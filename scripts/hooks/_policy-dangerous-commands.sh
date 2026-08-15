@@ -67,7 +67,18 @@ validate_command() {
     printf '%s\n' "BLOCKED: Fork bomb detected."
     return 1
   fi
-  if echo "$CMD_LOWER" | grep -qE '(while true|for \(\(;;|yes \|)'; then
+  # `yes | consumer` — the infinite generator. Matched in COMMAND POSITION
+  # (string start, or after a `; & | ( {` separator) rather than as three loose
+  # letters, and requiring a REAL pipe: `\|` not followed by another `|`.
+  #
+  # The previous literal `yes \|` was wrong in both directions. Too broad: it
+  # fired on `echo YES || echo NO`, where `yes` is an argument and `||` is
+  # logical OR — a benign command blocked as a fork bomb. Too narrow: it demands
+  # a space before the pipe, so the real generator escaped as `yes|consumer` and
+  # as `yes '' | consumer`. Command-position anchoring also gives word
+  # boundaries for free (`yesterday | wc`, `eyes.txt`).
+  local YES_PIPE='(^|[;&|({])[[:space:]]*yes([[:space:]][^|]*)?\|([^|]|$)'
+  if echo "$CMD_LOWER" | grep -qE "(while true|for \(\(;;|$YES_PIPE)"; then
     # Allow if it's a test/watch command
     if ! echo "$CMD_LOWER" | grep -qE '(jest|vitest|mocha|pytest|watch|poll|retry|timeout)'; then
       printf '%s\n' "BLOCKED: Potential infinite loop detected."

@@ -388,6 +388,16 @@ Available variables:
 | `SKIP_COMMAND_VALIDATOR=1` | Disables security validation of commands |
 | `SKIP_DESTRUCTIVE_CHECK=1` | Disables protection against destructive operations |
 
+### Is it the foundation, or Claude Code? — `--safe-mode` (CLI 2.1.169+)
+
+The variables above switch off one guard at a time. To answer the prior question — *does the problem even come from this foundation?* — start Claude Code with **every** customization disabled at once:
+
+```bash
+claude --safe-mode          # or: CLAUDE_CODE_SAFE_MODE=1 claude
+```
+
+This drops `CLAUDE.md`, plugins, skills, hooks and MCP servers for the session. If the symptom disappears, it is something this foundation installs, and the variables above will bisect which one; if it persists, the cause is upstream and belongs in a Claude Code issue rather than here. Doing this **first** avoids the long tail of disabling guards one by one to chase a bug that was never ours.
+
 ### Fully reset the hooks
 
 If the hooks are in an inconsistent state (permissions, modified scripts):
@@ -468,7 +478,8 @@ Rule: prefer `/compact` over `/clear`. Compaction preserves the essentials (deci
 | Read and explore code | Low | `/effort low` |
 | Implement a standard feature | Medium | `/effort medium` |
 | Design an architecture | High | `/effort high` |
-| Critical audit, complex debug | Maximum | `/effort xhigh` |
+| Critical audit, complex debug | Very high | `/effort xhigh` |
+| The single hardest problem | Ceiling | `/effort max` |
 
 **Avoid expensive reads:**
 

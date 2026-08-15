@@ -77,8 +77,7 @@ Disable: `SKIP_PROMPT_CONTEXT=1`. An explicit slash command always short-circuit
 | Cost tracking | `/ops:ops-cost` |
 | Morning standup | `/ops:ops-standup` |
 | Broken CI | `/ops:ops-ci-fix` |
-| Cloud plan (large feature) | `/ultraplan` |
-| Cloud review (large PR) | `/ultrareview` |
+| Cloud review (large PR) | `/code-review ultra` |
 | Autonomously converge a PR (auto-fix CI + nits) | `/autofix-pr` |
 | Session recap | `/recap` |
 | Reduce permission prompts | `/fewer-permission-prompts` |

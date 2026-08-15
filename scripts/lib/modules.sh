@@ -53,27 +53,91 @@ module_exists() {
     [[ -f "$MODULES_BUNDLES_DIR/$name.txt" ]]
 }
 
+# -----------------------------------------------------------------------------
+# Flattened registry cache (owner lookup)
+#
+# path_module is called once per catalog item by the select-then-emit installer
+# (~200 times per install). Re-reading the registry on each call cost ~30 forks
+# a time (modules_list = one basename fork per bundle + sort; then one
+# module_bundle_paths process substitution per module) — ~120ms per call, ~24s
+# per install. The registry cannot change under a running process, so flatten
+# it once into two parallel indexed arrays and scan those instead.
+#
+# This mirrors the pattern update.sh already uses for the same problem (see
+# "US-3 — module-aware filtering (precomputed once, zero forks per file)"):
+# parallel indexed arrays loaded once, then a pure-bash lookup per item. The
+# select-then-emit installer is the one path that did not adopt it.
+#
+# Indexed (not associative) arrays: directory entries match by PREFIX, so this
+# is an ordered scan rather than a key lookup — and associative arrays are out
+# anyway for macOS bash 3.2 portability, as update.sh notes at the same spot.
+#
+# The key is MODULES_BUNDLES_DIR, so a caller that swaps the registry (tests
+# build a synthetic bundles dir) rebuilds instead of answering from the old one.
+# -----------------------------------------------------------------------------
+_MODULES_REG_KEY=""
+_MODULES_REG_N=0
+_MODULES_REG_NAME=()
+_MODULES_REG_PATH=()
+# Out-parameter of path_module_var. Initialised at load so a read under
+# `set -u` before the first call is not a fatal unbound-variable error.
+_MODULES_PATH_OWNER=""
+
+_modules_registry_load() {
+    [[ "$_MODULES_REG_KEY" == "$MODULES_BUNDLES_DIR" ]] && return 0
+    _MODULES_REG_NAME=()
+    _MODULES_REG_PATH=()
+    _MODULES_REG_N=0
+    local m p
+    # Same traversal order as the pre-cache implementation (modules sorted,
+    # then bundle-file order), so first-match wins identically.
+    while IFS= read -r m; do
+        while IFS= read -r p; do
+            [[ -n "$p" ]] || continue
+            _MODULES_REG_NAME[_MODULES_REG_N]="$m"
+            _MODULES_REG_PATH[_MODULES_REG_N]="$p"
+            _MODULES_REG_N=$((_MODULES_REG_N + 1))
+        done < <(module_bundle_paths "$m")
+    done < <(modules_list)
+    _MODULES_REG_KEY="$MODULES_BUNDLES_DIR"
+}
+
+# path_module_var <repo-relative-path> — set _MODULES_PATH_OWNER to the module
+# that owns <path>, or "" when the path is core.
+#
+# The variable form exists because the printing form can only be consumed via
+# `owner=$(path_module ...)`, and a command substitution forks a subshell: the
+# registry cache would be built in the child and thrown away on every item, so
+# a caller looping over the catalogs pays a full registry reload per item (the
+# #491 regression). Hot loops must call this; `path_module` stays the public
+# printing wrapper for one-shot callers.
+path_module_var() {
+    _MODULES_PATH_OWNER=""
+    local path="${1:-}"
+    [[ -n "$path" ]] || return 0
+    _modules_registry_load
+    local i p
+    for (( i = 0; i < _MODULES_REG_N; i++ )); do
+        p="${_MODULES_REG_PATH[i]}"
+        # Directory entry (trailing /): check if path starts with it.
+        if [[ "$p" == */ ]]; then
+            [[ "$path" == "${p%/}"/* || "$path" == "${p%/}" ]] && { _MODULES_PATH_OWNER="${_MODULES_REG_NAME[i]}"; return 0; }
+        else
+            [[ "$path" == "$p" ]] && { _MODULES_PATH_OWNER="${_MODULES_REG_NAME[i]}"; return 0; }
+        fi
+    done
+    # Not owned by any module — it is a core path.
+    return 0
+}
+
 # path_module <repo-relative-path> — print the module name that owns <path>,
 # or print nothing (empty) if the path is a core foundation item not owned
 # by any optional module bundle.
 # Used by update.sh to decide whether a file should be skipped when its
 # owning module is absent from the project manifest.
 path_module() {
-    local path="${1:-}"
-    [[ -n "$path" ]] || return 0
-    local m
-    while IFS= read -r m; do
-        local p
-        while IFS= read -r p; do
-            # Directory entry (trailing /): check if path starts with it.
-            if [[ "$p" == */ ]]; then
-                [[ "$path" == "${p%/}"/* || "$path" == "${p%/}" ]] && { printf '%s\n' "$m"; return 0; }
-            else
-                [[ "$path" == "$p" ]] && { printf '%s\n' "$m"; return 0; }
-            fi
-        done < <(module_bundle_paths "$m")
-    done < <(modules_list)
-    # Not owned by any module — it is a core path.
+    path_module_var "${1:-}"
+    [[ -n "$_MODULES_PATH_OWNER" ]] && printf '%s\n' "$_MODULES_PATH_OWNER"
     return 0
 }
 

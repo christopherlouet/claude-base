@@ -116,7 +116,14 @@ _selset_module_selected() {
 # a module bundle that is NOT selected (so it must not ship as core).
 _selset_owned_by_unselected() {
     local owner=""
-    if declare -F path_module >/dev/null 2>&1; then
+    # Variable form first: this runs once per catalog item, and the printing
+    # form would cost a command substitution (subshell fork + a cold registry
+    # cache) on every one of them. Fall back to the printing form so the lib
+    # still works when sourced against an older modules.sh.
+    if declare -F path_module_var >/dev/null 2>&1; then
+        path_module_var "$1"
+        owner="$_MODULES_PATH_OWNER"
+    elif declare -F path_module >/dev/null 2>&1; then
         owner=$(path_module "$1" 2>/dev/null || true)
     fi
     [ -n "$owner" ] || return 1

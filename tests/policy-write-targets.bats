@@ -102,3 +102,79 @@ run_extract() {
     run_extract "npm test 2>&1"
     [ -z "$output" ]
 }
+
+# =============================================================================
+# Quoted metacharacters are DATA, not operators
+#
+# The core quote-strips before extraction, so a shell metacharacter written
+# inside quotes became indistinguishable from a real operator. Two live
+# incidents, both on plain read-only greps during this repo's own merge work:
+#
+#   grep -n '^>>>>>>>' CHANGELOG.md          -> "write to CHANGELOG.md"
+#   grep -nE 'redirect|tee' <file>           -> "write to <file>"  (via tee)
+#
+# Same class as the loop guard's literal `yes \|`: syntax inferred from a
+# character that the shell would never treat as syntax there.
+#
+# The quote-strip exists for a real reason — `> ".env"` must still resolve to
+# .env — so the deny cases below are as load-bearing as the allow cases. A fix
+# that simply stops stripping quotes would open a bypass and is what these
+# pin against.
+# =============================================================================
+
+@test "policy-wt: a quoted redirection operator is not a write (real incident)" {
+    run_extract "grep -n '^>>>>>>>' CHANGELOG.md"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "policy-wt: a quoted 'tee' inside a grep pattern is not a write (real incident)" {
+    run_extract "grep -nE 'redirect|tee' scripts/hooks/_policy-write-targets.sh"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "policy-wt: a redirection character inside an echo string is not a write" {
+    run_extract "echo 'a > b'"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "policy-wt: quoted metachars mixed with a REAL redirect still yield the target" {
+    # The quoted '>' must be ignored AND the unquoted one must still be seen.
+    run_extract "grep -n 'a > b' in.txt > .env"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *".env"* ]]
+}
+
+# --- bypass guards: the quote-strip's original purpose must survive ----------
+
+@test "policy-wt: a double-quoted redirect target is still extracted" {
+    run_extract 'echo x > ".env"'
+    [ "$status" -eq 0 ]
+    [[ "$output" == *".env"* ]]
+}
+
+@test "policy-wt: a single-quoted redirect target is still extracted" {
+    run_extract "echo x > '.env'"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *".env"* ]]
+}
+
+@test "policy-wt: a quoted tee target is still extracted" {
+    run_extract "cat foo | tee '.env'"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *".env"* ]]
+}
+
+@test "policy-wt: a quoted sed -i target is still extracted" {
+    run_extract "sed -i s/a/b/ '.eslintrc.json'"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *".eslintrc.json"* ]]
+}
+
+@test "policy-wt: a quoted cp destination is still extracted" {
+    run_extract "cp src/a '.env'"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *".env"* ]]
+}

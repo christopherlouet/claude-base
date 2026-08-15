@@ -53,6 +53,75 @@ assert_allow() {
     assert_allow
 }
 
+# --- Category 1b: `yes |` must mean the COMMAND, not the word ----------------
+# The pattern targets the infinite generator `yes | consumer`. It was written as
+# the literal `yes \|` — "the three letters, a space, a pipe" — which is both
+# too broad and too narrow:
+#
+#   too broad   `echo YES || echo NO`   blocked: `yes` is an ARGUMENT and `||`
+#                                       is logical OR, not a pipe. Real: hit
+#                                       while probing a job with
+#                                       `pgrep -f … && echo YES || echo NO`.
+#               `echo yes | grep yes`   blocked: `yes` is data here.
+#   too narrow  `yes|consumer`          allowed: no space before the pipe.
+#               `yes '' | consumer`     allowed: an argument between the two.
+#
+# So the guard blocked benign commands while the actual generator escaped it in
+# two spellings. It is now anchored on COMMAND POSITION (start of string or
+# after a separator) and requires a real pipe — `\|` not followed by another
+# `|`. The deny cases are the mutation test: they fail on the old pattern too,
+# which is the point.
+
+@test "policy-dc: allows echo YES || echo NO (yes as argument, || is not a pipe)" {
+    run_policy "pgrep -f 'preflight.sh --full' >/dev/null && echo YES || echo NO"
+    assert_allow
+}
+
+@test "policy-dc: allows a bare yes || fallback (logical OR, no pipe)" {
+    run_policy "check_thing || yes"
+    assert_allow
+    run_policy "make check || yes || true"
+    assert_allow
+}
+
+@test "policy-dc: allows the word yes piped as data, not as a command" {
+    run_policy "echo yes | grep -q yes"
+    assert_allow
+}
+
+@test "policy-dc: denies the yes generator piped into a consumer" {
+    run_policy "yes | head -1"
+    assert_deny
+    # Spacing is not what makes it dangerous — the old literal `yes \|` let this
+    # one through.
+    run_policy "yes|rm -rf /tmp/x"
+    assert_deny
+}
+
+@test "policy-dc: denies yes with arguments before the pipe" {
+    # Also escaped the old pattern: anything between `yes` and the pipe.
+    run_policy "yes '' | tr a b"
+    assert_deny
+    run_policy "yes 2>/dev/null | ./installer"
+    assert_deny
+}
+
+@test "policy-dc: denies the yes generator after a command separator" {
+    run_policy "make build; yes | ./installer"
+    assert_deny
+    run_policy "test -f x && yes | ./installer"
+    assert_deny
+    run_policy "check || yes | ./installer"
+    assert_deny
+}
+
+@test "policy-dc: does not fire on words merely containing yes" {
+    run_policy "yesterday | wc -l"
+    assert_allow
+    run_policy "cat eyes.txt | wc -l"
+    assert_allow
+}
+
 # --- Category 2: pipe-to-shell ----------------------------------------------
 
 @test "policy-dc: denies curl | sh" {

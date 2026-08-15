@@ -69,6 +69,27 @@ one that caught the real bug while the unit tests stayed green:
 The "0 on our own corpus" assertion is also a **standing regression guard**: it
 fails the day a real drift appears.
 
+## Widening a detector pattern — measure the delta first
+
+A guard built from regexes is tuned against invented examples and drifts. Reading
+the patterns again proves nothing; **measure** what a change costs in false blocks:
+
+```bash
+scripts/validator-corpus.sh --summary   # before
+# …widen the pattern…
+scripts/validator-corpus.sh             # after: which commands now get refused
+```
+
+The corpus is the foundation's own commands — what CI executes and what the docs
+tell a reader to run — because a refusal there is a self-contradiction.
+`tests/validator-corpus.bats` pins the result: every refusal must be a reviewed
+exception, so a widening that starts taxing ordinary documented commands fails
+with the offending command named. Refusing *fewer* commands never fails.
+
+Precedent: the loop guard shipped the literal `yes \|`, which refused
+`echo YES || echo NO` while the real generator escaped as `yes|consumer`. It was
+found by tripping over it in normal work, not by review.
+
 ## New shell-script portability (macOS bash 3.2)
 
 CI runs a **macOS column** (system bash is **3.2**) alongside Linux. A new

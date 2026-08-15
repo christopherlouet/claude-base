@@ -24,7 +24,7 @@ _(Since 2026-07-24, **Opus 5** is the recommended default for complex work — n
 |----------|--------|---------------|
 | Complex tasks (default) | **Opus 5** (`claude-opus-5`) | Released 2026-07-24: within ~0.5% of Fable 5's peak scores at **half the price** (`$5/$25` per MTok — same as Opus 4.8), 1M context, configurable effort. The `opus` alias resolves to it automatically |
 | Extreme niche: the ~0.5% Fable still wins | **Fable 5** (`claude-fable-5`) | ~$10/$50 per MTok (2× Opus 5). Since Opus 5, a **rare, deliberate** choice — see the note below |
-| Audits, analyses, high-volume agentic work | **Sonnet** (Sonnet 5) | 1M context, `$2/$10` per MTok intro through 2026-08-31 (then `$3/$15`) vs Opus `$5/$25`. Claude Code's **default model** for subscription seats since 2026-06-30 |
+| Audits, analyses, high-volume agentic work | **Sonnet** (Sonnet 5) | 1M context, `$2/$10` per MTok — permanent since 2026-08-10 (the planned `$3/$15` rise was cancelled) vs Opus `$5/$25`. Claude Code's **default model** for subscription seats since 2026-06-30 |
 | Simple tasks | **Haiku** | Fast for trivial operations |
 
 > **Opus 5 (since 2026-07-24):** the new default of the `opus` tier alias (no agent-frontmatter change needed). Same price as Opus 4.8 with greatly improved performance: doubles Opus 4.8 on Frontier-Bench v0.1 and outperforms Fable 5 on OSWorld 2.0 at a third of the cost. Fast mode runs on it at `$10/$50` per MTok (~2.5× speed). Opus 4.8 is not deprecated (it serves as fallback) but is no longer the recommendation. ([Announcement](https://techcrunch.com/2026/07/24/anthropic-launches-opus-5/))
@@ -54,9 +54,10 @@ See `docs/guides/PROMPTING-GUIDE.md` for the complete guide.
 | Exploring code, reading files | `low` | No need for deep reasoning |
 | Implementing a standard feature | `medium` | Speed/quality balance |
 | Designing an architecture, audit, complex debug | `high` | Deep reasoning required |
-| Critical system architecture, advanced security audit | `xhigh` | Maximum reasoning (Opus-class models: Opus 5 / 4.8) |
+| Critical system architecture, advanced security audit | `xhigh` | Deepest routinely-useful reasoning (Opus-class models: Opus 5 / 4.8) |
+| The single hardest problem in a session | `max` | The ceiling above `xhigh` — slowest and costliest per turn, so reserve it rather than defaulting to it |
 
-Command: `/effort low`, `/effort medium`, `/effort high`, `/effort xhigh` (interactive slider).
+Command: `/effort low`, `/effort medium`, `/effort high`, `/effort xhigh`, `/effort max` (interactive slider; same values on `--effort` and in skill/agent `effort:` frontmatter).
 
 > Effort tunes reasoning depth **on the current model**; it is not a model upgrade. Since Opus 5, raising effort on Opus 5 covers almost every hard case; the Fable 5 model escalation (`claude-fable-5`, ~2× Opus 5) remains only for the rare tasks where Fable's last half-percent measurably matters — see "Recommended Model" above.
 
