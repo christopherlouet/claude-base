@@ -138,14 +138,23 @@ teardown() { teardown_test_dir; }
 
 # --- Self-application ---------------------------------------------------------
 
-@test "git-hooks-wire: on the real foundation it is a silent no-op" {
-    # The repo ships .husky and is correctly wired, so the hook must say
-    # nothing and change nothing. This is also a standing guard: it starts
-    # printing the day this checkout's wiring actually breaks.
+@test "git-hooks-wire: on the real foundation it converges to .husky, then goes quiet" {
+    # Asserts the INVARIANT, not the incidental. An earlier version demanded
+    # silence on the first run, which encoded the state of one developer's
+    # machine: a checkout that had already been repaired by hand. CI proved it
+    # wrong on both Linux and macOS — a fresh clone carries no local config, so
+    # hooksPath is unset and the hook correctly repairs and says so. That is
+    # one of the two breakages this hook exists for, and it is the common one.
+    #
+    # What must hold on any checkout: the end state is .husky, and a second run
+    # has nothing left to do.
     cd "$BASE_DIR"
-    local before; before=$(git config --local core.hooksPath || true)
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = ".husky" ]
+
     run bash "$WIRE"
     [ "$status" -eq 0 ]
     [ -z "$output" ]
-    [ "$(git config --local core.hooksPath || true)" = "$before" ]
+    [ "$(git config --local core.hooksPath)" = ".husky" ]
 }

@@ -127,3 +127,39 @@ run_emit_nobatch() {
     [ -f "$DST/a.txt" ]
     [ -f "$DST/b.txt" ]
 }
+
+@test "emit: a src_root reached through a SYMLINK is not rejected wholesale" {
+    # The macOS default: /tmp is a link to /private/tmp, so src_root resolves to
+    # a different string than the caller passed. Comparing a resolved source
+    # against a RAW root then refused every entry — an install from such a path
+    # failed completely with "source outside the repo". Predates the batch
+    # cache; these tests were simply the first to exercise a symlinked root.
+    mkdir -p "$TEST_DIR/real/src" "$TEST_DIR/real/dst"
+    printf 'a\n' > "$TEST_DIR/real/src/a.txt"
+    ln -s "$TEST_DIR/real" "$TEST_DIR/link"
+    printf 'a.txt\n' > "$TEST_DIR/m.txt"
+
+    run bash -c '. "$1"; emit_manifest "$2" "$3" "$4"' _ \
+        "$EMIT_LIB" "$TEST_DIR/m.txt" "$TEST_DIR/link/src" "$TEST_DIR/link/dst"
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_DIR/real/dst/a.txt" ]
+}
+
+@test "emit: an outgoing symlink is still refused when the root is symlinked" {
+    # The bypass check for the fix above: relaxing the comparison must not stop
+    # refusing a source that genuinely resolves outside the (resolved) root.
+    # Target is /etc/hostname rather than the usual /etc/passwd — the latter,
+    # written in a shell command, trips our own command validator, which reads
+    # the PATH as the passwd COMMAND. Same false-positive family as the quoted
+    # metacharacters; noted rather than worked around silently.
+    mkdir -p "$TEST_DIR/real/src" "$TEST_DIR/real/dst"
+    printf 'a\n' > "$TEST_DIR/real/src/a.txt"
+    ln -s /etc/hostname "$TEST_DIR/real/src/escape.txt"
+    ln -s "$TEST_DIR/real" "$TEST_DIR/link"
+    printf 'a.txt\nescape.txt\n' > "$TEST_DIR/m.txt"
+
+    run bash -c '. "$1"; emit_manifest "$2" "$3" "$4"' _ \
+        "$EMIT_LIB" "$TEST_DIR/m.txt" "$TEST_DIR/link/src" "$TEST_DIR/link/dst"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"symlink"* ]]
+}

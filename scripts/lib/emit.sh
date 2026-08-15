@@ -129,15 +129,27 @@ _emit_resolve_lookup() {
 }
 
 # Verifies that the resolved source stays under <src_root> (blocks outgoing symlinks).
+#
+# BOTH sides are symlink-resolved. Comparing a resolved source against a RAW
+# root rejects every entry whenever the root itself is reached through a
+# symlink — and that is the default on macOS, where /tmp is a link to
+# /private/tmp, so an install run from any such path failed wholesale with
+# "source outside the repo". Predates the batch cache; the emit tests were
+# simply the first to exercise a symlinked root.
+#
+# The security property is unchanged: a source that resolves OUTSIDE the
+# resolved root is still refused. Only the false rejection goes away.
 emit_assert_within_root() {
   local src_path="$1" src_root="$2"
-  local resolved
+  local resolved root_real
+  root_real="$(emit_resolve_path "$src_root" || true)"
+  [ -n "$root_real" ] || root_real="$src_root"
   if _emit_resolve_lookup "$src_path"; then
     resolved="$_EMIT_RES_HIT"
   else
     resolved="$(cd "$src_root" && emit_resolve_path "$src_path" || true)"
   fi
-  if [ -z "$resolved" ] || [[ "$resolved" != "$src_root"/* && "$resolved" != "$src_root" ]]; then
+  if [ -z "$resolved" ] || [[ "$resolved" != "$root_real"/* && "$resolved" != "$root_real" ]]; then
     _emit_err "source outside the repo (outgoing symlink?): $src_path -> ${resolved:-unresolved}"
     return 1
   fi
