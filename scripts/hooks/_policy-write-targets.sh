@@ -46,13 +46,61 @@ else
 fi
 # --- end policy bootstrap ---
 
+# _wt_mask_quotes — replace every quoted span with an inert placeholder.
+#
+# Prints the masked command on line 1, then one line per span, in index order.
+# A span becomes \001<idx>\001, which the target regexes below still accept as
+# a path token (it contains none of [[:space:]<>|&;()]), so a QUOTED TARGET is
+# still found — but its CONTENT can no longer be read as syntax.
+#
+# This replaces a blanket `tr -d "\"'"`. Stripping the quotes made a quoted
+# metacharacter indistinguishable from a real operator, and two plain read-only
+# greps were blocked as writes during this repo's own merge work:
+#   grep -n '^>>>>>>>' CHANGELOG.md        -> read as a redirect to CHANGELOG.md
+#   grep -nE 'redirect|tee' <file>         -> read as a tee to <file>
+# The shell never treats a quoted `>` or a quoted `tee` as syntax; neither
+# should this. Note the fix cannot be "stop stripping quotes": `> ".env"` must
+# still resolve to .env, which is what the placeholder preserves.
+_wt_mask_quotes() {
+  printf '%s' "$1" | awk '
+    BEGIN { RS = "\0" }
+    {
+      s = $0; out = ""; n = 0; i = 1; L = length(s)
+      while (i <= L) {
+        c = substr(s, i, 1)
+        if (c == "\"" || c == "\047") {
+          q = c; i++; content = ""
+          while (i <= L) { d = substr(s, i, 1); if (d == q) break; content = content d; i++ }
+          i++
+          out = out "\001" n "\001"
+          span[n] = content; n++
+          continue
+        }
+        out = out c; i++
+      }
+      print out
+      for (k = 0; k < n; k++) print span[k]
+    }'
+}
+
 extract_write_targets() {
   local CMD="$1"
   [ -z "$CMD" ] && return 0
 
-  # Quote-stripped, newline-flattened copy for token extraction.
+  # Quote-masked, newline-flattened copy for token extraction.
   local CMD_UQ CMD_UQ_CPMV targets
-  CMD_UQ=$(printf '%s' "$(strip_msg_values "$CMD")" | tr -d "\"'" | tr '\n' ' ')
+  local _masked _line _i=0
+  _masked=""
+  # Parallel arrays (no associative arrays: macOS bash 3.2).
+  local _spanv=() _spann=0
+  while IFS= read -r _line; do
+    if [ "$_i" -eq 0 ]; then _masked="$_line"
+    else _spanv[_spann]="$_line"; _spann=$((_spann + 1)); fi
+    _i=$((_i + 1))
+  done <<EOF
+$(_wt_mask_quotes "$(strip_msg_values "$CMD")")
+EOF
+  CMD_UQ=$(printf '%s' "$_masked" | tr '\n' ' ')
 
   # Package-manager `install` subcommands (pip/npm/apt/cargo/…) are not file
   # writes: without this, the (cp|mv|install) DEST extraction below reads
@@ -87,6 +135,20 @@ extract_write_targets() {
         | sed -E 's/^[[:space:]]*of=//'
     } 2>/dev/null | sed '/^[[:space:]]*$/d'
   )
+  # Put the quoted content back: a target may BE a placeholder (`> ".env"`) or
+  # merely contain one (`> pre".env"`). Done after extraction so the content
+  # never had a chance to be parsed as syntax.
+  if [ -n "$targets" ] && [ "$_spann" -gt 0 ]; then
+    local _k _ph
+    for (( _k = 0; _k < _spann; _k++ )); do
+      _ph=$'\001'"$_k"$'\001'
+      targets="${targets//$_ph/${_spanv[_k]}}"
+    done
+  fi
+  # A span that resolved to nothing (`> ""`) leaves an empty line; drop those
+  # so an empty target is never handed to the classifier as a real path.
+  targets=$(printf '%s\n' "$targets" | sed '/^[[:space:]]*$/d')
+
   if [ -n "$targets" ]; then
     printf '%s\n' "$targets"
   fi

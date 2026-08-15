@@ -91,6 +91,40 @@ if [ "$MODE" = "--list" ]; then
     exit 0
 fi
 
+# --- write-target extraction over the same corpus -----------------------------
+# Second guard, same method. bash-write-guard's core turns a command into
+# candidate write targets; a read-only command must yield none. Ground truth
+# comes from an INDEPENDENT quote-stripper (sed here, versus the awk masker the
+# core uses) — agreeing implementations are the point: a command with no write
+# operator left after stripping quoted spans must produce no target.
+#
+# This is what found the third false positive of that class, one no amount of
+# re-reading the regexes had surfaced: a quoted URL whose `<placeholder>` was
+# parsed as a redirection.
+if [ "$MODE" = "--write-targets" ]; then
+    # shellcheck source=hooks/_policy-write-targets.sh
+    . "$REPO_ROOT/scripts/hooks/_policy-write-targets.sh"
+    spurious=0
+    while IFS=$'\t' read -r src cmd; do
+        [ -n "${cmd:-}" ] || continue
+        tgt=$(extract_write_targets "$cmd" | tr '\n' ' ')
+        tgt="${tgt% }"
+        [ -n "$tgt" ] || continue
+        bare=$(printf '%s' "$cmd" | sed -E "s/\"[^\"]*\"|'[^']*'/ /g")
+        # Anchor on start-of-string OR a separator: a corpus line very often
+        # BEGINS with the verb (`cp a b`), which a leading-space-only pattern
+        # misses — that mistake reported twelve ordinary copies as spurious.
+        if printf '%s' "$bare" | grep -qE '(>>?|(^|[[:space:]|&;(])(tee|cp|mv|install)[[:space:]]|(^|[[:space:]|&;(])sed[[:space:]][^|;&]*-i|(^|[[:space:]])of=)'; then
+            continue
+        fi
+        spurious=$((spurious + 1))
+        printf '%s\t%s\t%s\n' "$tgt" "$src" "$cmd"
+    done <<EOF
+$CORPUS
+EOF
+    exit 0
+fi
+
 # --- run the policy over it ----------------------------------------------------
 
 # shellcheck source=hooks/_policy-dangerous-commands.sh
