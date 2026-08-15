@@ -148,13 +148,19 @@ run_emit_nobatch() {
 @test "emit: an outgoing symlink is still refused when the root is symlinked" {
     # The bypass check for the fix above: relaxing the comparison must not stop
     # refusing a source that genuinely resolves outside the (resolved) root.
-    # Target is /etc/hostname rather than the usual /etc/passwd — the latter,
-    # written in a shell command, trips our own command validator, which reads
-    # the PATH as the passwd COMMAND. Same false-positive family as the quoted
-    # metacharacters; noted rather than worked around silently.
-    mkdir -p "$TEST_DIR/real/src" "$TEST_DIR/real/dst"
+    #
+    # The escape target is a real file created HERE, outside the root, rather
+    # than a system path. Two earlier attempts show why: /etc/passwd trips our
+    # own command validator when written in a shell command (it reads the PATH
+    # as the passwd COMMAND), and /etc/hostname — chosen to dodge that — does
+    # not exist on macOS, so the link dangled and emit failed with "path not
+    # found" instead of the symlink refusal, failing this test on CI's macOS
+    # column for a reason that had nothing to do with the behaviour under test.
+    # A self-contained target depends on no platform at all.
+    mkdir -p "$TEST_DIR/real/src" "$TEST_DIR/real/dst" "$TEST_DIR/outside"
     printf 'a\n' > "$TEST_DIR/real/src/a.txt"
-    ln -s /etc/hostname "$TEST_DIR/real/src/escape.txt"
+    printf 'secret\n' > "$TEST_DIR/outside/target.txt"
+    ln -s "$TEST_DIR/outside/target.txt" "$TEST_DIR/real/src/escape.txt"
     ln -s "$TEST_DIR/real" "$TEST_DIR/link"
     printf 'a.txt\nescape.txt\n' > "$TEST_DIR/m.txt"
 
