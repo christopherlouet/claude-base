@@ -22,6 +22,7 @@ run_pf() {
         PREFLIGHT_GATE_SHELLCHECK="${G_SHELLCHECK:-true}" \
         PREFLIGHT_GATE_COUNTS="${G_COUNTS:-true}" \
         PREFLIGHT_GATE_MANIFEST="${G_MANIFEST:-true}" \
+        PREFLIGHT_GATE_STRUCTURE="${G_STRUCTURE:-true}" \
         PREFLIGHT_GATE_FULL="${G_FULL:-true}" \
         bash "$PF" "$@"
 }
@@ -47,6 +48,22 @@ run_pf() {
     [ "$status" -eq 1 ]
 }
 
+@test "preflight: structure gate failure → exit 1, names the gate" {
+    G_STRUCTURE=false run_pf
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"structure"* ]]
+}
+
+@test "preflight: --fast DOES run the structure gate" {
+    # The point of putting policy-structure in --fast: a hook added without its
+    # portability-map row used to pass --fast and fail only in the full suite,
+    # costing a push/CI round-trip. Defining the gate is not enough — pin that
+    # the FAST set actually runs it.
+    G_STRUCTURE="touch $TEST_DIR/struct_ran" run_pf --fast
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_DIR/struct_ran" ]
+}
+
 @test "preflight: --fast does NOT run the full (slow) bats gate" {
     # the full gate writes a marker; --fast must not trigger it
     G_FULL="touch $TEST_DIR/full_ran" run_pf --fast
@@ -63,7 +80,7 @@ run_pf() {
 @test "preflight: SKIP_PREFLIGHT=1 skips all gates → exit 0" {
     G_COUNTS=false run env SKIP_PREFLIGHT=1 \
         PREFLIGHT_GATE_SHELLCHECK=true PREFLIGHT_GATE_COUNTS=false \
-        PREFLIGHT_GATE_MANIFEST=true PREFLIGHT_GATE_FULL=true \
+        PREFLIGHT_GATE_MANIFEST=true PREFLIGHT_GATE_STRUCTURE=true PREFLIGHT_GATE_FULL=true \
         bash "$PF"
     [ "$status" -eq 0 ]
 }

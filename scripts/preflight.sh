@@ -11,7 +11,8 @@
 # closes that local↔CI gap.
 #
 # Gates mirror .github/workflows/ci.yml "Lint & Test":
-#   fast (default): shellcheck · validate-counts.sh · manifest-hooks-coverage
+#   fast (default): shellcheck · validate-counts.sh · conflict markers ·
+#                   manifest-hooks-coverage · policy-structure
 #   --full:         + scripts/test.sh (the complete bats suite)
 #
 # Each gate command is overridable via env (PREFLIGHT_GATE_*) for testing.
@@ -63,6 +64,16 @@ if [ -n "${PREFLIGHT_GATE_MANIFEST:-}" ]; then GATE_MANIFEST="$PREFLIGHT_GATE_MA
 elif command -v bats >/dev/null 2>&1; then GATE_MANIFEST='bats tests/manifest-hooks-coverage.bats'
 else GATE_MANIFEST='echo "bats absent - gate skipped"'; fi
 
+# Structural drift on the hook layer: the core/shell split invariants and the
+# agnostic-core portability map (every scripts/hooks/*.sh listed, no stale
+# entry). ~1.7s, and it belongs in --fast for the same reason the manifest gate
+# does: adding a hook without its map row passes --fast, passes a targeted bats
+# run, and only fails in the full suite — a whole push/CI round-trip to learn
+# a one-line omission. Observed exactly that while adding git-hooks-wire.sh.
+if [ -n "${PREFLIGHT_GATE_STRUCTURE:-}" ]; then GATE_STRUCTURE="$PREFLIGHT_GATE_STRUCTURE"
+elif command -v bats >/dev/null 2>&1; then GATE_STRUCTURE='bats tests/policy-structure.bats'
+else GATE_STRUCTURE='echo "bats absent - gate skipped"'; fi
+
 if [ -n "${PREFLIGHT_GATE_FULL:-}" ]; then GATE_FULL="$PREFLIGHT_GATE_FULL"
 elif command -v bats >/dev/null 2>&1; then GATE_FULL='bash scripts/test.sh'
 else GATE_FULL='echo "bats absent - gate skipped"'; fi
@@ -90,6 +101,7 @@ run_gate "shellcheck" "$GATE_SHELLCHECK"
 run_gate "counts"     "$GATE_COUNTS"
 run_gate "conflicts"  "$GATE_CONFLICTS"
 run_gate "manifest"   "$GATE_MANIFEST"
+run_gate "structure"  "$GATE_STRUCTURE"
 [ "$MODE" = full ] && run_gate "bats (full)" "$GATE_FULL"
 
 if [ "$fail_count" -gt 0 ]; then
