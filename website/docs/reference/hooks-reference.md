@@ -40,7 +40,9 @@ The project includes automatic hooks in `.claude/settings.json`:
 | `ElicitationResult` | command | When the user responds to an MCP Elicitation |
 | `PermissionDenied` | command | After a permission denial by the auto mode classifier. Return `{retry: true}` to retry |
 | `CwdChanged` | command | When the working directory changes |
+| `DirectoryAdded` | command | After `/add-dir` (or the SDK `register_repo_root`) registers a new working directory mid-session (CLI 2.1.219+) |
 | `FileChanged` | command | When a file is modified |
+| `MessageDisplay` | command | Lets a hook transform or hide assistant message text as it is displayed (CLI 2.1.152+) |
 
 ### Matcher syntax — exact match on hyphenated identifiers (CLI 2.1.195, June 2026)
 

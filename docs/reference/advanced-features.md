@@ -45,7 +45,8 @@ Best practices:
 | `low` | `/effort low` | Exploration, formatting, simple tasks |
 | `medium` | `/effort medium` | Standard development, fixes |
 | `high` | `/effort high` | Architecture, audit, complex refactoring, debug |
-| `xhigh` | `/effort xhigh` | Maximum reasoning — critical system architecture, advanced security audit (Opus-class models: Opus 5 / 4.8) |
+| `xhigh` | `/effort xhigh` | Critical system architecture, advanced security audit (Opus-class models: Opus 5 / 4.8) |
+| `max` | `/effort max` | The ceiling, above `xhigh` — reserve for the hardest single problem; slowest and most expensive per turn |
 
 Recommendations per foundation workflow:
 
@@ -97,13 +98,13 @@ Behaviourally: thinking is always on (the raw chain of thought is never returned
 
 ## Opus 4.8 (superseded by Opus 5)
 
-Frontier model from 2026-05-28 to 2026-07-24; now the fallback behind Opus 5 (same pricing). Introduced **`high` effort by default**, Adaptive Thinking (replaces `budget_tokens`), the 4 effort levels (`low`–`xhigh`, `xhigh` as a tier in v2.1.111), 1M context by default and 128k output. Anthropic reported it roughly **4× less likely than Opus 4.7 to let a flaw in code it has written pass unremarked** — the property that made Opus-class models the recommendation for the TDD and Audit phases, which Opus 5 inherits.
+Frontier model from 2026-05-28 to 2026-07-24; now the fallback behind Opus 5 (same pricing). Introduced **`high` effort by default**, Adaptive Thinking (replaces `budget_tokens`), the effort ladder (`low`–`max`, `xhigh` slotted in below `max` in v2.1.111), 1M context by default and 128k output. Anthropic reported it roughly **4× less likely than Opus 4.7 to let a flaw in code it has written pass unremarked** — the property that made Opus-class models the recommendation for the TDD and Audit phases, which Opus 5 inherits.
 
 **Auto mode (native, July 2026)** — a Claude Code permission mode where a model classifier approves/denies each tool call in place of the human (positioned as the safe alternative to `--dangerously-skip-permissions`; default-on for Bedrock/Vertex/Foundry since CLI 2.1.207). **It composes with — and does not replace — this foundation's hooks**: the classifier is probabilistic and decides *approval*, while the foundation's PreToolUse guards (command-validator, destructive-ops, config-protection, bash-write-guard…) are deterministic *class blockers* that keep running under any permission mode, auto included. Running both is defense in depth: keep the hooks even with auto mode on.
 
 ## Sonnet 5 (default tier, since 2026-06-30)
 
-`claude-sonnet-5` is Anthropic's most agentic Sonnet yet — released 2026-06-30 and now **Claude Code's default model**. It delivers **near-Opus 4.8 quality on many agentic tasks at roughly a third of the cost**, with a **native 1M-token context**. Pricing is **`$2/$10` per MTok introductory through 2026-08-31**, then **`$3/$15`** (vs Opus 4.8 at `$5/$25`).
+`claude-sonnet-5` is Anthropic's most agentic Sonnet yet — released 2026-06-30 and now **Claude Code's default model**. It delivers **near-Opus 4.8 quality on many agentic tasks at roughly a third of the cost**, with a **native 1M-token context**. Pricing is **`$2/$10` per MTok** (vs Opus 4.8 at `$5/$25`) — announced as introductory through 2026-08-31, but **made the permanent standard price on 2026-08-10**; the scheduled rise to `$3/$15` on September 1 will not happen.
 
 The `sonnet` tier alias resolves to Sonnet 5 automatically, so agent `model: sonnet` frontmatter picks it up with **no change needed**. This foundation recommends **Opus 5 for complex/critical work** (TDD, Audit, architecture) — see [best-practices.md](./best-practices.md) — and uses Sonnet 5 where its price/perf wins: audits, analyses, and high-volume agentic passes.
 
@@ -186,7 +187,7 @@ Messages relayed via `SendMessage` from other Claude sessions no longer carry us
 
 Introduced with Opus 4.8 (and inherited by Opus 5): a native **Workflow** capability that orchestrates work across **tens to hundreds of agents in the background** for large, complex tasks. Unlike the two mechanisms above, control flow is **deterministic and scripted** (loops, conditionals, fan-out, fan-in) rather than model-driven — you describe the structure (pipeline, parallel fan-out, adversarial verification) and the harness drives the agents.
 
-Ask Claude to "create a workflow that…" and it generates a script orchestrating the fleet. Typical shapes:
+The opt-in keyword is **`ultracode`** (highlighted in the prompt input). Since CC 2.1.160 the word *"workflow"* no longer triggers a run — asking in your own words still does, but `ultracode` is the reliable switch, and it can also be left on for a whole session via `/config`. Once triggered, Claude generates a script orchestrating the fleet. Typical shapes:
 
 | Shape | When to use |
 |-------|-------------|
@@ -366,18 +367,28 @@ Use cases with the foundation:
 
 Configuration via the Anthropic console or `/schedule`. Requires a Pro/Max/Team/Enterprise plan.
 
-## Ultraplan and Ultrareview (CLI 2.1.101+)
+## Self-hosted environments (public beta, CLI 2.1.224+)
 
-Cloud commands that delegate work to parallel agents on Anthropic's infrastructure.
+The cloud features above run on Anthropic's infrastructure. `claude self-hosted-runner` turns your own machines or containers into that compute layer instead: sessions started from web, mobile, desktop or a routine execute **inside your network**, next to internal services, toolchains and security controls.
+
+| Mode | Behaviour |
+|------|-----------|
+| Fixed | A set number of runners stays up; sessions are distributed across them |
+| On-demand | A runner spins up when work is queued and shuts down when finished |
+
+Public beta since 2026-08-06, on Claude Team and Enterprise plans. Relevant to this foundation when a project cannot send its repo to hosted compute: the hooks, skills and guards all run unchanged on a self-hosted runner, since it is the same CLI on different hardware.
+
+## Cloud review: /code-review ultra (CLI 2.1.111+)
+
+A cloud command that delegates a review to parallel agents on Anthropic's infrastructure.
 
 | Command | Description | When to use |
 |----------|-------------|----------------|
-| `/ultraplan` | Plan in cloud: draft, review in a web editor, remote or local execution | Complex architecture, multi-file plans |
-| `/ultrareview` | Parallel multi-agent review in cloud | Large PRs, in-depth reviews |
+| `/code-review ultra` | Parallel multi-agent review in cloud | Large PRs, in-depth reviews |
 
-`/ultraplan` automatically creates a cloud environment on first launch. The plan can be revised via a web editor before execution.
+`/code-review ultra` launches several agents in parallel for a more exhaustive review than local `/qa:qa-review`. Ideal for PRs of more than 500 lines. With no argument it bundles the current local branch and needs no GitHub remote; `/code-review ultra <PR#>` targets a GitHub PR. `/ultrareview` still works as a **deprecated alias** for the same command.
 
-`/ultrareview` launches several agents in parallel for a more exhaustive review than local `/qa:qa-review`. Ideal for PRs of more than 500 lines.
+> **`/ultraplan` was removed in CLI 2.1.222** (2026-08). The cloud-planning half of this pair no longer exists; there is no drop-in replacement. For large features, plan locally with `/work:work-plan` (or the `Plan` agent) — the foundation's Explore → Specify → Plan chain never depended on the cloud editor.
 
 ### Local /code-review --fix (CLI 2.1.152+)
 
