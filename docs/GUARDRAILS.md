@@ -86,6 +86,25 @@ tests-first, an audit report, a clean PR) are things a native session never make
 | **Doc/counter integrity** | docs & counters drifting from `.claude/` | PostToolUse `base-integrity-check.sh` | No |
 | **`.env` in `.gitignore`** | committing a real `.env` | SessionStart check | No |
 | **Dependencies installed** | "works on my machine" / missing `node_modules` | SessionStart check | No |
+| **Private names** | an end user's private project names reaching this public repo *in staged paths or staged content* | pre-commit `private-names-check.sh` | No |
+
+> **Private names, in detail.** This foundation is developed against real personal
+> projects, so their names slip into docs, specs and fixtures — historically into
+> the very checklists meant to catch them. The protected-name list therefore lives
+> **outside the repo** (`~/.claude/private-names`, or `CLAUDE_BASE_PRIVATE_NAMES`):
+> committing the list would publish exactly what it protects. **No list means a
+> silent no-op**, so a fresh clone of the public foundation is never blocked by a
+> list it does not have. The gate scans only what a commit *adds*, so a
+> pre-existing mention never blocks unrelated work and removing one is always
+> allowed. Names are matched as fixed strings, case-insensitively. Prefer a
+> distinctive form (`orchid-relay-backup`, not `relay`) — a name that is also an
+> ordinary word will block correct commits. Deliberate bypass:
+> `SKIP_PRIVATE_NAMES=1`.
+>
+> **Known limits** — the gate sees the staged *paths* and staged *content*, and
+> nothing else. A commit **message** or a **branch name** carrying a private name
+> still becomes public on push, and neither is covered here. Treat this gate as
+> the floor, not the whole fence.
 
 ---
 

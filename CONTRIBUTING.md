@@ -175,3 +175,7 @@ The project uses Claude Code hooks that run automatically:
 - **Gitleaks**: secret detection before any write
 - **Pre-commit tests**: tests run before each commit
 - **Auto-format**: automatic formatting after edits (TS, Python, Go, Rust, Dart, Lua)
+- **Private names**: a commit that would add an end user's private project name to
+  this public repo is blocked. The list of protected names lives outside the repo
+  (`~/.claude/private-names`), so this gate is a silent no-op unless you keep one —
+  see [`docs/GUARDRAILS.md`](docs/GUARDRAILS.md) §6.

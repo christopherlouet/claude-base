@@ -161,7 +161,7 @@ Per CLAUDE.md mandate ("give Claude a way to verify"), each layer gets a verific
 | Dry-run conflicts | `tests/update.bats` — temp project with locally modified file, run `update --dry-run --yes`, assert conflicts section in stdout |
 | Backward compat | Existing 536-test suite must continue to pass before any commit (per workflow.md baseline rule) |
 | ShellCheck | `scripts/lint.sh` zero warnings on new + modified scripts |
-| Manual smoke (escapade) | After implementation, re-run the same flow as today's session against escapade and verify the new behaviors fire (marker created, recommendations re-printed with indicators) |
+| Manual smoke (installed project) | After implementation, re-run the same flow as today's session against a real installed project and verify the new behaviors fire (marker created, recommendations re-printed with indicators) |
 
 ---
 

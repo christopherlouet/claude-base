@@ -273,7 +273,7 @@
   - `counts.json` (auto-regenerated)
   - `README.md` (auto-regenerated badge if any)
   Any extra file → investigate before commit.
-- [ ] **T038** [P] Grep for protected end-user project names over the diff (per `feedback_no_project_names`): `git diff HEAD | grep -Ei 'alloc-budget|escapade|<other-known-names>'`. Expected: empty.
+- [ ] **T038** [P] Check for protected end-user project names over the staged diff (per `feedback_no_project_names`): `bash scripts/private-names-check.sh`. Expected: exit 0.
 
 **Checkpoint**: Diff clean, ready to commit.
 

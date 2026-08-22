@@ -308,7 +308,7 @@
     hatch. ≥14 new bats tests including 1 regression on PR #199
     drift scenario. Spec at `specs/audit-docs/`.
   ```
-- [ ] **T048** Grep diff for protected names: `git diff HEAD | grep -iE 'alloc-budget|escapade|pacman'` → expect empty.
+- [ ] **T048** Run the protected-name gate over the staged diff: `bash scripts/private-names-check.sh` → expect exit 0.
 
 ---
 
