@@ -6,7 +6,7 @@
 
 ## 1. Summary
 
-Build a deterministic, billing-safe curation engine in four layers: a **machine-readable data model** (canonicalVendor registry + pinned/trust/provenance fields on recommendations), a **community-trust scorer** (public signals, no LLM), a **rot-watch** (nightly, LLM-free, emits one digest), and a **discovery** pass (monthly, LLM, budget-capped). Deployment target is a cron bot on `ubuntu@192.168.1.101` — nightly rot-watch costs $0 tokens (immune to the 2026-06-15 agentic-billing change), monthly discovery runs on a dedicated capped API key.
+Build a deterministic, billing-safe curation engine in four layers: a **machine-readable data model** (canonicalVendor registry + pinned/trust/provenance fields on recommendations), a **community-trust scorer** (public signals, no LLM), a **rot-watch** (nightly, LLM-free, emits one digest), and a **discovery** pass (monthly, LLM, budget-capped). Deployment target is a cron bot on a self-hosted homelab host (address kept out of this public repo) — nightly rot-watch costs $0 tokens (immune to the 2026-06-15 agentic-billing change), monthly discovery runs on a dedicated capped API key.
 
 ## 2. Technical context & key decisions
 

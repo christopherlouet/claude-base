@@ -106,6 +106,35 @@ tests-first, an audit report, a clean PR) are things a native session never make
 > still becomes public on push, and neither is covered here. Treat this gate as
 > the floor, not the whole fence.
 
+### The convention behind the gate: name the ROLE, not the machine
+
+A deterministic gate only catches what someone thought to list. The habit it
+backs up is this: **in a spec, a plan, a task or a doc, name the role a thing
+plays — never the private identity it happens to have.** Write "a self-hosted
+homelab host", "the CI runner", "the staging database"; keep the address, the
+hostname and the login in personal notes.
+
+This matters because the leak does not arrive through carelessness. It arrives
+through *correct documentation of a private fact*: a spec is supposed to record
+where a thing deploys, so writing "deployment target is `user@10.x.y.z`" looks
+exactly like doing the job well. That is what happened here — a curation-engine
+spec recorded its real deployment host, and it sat in this public repo for two
+months. No mechanism could have caught it: a project-name checklist does not
+cover hosts, and a secret scanner does not consider an RFC1918 address a secret.
+
+What counts as a private identity, in practice:
+
+| Do not write | Write instead |
+|--------------|---------------|
+| an internal IP or hostname (`192.0.2.10`, `nas.local`) | "the homelab host", "the internal registry" |
+| a shell target (`user@host`) | "the deploy account on that host" |
+| a personal path (`/home/<you>/src/<project>`) | "the project root" |
+| an end user's private project name | "a personal project", `<project-a>` |
+
+Documentation examples are the deliberate exception: RFC5737/RFC1918 sample
+addresses in a networking tutorial are content, not identity. The test is
+whether the value points at something that actually exists and is yours.
+
 ---
 
 ## How we know these earn their place (not just exist)

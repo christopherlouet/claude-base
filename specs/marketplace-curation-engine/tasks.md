@@ -35,7 +35,7 @@
 ## Slice 4 — Nightly bot deploy (PR #4 + ops on the box)
 - **T400** `[US3]` Create `docs/recipes/curation-bot-deploy.md` — nightly cron/systemd timer for `curation-watch.sh` (LLM-free, $0 tokens); digest → GitHub issue/draft PR via `gh`; secret handling (no key needed for rot-watch beyond `gh`).
 - **T401** Regen mirror if recipe is mirrored; `validate-counts.sh`; PR #4.
-- **T402** (ops, off-repo) Install the nightly timer on `ubuntu@192.168.1.101`; verify a real run produces a digest.
+- **T402** (ops, off-repo) Install the nightly timer on the self-hosted homelab host; verify a real run produces a digest.
 
 ## Phase P2 — Important
 ### Slice 5 — Discovery (PR #5)
