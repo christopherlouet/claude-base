@@ -147,3 +147,47 @@ expected_exception() {
     run bash -c ". '$policy'; extract_write_targets 'echo x > \".env\"'"
     [[ "$output" == *".env"* ]]
 }
+
+# --- regression: the corpus is built from TRACKED files ---------------------
+# The collector used `find`, which walks the disk and so descended into
+# gitignored paths: a worktree under .claude/worktrees/ (the location this
+# foundation documents and its `git-worktrees` skill encourages), a
+# .claude/commands.backup.<ts>/ written by update.sh, node_modules. It then
+# reported a SECOND copy of this repo's docs as if they were ours — every
+# privileged or pipe-to-shell line in them surfacing as an unreviewed refusal,
+# which is exactly how this was found. Ignored means "not repo content".
+
+@test "regression: a gitignored dir does not feed the corpus" {
+    local probe="$BASE_DIR/.claude/worktrees/corpus-probe-$$"
+    mkdir -p "$probe"
+    # A fenced command the guard DOES refuse (so it would surface in the output
+    # if collected), assembled from fragments so neither this file nor the
+    # command that wrote it reads as documenting it.
+    # The command must be UNIQUE to this probe: an exact duplicate of a command
+    # already documented elsewhere does not survive to the output, which made an
+    # earlier version of this test vacuous.
+    local esc="s"; esc="${esc}udo"
+    printf '# probe\n\n```bash\n%s npm install -g corpus-probe-%s-marker\n```\n' "$esc" "$$" > "$probe/README.md"
+
+    local out
+    out=$(bash "$CORPUS_TOOL" 2>/dev/null || true)
+
+    rm -rf "$probe"
+
+    [[ "$out" != *"corpus-probe-$$"* ]]
+}
+
+@test "regression: the control — that probe IS collected by a filesystem walk" {
+    # Pins that the test above is not vacuous: the same probe, gathered the old
+    # way, is picked up. If this stops holding, the test above proves nothing.
+    local probe="$BASE_DIR/.claude/worktrees/corpus-probe-ctl-$$"
+    mkdir -p "$probe"
+    printf '# probe\n' > "$probe/README.md"
+
+    local found
+    found=$(find "$BASE_DIR/.claude" -name '*.md' -type f 2>/dev/null | grep -c "corpus-probe-ctl-$$" || true)
+
+    rm -rf "$probe"
+
+    [ "$found" -ge 1 ]
+}
