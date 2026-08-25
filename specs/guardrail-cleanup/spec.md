@@ -14,10 +14,18 @@ from memory** which of its guardrails still earn their place. Every guardrail ke
 paid twice — once on each assistant — plus a surface where the two can drift apart. The project
 already owns the instrument that can answer this; it has never been pointed at its own guardrails.
 
-**Scope, fixed 2026-08-25: the 18 things that refuse an action, and nothing else.** Ten of them
-block; eight only advise. Five are already graded; **thirteen have never been graded at all**. The
-rules, the reference material and the curation engine are out — see *Out of Scope*, which explains
-what that choice deliberately leaves unmeasured.
+**Scope, 2026-08-25.** Two halves, graded by two different criteria because they earn their place in
+two different ways:
+
+- **What refuses an action** — 18 items, ten blocking and eight advisory. Five are graded today;
+  **thirteen have never been graded at all**. They earn their place by the harm they prevent.
+- **What every session carries** — the reference material placed in front of the assistant
+  unprompted, and **roughly four fifths of the shipped cost**. It prevents nothing, so it earns its
+  place only by changing what the assistant does. *Reopened after the first scoping excluded it: the
+  measurement showed the exclusion removed the answer along with the work.*
+
+The rules and the curation engine stay out — see *Out of Scope*, which states what that still leaves
+unmeasured rather than implying it is nothing.
 
 ---
 
@@ -100,17 +108,20 @@ from the record; every one removed has its removal reasoned in the same record.
 
 ---
 
-### US4 — Stop the repeated bookkeeping from generating work (Priority: P2)
+### US4 — Stop the repeated bookkeeping from generating work (Priority: P1)
 
 **As a** foundation maintainer
 **I want** the repeated counting of what the foundation contains to stop producing commits and
 blocking prepared changes
 **So that** two people (or two changes) can work in parallel without invalidating each other
 
-**Why P2**: real and measured — two files are touched by a majority of commits over two months, and
-three prepared changes are currently blocked on nothing but stale counts. It is not P1 because it
-does not change *what is shipped*, only the friction of shipping it. It gets worse mechanically once
-a second assistant needs its own copy of the same records.
+**Why P1** — *raised from P2 on 2026-08-25, on evidence*: this is the friction that is actually felt
+day to day, and removing guardrails does not touch it. Two files are touched by a **majority of
+commits over two months**; **three prepared changes are blocked on nothing but stale counts** right
+now. It was ranked P2 on the argument that it does not change *what is shipped* — but the measured
+cost of shipping turned out to be the larger of the two, and it **doubles mechanically** once a
+second assistant needs its own copy of the same records. A pass that shrinks the shipped set while
+leaving this in place would produce a smaller foundation that feels exactly as heavy.
 
 **Independent test**: prepare two independent changes; accept one; the other is still acceptable
 without touching its counts.
@@ -124,7 +135,42 @@ without touching its counts.
 
 ---
 
-### US5 — Know what survives the move before making it (Priority: P2)
+### US5 — Justify what every session carries, or stop carrying it (Priority: P1)
+
+**As a** foundation maintainer
+**I want** the material the foundation places in front of the assistant in *every* session to be
+justified by evidence that it changes what the assistant does
+**So that** I stop paying the largest measured cost for material that may never be consulted
+
+**Why P1** — *scope reopened on 2026-08-25*: this was excluded when the pass was scoped to the
+guardrails, on the argument that a finished narrow pass beats an unfinished wide one. The measurement
+overturned it. The carried reference material is **the single largest cost of the shipped surface —
+roughly four fifths of what a session carries before any work begins** — while the guardrails, which
+the pass was built around, are a small fraction of it. Excluding it meant excluding the answer.
+
+**This story is graded differently from US1, and that difference is the point.** A guardrail earns
+its place by the harm it prevents. Carried material has no harm to prevent: it earns its place only
+if it **changes behaviour**. The two cannot share a criterion, and applying the guardrail criterion
+to carried material would pass everything.
+
+**Independent test**: for any carried item, the record says whether its presence changed what the
+assistant did — and if that was never measured, it says that instead of implying it was.
+
+**Acceptance criteria**:
+
+1. **Given** the material carried into every session, **When** the record is read, **Then** each item
+   appears with its size and a verdict: **changes behaviour**, **does not**, or **unmeasured**.
+2. **Given** an item graded "unmeasured", **When** a keep-or-drop decision is taken on it, **Then**
+   the decision states that it rests on judgement, not on evidence.
+3. **Given** an item that is reference material — consulted on demand rather than needed unprompted —
+   **When** it is assessed, **Then** the record says whether it needs to be *carried* at all, as
+   distinct from whether it is *useful*.
+4. **Given** a measured verdict, **When** it is recorded, **Then** the strength of the evidence is
+   stated with it; small-sample verdicts are recorded as signal, never as proof.
+
+---
+
+### US6 — Know what survives the move before making it (Priority: P2)
 
 **As a** foundation maintainer
 **I want** to know, for each thing the foundation ships, whether it survives being carried to the
@@ -147,7 +193,7 @@ silently, or arrives broken.
 
 ---
 
-### US6 — Leave a decision record a stranger can read (Priority: P3)
+### US7 — Leave a decision record a stranger can read (Priority: P3)
 
 **As a** maintainer returning in six months
 **I want** the reasoning kept, not only the outcome
@@ -216,6 +262,12 @@ it.
 - **EF-013**: Where a guardrail has both prevented real harm and blocked legitimate work, the
   keep-or-remove decision MUST follow EF-012: irreversible keeps it, recoverable removes it. A
   decision that departs from this MUST state why in the entry.
+- **EF-014**: The record MUST NOT decide by comparing the two counts. **Prevented harm leaves no
+  trace and caused harm always does**, so the counts are structurally biased against the guardrails
+  that matter most: the one protecting against the only irreversible outcome in the set currently has
+  zero recorded preventions and two recorded blocks. Counts MAY be reported; they MUST NOT be the
+  criterion.
+
 - **EF-015**: A guardrail MUST NOT be removed on the grounds that the platform now covers it unless
   that coverage has been **demonstrated on this repository**: disable the guardrail, trigger the real
   case it targets, observe whether the platform refuses, and record what was observed. Documented
@@ -223,12 +275,19 @@ it.
   comments asserted the opposite of what the tool actually did.
 - **EF-016**: A demonstration that produces no refusal MUST be treated as "not covered". A
   demonstration that cannot be run MUST be recorded as "unproven", never as "covered".
-- **EF-014**: The record MUST NOT decide by comparing the two counts. **Prevented harm leaves no
-  trace and caused harm always does**, so the counts are structurally biased against the guardrails
-  that matter most: the one protecting against the only irreversible outcome in the set currently has
-  zero recorded preventions and two recorded blocks. Counts MAY be reported; they MUST NOT be the
-  criterion.
-
+- **EF-017**: Every item the foundation places in front of the assistant unprompted MUST appear in
+  the record with its size and one of three verdicts: **changes behaviour**, **does not**, or
+  **unmeasured**.
+- **EF-018**: Carried material MUST NOT be graded by the criterion used for guardrails. It prevents
+  no harm, so the harm-prevented and irreversibility tests (EF-012, EF-013) MUST NOT be applied to
+  it; applying them would pass every item by default.
+- **EF-019**: Each carried item MUST be classified as needed **unprompted** or consulted **on
+  demand**. An item that is only ever consulted on demand MUST have that recorded, whether or not it
+  is kept — being useful and needing to be carried are different claims.
+- **EF-020**: A verdict resting on a small sample MUST be recorded as signal, not as proof, and the
+  sample size MUST be stated beside it.
+- **EF-021**: A decision taken on an item graded "unmeasured" MUST state that it rests on judgement
+  rather than evidence.
 ---
 
 ## Key Entities
@@ -258,6 +317,16 @@ it.
   in sequence without either being edited for bookkeeping.
 - **CS-006**: Every shipped item carries a portability verdict; zero items are unclassified.
 - **CS-007**: No new guardrail is added between the start of this pass and its conclusion.
+- **CS-008**: Every item carried into each session appears in the record with its size and a verdict;
+  zero items are unlisted, and the share of the carried cost that has been graded is stated as a
+  percentage rather than asserted as "all".
+- **CS-009**: Every carried item is classified as needed unprompted or consulted on demand — zero
+  unclassified.
+- **CS-010**: After the pass, the cost carried into a session is stated as a before-and-after figure.
+  A pass that leaves it unchanged is a valid outcome only if the record says why every item earned
+  its place.
+- **CS-011**: Two changes prepared in parallel can both be accepted without either being edited for
+  bookkeeping — measured on two real changes, not asserted.
 
 ---
 
@@ -273,18 +342,14 @@ it.
   be decided without it.
 - **Rewriting published history.**
 - **Changing what the second assistant does.** Its behaviour is a constraint here, not a subject.
-- **Everything that does not refuse an action** — decided 2026-08-25. The rules, the reference
-  material and the curation engine are outside this pass. Two consequences are accepted knowingly
-  rather than overlooked:
-  - the **largest measured cost is left unmeasured**: the reference material carried into every
-    session dwarfs the guardrails, and it is the part that arrives broken on the second assistant;
-  - **no rule crosses the boundary either**, so the rules face the same portability question the
-    guardrails do — just not in this pass.
-
-  The scope was cut here because the guardrails are where the harm is *observed* (three episodes of
-  blocked legitimate work in a single day), and because a pass that finishes is worth more than one
-  that is still running when the port starts. A second pass over the wider surface is the natural
-  successor, not a rejected alternative.
+- **The rules and the curation engine** — still outside this pass, and the cost of that is stated
+  rather than implied: **no rule crosses the boundary to the second assistant either**, so the rules
+  face the same portability question as everything else — just not here. They are the natural third
+  pass.
+- ~~The reference material carried into every session~~ — **brought back into scope 2026-08-25**
+  (US5). It was excluded on the argument that a narrow pass that finishes beats a wide one that does
+  not; the measurement overturned that, since it is the largest single cost of the shipped surface.
+  Excluding it would have left the pass measuring the small half.
 
 ---
 
@@ -299,7 +364,12 @@ it.
    **RESOLVED 2026-08-25: no. It must be demonstrated on this repository, by mutation.** Documented
    coverage is not evidence of coverage. See EF-015.
 3. ~~**Does this pass cover only the guardrails, or the whole shipped surface?**~~ — **RESOLVED
-   2026-08-25: the 18 things that refuse an action, nothing else.** Ten block, eight advise; five are
-   graded, thirteen are not. The wider surface — rules, reference material, curation engine — is
-   deferred to a successor pass. The cost of that choice is written into *Out of Scope* rather than
-   left implicit: the largest measured cost goes unmeasured for now.
+   2026-08-25, then AMENDED the same day.** First answer: the 18 things that refuse an action,
+   nothing else. Amended once the maintenance and the carried cost were actually measured — **the
+   reference material carried into every session is back in scope** (US5), graded by its own
+   criterion, because it is roughly four fifths of the shipped cost and the first scoping would have
+   measured only the small half. The rules and the curation engine remain deferred.
+
+   The amendment is recorded rather than overwritten: the first answer was reasonable on what was
+   known when it was given, and a spec that hides its own reversals teaches the wrong lesson to
+   whoever reads it next.
