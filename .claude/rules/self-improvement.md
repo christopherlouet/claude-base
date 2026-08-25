@@ -26,7 +26,7 @@ A terse markdown file: optional `## Topic` headings group related lessons; each 
 
 ## Keep the store small (it costs context everywhere)
 
-The store is loaded into every project, every session, so it must stay terse — target **~2,000 characters / ~15–20 lessons**. When it approaches the budget, propose pruning (merge near-duplicates incl. recurrence twins, drop superseded lessons) rather than letting it grow. `claude-base lessons prune-check` reports `OVER` budget, `DUP:` lessons (section-aware), and `RECUR N:` for the most-repeated.
+The store is loaded into every project, every session, so it must stay terse. The bound is **~2,000 characters** — the only target; the lesson count follows from it (**8–13**), never a quota to fill, and never strip a lesson's exemplars to fit one more in ([why](https://github.com/christopherlouet/claude-base/blob/main/docs/recipes/personal-lessons-referential.md)). When it approaches the budget, propose pruning (merge near-duplicates incl. recurrence twins, drop superseded lessons) rather than letting it grow. `claude-base lessons prune-check` reports `OVER` budget, `DUP:` lessons (section-aware), and `RECUR N:` for the most-repeated.
 
 ## Boundaries
 

@@ -13,7 +13,7 @@ Ship the **mechanism** for a personal, cross-project lessons referential. The da
 - `~/.claude/` is **machine-local** → cross-machine (US-7) is bring-your-own sync, documented only.
 - **Auto Dream is project-scoped** → it will NOT prune our user-level store → prune (US-5) is ours.
 - **Key architectural reality:** rules and slash-commands are **prompts**, not programs. The capture reflex (US-1), generalize/sanitize (US-3), and the confirm step are **model-instruction** and are NOT behaviorally bats-testable. Only the deterministic mechanics (scan existing feedback memories, compute store size vs budget, list candidates, dedupe) are shell → those go into `scripts/lessons.sh` and ARE bats-tested.
-- **Context-cost caution:** the capture rule is shipped into every project (`.claude/rules/`) AND the lessons store is loaded in every project. **Both must be terse** — the rule is concise instruction; the store is bounded (~2,000 chars / ~15–20 lessons).
+- **Context-cost caution:** the capture rule is shipped into every project (`.claude/rules/`) AND the lessons store is loaded in every project. **Both must be terse** — the rule is concise instruction; the store is bounded to ~2,000 chars, which is ~8–13 lessons at the size a lesson needs to stay recognizable. (Originally written "~2,000 chars / ~15–20 lessons"; the count was inconsistent with the budget — amended 2026-08-25, see `spec.md` §8.1 and #504.)
 
 ## 3. Architecture
 
