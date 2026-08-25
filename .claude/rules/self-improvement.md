@@ -26,7 +26,7 @@ A terse markdown file: optional `## Topic` headings group related lessons; each 
 
 ## Keep the store small (it costs context everywhere)
 
-The store is loaded into every project, every session, so it must stay terse — target **~2,000 characters / ~15–20 lessons**. When it approaches the budget, propose pruning (merge near-duplicates incl. recurrence twins, drop superseded lessons) rather than letting it grow. `claude-base lessons prune-check` reports `OVER` budget, `DUP:` lessons (section-aware), and `RECUR N:` for the most-repeated.
+The store is loaded into every project, every session, so it must stay terse. The bound is **~2,000 characters** — that is the real cost, and the only target. The lesson count *follows* from it and is not a second target to hit: a lesson that actually fires carries a one-line principle plus the two or three exemplars that make it recognizable (~150–250 chars), so the budget holds roughly **8–13 lessons**. Compressing below that to fit more in is a false economy — the exemplars are what make a lesson fire in the moment. When it approaches the budget, propose pruning (merge near-duplicates incl. recurrence twins, drop superseded lessons) rather than letting it grow. `claude-base lessons prune-check` reports `OVER` budget, `DUP:` lessons (section-aware), and `RECUR N:` for the most-repeated.
 
 ## Boundaries
 

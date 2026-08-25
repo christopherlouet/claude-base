@@ -112,5 +112,12 @@ As a developer, I want a lesson to note when the same mistake recurred, so that 
 ## 8. Resolved decisions (were clarification points — confirmed 2026-06-21)
 
 1. **Context budget (US-5/EF-005).** A single-screenful bound: **~2,000 characters / ~15–20 lessons**; beyond it, consolidation is prompted.
+   > **Amended 2026-08-25 — the two halves of this bound were never consistent.** ~15–20 lessons in
+   > ~2,000 chars implies 100–133 chars per lesson. Measured on a real store after ~2 months of use,
+   > lessons average 210 chars (median 186) — and Hermes, the source of the 2,000 figure, states
+   > 2,200 chars for 8–15 entries, i.e. 147–275 per entry, which is self-consistent where ours was
+   > not. **The character bound stands; the count is now stated as a consequence of it (~8–13
+   > lessons), not as a co-equal target.** Only the count changed — whether ~2,000 is still the right
+   > budget is a separate, open question (see #504).
 2. **"Hard problem" signal (EF-006).** The reflex qualifies a moment when **any** of: (a) more than one failed attempt before success, (b) an explicit user correction of the assistant, (c) a non-obvious root cause. It stays silent otherwise.
 3. **Capture-rule placement.** The capture behavior is **shipped into each project** (so it fires everywhere via the normal foundation install/update); the lessons themselves live in the user's personal store, never in the project/foundation.
