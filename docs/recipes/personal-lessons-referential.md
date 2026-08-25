@@ -10,7 +10,28 @@ A **personal memory of lessons** that carries across **all your projects** (and 
 - **Recall is automatic.** Claude Code loads everything under `~/.claude/rules/` into *every* project session, so a lesson you confirm once is in context everywhere — no import, no command.
 - **Capture is a human-gated reflex.** After a genuinely instructive moment (a fix that took several attempts, an explicit correction from you, a non-obvious root cause), the assistant proposes **one** short, generalized, sanitized lesson and asks you to keep / edit / discard it. Nothing is stored without your confirmation.
 - **Recurring mistakes are counted, not duplicated.** If the same lesson comes up again, you are offered to bump a `(seen N times)` marker on the existing line instead of adding a second copy — so the most-repeated lessons are easy to spot and prioritize.
-- **It stays small.** The store is loaded into every session, so it is bounded to **~2,000 characters** — the character count is the bound, since the cost is context. That works out to roughly **8–13 lessons** at the size a lesson needs to stay recognizable (a one-line principle plus two or three exemplars, ~150–250 chars each); the count is a consequence of the budget, not a separate quota to fill. When it fills up, you are prompted to prune (`/lessons --prune` reports over-budget, duplicates, and the most-repeated lessons).
+- **It stays small.** The store is loaded into every session, so it is bounded to **~2,000 characters** — see [Why the bound is a character count](#why-the-bound-is-a-character-count) below. When it fills up, you are prompted to prune (`/lessons --prune` reports over-budget, duplicates, and the most-repeated lessons).
+
+## Why the bound is a character count
+
+The cost is context, so **characters are the bound** and the lesson count is a *consequence* of it —
+never a second target, and never a quota to fill.
+
+A lesson that actually fires carries a one-line principle **plus the two or three exemplars that make
+it recognizable in the moment**. Measured on a real store, that is ~150–250 characters each. So
+~2,000 characters holds roughly **8–13 lessons**:
+
+| | budget | entries | implied chars/entry |
+|---|---:|---:|---:|
+| this store | 2,000 | **8–13** | 150–250 |
+
+Compressing below that to fit more in is a false economy: the exemplars are precisely what let you
+recognize the trap when you are in it. A store of twenty abstract one-liners costs the same context
+and fires less often.
+
+> **This pair used to be stated as "~2,000 characters / ~15–20 lessons", which implied 100–133 chars
+> per lesson — half of what a usable lesson takes.** The two halves could not both be met, so the
+> budget read as unreachable rather than tight. Corrected 2026-08-25; only the count changed.
 
 ## Privacy
 
