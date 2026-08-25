@@ -1,18 +1,34 @@
-# Specification: Guardrail cleanup before the second-assistant chantier
+# Specification: Trim the foundation to what intermittent maintenance can keep true
 
 **Branch**: `spec/guardrail-cleanup`
 **Date**: 2026-08-25
 **Status**: Draft
-**Input**: User description: *"avant de commencer le chantier avec Codex, va falloir faire le ménage de ce qui n'était pas utile, par rapport à tes recommandations"*
+**Input**: User description: *"va falloir faire le ménage de ce qui n'était pas utile, par rapport à tes recommandations"*
+
+> **Reframed 2026-08-25, same day.** This pass was first justified by an upcoming port to a second
+> coding assistant — *"every guardrail kept is a cost paid twice"*. **That port was then dropped**, and
+> the justification would have gone with it. It did not, because the port was never the real reason:
+> the measured reasons are all local to the assistant already in use. The framing is corrected here
+> rather than left standing, on the same grounds this spec applies to everything else — a rule whose
+> stated reason is false rots, and takes the true reasons down with it.
 
 ---
 
 ## Summary
 
-Before this foundation is carried to a second coding assistant, decide **from evidence rather than
-from memory** which of its guardrails still earn their place. Every guardrail kept becomes a cost
-paid twice — once on each assistant — plus a surface where the two can drift apart. The project
-already owns the instrument that can answer this; it has never been pointed at its own guardrails.
+This foundation is maintained **in bursts, not continuously** — a few hours now and then. Decide
+**from evidence rather than from memory** which of its parts still earn their place under that
+constraint, because the parts differ enormously in what they become when left alone.
+
+That is the whole argument, and it is not about size. An unmaintained guardrail does not simply stop
+helping: it either blocks every piece of work, or silently stops running while the belief that it
+protects you remains. **Both are worse than its absence**, and both were observed — three episodes of
+blocked legitimate work in a single day, from guardrails that had been quietly wrong for weeks.
+Reference material behaves the same way: it describes a platform that ships weekly, and stale
+guidance is acted on as readily as fresh guidance.
+
+So the pass keeps what survives neglect and removes what needs feeding. The project already owns the
+instrument that can answer this; it has never been pointed at its own guardrails.
 
 **Scope, 2026-08-25.** Two halves, graded by two different criteria because they earn their place in
 two different ways:
@@ -88,10 +104,12 @@ episode against it, with a date and what was blocked.
 
 **As a** foundation maintainer
 **I want** the guardrails that fail the review actually removed
-**So that** the surface I carry to a second assistant is one I can defend, line by line
+**So that** what remains is a set I can defend line by line, and small enough that occasional
+attention keeps all of it true
 
-**Why P1**: grading without acting changes nothing, and the cost this work exists to avoid is paid at
-the moment of the port, not before it.
+**Why P1**: grading without acting changes nothing. And the cost is not paid on the day of the
+decision — it is paid every week the foundation is *not* looked at, by the parts that need feeding
+to stay honest.
 
 **Independent test**: after the pass, every guardrail still shipped can be justified in one sentence
 from the record; every one removed has its removal reasoned in the same record.
@@ -119,8 +137,7 @@ blocking prepared changes
 day to day, and removing guardrails does not touch it. Two files are touched by a **majority of
 commits over two months**; **three prepared changes are blocked on nothing but stale counts** right
 now. It was ranked P2 on the argument that it does not change *what is shipped* — but the measured
-cost of shipping turned out to be the larger of the two, and it **doubles mechanically** once a
-second assistant needs its own copy of the same records. A pass that shrinks the shipped set while
+cost of shipping turned out to be the larger of the two. A pass that shrinks the shipped set while
 leaving this in place would produce a smaller foundation that feels exactly as heavy.
 
 **Independent test**: prepare two independent changes; accept one; the other is still acceptable
@@ -170,26 +187,32 @@ assistant did — and if that was never measured, it says that instead of implyi
 
 ---
 
-### US6 — Know what survives the move before making it (Priority: P2)
+### US6 — Write down what already travels, so the option stays open for free (Priority: P3)
 
 **As a** foundation maintainer
-**I want** to know, for each thing the foundation ships, whether it survives being carried to the
-second assistant
-**So that** I stop investing in what does not travel
+**I want** the portability of each shipped item recorded from what has *already been measured*
+**So that** adding a second assistant later stays a possibility I have not accidentally closed
 
-**Why P2**: measured on the real import path, the guardrails and the rules do not cross the boundary
-at all, and the reference material arrives pointing at somewhere that does not exist. Knowing this
-per item, before the port, is what makes the keep/drop decisions in US1–US3 answerable at all.
+**Why P3** — *demoted from P2 on 2026-08-25, when the port it served was dropped*: this story was the
+preparation for a port that is no longer planned. What remains is not preparation but **book-keeping
+of a measurement already taken**: the import path was run once and the verdicts are known — the
+guardrails and the rules do not cross at all, the reference material arrives pointing at a directory
+that does not exist, the conventions cross intact.
+
+Kept, at low priority, for one reason only: **portability is preserved, never built.** Recording
+which parts already travel costs nothing and makes the constraint checkable later; investigating it
+per item would be building it, which is exactly what was decided against. If this story ever demands
+new measurement, it has outgrown its justification and should be dropped rather than funded.
 
 **Independent test**: pick any shipped item; the record says whether it travels intact, is lost
-silently, or arrives broken.
+silently, or arrives broken — and says so from evidence already in hand.
 
 **Acceptance criteria**:
 
-1. **Given** the shipped inventory, **When** the record is read, **Then** each item carries one of
-   three verdicts: travels, lost, or arrives broken.
-2. **Given** an item recorded as lost or broken, **When** it is also recorded as worth keeping,
-   **Then** the record says what would have to be built for it to travel.
+1. **Given** an item whose portability has already been measured, **When** the record is read,
+   **Then** it carries one of three verdicts: travels, lost, or arrives broken.
+2. **Given** an item whose portability has **not** been measured, **When** the record is read, **Then**
+   it says "not measured" — and no work is opened to find out.
 
 ---
 
@@ -247,8 +270,10 @@ it.
   default or by omission.
 - **EF-006**: Each removal MUST state the failure mode left uncovered and whether anything else
   covers it.
-- **EF-007**: Each entry MUST state whether the guardrail survives being carried to the second
-  assistant: travels, lost, or arrives broken.
+- **EF-007**: Where portability has **already been measured**, the entry MUST record the verdict —
+  travels, lost, or arrives broken. Where it has not, the entry MUST say "not measured". This
+  requirement MUST NOT open any investigation: portability is recorded from evidence in hand, never
+  established for the purpose of this record.
 - **EF-008**: The record MUST be readable as a single view in which both the prevented harm and the
   caused harm are visible together.
 - **EF-009**: Accepting one prepared change MUST NOT invalidate another prepared change through
@@ -315,7 +340,8 @@ it.
   was the conclusion.
 - **CS-005**: Two changes prepared in parallel, each adding something counted, can both be accepted
   in sequence without either being edited for bookkeeping.
-- **CS-006**: Every shipped item carries a portability verdict; zero items are unclassified.
+- **CS-006**: Every shipped item carries either a portability verdict or an explicit "not measured";
+  zero items are silently blank, and zero new measurements were taken to satisfy this.
 - **CS-007**: No new guardrail is added between the start of this pass and its conclusion.
 - **CS-008**: Every item carried into each session appears in the record with its size and a verdict;
   zero items are unlisted, and the share of the carried cost that has been graded is stated as a
@@ -332,8 +358,12 @@ it.
 
 ## Out of Scope
 
-- **The port itself.** Carrying the foundation to the second assistant is the work this pass
-  precedes, not part of it.
+- **Any work toward a second assistant.** The port was considered and **dropped on 2026-08-25** — not
+  deferred. The audit value it promised had already been collected by running the import once, and
+  the platform's own importer improves without this project's effort. Nothing in this pass may be
+  justified by it, and no adapter layer is to be built. Portability is *preserved* — kept as a
+  property of the formats already used — never *constructed*. Reopen only if that assistant becomes
+  a regular working tool rather than an occasional one.
 - **Adding guardrails.** Explicitly excluded for the duration — including the one currently proposed
   elsewhere. Deciding to add before having measured what exists is the exact pattern this pass
   exists to correct.
@@ -341,11 +371,9 @@ it.
   instruction-context work. Both are deferred until this record exists, because both would otherwise
   be decided without it.
 - **Rewriting published history.**
-- **Changing what the second assistant does.** Its behaviour is a constraint here, not a subject.
 - **The rules and the curation engine** — still outside this pass, and the cost of that is stated
-  rather than implied: **no rule crosses the boundary to the second assistant either**, so the rules
-  face the same portability question as everything else — just not here. They are the natural third
-  pass.
+  rather than implied: the rules decay at the same rate as everything else here and have never been
+  graded either. They are the natural second pass.
 - ~~The reference material carried into every session~~ — **brought back into scope 2026-08-25**
   (US5). It was excluded on the argument that a narrow pass that finishes beats a wide one that does
   not; the measurement overturned that, since it is the largest single cost of the shipped surface.
