@@ -14,6 +14,11 @@ from memory** which of its guardrails still earn their place. Every guardrail ke
 paid twice — once on each assistant — plus a surface where the two can drift apart. The project
 already owns the instrument that can answer this; it has never been pointed at its own guardrails.
 
+**Scope, fixed 2026-08-25: the 18 things that refuse an action, and nothing else.** Ten of them
+block; eight only advise. Five are already graded; **thirteen have never been graded at all**. The
+rules, the reference material and the curation engine are out — see *Out of Scope*, which explains
+what that choice deliberately leaves unmeasured.
+
 ---
 
 ## User Stories (prioritized)
@@ -168,8 +173,10 @@ it.
 - **A failure mode that never recurred.** The guardrail may be working, or the failure may simply
   never have been likely. Absence of recurrence cannot distinguish the two — the record must say
   which it is claiming.
-- **The assistant now does it natively.** A guardrail overlaps something the assistant gained since
-  the guardrail was written. Is the overlap grounds for removal on its own?
+- **The platform now does it natively.** Settled: the overlap must be *shown*, not read. The live
+  edge case is the one where the demonstration is impossible to stage — the guardrail targets
+  something that cannot be safely triggered on a real repository. That entry is "unproven", and
+  unproven is not a reason to remove.
 - **The inventory is itself incomplete.** A guardrail exists but is not listed anywhere — the pass
   must be able to say it examined *everything*, not everything it knew about.
 - **A guardrail nobody can trigger.** It has never fired in either direction. That is not evidence of
@@ -202,6 +209,25 @@ it.
   bookkeeping alone.
 - **EF-010**: A change that adds nothing counted MUST NOT be required to carry a bookkeeping update.
 - **EF-011**: The record MUST be complete before any decision that adds a new guardrail is taken.
+- **EF-012**: Each entry MUST classify the harm the guardrail prevents as **irreversible** (cannot be
+  undone once it happens — a published secret, an erased disk) or **recoverable** (a commit on the
+  wrong branch, a failed check). Where both apply, the entry MUST say which case the classification
+  refers to.
+- **EF-013**: Where a guardrail has both prevented real harm and blocked legitimate work, the
+  keep-or-remove decision MUST follow EF-012: irreversible keeps it, recoverable removes it. A
+  decision that departs from this MUST state why in the entry.
+- **EF-015**: A guardrail MUST NOT be removed on the grounds that the platform now covers it unless
+  that coverage has been **demonstrated on this repository**: disable the guardrail, trigger the real
+  case it targets, observe whether the platform refuses, and record what was observed. Documented
+  coverage is not evidence of coverage — on the day this was decided, two of this repository's own
+  comments asserted the opposite of what the tool actually did.
+- **EF-016**: A demonstration that produces no refusal MUST be treated as "not covered". A
+  demonstration that cannot be run MUST be recorded as "unproven", never as "covered".
+- **EF-014**: The record MUST NOT decide by comparing the two counts. **Prevented harm leaves no
+  trace and caused harm always does**, so the counts are structurally biased against the guardrails
+  that matter most: the one protecting against the only irreversible outcome in the set currently has
+  zero recorded preventions and two recorded blocks. Counts MAY be reported; they MUST NOT be the
+  criterion.
 
 ---
 
@@ -247,18 +273,33 @@ it.
   be decided without it.
 - **Rewriting published history.**
 - **Changing what the second assistant does.** Its behaviour is a constraint here, not a subject.
+- **Everything that does not refuse an action** — decided 2026-08-25. The rules, the reference
+  material and the curation engine are outside this pass. Two consequences are accepted knowingly
+  rather than overlooked:
+  - the **largest measured cost is left unmeasured**: the reference material carried into every
+    session dwarfs the guardrails, and it is the part that arrives broken on the second assistant;
+  - **no rule crosses the boundary either**, so the rules face the same portability question the
+    guardrails do — just not in this pass.
+
+  The scope was cut here because the guardrails are where the harm is *observed* (three episodes of
+  blocked legitimate work in a single day), and because a pass that finishes is worth more than one
+  that is still running when the port starts. A second pass over the wider surface is the natural
+  successor, not a rejected alternative.
 
 ---
 
 ## Clarification Points
 
-1. **When evidence points both ways, which side is the default?** A guardrail with a proven
-   prevention *and* proven blocks of legitimate work needs a stated tie-break. Proposal: it goes,
-   unless the harm it prevents is irreversible — a published secret is not a bad commit. This needs
-   deciding before grading starts, not during it, or the grading will follow the mood of the day.
-2. **Is "the assistant now covers this natively" sufficient grounds for removal on its own**, or must
-   the native coverage be demonstrated on this repository first? The two answers give materially
-   different keep-sets.
-3. **Does this pass cover only the guardrails, or the whole shipped surface** — rules, reference
-   material, catalogues? The measured evidence says the reference material is the larger cost, which
-   argues for the wider scope; the wider scope is also a much longer pass.
+1. ~~**When evidence points both ways, which side is the default?**~~ — **RESOLVED 2026-08-25:
+   irreversibility decides.** A guardrail stays when the harm it prevents cannot be undone — a
+   published secret, an erased disk — even if it blocks often; it goes when that harm is recoverable
+   — a commit on the wrong branch can be moved. Friction is spent only against the permanent. See
+   EF-012 and EF-013.
+2. ~~**Is "the assistant now covers this natively" sufficient grounds for removal on its own?**~~ —
+   **RESOLVED 2026-08-25: no. It must be demonstrated on this repository, by mutation.** Documented
+   coverage is not evidence of coverage. See EF-015.
+3. ~~**Does this pass cover only the guardrails, or the whole shipped surface?**~~ — **RESOLVED
+   2026-08-25: the 18 things that refuse an action, nothing else.** Ten block, eight advise; five are
+   graded, thirteen are not. The wider surface — rules, reference material, curation engine — is
+   deferred to a successor pass. The cost of that choice is written into *Out of Scope* rather than
+   left implicit: the largest measured cost goes unmeasured for now.
