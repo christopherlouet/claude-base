@@ -181,6 +181,29 @@ fixing a pre-existing guard mid-pass is what EF-011 forbids. They belong to Phas
   two of the things it claims to pin. The right repair is to extract the regex literal and assert
   path-matching *behaviour* per class, not substring presence — the same hollow-assertion class this
   change already fixed twice elsewhere in its own tests.
+
+### ✅ Repaired in Phase 4 — measured against the test it replaces
+
+The trigger regex is now extracted from the hook and applied to one representative path per class,
+plus a set of paths that must **not** fire it (a trigger matching everything would pass every
+positive arm while running node on every commit). Five mutations of the real hook, each run against
+both tests:
+
+| Mutation of `.husky/pre-commit` | old test | new test |
+|---|:--:|:--:|
+| drop `^VERSION$` | **survives** | killed |
+| drop `^docs/` | **survives** | killed |
+| drop `^specs/marketplace-audit/` | **survives** | killed |
+| drop `^scripts/lib/minimal-manifest.txt$` | killed | killed |
+| trigger widened to match everything | **survives** | killed (2 arms) |
+
+One of five against five of five. An extraction arm asserts the regex is non-empty, because an empty
+one matches everything and would make every positive arm vacuous.
+
+⚠️ **A method note, because it nearly published a false result.** Two of these mutants first appeared
+to *survive* the new test. They had not been applied at all — the `sed` expression escaping was
+wrong, and a mutation that does not mutate is indistinguishable from a guardrail that does not
+catch. The mutation is now applied by exact-string replacement that **asserts its own anchor**.
 - **The marker gate validates 4 of the 6 live keys.** `presets` (5 markers) and
   `marketplaceAuditPilots` (1) fall through `*) continue ;;`, and `byDomain.*` markers are never
   matched at all because the grep pattern `count:[a-zA-Z]+` excludes the dot. Only CI's

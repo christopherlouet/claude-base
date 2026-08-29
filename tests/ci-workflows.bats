@@ -40,20 +40,57 @@ WORKFLOWS="$BASE_DIR/.github/workflows"
     grep -qE 'shellcheck[^"]*bin/claude-base' "$BASE_DIR/scripts/preflight.sh"
 }
 
-@test "husky pre-commit: self-heal trigger covers every counts-gate input class" {
-    # website/scripts/generate-counts.ts reads presets, the vendor-skills
-    # recipe (via docs/), the minimal manifest and VERSION in addition to
-    # .claude/{commands,agents,skills,rules}. NOT tests/*.bats: the test
-    # counters stopped being tracked (specs/guardrail-cleanup, US4), so a
-    # test-only commit no longer feeds any counted artifact; sync-docs.ts
-    # mirrors all of docs/. A class missing from the husky regex commits
-    # cleanly locally and fails the CI counts gate ("forgot to regenerate").
-    local hook="$BASE_DIR/.husky/pre-commit"
-    grep -q 'claude/(commands|agents|skills|rules|presets)' "$hook"
-    grep -q 'presets' "$hook"
-    grep -q 'docs/' "$hook"
-    grep -q 'minimal-manifest' "$hook"
-    grep -q 'VERSION' "$hook"
+# _trigger_regex — the counts self-heal trigger as the hook actually applies it.
+# Pinning the regex by SUBSTRING is what let a documentation gap through on
+# 2026-08-29: `grep -q VERSION` matched the surrounding prose comment, not the
+# pattern, so dropping `^VERSION$` from the trigger would not have failed
+# anything. Extract the literal and test the BEHAVIOUR — does this path fire the
+# hook — one class at a time.
+_trigger_regex() {
+    sed -nE "s/.*grep -qE '([^']*)'.*/\1/p" "$BASE_DIR/.husky/pre-commit" | head -1
+}
+
+# _fires <path> — would a commit staging this path trigger the self-heal?
+_fires() { printf '%s\n' "$1" | grep -qE "$(_trigger_regex)"; }
+
+@test "husky pre-commit: the trigger regex can be extracted and is not empty" {
+    # Without this, every arm below would be vacuous: an empty regex matches
+    # everything, so every "fires" assertion would pass and every "does not
+    # fire" assertion would be the only thing failing.
+    local re
+    re="$(_trigger_regex)"
+    [ -n "$re" ]
+    [[ "$re" == *"claude/"* ]]
+}
+
+@test "husky pre-commit: self-heal fires for every counts-gate input class" {
+    # website/scripts/generate-counts.ts reads presets, the marketplace pilot
+    # specs, the vendor-skills recipe (via docs/), the minimal manifest and
+    # VERSION in addition to .claude/{commands,agents,skills,rules}. A class
+    # missing from the trigger commits cleanly locally and fails the CI counts
+    # gate ("forgot to regenerate" — the top lesson of this repo).
+    _fires ".claude/commands/work/work-quick.md"
+    _fires ".claude/agents/qa-audit.md"
+    _fires ".claude/skills/dev-tdd/SKILL.md"
+    _fires ".claude/rules/testing.md"
+    _fires ".claude/presets/saas.json"
+    _fires "docs/reference/commands.md"
+    _fires "specs/marketplace-audit/growth-skills-pilot-2026-05-21.md"
+    _fires "scripts/lib/minimal-manifest.txt"
+    _fires "VERSION"
+}
+
+@test "husky pre-commit: self-heal does NOT fire for paths feeding no counter" {
+    # The other half of the contract: a trigger that fires on everything would
+    # pass every arm above while running node on every commit. NOT tests/*.bats
+    # since the test counters stopped being tracked (specs/guardrail-cleanup,
+    # US4), and not the generated website mirror.
+    ! _fires "README.md"
+    ! _fires "tests/ci-workflows.bats"
+    ! _fires "scripts/validate-counts.sh"
+    ! _fires "website/docs/reference/commands.md"
+    ! _fires "VERSIONING.md"
+    ! _fires "specs/guardrail-cleanup/spec.md"
 }
 
 # --- Self-application: the release gate must be able to hold on the real repo
