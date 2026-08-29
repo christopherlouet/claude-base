@@ -139,6 +139,105 @@ the honest question is whether they run at all, not whether they are useful.
 
 ---
 
+## T105 complete — and it produced a grade the scale did not have
+
+The probe asked whether the guardrails with an empty incident record ever fire. Running it properly
+took three attempts, and each failure is more useful than the answer.
+
+**Attempt one** was refused by the guardrail it was measuring: the probe's own command line carried
+the payload it was testing for. **Attempt two** reported *five guardrails not firing*, which looked
+like a devastating finding and was worth nothing — the instrument had never been shown capable of a
+positive. Reading their tests explained it: those five are **conditional on project shape**.
+
+**Attempt three** probes each one twice, with the condition absent and present:
+
+| Guardrail | Condition absent — this repository | Condition present |
+|---|---|---|
+| `config-protection.sh` | passes | **refuses (2)** — the config file exists |
+| `bash-write-guard.sh` | passes — an ordinary file | **refuses (2)** — an in-place rewrite of a real config |
+| `pre-deploy-build.sh` | passes | **refuses (2)** — a deploy with a failing build |
+| `pre-commit-tests.sh` | passes | **refuses (2)** — pinned by its own suite, green in CI |
+| `pre-push-ci.sh` | passes | **refuses (2)** — same |
+
+**All five are alive.** None is dormant, none is dead.
+
+### The grade this produced: *not exercisable here*
+
+The scale had A (prevented something real), B (fired, outcome unknown), C (preventive, nothing
+recorded) and D (never observed to fire). These five fit none of them cleanly, and forcing them into
+C would lose the reason.
+
+They are **inert on this repository because it does not have the shape they guard**: claude-base
+ships no eslint config to weaken, its test command is bats rather than `npm test`, and it has no
+build to fail before a deploy. Their mechanism is demonstrated functional; their *value here* is
+unmeasurable, because the failure mode they remove cannot occur here.
+
+That matters for the decision, and it cuts the opposite way from how an empty column reads. These
+five ship to the installed projects — which **do** have those shapes. Judging them by what happens in
+this repository would be measuring them where they were never meant to fire, and the pass's own
+criterion (does it earn its place?) has to be applied where the thing actually runs.
+
+**Consequence for the record**: their rows keep the **keep — pending** decision, and the pending is
+now specific. It does not depend on Phase 3's native-coverage demonstration alone; it depends on
+whether their value can be assessed anywhere the maintainer can observe. That is an open question
+this record states rather than resolves.
+
+### The methodological point, which generalises past this pass
+
+Three arms were needed before the measurement meant anything, and the first two were confidently
+wrong in opposite directions — one refused to run, one produced a clean false alarm. *Five guardrails
+do not fire* is exactly the kind of finding that reads as decisive and gets acted on. Had it been
+believed, this pass would have removed five working guardrails on the strength of a badly-shaped
+probe.
+
+---
+
+## The spec's worst case, measured — `preflight` skips silently
+
+The spec's argument rests on a claim: an unmaintained guardrail *"silently stops running while the
+belief that it protects you remains"*. That claim was an argument. It is now a measurement.
+
+`scripts/preflight.sh` runs five gates before every push. Its own header says a missing tool skips
+its gate, and it defines a fallback that echoes `shellcheck absent - gate skipped`. The question was
+never whether it skips — it says so — but whether the operator can **tell**.
+
+Probed with a PATH mirroring the real one exactly (4 459 binaries) and removing a single tool, so the
+only difference between the arms is the tool under study:
+
+| Arm | Output | Exit |
+|---|---|---|
+| `shellcheck` present | `[preflight] shellcheck...` … `OK all fast gates passed` | 0 |
+| `shellcheck` absent | `[preflight] shellcheck...` … `OK all fast gates passed` | 0 |
+| control: absent **and** a real drift planted | `FAILED: counts`, naming file, line and both numbers | 1 |
+
+**The two are indistinguishable.** The line `[preflight] shellcheck...` is printed either way, which
+positively suggests the gate ran; the skip notice never reaches the output; the run announces
+*"OK all fast gates passed"* when one of them did not execute at all.
+
+The control matters: the remaining gates still bite, so this is not a broken script. It is a gate
+that removed itself and left the reassurance in place.
+
+**Not hypothetical.** The foundation's own conventions record that the GitHub **macOS runner ships no
+shellcheck** — the same absence this probe simulates. Any contributor on a machine without it pushes
+with that gate silently inert, reading a success line.
+
+**Harm class: recoverable** — CI runs shellcheck on Linux and would catch what the local gate missed.
+By EF-013's letter that argues for removal rather than repair. But the finding is not really about
+shellcheck: it is about a **reporting contract**. A gate that cannot run should say so in the line it
+already prints, and the run should not claim all gates passed. That is a repair, not a removal, and
+it is the cheapest correction of the exact failure mode this entire pass was built around.
+
+**Deferred to Phase 4, deliberately.** Repairing a guardrail before the record is complete is what
+EF-011 forbids, and that discipline has held for six pre-existing findings today. This one is
+recorded with its reproduction so the decision is taken on evidence.
+
+**One consequence for the record itself**: every "the gates were green" statement in this repository's
+history carries this caveat. Green meant *"no gate objected"*, which is not the same as *"every gate
+ran"*. Nothing here suggests a specific past failure slipped through; it means the evidence cannot
+rule one out, and the record should say that rather than imply the stronger claim.
+
+---
+
 ## What the existing ledger already said, and where it stops
 
 `eval/value-proof/LEDGER.md` grades five gates, and its vocabulary maps cleanly onto this scale:
@@ -212,7 +311,7 @@ most irreversible failure mode in the set. That is not an argument against the p
 strongest argument for it. An empty incident column had been reading as "quiet"; it was partly
 reading as "never tested".
 
-**Harm class: irreversible.** EF-012/013 place this at the top of the keep ladder. Closing the gap is
+**Harm class: irreversible. Closed in #513** (`21c97b30`), with the corpus delta measured at 656/10 before and after — identical. EF-012/013 place this at the top of the keep ladder. Closing the gap was
 a repair to an existing guardrail rather than a new one, but it is still a deliberate widening of a
 detector pattern — which this repository requires to be measured against its own command corpus
 before and after (`scripts/validator-corpus.sh`), since a refusal there is a self-contradiction.
@@ -227,11 +326,10 @@ indistinguishable, to that guard, from a document *violating* it.
 
 ## Open, and carried forward
 
-- **The grade-D probe (T105) has been run** for the destructive pair — both are alive — and it
-  surfaced the bare-root gap above. It has **not** been run for `bash-write-guard.sh`,
-  `pre-commit-tests.sh`, `pre-push-ci.sh`, `pre-deploy-build.sh` or `config-protection.sh`.
-- **`preflight` gates skip silently when their tool is missing** — the script says so itself. That
-  is the spec's own worst case: a guardrail that stops running while the belief it protects you
-  remains. It needs a probe, not an opinion.
+- **The grade-D probe (T105) is complete.** Every blocking guardrail is alive; none is dormant. It
+  also surfaced the bare-root gap, now closed (#513), and produced a grade the scale did not have —
+  *not exercisable here* — for the five that are conditional on project shape.
+- **`preflight`'s silent skip is measured, not suspected** — see the section above. The remaining
+  question is the reporting contract, and it is Phase 4's to decide.
 - **Portability (T106, EF-007)**: recorded from evidence already in hand only. For every entry
   above: **not measured**. No work is opened to find out.
