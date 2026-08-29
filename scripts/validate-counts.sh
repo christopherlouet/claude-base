@@ -388,30 +388,112 @@ scan_contributing_drift
 # canonical actual for KEY, anywhere it appears. Unlike the targeted prose
 # patterns above, a marker is an EXPLICIT canonical counter, so any mismatch is a
 # real drift (this catches files an injector forgot to cover — e.g. AGENTS.md).
-scan_marker_drift() {
-    local line fp rest lno content key n want rel
-    while IFS= read -r line; do
-        [[ -z "$line" ]] && continue
-        fp="${line%%:*}"; rest="${line#*:}"; lno="${rest%%:*}"; content="${rest#*:}"
-        key=$(printf '%s' "$content" | sed -nE 's/.*count:([a-zA-Z]+).*/\1/p')
-        n=$(printf '%s' "$content" | grep -oE '[0-9]+' | head -1)
-        case "$key" in
-            commands)  want="$ACTUAL_COMMANDS" ;;
-            agents)    want="$ACTUAL_AGENTS" ;;
-            skills)    want="$ACTUAL_SKILLS" ;;
-            rules)     want="$ACTUAL_RULES" ;;
-            *) continue ;;
-        esac
-        if [[ "$n" != "$want" ]]; then
-            rel="${fp#"$BASE_DIR"/}"
-            error_no_exit "${rel}:${lno} drift -> count:${key} marker = $n (canonical: $want)"
-            DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
-        fi
-    done < <(grep -rnoE '<!-- count:[a-zA-Z]+ -->[0-9]+' \
+#
+# Three properties this scan did not have before 2026-08-29, each from a measured
+# defect (specs/guardrail-cleanup/):
+#   * a document that QUOTES a marker — in a fenced block or inline backticks —
+#     is documentation, not drift. It blocked real work that day.
+#   * an EMPTY scan is not a passing scan: stripping every marker from the
+#     repository left this gate green.
+#   * every key is resolved, and an unknown one is REPORTED. `presets` and
+#     `marketplaceAuditPilots` used to fall through a silent `continue`, and
+#     `byDomain.*` never matched because the pattern excluded the dot.
+
+# _marker_want <key> — the canonical number for a marker key, or non-zero if the
+# key has no canonical source. The four structural keys come from the filesystem
+# (so this gate does not depend on counts.json being right); everything else is
+# resolved against counts.json, which generate-counts.ts derives from the tree
+# and CI regenerates on every pull request.
+_marker_want() {
+    local key="$1" v
+    case "$key" in
+        commands) printf '%s' "$ACTUAL_COMMANDS"; return 0 ;;
+        agents)   printf '%s' "$ACTUAL_AGENTS";   return 0 ;;
+        skills)   printf '%s' "$ACTUAL_SKILLS";   return 0 ;;
+        rules)    printf '%s' "$ACTUAL_RULES";    return 0 ;;
+    esac
+    [[ -f "$BASE_DIR/counts.json" ]] || return 1
+    command -v jq >/dev/null 2>&1 || return 1
+    v=$(jq -r --arg k "$key" '[($k|split("."))[]] as $p | getpath($p) // empty' \
+        "$BASE_DIR/counts.json" 2>/dev/null)
+    [[ -n "$v" && "$v" != "null" ]] || return 1
+    printf '%s' "$v"
+}
+
+# _marker_lines — emit `file:line:marker` for every LIVE marker. The key class
+# mirrors the injector's own (`[\w.]+` in website/scripts/inject-counts-md.ts):
+# a key it can write but this cannot read would be a silent skip again. Fenced blocks
+# are skipped wholesale and inline code spans are removed, so a marker being
+# shown is never read as a marker being used.
+_marker_lines() {
+    local f
+    while IFS= read -r f; do
+        [[ -n "$f" ]] || continue
+        awk '
+            /^[[:space:]]*(```|~~~)/ { fence = !fence; next }
+            fence { next }
+            {
+                line=$0
+                gsub(/`[^`]*`/,"",line)
+                while (match(line, /<!-- count:[A-Za-z0-9_.]+ -->[0-9]+/)) {
+                    printf "%s:%d:%s\n", FILENAME, FNR, substr(line, RSTART, RLENGTH)
+                    line = substr(line, RSTART + RLENGTH)
+                }
+            }
+        ' "$f"
+    done < <(grep -rlE '<!-- count:[A-Za-z0-9_.]+ -->[0-9]+' \
         --include="*.md" --exclude-dir=node_modules --exclude-dir=.git \
         --exclude-dir=build --exclude-dir=.docusaurus --exclude-dir=memory \
         --exclude-dir=worktrees \
         "$BASE_DIR" 2>/dev/null)
+}
+
+scan_marker_drift() {
+    local line fp rest lno content key n want rel
+    local seen_commands=0 seen_agents=0 seen_skills=0 seen_rules=0
+    while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        fp="${line%%:*}"; rest="${line#*:}"; lno="${rest%%:*}"; content="${rest#*:}"
+        key=$(printf '%s' "$content" | sed -nE 's/.*count:([A-Za-z0-9_.]+).*/\1/p')
+        n=$(printf '%s' "$content" | grep -oE '[0-9]+' | head -1)
+        rel="${fp#"$BASE_DIR"/}"
+        case "$key" in
+            commands) seen_commands=$((seen_commands + 1)) ;;
+            agents)   seen_agents=$((seen_agents + 1)) ;;
+            skills)   seen_skills=$((seen_skills + 1)) ;;
+            rules)    seen_rules=$((seen_rules + 1)) ;;
+        esac
+        if ! want=$(_marker_want "$key"); then
+            error_no_exit "${rel}:${lno} count:${key} marker has no canonical source (unknown counter key)"
+            DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
+            continue
+        fi
+        if [[ "$n" != "$want" ]]; then
+            error_no_exit "${rel}:${lno} drift -> count:${key} marker = $n (canonical: $want)"
+            DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
+        fi
+    done < <(_marker_lines)
+
+    # Anti-vacuity floor. A scan that finds nothing reports nothing, which reads
+    # exactly like a scan that found nothing wrong — measured: stripping every
+    # marker in the repository left this gate green. The four structural keys are
+    # injected across the documentation, so a count of zero means the markers or
+    # the injector went away, not that the docs are clean. Only guarded on a real
+    # foundation (counts.json present); the test fake has none.
+    [[ -f "$BASE_DIR/counts.json" ]] || return 0
+    local k seen
+    for k in commands agents skills rules; do
+        case "$k" in
+            commands) seen=$seen_commands ;;
+            agents)   seen=$seen_agents ;;
+            skills)   seen=$seen_skills ;;
+            rules)    seen=$seen_rules ;;
+        esac
+        if [[ "$seen" -eq 0 ]]; then
+            error_no_exit "no live <!-- count:${k} --> marker found anywhere: this gate would pass vacuously"
+            DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
+        fi
+    done
 }
 scan_marker_drift
 
