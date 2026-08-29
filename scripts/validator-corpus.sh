@@ -65,7 +65,15 @@ _extract() {
                     print src "\t" line
                 }
             ' "$f"
-        done < <(find "$REPO_ROOT/$d" -name '*.md' -type f 2>/dev/null || true)
+        # TRACKED files only. `find` walks the disk and so descends into
+        # gitignored paths — a worktree under .claude/worktrees/ (the location
+        # this foundation documents), a .claude/commands.backup.<ts>/ left by
+        # update.sh, node_modules — and re-reads a second copy of this repo,
+        # reporting its docs as if they were ours. Ignored means "not repo
+        # content". Pinned by tests/validator-corpus.bats.
+        done < <(git -C "$REPO_ROOT" ls-files -- "$d" 2>/dev/null \
+                 | grep -E '\.md$' \
+                 | sed "s|^|$REPO_ROOT/|" || true)
     done
 }
 
