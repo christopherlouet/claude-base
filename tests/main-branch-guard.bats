@@ -86,3 +86,110 @@ SH
     run bash -c "PATH='$fake' bash '$GUARD' </dev/null 2>&1"
     [ "$status" -eq 0 ]
 }
+
+# --- Target scoping ---------------------------------------------------------
+# The guard fires on the TOOL, not on the path. An edit aimed outside the
+# working tree (a dotfile in $HOME, a second project) branched the repo for a
+# change it will never contain, leaving an empty feature/auto-* the user had to
+# notice and delete. A guard that reacts to what it does not guard is one the
+# user learns to ignore. The tests above deliberately keep feeding an EMPTY
+# stdin: an unreadable target must still guard, so they pin that fallback.
+
+# guard_on <repo> <file-path> — feed a PreToolUse Edit envelope on stdin.
+guard_on() {
+    local json
+    json=$(jq -n --arg f "$2" '{tool_name:"Edit", tool_input:{file_path:$f}}')
+    printf '%s' "$json" > "$TEST_DIR/in.json"
+    run bash -c "cd '$1' && bash '$GUARD' < '$TEST_DIR/in.json' 2>&1"
+}
+
+@test "main-branch-guard: editing a file INSIDE the repo still branches" {
+    skip_if_no_jq
+    init_repo "$TEST_DIR/repo" main
+    guard_on "$TEST_DIR/repo" "$TEST_DIR/repo/f.txt"
+    [ "$status" -eq 0 ]
+    [[ "$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)" == feature/auto-* ]]
+}
+
+@test "main-branch-guard: a not-yet-existing path inside the repo still branches" {
+    skip_if_no_jq
+    init_repo "$TEST_DIR/repo" main
+    guard_on "$TEST_DIR/repo" "$TEST_DIR/repo/sub/new.py"
+    [ "$status" -eq 0 ]
+    [[ "$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)" == feature/auto-* ]]
+}
+
+@test "main-branch-guard: a relative path resolves against the repo and branches" {
+    skip_if_no_jq
+    init_repo "$TEST_DIR/repo" main
+    guard_on "$TEST_DIR/repo" "f.txt"
+    [ "$status" -eq 0 ]
+    [[ "$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)" == feature/auto-* ]]
+}
+
+@test "main-branch-guard: a relative path ignores CLAUDE_PROJECT_DIR" {
+    # The dangerous direction: the hook reads the branch and switches it in the
+    # repo at $PWD, so a relative target must resolve against that same root.
+    # Resolving against CLAUDE_PROJECT_DIR put an IN-repo path outside the tree
+    # whenever the two differ (worktree, sub-repo, second project) and the
+    # guard fell silent on the edit it exists to catch. Green in any shell
+    # where CLAUDE_PROJECT_DIR is unset — which is every shell except the one
+    # the hook actually runs in.
+    skip_if_no_jq
+    init_repo "$TEST_DIR/repo" main
+    mkdir -p "$TEST_DIR/another-project"
+    local json
+    json=$(jq -n '{tool_name:"Edit", tool_input:{file_path:"f.txt"}}')
+    printf '%s' "$json" > "$TEST_DIR/in.json"
+    run bash -c "cd '$TEST_DIR/repo' && CLAUDE_PROJECT_DIR='$TEST_DIR/another-project' bash '$GUARD' < '$TEST_DIR/in.json' 2>&1"
+    [ "$status" -eq 0 ]
+    [[ "$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)" == feature/auto-* ]]
+}
+
+@test "main-branch-guard: editing a file OUTSIDE the repo leaves the branch alone" {
+    skip_if_no_jq
+    init_repo "$TEST_DIR/repo" main
+    mkdir -p "$TEST_DIR/elsewhere"
+    echo x > "$TEST_DIR/elsewhere/dotfile"
+    guard_on "$TEST_DIR/repo" "$TEST_DIR/elsewhere/dotfile"
+    [ "$status" -eq 0 ]
+    [ "$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)" = "main" ]
+}
+
+@test "main-branch-guard: a path climbing out with .. is outside" {
+    skip_if_no_jq
+    init_repo "$TEST_DIR/repo" main
+    guard_on "$TEST_DIR/repo" "$TEST_DIR/repo/../elsewhere.txt"
+    [ "$status" -eq 0 ]
+    [ "$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)" = "main" ]
+}
+
+@test "main-branch-guard: a sibling sharing a name prefix is outside" {
+    skip_if_no_jq
+    init_repo "$TEST_DIR/repo" main
+    mkdir -p "$TEST_DIR/repo-notes"
+    echo x > "$TEST_DIR/repo-notes/note.md"
+    guard_on "$TEST_DIR/repo" "$TEST_DIR/repo-notes/note.md"
+    [ "$status" -eq 0 ]
+    [ "$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)" = "main" ]
+}
+
+@test "main-branch-guard: an envelope with no path still guards" {
+    skip_if_no_jq
+    init_repo "$TEST_DIR/repo" main
+    printf '%s' '{"tool_name":"Edit","tool_input":{}}' > "$TEST_DIR/in.json"
+    run bash -c "cd '$TEST_DIR/repo' && bash '$GUARD' < '$TEST_DIR/in.json' 2>&1"
+    [ "$status" -eq 0 ]
+    [[ "$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)" == feature/auto-* ]]
+}
+
+@test "main-branch-guard: NotebookEdit's notebook_path is read too" {
+    skip_if_no_jq
+    init_repo "$TEST_DIR/repo" main
+    mkdir -p "$TEST_DIR/elsewhere"
+    jq -n --arg f "$TEST_DIR/elsewhere/n.ipynb" \
+        '{tool_name:"NotebookEdit", tool_input:{notebook_path:$f}}' > "$TEST_DIR/in.json"
+    run bash -c "cd '$TEST_DIR/repo' && bash '$GUARD' < '$TEST_DIR/in.json' 2>&1"
+    [ "$status" -eq 0 ]
+    [ "$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)" = "main" ]
+}
