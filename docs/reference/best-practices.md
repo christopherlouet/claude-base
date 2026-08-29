@@ -1,18 +1,12 @@
 # Claude Code Best Practices (Boris Cherny)
 
-## Verification: The Quality Multiplier
+## Verification and effort — moved
 
-> "Give Claude a way to verify its work. If Claude has that feedback loop, it will 2-3x the quality of the final result." -- Boris Cherny
-
-Always give Claude a way to validate its work:
-
-| Complexity | Method | Example |
-|------------|---------|---------|
-| Simple | Bash command | `npm run lint`, `npm run typecheck` |
-| Moderate | Test suite | `npm test`, `pytest`, `go test` |
-| Complex | Browser/Simulator | Playwright, Chrome DevTools, mobile emulator |
-
-Integration: PostToolUse hooks (auto-format, type-check, lint), PreToolUse on commit (mandatory tests), QA agents (`/qa:qa-audit`).
+These two lived here and in `CLAUDE.md`, which is carried into every session; the same fact in two
+places is how the anti-pattern lists in this repository drifted apart. They now have one home, in
+the project's `CLAUDE.md`: give yourself the cheapest check that can fail, and match reasoning
+depth to the task (`/effort`). This file keeps what is reference rather than instruction — consulted
+on demand, not carried (`specs/guardrail-cleanup/carried-material.md`).
 
 ## Recommended Model
 
@@ -44,22 +38,6 @@ _(Since 2026-07-24, **Opus 5** is the recommended default for complex work — n
 Techniques: "Grill me on these changes", "Prove to me this works", "Knowing everything you know now, implement the elegant solution".
 
 See `docs/guides/PROMPTING-GUIDE.md` for the complete guide.
-
-## Effort Levels
-
-> Match the level of reasoning to the task.
-
-| Task | Effort | Why |
-|-------|--------|----------|
-| Exploring code, reading files | `low` | No need for deep reasoning |
-| Implementing a standard feature | `medium` | Speed/quality balance |
-| Designing an architecture, audit, complex debug | `high` | Deep reasoning required |
-| Critical system architecture, advanced security audit | `xhigh` | Deepest routinely-useful reasoning (Opus-class models: Opus 5 / 4.8) |
-| The single hardest problem in a session | `max` | The ceiling above `xhigh` — slowest and costliest per turn, so reserve it rather than defaulting to it |
-
-Command: `/effort low`, `/effort medium`, `/effort high`, `/effort xhigh`, `/effort max` (interactive slider; same values on `--effort` and in skill/agent `effort:` frontmatter).
-
-> Effort tunes reasoning depth **on the current model**; it is not a model upgrade. Since Opus 5, raising effort on Opus 5 covers almost every hard case; the Fable 5 model escalation (`claude-fable-5`, ~2× Opus 5) remains only for the rare tasks where Fable's last half-percent measurably matters — see "Recommended Model" above.
 
 ## Automatic Memory (CLI 2.1.76+)
 

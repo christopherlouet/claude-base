@@ -121,6 +121,8 @@ Prefer `/compact` over `/clear`: compaction keeps the essence of the context (de
 - Ignoring lint/type warnings
 - Overly ambitious sessions (15+ tasks in one session)
 - Confusing pre-existing CI errors with new errors
+- Not giving yourself a way to verify — a change nobody can check is not finished
+- Vague prompts without context or examples
 
 ## Recommended Workflows
 
