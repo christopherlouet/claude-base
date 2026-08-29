@@ -161,10 +161,14 @@ validate_command() {
 
   # === CATEGORY 7: Protected system paths ===
   # Any-depth deletion inside a purely-system tree (no legit subdir to delete).
-  # The flag group accepts long flags too (`rm --recursive --force /etc`), matching
-  # the (usr|var|opt) check below — the short-flag-only version was bypassable.
-  # Runs on the dequoted command so `rm -rf '/etc'` is caught.
-  if echo "$CMD_NQ" | grep -qE 'rm\s+(-{1,2}[a-z]+\s+)*/(etc|boot|sys|proc|usr/lib|lib|sbin)\b'; then
+  # The flag group accepts long flags AND hyphenated ones — the [a-z]+ form could
+  # not match --no-preserve-root, which is precisely the flag that turns the
+  # otherwise-safe bare-root form back into a destructive one.
+  # The path may appear ANYWHERE in the argument list, not only first: one system
+  # directory alone was refused while the same directory listed after another was
+  # not. Bounded by [^;|&]* so a match cannot reach across a command separator.
+  # Runs on the dequoted command so a quoted protected path is caught.
+  if echo "$CMD_NQ" | grep -qE 'rm\s+([^;|&]*\s)?/(etc|boot|sys|proc|usr/lib|lib|s?bin)\b'; then
     printf '%s\n' "BLOCKED: Deletion in a protected system directory."
     return 1
   fi
@@ -172,8 +176,23 @@ validate_command() {
   # block only the bare root (`rm -rf /var`, optional trailing slash) — a real
   # subpath like /var/www/html stays allowed. Closes the gap where `rm -rf /usr`
   # slipped through while `/usr/lib` was blocked.
-  if echo "$CMD_NQ" | grep -qE 'rm\s+(-{1,2}[a-z]+\s+)*/(usr|var|opt)/?(\s|$)'; then
+  if echo "$CMD_NQ" | grep -qE 'rm\s+([^;|&]*\s)?/(usr|var|opt)/?(\s|$)'; then
     printf '%s\n' "BLOCKED: Deletion of a system tree root (/usr, /var or /opt)."
+    return 1
+  fi
+  # The bare filesystem root, which had no rule at all until the guardrail-cleanup
+  # pass probed for it (specs/guardrail-cleanup/inventory.md).
+  #
+  # `rm` defends itself against the plain form — --preserve-root is the default —
+  # but not against the two forms that matter: the GLOB form, which the shell
+  # expands to the top-level directories before rm sees a slash at all, and
+  # --no-preserve-root, which switches the built-in defence off. The harm is
+  # irreversible, so this is refused whatever rm would have done on its own.
+  #
+  # Narrow on purpose: the slash must END the argument (optionally as a glob), so
+  # a real path like /tmp/build or /var/www/html never reaches this rule.
+  if echo "$CMD_NQ" | grep -qE 'rm\s+([^;|&]*\s)?/\*?(\s|$)'; then
+    printf '%s\n' "BLOCKED: Deletion of the filesystem root."
     return 1
   fi
   if echo "$CMD_LOWER" | grep -qE '(chmod|chown)\s.*/(etc|boot|sys|proc|usr)\b'; then

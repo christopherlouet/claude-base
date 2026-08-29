@@ -254,6 +254,94 @@ assert_allow() {
     assert_allow
 }
 
+# --- Bare filesystem root ---------------------------------------------------
+#
+# Found by the T105 probe of specs/guardrail-cleanup/ (Phase 2), with the
+# instrument first shown capable of a positive: every NAMED system directory
+# above is already refused, and the allow-cases below still pass. The bare root
+# fell through because the pattern demanded a named directory after the
+# separator.
+#
+# Why the bare root matters more than its named siblings, not less:
+#   * `rm` protects itself against the plain form (--preserve-root is the
+#     default) but NOT against the glob form, which the shell expands to the
+#     top-level directories before rm ever sees a slash;
+#   * `--no-preserve-root` turns the plain form back into the dangerous one;
+#   * the harm is IRREVERSIBLE, which is the top of the keep ladder in this
+#     project's own criteria (EF-012/013).
+#
+# The multi-path case is a separate defect of the same pattern: one system
+# directory alone was refused while the same directory listed AFTER another was
+# not, because only the first path following the flag group was examined.
+
+@test "policy-dc: denies deletion of the bare root" {
+    run_policy "rm -rf /"
+    assert_deny
+}
+
+@test "policy-dc: denies the bare root with a trailing space" {
+    run_policy "rm -rf / "
+    assert_deny
+}
+
+@test "policy-dc: denies the bare root with flags in the other order" {
+    run_policy "rm -fr /"
+    assert_deny
+}
+
+@test "policy-dc: denies the bare root with long flags" {
+    run_policy "rm --recursive --force /"
+    assert_deny
+}
+
+@test "policy-dc: denies the glob form, which rm's own protection never sees" {
+    run_policy "rm -rf /*"
+    assert_deny
+}
+
+@test "policy-dc: denies the form that disables rm's own protection" {
+    run_policy "rm -rf --no-preserve-root /"
+    assert_deny
+}
+
+@test "policy-dc: denies several system directories in one command" {
+    # `rm -rf /etc` alone was already refused; the same directory listed after
+    # another one was not, because only the first path was examined.
+    run_policy "rm -rf /bin /boot /etc"
+    assert_deny
+}
+
+# --- Controls: widening must not tax ordinary work --------------------------
+#
+# A guard that refuses these is worse than the gap it closes. The command corpus
+# (scripts/validator-corpus.sh) is the real measurement -- these pin the shapes
+# most likely to be caught by a careless anchor.
+
+@test "policy-dc: allows deleting a relative build directory" {
+    run_policy "rm -rf ./build"
+    assert_allow
+}
+
+@test "policy-dc: allows deleting node_modules" {
+    run_policy "rm -rf node_modules"
+    assert_allow
+}
+
+@test "policy-dc: allows a path that merely starts with a slash" {
+    run_policy "rm -rf /home/someone/project/dist"
+    assert_allow
+}
+
+@test "policy-dc: allows a rooted temp path" {
+    run_policy "rm -rf /tmp/build-cache"
+    assert_allow
+}
+
+@test "policy-dc: allows a command that merely mentions a slash argument" {
+    run_policy "grep -r pattern /"
+    assert_allow
+}
+
 @test "policy-dc: denies chmod on a system directory" {
     run_policy "chmod -R 777 /etc"
     assert_deny
