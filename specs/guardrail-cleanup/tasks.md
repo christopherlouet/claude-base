@@ -14,9 +14,9 @@
 
 ---
 
-## Phase 1: Enumerate — US1 (blocking) 🚧 **implemented, pending merge**
+## Phase 1: Enumerate — US1 (blocking) ✅ **DONE**
 
-> Outcome so far: the spec's "18 items, ten blocking and eight advisory" is **confirmed** for
+> Outcome: the spec's "18 items, ten blocking and eight advisory" is **confirmed** for
 > `scripts/hooks/` — and covers one source of four. The blocking tier is ~37, the advisory tier 39,
 > the latter because `.claude/settings.json` holds **31 inline declarations** that no inventory had
 > ever listed (none can refuse — verified). The enumerator's own first version was wrong in a
@@ -28,18 +28,18 @@ four sources, so that completeness can be *established* rather than asserted (EF
 
 **⚠️ No grading task may start before this phase is finished.**
 
-- [ ] **T001** [US1] Write `scripts/guardrail-inventory.sh` — enumerate from `scripts/hooks/*.sh`
+- [x] **T001** [US1] Write `scripts/guardrail-inventory.sh` — enumerate from `scripts/hooks/*.sh`
       (classify `exit 2` = blocking, exclude `_`-prefixed shared libraries), `.husky/*`,
       the `scripts/preflight.sh` gate chain, and `.github/workflows/*.yml` job steps. Emit one stable,
       sorted row per item: `source | name | blocking|advisory | invoked-from`. **Reports only —
       it must refuse nothing and exit 0 always.** macOS bash 3.2 safe.
-- [ ] **T002** [US1] Cross-check the enumerator against `.claude/settings.json`: 49 hook invocations
+- [x] **T002** [US1] Cross-check the enumerator against `.claude/settings.json`: 49 hook invocations
       across 17 events map many-to-one onto 27 scripts. Any declared hook with no script, or script
       with no declaration, is a finding — record it, do not silently reconcile.
-- [ ] **T003** [P] [US1] Write `tests/guardrail-inventory.bats`: per-source enumeration; output is
+- [x] **T003** [P] [US1] Write `tests/guardrail-inventory.bats`: per-source enumeration; output is
       stable and sorted; **non-vacuity control** — hiding a known guardrail from the enumerator must
       make it fail (a test that cannot fail proves nothing).
-- [ ] **T004** [US1] Run the enumerator on the real foundation and reconcile with the spec's figure.
+- [x] **T004** [US1] Run the enumerator on the real foundation and reconcile with the spec's figure.
       Expected: 18 from `scripts/hooks/` (10 + 8, confirmed while planning) plus the git-hook and CI
       gates. **Record the delta and its cause in `inventory.md`, as the answer to EF-001's "how
       completeness was established".**
