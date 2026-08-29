@@ -1,3 +1,18 @@
+---
+paths:
+  - ".claude/rules/**"
+---
+
+<!-- This file is a CATALOGUE of the rules, not a rule. Without a `paths:` scope
+     it was global, so every session carried 5 441 bytes of inventory — 15 % of
+     all carried material (specs/guardrail-cleanup/carried-material.md). It is
+     scoped to the rules directory instead: an index of the rules is worth having
+     exactly when someone is working on them. The conflict-resolution ladder,
+     the only part that changes behaviour during ordinary work, lives in
+     CLAUDE.md. Nothing that READS this file is affected: audit-base.sh, the
+     website generator and the counts gate all read it from disk, and all three
+     already skip README itself. -->
+
 # Claude Code Rules
 
 Modular rules applied automatically based on the modified files (path-specific rules).

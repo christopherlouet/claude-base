@@ -222,20 +222,27 @@ of the evidence stated (EF-…4 of US5).
 harm to prevent, so it earns its place only by changing what the assistant does. Applying the
 guardrail criterion here would pass everything.
 
-- [ ] **T501** [US5] Create `specs/guardrail-cleanup/carried-material.md` with the 8 measured items
+- [x] **T501** [US5] Create `specs/guardrail-cleanup/carried-material.md` with the 8 measured items
       and their sizes (35 162 bytes total, ~8 k tokens — measured 2026-08-29 against a live session).
-- [ ] **T502** [US5] Start with **`.claude/rules/README.md`** (5 441 B, 15 % of the load): it is a
+      **Re-measured by a second route: identical to the byte.**
+- [x] **T502** [US5] Start with **`.claude/rules/README.md`** (5 441 B, 15 % of the load): it is a
       *catalogue describing the 32 rules*, carried into every session only because it lacks a
-      `paths:` frontmatter. Cheapest to test, most likely inert.
-- [ ] **T503** [P] [US5] For each item, distinguish **useful** from **needs carrying** — reference
-      material consulted on demand does not need to be present unprompted (US5 criterion 3).
-- [ ] **T504** [US5] Reuse the existing eval harness (`tests/eval-rule-efficacy.bats` and siblings)
+      `paths:` frontmatter. **Scoped to `.claude/rules/**`; the priority ladder — the only part that
+      instructs — moved to `CLAUDE.md`. Carried load 35 162 → 30 046 bytes (−14.5 %).** Nothing that
+      *reads* the file is affected: all three consumers read it from disk and already skip README.
+- [x] **T503** [P] [US5] For each item, distinguish **useful** from **needs carrying** — reference
+      material consulted on demand does not need to be present unprompted (US5 criterion 3). Done for
+      all eight, each verdict labelled *structural*, *judgement* or *unmeasured*.
+- [x] **T504** [US5] Reuse the existing eval harness (`tests/eval-rule-efficacy.bats` and siblings)
       rather than building a new one. Prior result — rule efficacy is **model-dependent** — must be
-      carried into every verdict here.
-- [ ] **T505** [US5] Record every small-sample verdict **as signal, never as proof**, with the sample
+      carried into every verdict here. **Its scoring half is offline; its generation half is manual
+      and billing-gated, and no such run was authorised — so no behavioural verdict is claimed.**
+- [x] **T505** [US5] Record every small-sample verdict **as signal, never as proof**, with the sample
       size beside it. "Unmeasured" is a permitted outcome; an item dropped on judgement must say so.
-- [ ] **T506** [US5] Act on the verdicts: relocate, add `paths:` scoping, or remove. State for each
-      what a session loses.
+      Every verdict carries its evidence class; nothing was dropped on judgement alone.
+- [x] **T506** [US5] Act on the verdicts: relocate, add `paths:` scoping, or remove. State for each
+      what a session loses. **One item acted on**; what a session loses is the 32-row inventory, and
+      it keeps the ladder. The rest need the billing-gated eval or a content split of their own.
 
 **Checkpoint**: no item graded on an unstated sample; every drop names what is lost.
 
