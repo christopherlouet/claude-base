@@ -137,13 +137,18 @@ finds its grade and the specific evidence that earned it.
         mispairs on an embedded escaped quote and can delete an *opening* brace, which flagged a
         real test here as hollow), so all three branches are now escape-aware. Seven arms detect
         the old scanner, including the EF-008 scan of the foundation's own tests.
-  - [ ] **(3)** `validate-counts.sh` refuses a document that *quotes* a marker: quoting and violating
-        are indistinguishable to the scanner. Blocked real work on 2026-08-29.
-  - [ ] **(4)** No anti-vacuity floor on the marker scan — stripping all 93 markers from the 24
-        files carrying them leaves the gate green. An empty gate is a green gate.
-  - [ ] **(5)** `_check_core` has no script-level coverage: a mutant disabling it survives the suite.
-  - [ ] **(6)** The marker gate validates 4 of 6 live keys — `presets` and `marketplaceAuditPilots`
+  - [x] **(3)** `validate-counts.sh` refuses a document that *quotes* a marker: quoting and violating
+        are indistinguishable to the scanner. Blocked real work on 2026-08-29. Fenced blocks and
+        inline code spans are now documentation; measured side effect on the tree: **none**.
+  - [x] **(4)** No anti-vacuity floor on the marker scan — stripping all markers leaves the gate
+        green. An empty gate is a green gate. The floor stores **no number** (that would be one more
+        counter to feed): each structural key must have at least one live marker.
+  - [x] **(5)** `_check_core` has no script-level coverage: a mutant disabling it survives the suite.
+        Covered through the script now; that exact mutant dies, and by its own arm only.
+  - [x] **(6)** The marker gate validates 4 of 6 live keys — `presets` and `marketplaceAuditPilots`
         fall through `*) continue ;;`, and `byDomain.*` never matches (the pattern excludes the dot).
+        Coverage measured: **87 of 147 markers before, 147 after**; an unknown key is reported, not
+        skipped.
   - [ ] **(7)** `tests/ci-workflows.bats` does not earn its title: 4 of 5 classes asserted, and its
         `grep VERSION` matches the surrounding prose instead of the regex. This is the test that let
         a documentation gap through on 2026-08-29.

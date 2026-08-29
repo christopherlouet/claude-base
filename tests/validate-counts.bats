@@ -431,3 +431,161 @@ EOF
     [ "$status" -ne 0 ]
     [[ "$output" == *"999 skills"* ]]
 }
+
+# =============================================================================
+# The marker gate's blind spots — Phase 4 of specs/guardrail-cleanup/
+# =============================================================================
+# Three defects recorded on 2026-08-29 and repaired here: a document that QUOTES
+# a marker was indistinguishable from one that violates it (it blocked real work
+# that day); the scan had no anti-vacuity floor, so stripping every marker left
+# the gate green; and it validated four of the six live keys, silently skipping
+# the rest through `*) continue ;;` while `byDomain.*` never matched at all.
+
+# fake_counts_json — give the fake foundation a counts.json consistent with it
+# (3 commands, 2 agents, 1 skill, 4 rules, no modules) plus the extra keys.
+fake_counts_json() {
+    # The fake foundation carries the REAL module bundles (the lib is copied
+    # wholesale), so point the registry at an empty dir: this fake has no
+    # module-owned commands, and core == full here.
+    mkdir -p "$TEST_DIR/nomodules"
+    export MODULES_BUNDLES_DIR="$TEST_DIR/nomodules"
+    cat > "$TEST_DIR/counts.json" <<JSON
+{
+  "commands": 3, "agents": 2, "skills": 1, "rules": 4,
+  "core": { "commands": 3, "agents": 2, "skills": 1 },
+  "byDomain": { "work": 3 },
+  "presets": 7,
+  "marketplaceAuditPilots": 2
+}
+JSON
+}
+
+# floor_markers — the four structural markers the anti-vacuity floor requires,
+# all correct, so a test can be about something else.
+floor_markers() {
+    printf 'c <!-- count:commands -->3<!-- /count --> a <!-- count:agents -->2<!-- /count --> s <!-- count:skills -->1<!-- /count --> r <!-- count:rules -->4<!-- /count -->\n' \
+        > "$TEST_DIR/docs/floor.md"
+}
+
+# --- a document that quotes a marker is not a document that violates one -----
+
+@test "marker drift: a marker inside a fenced code block is documentation, not drift" {
+    { echo 'How the gate works:'; echo '```markdown'
+      echo '<!-- count:rules -->99<!-- /count -->'; echo '```'; } > "$TEST_DIR/docs/explainer.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 0 ]
+}
+
+@test "marker drift: a marker inside inline backticks is documentation, not drift" {
+    printf 'Write `<!-- count:rules -->99<!-- /count -->` to pin a number.\n' > "$TEST_DIR/docs/explainer.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 0 ]
+}
+
+@test "marker drift: CONTROL - the same marker unquoted is still flagged" {
+    # Without this arm the two above would pass on a scanner that had simply
+    # stopped looking at markers altogether.
+    printf 'Live: <!-- count:rules -->99<!-- /count -->\n' > "$TEST_DIR/docs/explainer.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"count:rules marker = 99"* ]]
+}
+
+@test "marker drift: a quoted marker does not hide a live one in the same file" {
+    { printf 'Example: `<!-- count:rules -->99<!-- /count -->`\n'
+      printf 'Live: <!-- count:commands -->77<!-- /count -->\n'; } > "$TEST_DIR/docs/explainer.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"count:commands marker = 77"* ]]
+    [[ "$output" != *"count:rules marker = 99"* ]]
+}
+
+# --- an empty gate is a green gate ------------------------------------------
+
+@test "marker floor: a foundation with counts.json and no markers at all fails" {
+    fake_counts_json
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"count:commands"* ]]
+    [[ "$output" == *"no"*"marker"* ]]
+}
+
+@test "marker floor: CONTROL - the four structural markers satisfy the floor" {
+    fake_counts_json
+    floor_markers
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 0 ]
+}
+
+@test "marker floor: removing markers for ONE structural key still fails" {
+    fake_counts_json
+    printf 'c <!-- count:commands -->3<!-- /count --> a <!-- count:agents -->2<!-- /count --> s <!-- count:skills -->1<!-- /count -->\n' \
+        > "$TEST_DIR/docs/floor.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"count:rules"* ]]
+}
+
+# --- every live key is validated, and an unknown one is never skipped --------
+
+@test "marker keys: a wrong count:presets marker is flagged against counts.json" {
+    fake_counts_json; floor_markers
+    printf 'presets: <!-- count:presets -->99<!-- /count -->\n' > "$TEST_DIR/docs/presets.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"count:presets marker = 99"* ]]
+    [[ "$output" == *"canonical: 7"* ]]
+}
+
+@test "marker keys: a wrong count:marketplaceAuditPilots marker is flagged" {
+    fake_counts_json; floor_markers
+    printf 'pilots: <!-- count:marketplaceAuditPilots -->99<!-- /count -->\n' > "$TEST_DIR/docs/pilots.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"count:marketplaceAuditPilots marker = 99"* ]]
+}
+
+@test "marker keys: a dotted count:byDomain.work marker is matched and checked" {
+    # The old pattern excluded the dot, so these markers were never seen at all.
+    fake_counts_json; floor_markers
+    printf 'work: <!-- count:byDomain.work -->99<!-- /count -->\n' > "$TEST_DIR/docs/domains.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"count:byDomain.work marker = 99"* ]]
+    [[ "$output" == *"canonical: 3"* ]]
+}
+
+@test "marker keys: CONTROL - correct presets and byDomain markers pass" {
+    fake_counts_json; floor_markers
+    printf 'p <!-- count:presets -->7<!-- /count --> w <!-- count:byDomain.work -->3<!-- /count -->\n' \
+        > "$TEST_DIR/docs/extra.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 0 ]
+}
+
+@test "marker keys: a key with no canonical source is reported, never skipped" {
+    fake_counts_json; floor_markers
+    printf 'bogus: <!-- count:bogus -->12<!-- /count -->\n' > "$TEST_DIR/docs/bogus.md"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"bogus"* ]]
+}
+
+# --- _check_core is exercised through the script, not only through its data --
+
+@test "core split: a wrong core.commands in counts.json is flagged" {
+    # Recorded gap: a mutant disabling _check_core survived the whole suite,
+    # because the only coverage re-implemented the invariant against counts.json
+    # instead of running the script that enforces it.
+    fake_counts_json; floor_markers
+    sed -i.bak 's/"core": { "commands": 3/"core": { "commands": 99/' "$TEST_DIR/counts.json"
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"core.commands"* ]]
+}
+
+@test "core split: CONTROL - a consistent core object passes" {
+    fake_counts_json; floor_markers
+    run "$VALIDATE_SCRIPT"
+    [ "$status" -eq 0 ]
+}

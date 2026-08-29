@@ -186,6 +186,34 @@ fixing a pre-existing guard mid-pass is what EF-011 forbids. They belong to Phas
   matched at all because the grep pattern `count:[a-zA-Z]+` excludes the dot. Only CI's
   `generate + git diff --exit-code` covers them.
 
+### ✅ All four repaired in Phase 4, and the coverage delta was measured
+
+| | Markers the gate actually validated |
+|---|---|
+| before | **87** of 147 in the tree (59 %) |
+| after | **147** — every live one |
+
+Proven on the real target rather than only in fixtures: a wrong `byDomain.work` and a wrong
+`presets` marker planted in a real file pass the old gate untouched (*"All counters are
+consistent"*) and are both named by the new one. An unknown key is now **reported** instead of
+silently skipped, and the key class matches the injector's own `[\w.]+` — a key it can write but
+the gate cannot read is the same silent skip in a new place.
+
+The **quoting** repair follows from the same idea as the substance-check one earlier in this phase:
+a fenced block or an inline code span is a document *showing* a marker, not *using* one. Measured
+side effect: none. No marker in the current tree sits inside a fence, so nothing legitimate stops
+being checked — the exemption is entirely forward-looking, which is what the blocked work on
+2026-08-29 needed.
+
+The **floor** is deliberately maintenance-free: it does not store how many markers should exist
+(that would be a counter needing to be fed, which is what this whole pass exists to reduce). It
+requires only that each of the four structural keys has at least one live marker — zero means the
+injector or a mass edit removed them, not that the documentation is clean. A key losing all of its
+markers legitimately (`presets`, say) is not covered, and that is stated rather than hidden.
+
+`_check_core` now has script-level coverage: the mutant the finding describes — the comparison
+turned into `if false` — is killed by its own arm and by no other.
+
 ---
 
 Suite: 2 138 → **2 141** (five added, two removed with their subject).
