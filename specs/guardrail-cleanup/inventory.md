@@ -396,6 +396,39 @@ indistinguishable, to that guard, from a document *violating* it.
 
 ---
 
+## A verdict that was not deterministic — found by being wrong about it
+
+Recorded because it nearly produced a false conclusion: a macOS CI job failed on
+`audit-docs: real foundation repo exits 0 with no drift` for a pull request whose diff **cannot
+reach that scanner** — it touches neither the directories `audit-docs.sh` scans nor anything it
+reads. Re-running the identical commit passed. Two arms on the same code: **the verdict was
+non-deterministic**, which is the same defect as a guardrail reporting what it has not established,
+one level up.
+
+**The mechanism, and exactly how far the evidence goes.** Two cases in `tests/audit-docs.bats`
+planted their drift **in the shared checkout** — a file under `templates/`, an appended line in
+`README.md` — and removed it afterwards, while a third case audits that same checkout, and the suite
+runs `bats --jobs`.
+
+| Arm | Result |
+|---|---|
+| plant window widened, run concurrently | the clean-repo case fails **deterministically** |
+| real window, maximal concurrency, 32 runs here | **0 failures** — it did not reproduce |
+| checkout sampled while the planting cases run (before) | modified in **71 of 268 samples** |
+| same sampling (after the repair) | **0 of 281** |
+
+So: the coupling is **demonstrated**, the non-determinism is **established**, and the claim that this
+race caused that particular macOS red is **unproven** and written as such. The repair does not rest
+on it — a test mutating shared state while the suite runs in parallel is a hazard whether or not it
+has bitten yet, and the fix costs nothing the tests were relying on: they now plant in a
+foundation-shaped copy with `audit-docs.sh` inside it, so the **default scope** is still what gets
+exercised. Only the root moves.
+
+⚠️ **The instrument was wrong first.** The initial sampler reported the repaired code as *worse*
+(121 dirty of 121) because it read `git status` unscoped, and the working tree already carried the
+repair itself. A measurement that indicts the fix is a reason to check the instrument before
+believing it.
+
 ## Open, and carried forward
 
 - **The grade-D probe (T105) is complete.** Every blocking guardrail is alive; none is dormant. It
