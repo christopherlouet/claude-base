@@ -14,7 +14,14 @@
 
 ---
 
-## Phase 1: Enumerate — US1 (blocking)
+## Phase 1: Enumerate — US1 (blocking) 🚧 **implemented, pending merge**
+
+> Outcome so far: the spec's "18 items, ten blocking and eight advisory" is **confirmed** for
+> `scripts/hooks/` — and covers one source of four. The blocking tier is ~37, the advisory tier 39,
+> the latter because `.claude/settings.json` holds **31 inline declarations** that no inventory had
+> ever listed (none can refuse — verified). The enumerator's own first version was wrong in a
+> plausible way (9/9 instead of 10/8) and was caught by cross-checking two independent measurements,
+> not by review. See [`enumeration.md`](./enumeration.md).
 
 **Goal**: a reproducible list of everything in this repository that refuses an action, drawn from all
 four sources, so that completeness can be *established* rather than asserted (EF-001).
@@ -113,7 +120,16 @@ finds its grade and the specific evidence that earned it.
 
 ---
 
-## Phase 5: Stop the bookkeeping serialising work — US4 *(independent, can start now)*
+## Phase 5: Stop the bookkeeping serialising work — US4 ✅ **DONE — shipped in #510**
+
+> Outcome: a fourth option beat the three planned ones. `tests` and `testFiles` were the only
+> counters that **verify themselves** (CI runs the suite on every PR), so a stored figure told a
+> reader nothing; the structural counters do not verify themselves and stayed untouched. Measured
+> field-level churn justified the target: `tests` moved 112 count-lines and `testFiles` 48, while
+> commands/skills/rules/presets moved zero. EF-009 demonstrated in two arms on a throwaway clone;
+> the anti-drift property proven to survive by mutation on the real repository. Confirmed in
+> practice afterwards: adding a test file now moves no counted artifact at all.
+> See [`us4-demonstration.md`](./us4-demonstration.md).
 
 **Goal**: accepting one prepared change stops invalidating another (EF-009); a change that adds
 nothing counted carries no counting update (EF-010).
@@ -121,16 +137,16 @@ nothing counted carries no counting update (EF-010).
 **Independent test**: prepare two independent changes, accept one, and the other is still acceptable
 without touching its counts.
 
-- [ ] **T401** [US4] Choose between plan options A (stop tracking derived counts), B (merge driver)
+- [x] **T401** [US4] Choose between plan options A (stop tracking derived counts), B (merge driver)
       and C (CI recomputes). Judge against the measurement: `counts.json` 63 % / `README.md` 69 % of
       95 commits, **zero** bookkeeping-only commits — so the target is *invalidation*, not clutter.
       Option B adds a mechanism that must be maintained, which this pass exists to reduce.
-- [ ] **T402** [US4] Implement the chosen option across `scripts/sync-counts.sh`,
+- [x] **T402** [US4] Implement the chosen option across `scripts/sync-counts.sh`,
       `scripts/validate-counts.sh`, `.github/workflows/ci.yml`, `counts.json`, `README.md`.
-- [ ] **T403** [US4] **Mutation proof that the anti-drift property survives**: introduce real drift
+- [x] **T403** [US4] **Mutation proof that the anti-drift property survives**: introduce real drift
       and prove the new gate still fails. The counters exist because doc rot was real; a fix that
       quietly turns the gate into a no-op is worse than the friction it removes.
-- [ ] **T404** [US4] Demonstrate EF-009 end to end: two prepared branches, merge one, show the other
+- [x] **T404** [US4] Demonstrate EF-009 end to end: two prepared branches, merge one, show the other
       still merges without a counts touch. **Demonstrated, not argued.**
 
 **Checkpoint**: the demonstration in T404 passes, and T403 proves the gate can still fail.
