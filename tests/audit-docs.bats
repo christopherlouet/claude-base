@@ -349,12 +349,29 @@ EOF
 # Scope coverage — the guard's own blind spot
 # =============================================================================
 
-# PLANTED_DRIFT is removed by teardown even if an assertion aborts the test.
-PLANTED_DRIFT=""
-
-teardown_planted() {
-    [[ -n "$PLANTED_DRIFT" && -f "$PLANTED_DRIFT" ]] && rm -f "$PLANTED_DRIFT"
-    return 0
+# _fake_audit_root — a foundation-shaped tree with audit-docs.sh copied INSIDE
+# it, so the script resolves BASE_DIR to the copy and a planted drift never
+# touches the shared checkout.
+#
+# These two cases used to plant into the real repository — a file under
+# `templates/` and an appended line in `README.md` — and clean up afterwards.
+# The suite runs `bats --jobs`, so a sibling case auditing that same checkout can
+# observe the plant while it exists. Demonstrated on 2026-08-29: with the plant
+# window widened, "real foundation repo exits 0 with no drift" fails
+# deterministically. It did not reproduce at the real window in 32 runs here, so
+# whether this caused the macOS failure that day is unproven — but a test
+# mutating shared state while the suite runs in parallel is a hazard on its own.
+#
+# What is exercised is unchanged: the DEFAULT scope, with no --target passed.
+# Only the root moves.
+_fake_audit_root() {
+    local root="$TEST_DIR/fake-foundation"
+    mkdir -p "$root/scripts/lib" "$root/templates" "$root/docs"
+    cp "$BASE_DIR/scripts/audit-docs.sh" "$root/scripts/"
+    cp -r "$BASE_DIR/scripts/lib/." "$root/scripts/lib/"
+    printf '# Fake foundation\n' > "$root/README.md"
+    printf '# Fake foundation\n' > "$root/CLAUDE.md"
+    printf '%s' "$root"
 }
 
 @test "audit-docs: a drift planted in templates/ is caught by a default run" {
@@ -363,29 +380,34 @@ teardown_planted() {
     # six months: nothing scanned the surface every installed project inherits
     # its CLAUDE.md from. Asserting the behaviour — not the source text — is
     # what makes a future narrowing of the scope fail loudly.
-    PLANTED_DRIFT="$BASE_DIR/templates/.audit-scope-probe.md"
-    cat > "$PLANTED_DRIFT" <<'EOF'
+    local root; root="$(_fake_audit_root)"
+    cat > "$root/templates/scope-probe.md" <<'EOF'
 # Scope probe
 
 Run `./scripts/definitely-not-a-real-script.sh` to break things.
 EOF
 
-    run "$AUDIT_DOCS" --category scripts
-    teardown_planted
-
+    run bash "$root/scripts/audit-docs.sh" --category scripts
     [ "$status" -ne 0 ]
     printf '%s\n' "$output" | grep -q 'definitely-not-a-real-script.sh'
 }
 
 @test "audit-docs: a drift planted in README.md is caught by a default run" {
-    local backup="$TEST_DIR/README.md.bak"
-    cp "$BASE_DIR/README.md" "$backup"
+    local root; root="$(_fake_audit_root)"
     printf '\nRun `./scripts/definitely-not-a-real-script.sh` to break things.\n' \
-        >> "$BASE_DIR/README.md"
+        >> "$root/README.md"
 
-    run "$AUDIT_DOCS" --category scripts
-    cp "$backup" "$BASE_DIR/README.md"
-
+    run bash "$root/scripts/audit-docs.sh" --category scripts
     [ "$status" -ne 0 ]
     printf '%s\n' "$output" | grep -q 'definitely-not-a-real-script.sh'
+}
+
+@test "audit-docs: CONTROL - the fake root with nothing planted audits clean" {
+    # Without this, the two cases above would also pass on a root that fails for
+    # some unrelated reason — a non-zero exit is not evidence of the right cause.
+    local root; root="$(_fake_audit_root)"
+    printf '# A page with no script reference\n' > "$root/templates/plain.md"
+
+    run bash "$root/scripts/audit-docs.sh" --category scripts
+    [ "$status" -eq 0 ]
 }
