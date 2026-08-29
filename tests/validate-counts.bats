@@ -89,13 +89,13 @@ teardown() {
 @test "validate-counts.sh shows the actual counts in its output" {
     run "$VALIDATE_SCRIPT"
     [ "$status" -eq 0 ]
-    # The fake foundation has 3 commands / 2 agents / 1 skill / 4 rules / 5 tests
+    # The fake foundation has 3 commands / 2 agents / 1 skill / 4 rules
     # Loose assertions (regex) because bats may normalize whitespace.
     [[ "$output" =~ Commands[[:space:]]*:[[:space:]]*3 ]]
     [[ "$output" =~ Agents[[:space:]]*:[[:space:]]*2 ]]
     [[ "$output" =~ Skills[[:space:]]*:[[:space:]]*1 ]]
     [[ "$output" =~ Rules[[:space:]]*:[[:space:]]*4 ]]
-    [[ "$output" =~ Tests[[:space:]]*:[[:space:]]*5 ]]
+    # No "Tests :" line any more — the test counters are not tracked (US4).
 }
 
 # =============================================================================
@@ -198,31 +198,6 @@ EOF
 # =============================================================================
 # Layer 2 tests — scan_tests_drift (badges + Test layout)
 # =============================================================================
-
-@test "scan_tests_drift: detects the 'tests-N passing' badge pattern" {
-    # We have 5 actual tests but the badge declares 200
-    cat > "$TEST_DIR/README.md" <<'EOF'
-# Test
-[![Tests](https://img.shields.io/badge/tests-200%20passing-brightgreen)](./tests)
-EOF
-    run "$VALIDATE_SCRIPT"
-    [ "$status" -eq 1 ]
-    [[ "$output" == *"tests-200"* ]]
-    # canonical = ACTUAL_TESTS of the fake foundation (5)
-    [[ "$output" =~ canonical:[[:space:]]*5 ]]
-}
-
-@test "scan_tests_drift: detects the '(N files, M tests)' Test layout pattern" {
-    # We have 1 test file and 5 actual tests but declare 17 and 999
-    cat > "$TEST_DIR/README.md" <<'EOF'
-# Test
-### Test layout (17 files, 999 tests)
-EOF
-    run "$VALIDATE_SCRIPT"
-    [ "$status" -eq 1 ]
-    [[ "$output" == *"17 test files"* ]] || [[ "$output" == *"17"* ]]
-    [[ "$output" == *"999 tests"* ]]
-}
 
 # =============================================================================
 # Anti-false-positive tests
@@ -375,4 +350,63 @@ EOF
     [ "$status" -eq 1 ]
     [[ "$output" == *"99 rules"* ]]
     [[ "$output" == *"canonical: 4"* ]]
+}
+
+# =============================================================================
+# The test counters are no longer tracked (US4 / EF-009 / EF-010)
+#
+# Measured over 95 commits: `tests` moved 112 count-lines and `testFiles` 48,
+# while commands, skills, rules and presets moved ZERO. counts.json and
+# README.md were touched by 63% and 69% of commits -- yet no commit touched
+# only those two, so the cost was never clutter: it was SERIALISATION. Two
+# changes prepared in parallel each bumped the same line, so accepting one
+# invalidated the other.
+#
+# The principled line is not "it churns" but WHAT VERIFIES WHAT. The test count
+# is the only counter that verifies itself -- CI runs the suite on every PR, so
+# a stored figure tells a reader nothing they do not already have. The
+# structural counters do NOT verify themselves: a doc claiming 106 commands
+# while 107 exist is caught by this gate and by nothing else. So the
+# self-verifying counters go and the rest stay.
+#
+# Accepted loss, stated rather than hidden (EF-006): a stale test count written
+# into prose later is no longer detected. Its harm is recoverable (a wrong
+# number in a README), and no replacement guard is added here -- adding one
+# during this pass is what EF-011 forbids.
+# =============================================================================
+
+@test "counts.json no longer carries the self-verifying test counters" {
+    run grep -E '"(tests|testFiles)"[[:space:]]*:' "$BATS_TEST_DIRNAME/../counts.json"
+    [ "$status" -ne 0 ]
+}
+
+@test "README carries no hardcoded test count (badge or count marker)" {
+    run grep -nE 'tests-[0-9]+|count:tests|count:testFiles' "$BATS_TEST_DIRNAME/../README.md"
+    [ "$status" -ne 0 ]
+}
+
+@test "EF-010: adding a test file produces no counts drift" {
+    # A change that adds nothing COUNTED must carry no counting update.
+    #
+    # The fake foundation ships 5 tests; this plants a badge stating so, then
+    # adds two more tests. BEFORE the removal the badge drifted (5 vs 7) and the
+    # gate refused -- a change that added nothing counted still had to carry a
+    # counting update, which is precisely what serialised parallel work. AFTER,
+    # there is no test figure to drift.
+    echo '[![Tests](https://img.shields.io/badge/tests-5%20passing-brightgreen)](./tests)' \
+        >> "$TEST_DIR/README.md"
+    printf '@test "a" {\n  true\n}\n@test "b" {\n  true\n}\n' \
+        > "$TEST_DIR/tests/newly-added.bats"
+    run bash "$TEST_DIR/scripts/validate-counts.sh"
+    [ "$status" -eq 0 ]
+}
+
+@test "control: the gate can still fail — a structural counter drift is caught" {
+    # The anti-drift property must SURVIVE the removal. A gate that can no
+    # longer fail is worse than the friction it removed, because the belief
+    # that it protects the docs survives with it.
+    echo '<!-- count:commands -->999<!-- /count -->' >> "$TEST_DIR/README.md"
+    run bash "$TEST_DIR/scripts/validate-counts.sh"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"count:commands"* ]]
 }

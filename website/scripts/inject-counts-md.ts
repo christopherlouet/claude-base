@@ -4,7 +4,7 @@
  * with `<!-- count:KEY -->NNN<!-- /count -->` markers.
  *
  * KEY is a dot-path into counts.json (e.g. `commands`, `agents`,
- * `byDomain.work`, `tests`, `testFiles`).
+ * `byDomain.work`).
  *
  * The script is idempotent: if every marker already holds the right
  * value, no file is touched (so `git diff --exit-code` stays clean).
@@ -95,8 +95,6 @@ export function injectCountsMd(): { processed: number; updated: number; missingK
     });
 
     // Special case: shields.io test count badge (URLs can't contain HTML markers).
-    // Pattern: `tests-NNN%20passing` or `tests-NNN+passing` -> rewrite NNN.
-    next = next.replace(/(tests-)\d+(%20|\+| )passing/g, `$1${counts.tests}$2passing`);
 
     if (next !== original) {
       fs.writeFileSync(absPath, next, 'utf-8');
