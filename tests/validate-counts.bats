@@ -376,13 +376,18 @@ EOF
 # =============================================================================
 
 @test "counts.json no longer carries the self-verifying test counters" {
+    # `-eq 1` (no match), never `-ne 0`: grep exits 2 when the FILE IS MISSING,
+    # so `-ne 0` would keep this green if counts.json were deleted or renamed —
+    # it could not tell "the counter is gone" from "the file is gone".
+    [ -f "$BATS_TEST_DIRNAME/../counts.json" ]
     run grep -E '"(tests|testFiles)"[[:space:]]*:' "$BATS_TEST_DIRNAME/../counts.json"
-    [ "$status" -ne 0 ]
+    [ "$status" -eq 1 ]
 }
 
 @test "README carries no hardcoded test count (badge or count marker)" {
+    [ -f "$BATS_TEST_DIRNAME/../README.md" ]
     run grep -nE 'tests-[0-9]+|count:tests|count:testFiles' "$BATS_TEST_DIRNAME/../README.md"
-    [ "$status" -ne 0 ]
+    [ "$status" -eq 1 ]
 }
 
 @test "EF-010: adding a test file produces no counts drift" {
@@ -401,12 +406,28 @@ EOF
     [ "$status" -eq 0 ]
 }
 
-@test "control: the gate can still fail — a structural counter drift is caught" {
+@test "control: scan_marker_drift can still fail (a count: marker drift is caught)" {
     # The anti-drift property must SURVIVE the removal. A gate that can no
     # longer fail is worse than the friction it removed, because the belief
     # that it protects the docs survives with it.
+    #
+    # There are TWO live scanners and one control per scanner, because a single
+    # control does not span them. An earlier version planted a marker drift AND
+    # a prose drift in one test — but the marker drift alone satisfied every
+    # assertion, so the test still passed against a mutant with scan_drift
+    # disabled. Each control now asserts its own scanner's message signature.
     echo '<!-- count:commands -->999<!-- /count -->' >> "$TEST_DIR/README.md"
     run bash "$TEST_DIR/scripts/validate-counts.sh"
     [ "$status" -ne 0 ]
     [[ "$output" == *"count:commands"* ]]
+}
+
+@test "control: scan_drift can still fail (a prose/heading drift is caught)" {
+    # scan_drift covers markdown headings, table cells and TS literals — most of
+    # the live patterns. Its own signature is "N <resource>", distinct from the
+    # marker scanner's "count:<key> marker = N".
+    echo '## Skills (999)' >> "$TEST_DIR/README.md"
+    run bash "$TEST_DIR/scripts/validate-counts.sh"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"999 skills"* ]]
 }

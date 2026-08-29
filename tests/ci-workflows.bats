@@ -43,7 +43,9 @@ WORKFLOWS="$BASE_DIR/.github/workflows"
 @test "husky pre-commit: self-heal trigger covers every counts-gate input class" {
     # website/scripts/generate-counts.ts reads presets, the vendor-skills
     # recipe (via docs/), the minimal manifest and VERSION in addition to
-    # .claude/{commands,agents,skills,rules} and tests/*.bats; sync-docs.ts
+    # .claude/{commands,agents,skills,rules}. NOT tests/*.bats: the test
+    # counters stopped being tracked (specs/guardrail-cleanup, US4), so a
+    # test-only commit no longer feeds any counted artifact; sync-docs.ts
     # mirrors all of docs/. A class missing from the husky regex commits
     # cleanly locally and fails the CI counts gate ("forgot to regenerate").
     local hook="$BASE_DIR/.husky/pre-commit"

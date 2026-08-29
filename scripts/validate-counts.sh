@@ -118,7 +118,7 @@ ACTUAL_RULES=$(find "$BASE_DIR/.claude/rules" -name "*.md" -not -name "README.md
 # counters that verify themselves — CI runs the suite on every PR — so a stored
 # figure adds nothing, while every added test moved a line that two parallel
 # changes then fought over. The structural counters below do NOT verify
-# themselves and stay. See specs/guardrail-cleanup/ (US4).
+# themselves and stay. See specs/guardrail-cleanup/us4-demonstration.md.
 
 echo "  Commands : $ACTUAL_COMMANDS"
 echo "  Agents   : $ACTUAL_AGENTS"
@@ -383,12 +383,6 @@ scan_contributing_drift() {
     _contrib_check "rules?" "rules" "$ACTUAL_RULES"
 }
 scan_contributing_drift
-
-# -----------------------------------------------------------------------------
-# Dedicated drift scan for test counters (specific patterns: README shields.io
-# badge + "Test layout" section)
-# -----------------------------------------------------------------------------
-
 
 # --- Injected marker drift: <!-- count:KEY -->N<!-- /count --> must equal the
 # canonical actual for KEY, anywhere it appears. Unlike the targeted prose

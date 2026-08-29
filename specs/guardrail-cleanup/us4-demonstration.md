@@ -122,11 +122,28 @@ and both guardrails also prevent things. They are recorded so the balance is vis
 
 ## Accepted loss (EF-006)
 
-A stale test count written into prose later is **no longer detected** — `scan_tests_drift` covered the
-`tests-N passing` badge and the `(N files, M tests)` patterns anywhere in the docs.
+A stale test count written into prose later is **no longer detected**. The first version of this
+record said the loss was the badge and the `(N files, M tests)` prose forms, and that nothing else
+covered any of it. **Both halves were wrong**, and the corrected shape below was measured arm by arm
+during the audit of this change — not reasoned out.
 
-- **Harm class**: recoverable — a wrong number in a README.
-- **Covered by anything else?** No.
+**Wider than first stated.** A `<!-- count:tests -->` / `<!-- count:testFiles -->` marker is a third
+silent form: `scan_marker_drift`'s `case` no longer knows those keys, so they fall through to
+`*) continue ;;`. Planted in `AGENTS.md`, `docs/ARCHITECTURE.md`, `docs/QUICKSTART.md`,
+`CONTRIBUTING.md` and `website/docs/intro/index.md`, the guard refuses on `main` and passes here — in
+all five.
+
+**Narrower than first stated**: two residual nets exist, both verified.
+
+| Form | Still caught? | By what |
+|---|---|---|
+| `tests-N passing` badge in `README.md` | **yes** | the new test *"README carries no hardcoded test count"* |
+| `count:tests` marker in a file listed in `inject-counts-md.ts`'s `MD_FILES` | **yes** | the generator throws `Unknown count keys: tests` and exits 1, so CI fails — though the message names the key, not the drift |
+| `tests-N passing` badge anywhere else | no | — |
+| `(N files, M tests)` prose anywhere | no | — |
+| `count:tests` marker outside `MD_FILES` | no | — |
+
+- **Harm class**: recoverable — a wrong number in a document.
 - **Replacement guard**: deliberately **not** added. EF-011 forbids deciding to add a guardrail
   before the record is complete, and this pass adding one mid-flight is exactly the reflex it exists
   to interrupt. Revisit with the rest of the record.
@@ -136,4 +153,31 @@ Two tests were removed with their subject and are named here, per T303:
 - `scan_tests_drift: detects the 'tests-N passing' badge pattern`
 - `scan_tests_drift: detects the '(N files, M tests)' Test layout pattern`
 
-Suite: 2 138 → **2 140** (four added, two removed with their subject).
+### Why the correction is recorded rather than quietly applied
+
+EF-002 says a claim may not exceed the evidence beside it. The first version made a flat "no" where
+the truth had a shape, and that shape only appeared because someone went and measured it. Recording
+the correction instead of editing the sentence and moving on is what US7 is for.
+
+---
+
+## Findings this change did not cause, kept for the inventory
+
+Surfaced while auditing this PR, verified **identical on `main`**, and therefore *not* fixed here —
+fixing a pre-existing guard mid-pass is what EF-011 forbids. They belong to Phase 2's record.
+
+- **No anti-vacuity floor on the marker scan.** Stripping all 93 `count:` markers from the 24 files
+  carrying them leaves `validate-counts.sh` at exit 0 and the suite at zero failures. An empty gate
+  is a green gate. This PR is itself a marker-removal change (README went from 11 markers to 8) and
+  nothing asserted a floor — the same diff could have removed all 93 unnoticed.
+- **`_check_core` has no script-level coverage.** A mutant disabling it survives both
+  `tests/validate-counts.bats` and `tests/modules.bats`; the latter re-implements the invariant
+  against `counts.json`, so data drift is caught but the guard itself can be silently disabled.
+- **The marker gate validates 4 of the 6 live keys.** `presets` (5 markers) and
+  `marketplaceAuditPilots` (1) fall through `*) continue ;;`, and `byDomain.*` markers are never
+  matched at all because the grep pattern `count:[a-zA-Z]+` excludes the dot. Only CI's
+  `generate + git diff --exit-code` covers them.
+
+---
+
+Suite: 2 138 → **2 141** (five added, two removed with their subject).

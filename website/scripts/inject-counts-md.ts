@@ -94,8 +94,6 @@ export function injectCountsMd(): { processed: number; updated: number; missingK
       return `<!-- count:${key} -->${value}<!-- /count -->`;
     });
 
-    // Special case: shields.io test count badge (URLs can't contain HTML markers).
-
     if (next !== original) {
       fs.writeFileSync(absPath, next, 'utf-8');
       updated += 1;
