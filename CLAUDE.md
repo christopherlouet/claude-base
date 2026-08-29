@@ -2,8 +2,20 @@
 
 > Claude Code configuration template for an optimal workflow: Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit
 
-@docs/reference/best-practices.md
-@docs/reference/project-structures.md
+## Verification and effort — the two things that change the work
+
+- **Give yourself a way to verify.** Every change ships with the cheapest check that can fail:
+  a command (`npm run lint`, `typecheck`) for simple work, the test suite for moderate, a browser or
+  simulator for complex. A change nobody can check is not finished.
+- **Match reasoning depth to the task**: `low` to read code · `medium` for a standard feature ·
+  `high` to design, audit or debug deeply · `xhigh` for critical architecture and security ·
+  `max` for the single hardest problem of a session, never as a default. Set it with `/effort`.
+
+Everything else about working with Claude Code — model tiers and prices, memory, worktrees,
+`/rewind`, `/recap`, prompt caching — is reference, and lives in
+[`docs/reference/best-practices.md`](docs/reference/best-practices.md); project layouts by stack live
+in [`docs/reference/project-structures.md`](docs/reference/project-structures.md). Both are consulted
+on demand rather than carried into every session.
 
 ## Mandatory Workflow: Explore → (Brainstorm) → Specify → Plan → TDD → Audit → Commit
 
@@ -87,13 +99,6 @@ Manual workflow: `/work:work-explore` → (`/work:work-brainstorm`) → `/work:w
 
 ## Anti-patterns to Avoid
 
-- Coding without understanding the existing code
-- Implementing without a validated plan
-- Coding BEFORE writing the tests (violating TDD)
-- Committing without an audit (skipping the Audit phase)
-- Giant multi-feature commits
-- Tests with too many mocks
-- Over-engineering: building beyond the requirement (YAGNI — walk the `research` minimal-code ladder)
-- any everywhere in TypeScript
-- **Not giving Claude a way to verify**
-- **Vague prompts without context or examples**
+One home, one list: `.claude/rules/workflow.md` — a global rule, so it is already here. Keeping a
+second copy in this file bought nothing and the two had already drifted apart (measured: 7 of 13
+bullets duplicated, 3 more only here).

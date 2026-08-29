@@ -151,6 +151,45 @@ moves rather than disappears.
 eval or a content split that deserves its own evidence. Listing them as "next" and stopping is the
 honest end of a phase whose instrument is half unavailable.
 
+## Second action — the reference stops travelling, and every fact gets one home
+
+`docs/reference/best-practices.md` was the **largest carried item of all** (8 240 B, 23 %), and
+measuring it by section settled the argument that reading it could not:
+
+| | Sections | Bytes |
+|---|---|---:|
+| **Reference / news** — model tiers and prices, memory, worktrees, `/rewind`, `/recap`, prompt caching, prompting tables, one slash command | 8 | ~5 600 |
+| **Instruction** — verification, effort ladder | 2 | ~1 800 |
+
+`## Recommended Model` alone is **2 721 bytes, a third of the file**: prices and dated
+announcements, the fastest-staling content in the repository, and material the `claude-api` skill
+serves authoritatively on demand. `docs/reference/project-structures.md` (1 927 B) is four directory
+layouts — reference by construction.
+
+**Both `@`-imports are removed.** The instruction they carried moves into `CLAUDE.md` in compact
+form; the documents stay exactly where readers and the website expect them, and stay the canonical
+wording reference the `fable-5-integration` spec's EF-007 depends on. Nothing is deleted; it stops
+being *carried*.
+
+**And the duplication measured earlier is resolved rather than noted.** The anti-pattern list now has
+one home — `.claude/rules/workflow.md`, itself global, so it was already present — and the three
+bullets that existed only in `CLAUDE.md` moved there instead of being lost. The second copy bought
+nothing and had already drifted.
+
+| | Carried bytes |
+|---|---:|
+| at the start of the pass | 35 162 |
+| after scoping the catalogue | 30 046 |
+| **after this** | **20 783 — −40.9 %** |
+
+⚠️ **The same load rides into every installed project, and that is a separate decision.** The
+`CLAUDE.md` that `init` generates carries the same two `@`-imports (as
+`@.claude/docs/reference/…`), pinned by five tests in `tests/docs-under-claude.bats`,
+`tests/claude-md-per-type.bats` and `tests/new-project.bats` — where they are a *feature* of the
+docs-under-`.claude` layout, not an oversight. Making the same change downstream reaches ~20 projects
+and rewrites those tests, so it is named here rather than slipped in: the argument is identical, the
+blast radius is not.
+
 ## The one guardrail this phase adds, and why it earns its place
 
 `tests/rules-frontmatter.bats` pins the carried set as an **explicit list**. Judged by the same
