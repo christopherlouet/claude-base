@@ -81,7 +81,22 @@ _scan_bats() {
         {
             # Skip heredoc bodies entirely (brace/@test inside data must not count).
             if (inheredoc) { if ($0 ~ hend) inheredoc=0; next }
-            tmp=$0; o=gsub(/[{]/,"",tmp); tmp=$0; c=gsub(/[}]/,"",tmp)
+            # Count braces on a copy with single-line string/template/char
+            # literals stripped, so a lone `}` in a comment or a string cannot
+            # close the block early. Its absence here made a four-line test read
+            # as EMPTY in CI on 2026-08-29 (see tests/substance-check.bats).
+            #
+            # The stripping is ESCAPE-AWARE, and that is not decoration: a naive
+            # /"[^"]*"/ mispairs on an embedded \" and can then delete an OPENING
+            # brace while leaving its closing one — measured here, it turned a
+            # passing Go fixture into a false "no-assertion". Removing braces is
+            # only safe when the real extent of the literal is what gets removed.
+            # Multi-line quoting remains out of scope.
+            bl=$0
+            gsub(/"(\\.|[^"\\])*"/,"",bl)
+            gsub(/`(\\.|[^`\\])*`/,"",bl)
+            gsub(/'"'"'(\\.|[^'"'"'\\])*'"'"'/,"",bl)
+            o=gsub(/[{]/,"&",bl); c=gsub(/[}]/,"&",bl)
             startsheredoc=0
             if (match($0, /<<-?["'"'"']?[A-Za-z_][A-Za-z0-9_]*/)) {
                 hm=substr($0, RSTART, RLENGTH); gsub(/[<\-"'"'"']/,"",hm)
@@ -170,9 +185,14 @@ _scan_js() {
         {
             # Count braces on a copy with single-line string/template/char
             # literals stripped, so a lone `}` inside a string cannot close the
-            # block early (strip only REMOVES braces → depth bounded, never a new
-            # false positive). Multi-line templates remain out of scope.
-            bl=$0; gsub(/"[^"]*"/,"",bl); gsub(/`[^`]*`/,"",bl); gsub(/'"'"'[^'"'"']*'"'"'/,"",bl)
+            # block early. ESCAPE-AWARE: a naive /"[^"]*"/ mispairs on an embedded
+            # backslash-quote and can delete an OPENING brace while leaving its
+            # closing one, which flagged a real test as hollow (measured
+            # 2026-08-29). Multi-line templates remain out of scope.
+            bl=$0
+            gsub(/"(\\.|[^"\\])*"/,"",bl)
+            gsub(/`(\\.|[^`\\])*`/,"",bl)
+            gsub(/'"'"'(\\.|[^'"'"'\\])*'"'"'/,"",bl)
             o=gsub(/[{]/,"&",bl); c=gsub(/[}]/,"&",bl)
             if (inblock) {
                 body[n++]=$0
@@ -279,7 +299,10 @@ _scan_go() {
         {
             # Strip string / raw-string / rune literals before counting braces so
             # a `}` inside one cannot close the block early (FN-direction).
-            bl=$0; gsub(/"[^"]*"/,"",bl); gsub(/`[^`]*`/,"",bl); gsub(/'"'"'[^'"'"']*'"'"'/,"",bl)
+            bl=$0
+            gsub(/"(\\.|[^"\\])*"/,"",bl)
+            gsub(/`(\\.|[^`\\])*`/,"",bl)
+            gsub(/'"'"'(\\.|[^'"'"'\\])*'"'"'/,"",bl)
             o=gsub(/[{]/,"&",bl); c=gsub(/[}]/,"&",bl)
             if (inblock) {
                 body[n++]=$0

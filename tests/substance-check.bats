@@ -440,3 +440,85 @@ EOF
     run bash "$SC" "$TEST_DIR/c.test.ts"
     [ "$(count_focused)" -eq 0 ]
 }
+
+# --- braces inside literals must not close a bats block early ---------------
+#
+# Recorded 2026-08-29 (specs/guardrail-cleanup/enumeration.md): the scanner
+# failed a four-line test in CI with "empty test body". The bats branch counts
+# braces on the RAW line, so a closing brace inside a comment or a string closes
+# the block early; the body collapses to comment lines, all skipped, and the test
+# reads as empty. The JavaScript branch already strips single-line literals
+# before counting (scripts/substance-check.sh:175) — the bats branch never did.
+#
+# Fixtures are built with printf, like every other fixture here, and for a reason
+# worth recording: a literal `@test` line inside this file is rewritten by bats'
+# own preprocessor even inside a heredoc, so a heredoc fixture reaches the
+# scanner already transformed and no longer contains a test at all. The first
+# version of these arms did exactly that and passed green while measuring nothing.
+
+@test "substance-check: a lone closing brace in a bats comment does not empty the test" {
+    printf '@test "has a real body" {\n    # a comment with a lone ` } ` in backticks\n    run true\n    [ "$status" -eq 0 ]\n}\n' > "$TEST_DIR/brace_comment.bats"
+    run bash "$SC" "$TEST_DIR/brace_comment.bats"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -eq 0 ]
+}
+
+@test "substance-check: a closing brace in a double-quoted string does not empty the test" {
+    printf '@test "asserts on a brace" {\n    run printf "%%s" "}"\n    [ "$output" = "}" ]\n}\n' > "$TEST_DIR/brace_dquote.bats"
+    run bash "$SC" "$TEST_DIR/brace_dquote.bats"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -eq 0 ]
+}
+
+@test "substance-check: a brace inside a literal does not bleed into the next test" {
+    # The early close mis-reads its own test AND shifts everything after it, so a
+    # genuinely hollow test later in the file is reported at the wrong line.
+    printf '@test "first" {\n    # closing ` } ` in a comment\n    run true\n    [ "$status" -eq 0 ]\n}\n\n@test "second, genuinely hollow" {\n    run echo hi\n}\n' > "$TEST_DIR/brace_bleed.bats"
+    run bash "$SC" "$TEST_DIR/brace_bleed.bats"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -eq 1 ]
+    [[ "$output" == *":7:"* ]]
+}
+
+@test "substance-check: CONTROL - the same fixture without the literal brace is clean" {
+    # Proves the arms above measure the brace, not the fixture's shape.
+    printf '@test "has a real body" {\n    # a comment with nothing in particular\n    run true\n    [ "$status" -eq 0 ]\n}\n' > "$TEST_DIR/brace_control.bats"
+    run bash "$SC" "$TEST_DIR/brace_control.bats"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -eq 0 ]
+}
+
+@test "substance-check: CONTROL - a hollow test is still flagged despite a brace in a literal" {
+    # The stripping must not blind the scanner: it removes braces, never findings.
+    printf '@test "hollow" {\n    # closing ` } ` in a comment\n    run echo hi\n}\n' > "$TEST_DIR/brace_hollow.bats"
+    run bash "$SC" "$TEST_DIR/brace_hollow.bats"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -eq 1 ]
+    [[ "$output" == *"no-assertion"* ]]
+}
+
+# The same naive stripping lives in the JS and Go branches. Measured, not assumed:
+# an embedded \" mispairs the quotes, the leftover `}` closes the block early, and
+# a real test is reported as hollow. One fixture per branch, each with a control.
+
+@test "substance-check: an escaped quote in JS does not close the block early" {
+    printf '%s\n' 'it("closes on an escaped quote", () => {' '  const s = "x \" } ";' '  expect(fn(s)).toBe(0);' '});' > "$TEST_DIR/esc.test.js"
+    run bash "$SC" "$TEST_DIR/esc.test.js"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -eq 0 ]
+}
+
+@test "substance-check: CONTROL - a hollow JS test with an escaped quote is still flagged" {
+    printf '%s\n' 'it("hollow", () => {' '  const s = "x \" } ";' '  fn(s);' '});' > "$TEST_DIR/esc_hollow.test.js"
+    run bash "$SC" "$TEST_DIR/esc_hollow.test.js"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -eq 1 ]
+    [[ "$output" == *"no-assertion"* ]]
+}
+
+@test "substance-check: an escaped quote in Go does not close the block early" {
+    printf '%s\n' 'func TestEscape(t *testing.T) {' '	s := "x \" } "' '	if Parse(s) != 0 { t.Errorf("bad") }' '}' > "$TEST_DIR/esc_test.go"
+    run bash "$SC" "$TEST_DIR/esc_test.go"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -eq 0 ]
+}

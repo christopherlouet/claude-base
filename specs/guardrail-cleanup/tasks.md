@@ -131,9 +131,12 @@ finds its grade and the specific evidence that earned it.
         case, measured**. Repair is a *reporting contract*, not a regex: the skip stays non-blocking,
         but a gate that could not run is never reported as one that passed. Shipped with four
         mutants, each killed by its own arm; one hollow arm caught and hardened.
-  - [ ] **(2)** `substance-check.sh`'s bats branch counts braces on the raw line — a closing brace
-        in a comment closes the block early and the test reads as empty. **The repair already exists
-        100 lines below** in the JavaScript branch (`:175`); the bats branch (`:84`) never got it.
+  - [x] **(2)** `substance-check.sh`'s bats branch counts braces on the raw line — a closing brace
+        in a comment closes the block early and the test reads as empty. The repair was supposed to
+        be the JavaScript branch's one line; **that model was itself defective** (naive stripping
+        mispairs on an embedded escaped quote and can delete an *opening* brace, which flagged a
+        real test here as hollow), so all three branches are now escape-aware. Seven arms detect
+        the old scanner, including the EF-008 scan of the foundation's own tests.
   - [ ] **(3)** `validate-counts.sh` refuses a document that *quotes* a marker: quoting and violating
         are indistinguishable to the scanner. Blocked real work on 2026-08-29.
   - [ ] **(4)** No anti-vacuity floor on the marker scan — stripping all 93 markers from the 24
