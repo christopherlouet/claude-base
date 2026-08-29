@@ -19,6 +19,21 @@ load 'test_helper'
 
 REPO_ROOT="$BATS_TEST_DIRNAME/.."
 
+# Hits for PATTERN across the authored docs, reading TRACKED files only.
+#
+# `git grep` never descends into a gitignored path; a recursive filesystem grep
+# does. That difference is the whole point: `.claude/worktrees/` is the location
+# this foundation documents for worktrees and its own `git-worktrees` skill
+# encourages, and a worktree there holds a full second copy of this repository —
+# including this very test file, whose pattern lists every pre-rename name. The
+# same applies to `.claude/commands.backup.<timestamp>/` (written by update.sh)
+# and to node_modules. Ignored means "not repo content"; the scan must agree.
+authored_doc_hits() {
+    local pattern="$1"; shift
+    git -C "$REPO_ROOT" grep -nE "$pattern" -- "$@" 2>/dev/null | grep -v 'http' || true
+}
+
+
 # skill_refs_in <template> — echo the skill names cited in the template's
 # "## Available skills" table, one per line.
 #
@@ -81,12 +96,12 @@ skill_refs_in() {
     # website/docs/{agents,commands,skills,rules} are generated mirrors and are
     # deliberately out of scope; intro/ and concepts/ are authored.
     local scan_paths=(
-        "$REPO_ROOT/docs"
-        "$REPO_ROOT/website/docs/intro"
-        "$REPO_ROOT/website/docs/concepts"
-        "$REPO_ROOT/.claude"
-        "$REPO_ROOT/README.md"
-        "$REPO_ROOT/CLAUDE.md"
+        docs
+        website/docs/intro
+        website/docs/concepts
+        .claude
+        README.md
+        CLAUDE.md
     )
     local pattern='exploring-codebase|planning-implementation|test-driven-development|debugging-issues|generating-commit-messages|creating-pull-requests|reviewing-code'
     local hits
@@ -94,7 +109,7 @@ skill_refs_in() {
     # Lines carrying a URL are excluded: an external link may legitimately
     # contain one of these words (the O'Reilly TDD-by-Example URL does) and it
     # is not a skill reference.
-    hits=$(grep -rnE "$pattern" "${scan_paths[@]}" 2>/dev/null | grep -v 'http' || true)
+    hits=$(authored_doc_hits "$pattern" "${scan_paths[@]}")
 
     if [[ -n "$hits" ]]; then
         printf 'Pre-rename skill names still cited in authored docs:\n%s\n' "$hits" >&2
@@ -126,4 +141,40 @@ skill_refs_in() {
         printf 'Pre-rename skill names still cited in templates:\n%s' "$hits" >&2
         return 1
     fi
+}
+
+# --- regression: an ignored directory is not repo content -------------------
+
+@test "regression: a gitignored dir under .claude is invisible to the scan" {
+    local probe="$REPO_ROOT/.claude/worktrees/regression-probe-$$"
+    mkdir -p "$probe"
+    # A pre-rename name that a filesystem walk WOULD flag. If this test fails,
+    # the scan has gone back to reading the disk instead of the git index.
+    printf 'cites exploring-codebase and planning-implementation\n' > "$probe/CLAUDE.md"
+
+    local pattern='exploring-codebase|planning-implementation'
+    local hits
+    hits=$(authored_doc_hits "$pattern" docs .claude README.md CLAUDE.md)
+    local rc=$?
+
+    rm -rf "$probe"
+
+    [ "$rc" -eq 0 ]
+    [ -z "$hits" ]
+}
+
+@test "regression: the control — the probe IS found by a filesystem walk" {
+    # Pins that the test above is not vacuous: the same probe, scanned the old
+    # way, is detected. If this control stops finding it, the regression test
+    # above proves nothing and must be re-examined.
+    local probe="$REPO_ROOT/.claude/worktrees/regression-probe-ctl-$$"
+    mkdir -p "$probe"
+    printf 'cites exploring-codebase\n' > "$probe/CLAUDE.md"
+
+    local hits
+    hits=$(grep -rnE 'exploring-codebase' "$REPO_ROOT/.claude" 2>/dev/null || true)
+
+    rm -rf "$probe"
+
+    [[ "$hits" == *"regression-probe-ctl-$$"* ]]
 }
