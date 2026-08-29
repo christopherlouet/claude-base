@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 /**
  * Generate counts.json — the single source of truth for all counter
- * numbers (commands, agents, skills, rules, domain subtotals, tests)
+ * numbers (commands, agents, skills, rules, domain subtotals)
  * referenced across TS components, Markdown docs and CI configuration.
  *
  * Output: counts.json at the repo root.
@@ -17,7 +17,6 @@ import { Counts } from './utils/counts-types.js';
 
 const REPO_ROOT = path.resolve(__dirname, '../..');
 const CLAUDE_DIR = path.join(REPO_ROOT, '.claude');
-const TESTS_DIR = path.join(REPO_ROOT, 'tests');
 const OUTPUT_PATH = path.join(REPO_ROOT, 'counts.json');
 const RECIPE_PATH = path.join(REPO_ROOT, 'docs/recipes/recommended-vendor-skills.md');
 const AUDIT_DIR = path.join(REPO_ROOT, 'specs/marketplace-audit');
@@ -120,20 +119,6 @@ function countVendorSkillsValidatedFromFile(recipePath: string): number {
   return countVendorSkillsInRecipe(fs.readFileSync(recipePath, 'utf-8'));
 }
 
-function countBatsTests(testsDir: string): { tests: number; testFiles: number } {
-  if (!fs.existsSync(testsDir)) return { tests: 0, testFiles: 0 };
-  let tests = 0;
-  let testFiles = 0;
-  for (const entry of fs.readdirSync(testsDir, { withFileTypes: true })) {
-    if (!entry.isFile() || !entry.name.endsWith('.bats')) continue;
-    testFiles += 1;
-    const content = fs.readFileSync(path.join(testsDir, entry.name), 'utf-8');
-    const matches = content.match(/^@test /gm);
-    tests += matches ? matches.length : 0;
-  }
-  return { tests, testFiles };
-}
-
 /**
  * Module-owned item totals, summed from the horizontal module bundles under
  * scripts/lib/modules/*.txt (one repo-relative path per line; # comments and
@@ -159,7 +144,6 @@ export function countModuleOwned(
 }
 
 export function computeCounts(): Counts {
-  const { tests, testFiles } = countBatsTests(TESTS_DIR);
   const commands = countMarkdownFiles(path.join(CLAUDE_DIR, 'commands'), { excludeReadme: true });
   const agents = countMarkdownFiles(path.join(CLAUDE_DIR, 'agents'), { excludeReadme: true });
   const skills = countSkills(path.join(CLAUDE_DIR, 'skills'));
@@ -174,8 +158,6 @@ export function computeCounts(): Counts {
       skills: skills - moduleOwned.skills,
     },
     rules: countMarkdownFiles(path.join(CLAUDE_DIR, 'rules'), { excludeReadme: true }),
-    tests,
-    testFiles,
     byDomain: countCommandsByDomain(path.join(CLAUDE_DIR, 'commands')),
     presets: countJsonFiles(path.join(CLAUDE_DIR, 'presets')),
     vendorSkillsValidated: countVendorSkillsValidatedFromFile(RECIPE_PATH),
@@ -187,7 +169,7 @@ export function generateCounts(): Counts {
   const counts = computeCounts();
   const json = JSON.stringify(counts, null, 2) + '\n';
   fs.writeFileSync(OUTPUT_PATH, json, 'utf-8');
-  console.log(`📊 counts.json written: ${counts.commands} commands, ${counts.agents} agents, ${counts.skills} skills, ${counts.rules} rules, ${counts.tests} tests in ${counts.testFiles} files, ${counts.presets} presets, ${counts.vendorSkillsValidated} vendor skills validated, ${counts.marketplaceAuditPilots} audit pilots`);
+  console.log(`📊 counts.json written: ${counts.commands} commands, ${counts.agents} agents, ${counts.skills} skills, ${counts.rules} rules, ${counts.presets} presets, ${counts.vendorSkillsValidated} vendor skills validated, ${counts.marketplaceAuditPilots} audit pilots`);
   return counts;
 }
 

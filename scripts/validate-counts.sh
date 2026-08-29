@@ -114,15 +114,16 @@ ACTUAL_SKILLS=$(find "$BASE_DIR/.claude/skills" -name "SKILL.md" -type f 2>/dev/
 # Count rules (exclude README.md index files)
 ACTUAL_RULES=$(find "$BASE_DIR/.claude/rules" -name "*.md" -not -name "README.md" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
 
-# Count tests (count `@test` lines across .bats files — fast, static, no execution)
-ACTUAL_TESTS=$(awk '/^@test/{n++} END{print n+0}' "$BASE_DIR"/tests/*.bats 2>/dev/null || echo 0)
-ACTUAL_TEST_FILES=$(find "$BASE_DIR/tests" -name "*.bats" -type f 2>/dev/null | wc -l | tr -d '[:space:]')
+# NOTE: the test counters are deliberately NOT tracked. They are the only
+# counters that verify themselves — CI runs the suite on every PR — so a stored
+# figure adds nothing, while every added test moved a line that two parallel
+# changes then fought over. The structural counters below do NOT verify
+# themselves and stay. See specs/guardrail-cleanup/us4-demonstration.md.
 
 echo "  Commands : $ACTUAL_COMMANDS"
 echo "  Agents   : $ACTUAL_AGENTS"
 echo "  Skills   : $ACTUAL_SKILLS"
 echo "  Rules    : $ACTUAL_RULES"
-echo "  Tests    : $ACTUAL_TESTS (in $ACTUAL_TEST_FILES files)"
 echo ""
 
 # =============================================================================
@@ -383,72 +384,6 @@ scan_contributing_drift() {
 }
 scan_contributing_drift
 
-# -----------------------------------------------------------------------------
-# Dedicated drift scan for test counters (specific patterns: README shields.io
-# badge + "Test layout" section)
-# -----------------------------------------------------------------------------
-scan_tests_drift() {
-    local actual_tests="$1"
-    local actual_files="$2"
-
-    # Pattern 1 : shields.io badge `tests-N+passing` or `tests-N%20passing`
-    while IFS= read -r match; do
-        [[ -z "$match" ]] && continue
-        local file_part="${match%%:*}"
-        local rest="${match#*:}"
-        local line_num="${rest%%:*}"
-        local content="${rest#*:}"
-        [[ "$file_part" == *"validate-counts.sh"* ]] && continue
-        local n
-        n=$(echo "$content" | grep -oiE 'tests-[0-9]+' | grep -oE '[0-9]+' | head -1)
-        if [[ -n "$n" ]] && [[ "$n" != "$actual_tests" ]]; then
-            local rel="${file_part#"$BASE_DIR"/}"
-            error_no_exit "${rel}:${line_num} drift -> tests-$n badge (canonical: $actual_tests)"
-            DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
-        fi
-    done < <(
-        grep -rniE 'tests-[0-9]+(%20|\+| )passing' \
-            --include="*.md" --include="*.ts" --include="*.tsx" \
-            --exclude-dir=node_modules --exclude-dir=.git \
-            --exclude-dir=build --exclude-dir=.docusaurus \
-            --exclude-dir=memory --exclude-dir=worktrees \
-            --exclude="CHANGELOG.md" \
-            "$BASE_DIR" 2>/dev/null
-    )
-
-    # Pattern 2 : `(N files, M tests)` captures both counters
-    while IFS= read -r match; do
-        [[ -z "$match" ]] && continue
-        local file_part="${match%%:*}"
-        local rest="${match#*:}"
-        local line_num="${rest%%:*}"
-        local content="${rest#*:}"
-        [[ "$file_part" == *"validate-counts.sh"* ]] && continue
-        local nf nt rel
-        nf=$(echo "$content" | grep -oE '\([0-9]+ files?' | grep -oE '[0-9]+' | head -1)
-        nt=$(echo "$content" | grep -oE '[0-9]+ tests\)' | grep -oE '[0-9]+' | head -1)
-        rel="${file_part#"$BASE_DIR"/}"
-        if [[ -n "$nf" ]] && [[ "$nf" != "$actual_files" ]]; then
-            error_no_exit "${rel}:${line_num} drift -> $nf test files (canonical: $actual_files)"
-            DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
-        fi
-        if [[ -n "$nt" ]] && [[ "$nt" != "$actual_tests" ]]; then
-            error_no_exit "${rel}:${line_num} drift -> $nt tests (canonical: $actual_tests)"
-            DRIFT_ERRORS=$((DRIFT_ERRORS + 1))
-        fi
-    done < <(
-        grep -rnE '\([0-9]+ files?,[[:space:]]*[0-9]+ tests\)' \
-            --include="*.md" --include="*.ts" --include="*.tsx" \
-            --exclude-dir=node_modules --exclude-dir=.git \
-            --exclude-dir=build --exclude-dir=.docusaurus \
-            --exclude-dir=memory --exclude-dir=worktrees \
-            --exclude="CHANGELOG.md" \
-            "$BASE_DIR" 2>/dev/null
-    )
-}
-
-scan_tests_drift "$ACTUAL_TESTS" "$ACTUAL_TEST_FILES"
-
 # --- Injected marker drift: <!-- count:KEY -->N<!-- /count --> must equal the
 # canonical actual for KEY, anywhere it appears. Unlike the targeted prose
 # patterns above, a marker is an EXPLICIT canonical counter, so any mismatch is a
@@ -465,8 +400,6 @@ scan_marker_drift() {
             agents)    want="$ACTUAL_AGENTS" ;;
             skills)    want="$ACTUAL_SKILLS" ;;
             rules)     want="$ACTUAL_RULES" ;;
-            tests)     want="$ACTUAL_TESTS" ;;
-            testFiles) want="$ACTUAL_TEST_FILES" ;;
             *) continue ;;
         esac
         if [[ "$n" != "$want" ]]; then
