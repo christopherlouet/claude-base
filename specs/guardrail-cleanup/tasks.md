@@ -122,7 +122,12 @@ finds its grade and the specific evidence that earned it.
 > recorded at the time it was found, none fixed then (EF-011). Phase 4 is therefore mostly T306 —
 > and that outcome is itself the finding, so it is written here rather than quietly reinterpreted.
 >
-> Ordered by value, highest first; the order is the evidence, not taste. **(1) is done.**
+> Ordered by value, highest first; the order is the evidence, not taste. **All seven are done.**
+>
+> Four of the seven turned out to be guardrails that *reported* something they had not established:
+> a success line for a gate that never ran, a clean verdict from a scan with nothing in it, four
+> keys checked out of six, and a test asserting the presence of a word rather than the behaviour it
+> named. That is one failure mode, not four — and it is the one the spec was written around.
 
 - [ ] **T306** [US3] Repair the seven recorded defects, one commit each, tests before code, and a
       **mutation proof per repair** — a repair whose test cannot fail restores the exact class of
@@ -149,9 +154,11 @@ finds its grade and the specific evidence that earned it.
         fall through `*) continue ;;`, and `byDomain.*` never matches (the pattern excludes the dot).
         Coverage measured: **87 of 147 markers before, 147 after**; an unknown key is reported, not
         skipped.
-  - [ ] **(7)** `tests/ci-workflows.bats` does not earn its title: 4 of 5 classes asserted, and its
+  - [x] **(7)** `tests/ci-workflows.bats` does not earn its title: 4 of 5 classes asserted, and its
         `grep VERSION` matches the surrounding prose instead of the regex. This is the test that let
-        a documentation gap through on 2026-08-29.
+        a documentation gap through on 2026-08-29. Now extracts the regex and asserts path-matching
+        behaviour per class, both ways. Measured against five mutations of the real hook: the old
+        test killed **one of five**, the new one **five of five**.
 
 **Goal**: an explicit decision per entry; removals executed completely.
 
