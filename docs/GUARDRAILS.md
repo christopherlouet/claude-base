@@ -86,6 +86,58 @@ tests-first, an audit report, a clean PR) are things a native session never make
 | **Doc/counter integrity** | docs & counters drifting from `.claude/` | PostToolUse `base-integrity-check.sh` | No |
 | **`.env` in `.gitignore`** | committing a real `.env` | SessionStart check | No |
 | **Dependencies installed** | "works on my machine" / missing `node_modules` | SessionStart check | No |
+| **Private names** | an end user's private project names reaching this public repo *in staged paths or staged content* | pre-commit `private-names-check.sh` | No |
+
+> **Private names, in detail.** This foundation is developed against real personal
+> projects, so their names slip into docs, specs and fixtures — historically into
+> the very checklists meant to catch them. The protected-name list therefore lives
+> **outside the repo** (`~/.claude/private-names`, or `CLAUDE_BASE_PRIVATE_NAMES`):
+> committing the list would publish exactly what it protects. **No list means a
+> silent no-op**, so a fresh clone of the public foundation is never blocked by a
+> list it does not have. The gate scans only what a commit *adds*, so a
+> pre-existing mention never blocks unrelated work and removing one is always
+> allowed. Names are matched as fixed strings, case-insensitively. Prefer a
+> distinctive form (`orchid-relay-backup`, not `relay`) — a name that is also an
+> ordinary word will block correct commits. An entry **shorter than 4 characters
+> is refused and named on stderr**: matched as a substring it would block
+> ordinary text (`K` inside `const kilo = 1000;`), and a gate that refuses every
+> second commit gets bypassed wholesale. Such a name cannot be protected this
+> way — give it a longer distinctive form. The rest of the list keeps working;
+> only the short entry is dropped. Deliberate bypass: `SKIP_PRIVATE_NAMES=1`.
+>
+> **Known limits** — the gate sees the staged *paths* and staged *content*, and
+> nothing else. A commit **message** or a **branch name** carrying a private name
+> still becomes public on push, and neither is covered here. Treat this gate as
+> the floor, not the whole fence.
+
+### The convention behind the gate: name the ROLE, not the machine
+
+A deterministic gate only catches what someone thought to list. The habit it
+backs up is this: **in a spec, a plan, a task or a doc, name the role a thing
+plays — never the private identity it happens to have.** Write "a self-hosted
+homelab host", "the CI runner", "the staging database"; keep the address, the
+hostname and the login in personal notes.
+
+This matters because the leak does not arrive through carelessness. It arrives
+through *correct documentation of a private fact*: a spec is supposed to record
+where a thing deploys, so writing "deployment target is `user@10.x.y.z`" looks
+exactly like doing the job well. That is what happened here — a curation-engine
+spec recorded its real deployment host, and it sat in this public repo for two
+months. No mechanism could have caught it: a project-name checklist does not
+cover hosts, and a secret scanner does not consider an RFC1918 address a secret.
+
+What counts as a private identity, in practice:
+
+| Do not write | Write instead |
+|--------------|---------------|
+| an internal IP or hostname (`192.0.2.10`, `nas.local`) | "the homelab host", "the internal registry" |
+| a shell target (`user@host`) | "the deploy account on that host" |
+| a personal path (`/home/<you>/src/<project>`) | "the project root" |
+| an end user's private project name | "a personal project", `<project-a>` |
+
+Documentation examples are the deliberate exception: RFC5737/RFC1918 sample
+addresses in a networking tutorial are content, not identity. The test is
+whether the value points at something that actually exists and is yours.
 
 ---
 

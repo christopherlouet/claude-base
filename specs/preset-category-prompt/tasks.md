@@ -245,7 +245,7 @@ Each retrofit is a single JSON edit (add `"categories": [...]` line). Use Edit t
   - `counts.json` (auto-regenerated)
   - `README.md` (auto-regenerated badge)
   - `specs/preset-category-prompt/{spec.md, plan.md, tasks.md}` (this feature's design docs, untracked)
-- [ ] **T052** [P] Grep for protected end-user project names over the diff: `git diff HEAD | grep -iE 'alloc-budget|escapade|<known-protected>'`. Expected: empty.
+- [ ] **T052** [P] Check for protected end-user project names over the staged diff: `bash scripts/private-names-check.sh`. Expected: exit 0.
 
 **Checkpoint**: Diff clean.
 

@@ -1,5 +1,13 @@
 #!/usr/bin/env sh
 
+# Privacy gate: this repo is PUBLIC and is developed against real personal
+# projects, so their names leak into docs, specs and fixtures by accident. The
+# protected-name list lives OUTSIDE the repo (~/.claude/private-names by
+# default) — no list means a silent no-op, so a fresh clone is never blocked.
+# Scans only what the commit ADDS. Disable with SKIP_PRIVATE_NAMES=1.
+# See scripts/private-names-check.sh, pinned by tests/private-names-check.bats.
+bash scripts/private-names-check.sh || exit 1
+
 # Counts self-heal: when a commit stages an input the CI counts gate derives
 # from, regenerate the derived count files and stage them, so a stale count can
 # never reach CI. The trigger set must cover EVERY input generate-counts.ts /

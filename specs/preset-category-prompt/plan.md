@@ -283,7 +283,7 @@ These edit different files and can run in parallel.
 
 - T050 — [P] In `CHANGELOG.md` under `[Unreleased] / ### Added`, add ONE bullet describing both the prompt and the schema extension.
 - T051 — [P] Run `git diff --name-only HEAD`. Expected file set (≥17 entries: 3 scripts + 1 new lib + 11 manifests + 4 docs + tests + auto-regen). Investigate any extra.
-- T052 — [P] Run `git diff HEAD | grep -iE 'alloc-budget|escapade|pacman'` over the diff (per `feedback_no_project_names`). Expected: empty.
+- T052 — [P] Run `bash scripts/private-names-check.sh` over the staged diff (per `feedback_no_project_names`). Expected: exit 0.
 
 **Checkpoint**: Diff clean, ready to commit.
 

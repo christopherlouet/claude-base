@@ -7,7 +7,7 @@
 
 ## 1. Context & problem
 
-When using Claude Code across several personal projects (escapade, blog-the, …), lessons learned in one project — a mistake made once, a hard-won fix, a preference — do not carry over to the others. Claude Code's auto-memory is **per-repository and machine-local**, so each project re-learns the same things and the same mistakes recur.
+When using Claude Code across several personal projects, lessons learned in one project — a mistake made once, a hard-won fix, a preference — do not carry over to the others. Claude Code's auto-memory is **per-repository and machine-local**, so each project re-learns the same things and the same mistakes recur.
 
 The goal, inspired by [Hermes](https://hermes-agent.org/) (Nous Research, MIT, Feb 2026) and its long-term self-improving memory, is to give claude-base users a **personal, cross-project "lessons learned" referential** so that *the more you use claude-base, the fewer times you repeat the same mistake* — a compounding-discipline effect that is the foundation's core differentiator.
 
@@ -82,7 +82,7 @@ The one downside of A — a non-enforced, instruction-driven reflex — is accep
 ### Components claude-base contributes
 
 1. **Store convention** — `~/.claude/rules/lessons.md` (single bounded file to start; topic-split deferred). Documented layout + a one-line header marking it as the personal lessons store.
-2. **Capture rule** — a rule shipped into each project (`.claude/rules/`) that instructs the reflex: *when you resolve a hard, generalizable problem, propose a one-line, generalized, sanitized lesson and, on confirmation, append it to `~/.claude/rules/lessons.md`*. Includes the **sanitize** mandate (strip project names, paths, secrets, anything project-specific) and the **generalize** mandate (a reusable principle, not "in blog-the we forgot X").
+2. **Capture rule** — a rule shipped into each project (`.claude/rules/`) that instructs the reflex: *when you resolve a hard, generalizable problem, propose a one-line, generalized, sanitized lesson and, on confirmation, append it to `~/.claude/rules/lessons.md`*. Includes the **sanitize** mandate (strip project names, paths, secrets, anything project-specific) and the **generalize** mandate (a reusable principle, not "in <project> we forgot X").
 3. **Promote/recall affordance** — extend the existing `/lessons` command: today it only *lists* feedback memories; add a `--promote` path (explicit fallback to the reflex) and surface the personal store. Recall itself needs no code (native load).
 4. **Bounding/pruning** — a light routine (skill or `/lessons` subcommand) that keeps the store under a context budget (consolidate duplicates, drop superseded lessons). Human-gated; no LLM hook.
 5. **Sync recipes (docs only)** — private git repo (recommended, versioned + free), Syncthing (no cloud, no repo), or a cloud-drive folder. claude-base only guarantees the store is a single relocatable file/dir.

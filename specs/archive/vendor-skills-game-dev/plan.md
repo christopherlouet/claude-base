@@ -177,7 +177,7 @@ CHANGELOG bullet + grep for protected names + commit
 **Objective**: CHANGELOG up to date; protected names verified absent; ready for `/work:work-commit`.
 
 - T015 — [P] Add a bullet to `## [Unreleased]` in `CHANGELOG.md` (single bullet per spec EF-010).
-- T016 — [P] Run `git diff` and `grep -Ei 'alloc-budget|escapade' -- '*.md' '*.json' '*.ts'` over the diff (per `feedback_no_project_names`). Confirm zero matches.
+- T016 — [P] Run `git diff` and `scripts/private-names-check.sh` over the staged diff (per `feedback_no_project_names`). Confirm zero matches.
 - T017 — [P] Rename branch with `/git-rename feat/vendor-skill-pointer-game-dev` (current name `feature/auto-20260518-142206` is auto-generated).
 - T018 — Stop and hand off to `/work:work-commit` (or `/work:work-pr`).
 
@@ -193,7 +193,7 @@ CHANGELOG bullet + grep for protected names + commit
 | `generate-counts.ts` parser doesn't recognize the new entry's heading shape | Medium | Low | Test `generate-counts.test.ts` catches it; if it fails, the entry's `### ` heading shape must match existing entries exactly |
 | `validate-counts.sh` flags an unrelated drift that pre-existed | Low | Medium | Run it once BEFORE changes to capture baseline (CI baseline rule from `.claude/rules/workflow.md`) |
 | Forgetting to regenerate causes a 16/17 mismatch the next CI run catches | High | Medium | Task T009 is mandatory and listed before validation; memory `feedback_counts_ci_gate` documents the same trap |
-| Mentioning Pacman / a specific game by mistake in CHANGELOG | High | Low | T016 explicit grep on protected names per `feedback_no_project_names` |
+| Mentioning a specific end-user game by mistake in CHANGELOG | High | Low | T016 runs the protected-name gate per `feedback_no_project_names` |
 | Subsection placement in roadmap breaks alphabetical order convention | Low | Low | T006 explicitly states alphabetical placement; verifiable visually |
 | The "Adjacent options" bullet creates expectation that PixiJS/Kaplay are validated | Medium | Low | The bullet explicitly says "(not separately evaluated)" — wording locked by spec |
 

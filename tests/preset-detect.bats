@@ -129,12 +129,12 @@ scan_in_temp() {
 # rather than at the root. The `files` signal already uses `find -maxdepth 2`,
 # but `depFiles` was root-only — asymmetric and broke detection for the
 # homelab-proxmox preset against a project layout like
-# `pve-home/infrastructure/proxmox/versions.tf`.
+# `<project>/infrastructure/proxmox/versions.tf`.
 # =============================================================================
 
 @test "preset-detect: depFiles signal matches when path exists in a subdirectory (friction #8)" {
     make_synthetic_preset "iac" '{"combinator":"anyOf","depFiles":[{"path":"versions.tf","contains":"bpg/proxmox"}]}'
-    # Mimic the real-world pve-home layout: Terraform code under
+    # Mimic a real-world homelab layout: Terraform code under
     # infrastructure/proxmox/, NOT at the project root.
     mkdir -p "$TEST_DIR/proj/infrastructure/proxmox"
     echo 'proxmox = { source = "bpg/proxmox" }' > "$TEST_DIR/proj/infrastructure/proxmox/versions.tf"
