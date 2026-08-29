@@ -48,10 +48,10 @@
       "url": "https://github.com/shadcn-ui/ui/tree/main/skills/shadcn",
       "rationale": "shadcn/ui patterns within Astro components",
       "condition": "if using shadcn/ui",
-      "pinnedRef": "shadcn@4.13.0",
+      "pinnedRef": "shadcn@4.19.0",
       "trustTrack": "authority",
       "provenance": "shadcn",
-      "lastVerified": "2026-07-07"
+      "lastVerified": "2026-08-26"
     },
     {
       "id": "frontend-design@claude-plugins-official",
