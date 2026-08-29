@@ -3,7 +3,7 @@
 **Branch**: `spec/guardrail-cleanup`
 **Date**: 2026-08-29
 **Spec**: [`spec.md`](./spec.md)
-**Status**: Draft — awaiting two scope decisions (D1, D2)
+**Status**: Validated — D2 resolved 2026-08-29; D1 deliberately deferred to T604
 
 ---
 
@@ -142,9 +142,9 @@ nothing. Phase 5 must state which cost it is measuring, every time it reports a 
 
 ---
 
-## Open decisions (blocking Phase 2, not Phase 1)
+## Decisions
 
-### D1 — Does the enumeration ship a drift guard?
+### D1 — Does the enumeration ship a drift guard? → **DEFERRED to T604** (option A)
 
 An inventory is only true on the day it is written. The natural durability mechanism is a bats test
 asserting that every guardrail on disk appears in the record — the same "self-application test"
@@ -160,16 +160,19 @@ first move.
 | B — ship it now | The record stays true automatically, but the pass adds a guardrail while its whole thesis is that guardrails are added too readily on the day they seem sensible. |
 | C — never | The record rots at the first change, and US7's "readable in six months" quietly fails. |
 
-### D2 — Are CI gates in scope for grading?
+### D2 — Are CI gates in scope for grading? → **RESOLVED 2026-08-29: option A, enumerate all and grade all**
 
 They refuse an action (a merge), so by the spec's own criterion they qualify. They were not in the
 18 because the 18 counted one directory.
 
 | Option | Consequence |
 |---|---|
-| **A — enumerate all, grade all (recommended)** | Honest completeness. Adds ~10 entries; several will grade quickly ("prevented, recorded" — the gitleaks and counts gates have documented catches). |
+| **A — enumerate all, grade all** ✅ **CHOSEN** | Honest completeness. Adds ~10 entries; several will grade quickly ("prevented, recorded" — the gitleaks and counts gates have documented catches). |
 | B — enumerate all, grade the hooks only | The record states plainly that CI gates are listed but ungraded, and why. Cheaper, still complete, and EF-004-compatible if the omission is explicit. |
 | C — hooks only | Fails EF-001. Not recommended. |
+
+**Consequence**: the record covers ~34 entries — 18 Claude Code hooks, ~6 git-hook gates, ~10 CI
+gates. Phase 2 is sized accordingly, and EF-001 is satisfied without reservation.
 
 ---
 
@@ -370,8 +373,9 @@ Phases 1 and 5 are tractable and deliver value on their own.
 
 ### Gate 1 — before starting
 - [x] Spec approved and rebased onto current `main`
-- [ ] D1 and D2 answered
-- [ ] Plan reviewed
+- [x] D2 answered (option A — enumerate all, grade all); D1 deferred to T604 by design
+- [x] Plan reviewed — **agreed starting point: Phase 5 (bookkeeping)**, which is independent of the
+      record and delivers on its own
 
 ### Gate 2 — before each merge
 - [ ] Suite green (2 138 baseline)
