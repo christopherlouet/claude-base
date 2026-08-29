@@ -952,10 +952,26 @@ seed_gitignore_from_foundation() {
     ' "$src" > "$dest"
 }
 
-# Ensures the presence of the 7 canonical @imports in CLAUDE.md.
-# Idempotent: only adds missing @imports after the last existing
-# @import. Used by new-project.sh and update.sh to avoid
-# asymmetry: both scripts produce the same complete CLAUDE.md.
+# Ensures the canonical @imports in CLAUDE.md — the documents a project CARRIES
+# into every session, as opposed to the documents it ships.
+#
+# Idempotent, in both directions: missing carried imports are added after the
+# last existing one, and the retired ones are removed. Used by new-project.sh
+# and update.sh so a project's CLAUDE.md never depends on which script last
+# touched it — that asymmetry is the bug this function was written for, and the
+# invariant is the SET, not its size.
+#
+# The set shrank from seven on 2026-08-30, measured on a real install: a project
+# carried 109 914 bytes per session, 5.3x the foundation's own load, and 75 061
+# of those were four documents that describe rather than instruct — 40 sections
+# of Claude Code feature notes (including one about a superseded model), a
+# catalogue of hooks that run whether or not they are documented, and catalogues
+# of agents and skills that the harness already lists natively. The three that
+# stay have no native equivalent (commands.md) or serve a downstream user who may
+# be new to the tool (best-practices, project-structures) — an argument that did
+# not apply to the foundation's own copy. See
+# specs/guardrail-cleanup/carried-material.md.
+#
 # Arguments:
 #   $1 - Path of the CLAUDE.md to check/complete
 ensure_claude_md_imports() {
@@ -967,11 +983,24 @@ ensure_claude_md_imports() {
         "@.claude/docs/reference/best-practices.md"
         "@.claude/docs/reference/project-structures.md"
         "@.claude/docs/reference/commands.md"
+    )
+
+    # Retired: carried by every install made before 2026-08-30. Removed here
+    # rather than only stopped for new projects, because an update that only
+    # ever ADDS would leave every existing project heavy forever. Only these
+    # exact generated lines are touched; a project's own @imports are not.
+    local retired_imports=(
         "@.claude/docs/reference/agents-catalog.md"
         "@.claude/docs/reference/hooks-reference.md"
         "@.claude/docs/reference/skills-catalog.md"
         "@.claude/docs/reference/advanced-features.md"
     )
+    local retired
+    for retired in "${retired_imports[@]}"; do
+        if grep -qxF "$retired" "$claude_md" 2>/dev/null; then
+            grep -vxF "$retired" "$claude_md" > "$claude_md.tmp" && mv "$claude_md.tmp" "$claude_md"
+        fi
+    done
 
     local missing_imports=()
     local import

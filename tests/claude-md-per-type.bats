@@ -153,8 +153,18 @@ assert_no_dead_pointers() {
         cat "$missing"
         return 1
     fi
-    # Guard the guard: a scan that collected nothing would pass vacuously.
-    [ "$(wc -l < "$refs")" -ge 7 ]
+    # Guard the guard: a scan that collected nothing would pass vacuously. The
+    # floor is DERIVED from the file rather than hardcoded — it used to be
+    # "at least 7", which held only because CLAUDE.md happened to carry seven
+    # @imports, and broke the day the carried set shrank to three (2026-08-30)
+    # even though no pointer was dead. Deriving it also keeps the property the
+    # comment above cares about: an extraction that silently under-reports fails
+    # here. A preset CLAUDE.md carries no reference tables, so backticked paths
+    # are not a reliable second source.
+    local imports_in_file
+    imports_in_file=$(grep -c '^@' "$project_dir/CLAUDE.md")
+    [ "$imports_in_file" -gt 0 ]
+    [ "$(wc -l < "$refs")" -ge "$imports_in_file" ]
 }
 
 @test "claude-md: every referenced path exists in the installed project" {
@@ -188,7 +198,10 @@ assert_no_dead_pointers() {
     install_into "$TEST_DIR/p" --simple -t python
 
     grep -q '^@\.claude/docs/reference/best-practices\.md' "$TEST_DIR/p/CLAUDE.md"
-    grep -q '^@\.claude/docs/reference/advanced-features\.md' "$TEST_DIR/p/CLAUDE.md"
+    grep -q '^@\.claude/docs/reference/commands\.md' "$TEST_DIR/p/CLAUDE.md"
+    # advanced-features.md is shipped but no longer CARRIED: 37 179 bytes of
+    # feature notes about the tool, in every session (2026-08-30).
+    ! grep -q '^@\.claude/docs/reference/advanced-features\.md' "$TEST_DIR/p/CLAUDE.md"
 }
 
 @test "claude-md: an existing CLAUDE.md is never overwritten" {

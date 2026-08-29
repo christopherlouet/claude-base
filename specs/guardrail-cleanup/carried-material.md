@@ -190,6 +190,45 @@ docs-under-`.claude` layout, not an oversight. Making the same change downstream
 and rewrites those tests, so it is named here rather than slipped in: the argument is identical, the
 blast radius is not.
 
+## Third action — the installed projects, where the load was five times larger
+
+The same argument was named as a follow-up rather than acted on, because the blast radius is about
+twenty projects. Measured first, **on a real install** rather than by summing source files — and the
+inference turned out exact to the byte, which is worth knowing for next time:
+
+| Imported by every installed project | Bytes | What it is |
+|---|---:|---|
+| `advanced-features.md` | 37 179 | **40 sections** of Claude Code feature notes, one of them about a *superseded* model |
+| `hooks-reference.md` | 20 821 | a catalogue of hooks — which run whether or not they are documented |
+| `agents-catalog.md` | 9 756 | the harness **already lists agent types natively** (observed in this session's own context) |
+| `skills-catalog.md` | 7 305 | same — the harness lists skills natively |
+| `best-practices.md` | 6 953 | reference, **kept** |
+| `commands.md` | 5 035 | **kept** — the one catalogue with no native equivalent |
+| `project-structures.md` | 1 927 | reference, **kept** |
+| `CLAUDE.md` + the four global rules | 20 938 | |
+| **total carried per session** | **109 914** | **5.3× the foundation's own** |
+
+**The strongest argument was already in the repository**: the foundation — which *writes* these
+catalogues — imports none of them, and works. The projects that merely *use* the tools carried all
+seven. A natural experiment that had been running all along.
+
+**Where the line was drawn, and why not further.** The four describing documents go; three stay. Two
+of them (`best-practices`, `project-structures`) were dropped from the *foundation's* carried set
+earlier in this same phase, and keeping them downstream is a deliberate asymmetry: the foundation's
+maintainer knows the tool, a downstream user may be new to it. That argument does not exist upstream,
+so the two decisions differ on purpose rather than by oversight. Cost of the choice: 8 percentage
+points of the possible saving.
+
+**Result, measured on the real project**: 109 914 → **34 681 bytes, −68 %**.
+
+⚠️ **The fleet path needed proving separately, and a false negative nearly hid it.** An update that
+only ever ADDS would leave every existing project heavy forever, so the retired imports are pruned as
+well. The first verification run showed **no change** — and the honest reading was not "the prune is
+broken" but "which regime did I run in": `upgrade_claude_md` only executes when that step is
+selected, and `--force` skips exactly that prompt. Re-run with `--upgrade-claude-md`, a real
+installed project went from 7 imports to 3, with a `CLAUDE.md` backup written. *A negative from a
+regime where the effect cannot occur is not a negative.*
+
 ## The one guardrail this phase adds, and why it earns its place
 
 `tests/rules-frontmatter.bats` pins the carried set as an **explicit list**. Judged by the same

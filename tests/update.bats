@@ -410,10 +410,17 @@ teardown() {
     run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # CLAUDE.md must contain the @imports (new layout)
+    # CLAUDE.md must contain the carried @imports (new layout)
     grep -q "@\.claude/docs/reference/commands\.md" "$TEST_DIR/CLAUDE.md"
-    grep -q "@\.claude/docs/reference/agents-catalog\.md" "$TEST_DIR/CLAUDE.md"
-    grep -q "@\.claude/docs/reference/skills-catalog\.md" "$TEST_DIR/CLAUDE.md"
+    grep -q "@\.claude/docs/reference/best-practices\.md" "$TEST_DIR/CLAUDE.md"
+    grep -q "@\.claude/docs/reference/project-structures\.md" "$TEST_DIR/CLAUDE.md"
+
+    # …and update must not carry back the four retired on 2026-08-30: they are
+    # shipped, not carried (specs/guardrail-cleanup/carried-material.md).
+    ! grep -q "@\.claude/docs/reference/agents-catalog\.md" "$TEST_DIR/CLAUDE.md"
+    ! grep -q "@\.claude/docs/reference/skills-catalog\.md" "$TEST_DIR/CLAUDE.md"
+    ! grep -q "@\.claude/docs/reference/hooks-reference\.md" "$TEST_DIR/CLAUDE.md"
+    ! grep -q "@\.claude/docs/reference/advanced-features\.md" "$TEST_DIR/CLAUDE.md"
 }
 
 @test "update.sh --upgrade-claude-md creates a backup" {

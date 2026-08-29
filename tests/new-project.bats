@@ -408,24 +408,20 @@ EOF
     [ "$count" -gt 0 ]
 }
 
-@test "new-project.sh installs the 7 canonical @imports in CLAUDE.md" {
-    # Regression: before the fix, new-project.sh installed CLAUDE.md with
-    # only 2 @imports (best-practices, project-structures), creating an
-    # asymmetry with update.sh --all which enforced 7. Fix in
-    # ensure_claude_md_imports() (lib/common.sh).
+@test "new-project.sh installs the canonical @imports in CLAUDE.md" {
+    # Regression: new-project.sh once installed a DIFFERENT set from
+    # update.sh --all, so a project's CLAUDE.md depended on which script last
+    # touched it. The invariant is the SET, not its size — it shrank from seven
+    # to three on 2026-08-30 (specs/guardrail-cleanup/carried-material.md), and
+    # both scripts must still agree. Fix in ensure_claude_md_imports().
     run "$NEW_PROJECT_SCRIPT" -y "$TEST_DIR"
     [ "$status" -eq 0 ]
     [ -f "$TEST_DIR/CLAUDE.md" ]
 
-    # The 7 canonical @imports must be present
     local expected_imports=(
         "@.claude/docs/reference/best-practices.md"
         "@.claude/docs/reference/project-structures.md"
         "@.claude/docs/reference/commands.md"
-        "@.claude/docs/reference/agents-catalog.md"
-        "@.claude/docs/reference/hooks-reference.md"
-        "@.claude/docs/reference/skills-catalog.md"
-        "@.claude/docs/reference/advanced-features.md"
     )
     for import in "${expected_imports[@]}"; do
         grep -qF "$import" "$TEST_DIR/CLAUDE.md" || {
@@ -433,6 +429,22 @@ EOF
             return 1
         }
     done
+
+    # And the four retired ones are not carried back in — 75 061 bytes per
+    # session that describe rather than instruct.
+    local retired_imports=(
+        "@.claude/docs/reference/agents-catalog.md"
+        "@.claude/docs/reference/hooks-reference.md"
+        "@.claude/docs/reference/skills-catalog.md"
+        "@.claude/docs/reference/advanced-features.md"
+    )
+    for import in "${retired_imports[@]}"; do
+        grep -qF "$import" "$TEST_DIR/CLAUDE.md" && {
+            echo "Retired @import carried again: $import"
+            return 1
+        }
+    done
+    true
 }
 
 @test "new-project.sh copies scripts/hooks/ referenced by settings.json" {
