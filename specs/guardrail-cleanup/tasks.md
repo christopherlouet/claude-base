@@ -250,14 +250,28 @@ guardrail criterion here would pass everything.
 
 ## Phase 7: Durability — US6, US7
 
-- [ ] **T601** [P] [US7] Ensure every removed guardrail's reason **and** evidence remain in
-      `inventory.md`, so it is not re-added by someone who only sees the gap.
+- [x] **T601** [P] [US7] Ensure every removed guardrail's reason **and** evidence remain in
+      `inventory.md`, so it is not re-added by someone who only sees the gap. **Vacuously satisfied
+      and worth saying so: nothing was removed.** What the record must instead survive is the
+      opposite — someone reading a repair as a removal.
 - [ ] **T602** [P] [US7] Independent read-through: a reader who was not present picks three removed
       items and states why each went. Failure here is a defect in the record, not in the reader.
-- [ ] **T603** [US1] Re-run `scripts/guardrail-inventory.sh` and confirm the record still matches the
-      repository after all removals.
-- [ ] **T604** [D1] **Now** decide whether the drift guard ships — with the record complete, EF-011 is
+      **Adapted, and deliberately left open**: nothing was removed, so the question becomes *why was
+      each of three repairs made, and what did it cost* — asked of `preflight`'s reporting contract,
+      the marker gate's 87-of-147, and the `audit-docs` non-determination. It **cannot be done by
+      anyone who was present**, which rules out the author of the record; it waits for a real reader.
+- [x] **T603** [US1] Re-run `scripts/guardrail-inventory.sh` and confirm the record still matches the
+      repository after all removals. **Confirmed after the seven repairs**: 29 CI gates · 18 hooks
+      (10 blocking / 8 advisory) · 31 inline declarations · 3 git hooks — the inline figure
+      cross-checked by a second, independent count straight from `.claude/settings.json`
+      (49 invocations across 27 scripts), because that is the number that was plausibly wrong once
+      before.
+- [x] **T604** [D1] **Now** decide whether the drift guard ships — with the record complete, EF-011 is
       satisfied and the decision can be judged by the same criteria as every other guardrail.
+      **Decision: it does not ship.** The harm is recoverable, an existing tested command already
+      re-derives the truth, and the guard would demand a hand-written graded entry before any new
+      guardrail could land — the *blocks all work* failure mode, on the most expensive feeding
+      requirement in the repository. Reasoning and what it leaves uncovered: [`decision-d1.md`](./decision-d1.md).
 
 ---
 
