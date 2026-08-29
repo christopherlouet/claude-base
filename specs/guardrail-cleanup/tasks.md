@@ -48,7 +48,24 @@ four sources, so that completeness can be *established* rather than asserted (EF
 
 ---
 
-## Phase 2: Grade what refuses — US1, US2 *(requires D2)*
+## Phase 2: Grade what refuses — US1, US2 ✅ **DONE for everything that can refuse**
+
+> Outcome: every tier that refuses an action is graded — ten blocking hooks and the CI tier — apart
+> from the `.husky`/`preflight` chain, which is measured but undecided. The advisory and inline
+> tiers belong to Phase 6's criterion, not this one.
+>
+> Three results the plan did not anticipate. **T105 found a real security gap** (bare-root deletion
+> uncovered, closed in #513) while asking a much smaller question. **The spec's own worst case is now
+> measured**: `preflight` announces success while a gate did not run, indistinguishably from a full
+> run. And the scale needed a grade it did not have — *not exercisable here* — for five guardrails
+> that are conditional on project shape and inert in this repository but not in the installed ones.
+>
+> **T106 (portability) is deliberately unchecked**: EF-007 permits recording only what was already
+> measured, and for every entry in this record the honest verdict is "not measured". Writing that
+> down is the task; opening work to find out is what EF-007 forbids.
+>
+> No removal candidate was produced. The pass called "cleanup" has so far found one hole and two
+> guardrails needing repair.
 
 **Goal**: every enumerated item carries a grade bounded by its evidence, both harms, and an
 irreversible/recoverable classification.
@@ -56,21 +73,21 @@ irreversible/recoverable classification.
 **Independent test**: a reader who was not present opens `inventory.md`, picks any guardrail, and
 finds its grade and the specific evidence that earned it.
 
-- [ ] **T101** [US1] Create `specs/guardrail-cleanup/inventory.md` with the row schema:
+- [x] **T101** [US1] Create `specs/guardrail-cleanup/inventory.md` with the row schema:
       `item | source | grade A/B/C/D | evidence | harm prevented | irreversible? | harm caused
       (dated) | portability | decision | rationale`. **No score column and no totals row** — EF-014
       forbids deciding by arithmetic, and a column of numbers invites exactly that.
-- [ ] **T102** [P] [US2] Mine the caused-harm column from evidence, not memory: `git log` for
+- [x] **T102** [P] [US2] Mine the caused-harm column from evidence, not memory: `git log` for
       revert/loosen/fix commits naming a guardrail, the three blocked-work episodes the spec cites,
       and today's `private-names-check.sh` fail-open. Each entry dated, with what was blocked and how
       it was resolved.
-- [ ] **T103** [P] [US1] Mine the prevented-harm column: catches recorded in commit messages, PR
+- [x] **T103** [P] [US1] Mine the prevented-harm column: catches recorded in commit messages, PR
       bodies and `docs/GUARDRAILS.md`. Where nothing is found, write **"preventive, nothing
       recorded"** — never leave the cell blank (EF-003, EF-004).
-- [ ] **T104** [US1] Classify each item's prevented harm as **irreversible** (published secret,
+- [x] **T104** [US1] Classify each item's prevented harm as **irreversible** (published secret,
       erased history) or **recoverable** (bad commit, failed check). Where both apply, state which
       case the classification refers to (EF-012).
-- [ ] **T105** [US1] Probe every **grade D** item (never observed to fire): is it dormant, or does it
+- [x] **T105** [US1] Probe every **grade D** item (never observed to fire): is it dormant, or does it
       not run at all? A guardrail that cannot be triggered may simply be dead — the spec names this
       explicitly. Probing is instrumentation, **not** grounds for removal.
 - [ ] **T106** [P] [US6] Transcribe portability verdicts **already measured** — travels / lost /

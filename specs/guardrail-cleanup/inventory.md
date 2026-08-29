@@ -40,7 +40,7 @@ Ten scripts under `scripts/hooks/` that can refuse an action (`exit 2`).
 
 | Guardrail | Grade | Harm prevented | Irreversible? | Harm caused — dated | Decision |
 |---|:--:|---|:--:|---|---|
-| `secret-scan.sh` | **C** | preventive, nothing recorded | **yes** — a published secret cannot be unpublished | **2026-07-08** (#449) a gitleaks false-block on correct content | **keep** |
+| `secret-scan.sh` | **C** | preventive, nothing recorded | **yes** — a published secret cannot be unpublished | **2026-07-08** (#449), **08-15** (#499), **08-25** (#508) — three | **keep** |
 | `command-validator.sh` | **C** | preventive, nothing recorded | mixed — see entry | **2026-07-08** (#453), **07-12** (#469), **07-13** (#477), **08-15** (`yes \|`), **08-29** (throwaway clone) | **keep**, narrowed |
 | `main-branch-guard.sh` | **C** | preventive, nothing recorded | no — a commit on the wrong branch is movable | **2026-08-29** (#501) branched the repo for edits outside its worktree | **keep** — see entry |
 | `destructive-ops.sh` | **C** | preventive, nothing recorded | **yes** — an erased database or disk | none recorded | **keep** |
@@ -60,10 +60,17 @@ are not final.
 
 ### `secret-scan.sh` — the clearest case for EF-013, and the clearest illustration of EF-014
 
-Grade **C**: nothing it has prevented is recorded. One caused-harm episode is recorded — a false
-block on correct content, 2026-07-08 (#449).
+Grade **C**: nothing it has prevented is recorded. **Three** caused-harm episodes are — and the
+first version of this record found only one, which is worth admitting because the correction makes
+the entry harder, not easier, to defend:
 
-**By the counts alone this guardrail loses: zero preventions against one block.** That is precisely
+| Date | Episode |
+|---|---|
+| 2026-07-08 (#449) | a false block on correct content |
+| 2026-08-15 (#499) | it scanned the working directory instead of the staged change |
+| 2026-08-25 (#508) | it read a *broken* scanner as a *found secret* — refusing on its own failure |
+
+**By the counts alone this guardrail loses badly: zero preventions against three blocks.** That is precisely
 the arithmetic EF-014 forbids, and this entry is why the prohibition exists. The harm it guards
 against — a secret published to a public repository — **cannot be undone**: revocation is possible,
 but the value is already out, mirrored and cached. EF-013 is unambiguous: irreversible keeps it.
@@ -262,6 +269,44 @@ feared.
 
 ---
 
+## The CI tier — 29 named steps, of which ~16 gate a pull request
+
+Decision D2 put these in scope: a CI step refuses a merge, so by the spec's own criterion it
+qualifies. They also grade faster than the hooks, because CI failures leave a trace by construction —
+which is itself a finding: **this is the only tier where prevented harm is visible at all.**
+
+| Gate | Grade | Evidence | Harm caused — dated |
+|---|:--:|---|---|
+| **Conflict markers** (`ci.yml`) | **A** | Conflict markers were **committed to `README.md`** on 2026-07-08 (#449); the gate was created 2026-07-11 (#464), three days later, because of it | none recorded |
+| **Counts gate** (`ci.yml`) | **A** | `eval/value-proof/LEDGER.md` records this as a *recurring* CI failure — add a resource, forget to regenerate, CI red after push | the serialisation cost measured in US4; addressed in #510 |
+| **Gitleaks behaviour** (`ci.yml`) | **B** | It fires — the enforcing scan runs on `main` — but no recorded occasion where it caught a *real* secret in this repository | via the `secret-scan` hook it feeds: three episodes above |
+| **ShellCheck** (`ci.yml`, `security.yml`) | **C** | preventive, nothing recorded | none recorded |
+| **Bats shards** (Linux ×4, macOS ×4) | **A** | The authoritative run. It caught what a local run missed **today**: `substance-check` failing on this pass's own test file while the local suite was green | slow feedback only |
+| **Validate counts / portability** (`ci.yml`) | **C** | preventive, nothing recorded | none recorded |
+| **CodeQL / Security Scan** | **C** | preventive, nothing recorded | none recorded |
+| **PR title format** (`pr-check.yml`) | **C** | preventive, nothing recorded | **2026-08-29**: refused `fix(security): CATEGORY 7 …` because the subject began with a capital. The change was correct and every test was green |
+| **Commit messages / WIP / PR size** (`pr-check.yml`) | **C** | preventive, nothing recorded | none recorded |
+| **Release, docs, dependabot steps** (13) | — | **not PR gates** — they run after a merge or on a schedule. Listed for completeness, outside the "refuses an action" criterion | — |
+
+### What grading this tier actually showed
+
+**Two grade As here, against two in the entire hooks tier** — and for the same structural reason. A
+CI gate that fires leaves a run record; a hook that fires leaves nothing but an interrupted session.
+The asymmetry is not evidence that CI gates are more valuable. It is evidence that **the hooks are
+harder to credit**, which is exactly the bias EF-014 warns about, appearing here as a tier-level
+effect rather than a per-entry one.
+
+**The bats shards earned their A today**, in this very pass: the local suite was green and CI was
+not. That is the single strongest argument in the record for keeping a slow, duplicated,
+run-everything gate — the thing a "what earns its place?" review would be most tempted to trim.
+
+**The PR-title gate is the tier's clearest cost.** It refused a correct, fully-green security fix
+over a capital letter, and the repository's own memory records it rejecting a valid conventional type
+on a previous occasion. Harm class: recoverable, trivially. It stays for now, but it is the one entry
+in this tier where the caused column has something and the prevented column has nothing.
+
+---
+
 ## Not yet graded
 
 Listed so the record can say it examined everything, and stated rather than left blank (EF-004).
@@ -270,8 +315,11 @@ Listed so the record can say it examined everything, and stated rather than left
 |---|---:|---|
 | Advisory `scripts/hooks/` scripts | 8 | graded by a different question — do they change what the assistant does? — which is Phase 6's criterion, not this one |
 | Inline `settings.json` declarations | 31 | none can refuse (verified). They belong to the carried-cost question, Phase 6 |
-| `.husky` chain + `preflight` gates | ~9 | Phase 3 first: `preflight` **duplicates CI**, and whether that duplication earns its keep depends on a demonstration, not an opinion |
-| CI steps | 29 | decision D2 puts them in scope; several will grade **A** on first reading (the gitleaks and counts gates have documented catches) |
+| `.husky` chain + `preflight` gates | ~9 | partly measured — `preflight`'s silent skip is above. What remains is whether its duplication of CI earns its keep, which needs Phase 3's demonstration, not an opinion |
+
+**Every tier that can refuse an action is now graded**, apart from the `.husky`/`preflight` chain,
+which is measured but undecided. The two tiers left are graded by Phase 6's criterion — *does this
+change what the assistant does?* — not by this phase's.
 
 ---
 
