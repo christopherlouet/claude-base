@@ -438,3 +438,44 @@ believing it.
   question is the reporting contract, and it is Phase 4's to decide.
 - **Portability (T106, EF-007)**: recorded from evidence already in hand only. For every entry
   above: **not measured**. No work is opened to find out.
+
+---
+
+## How the pass ended — read this first if you were not here
+
+A cleanup that removed nothing. That is the finding, not an apology for one.
+
+**What it did.** Enumerated everything in this repository that can refuse an action, from all four
+sources — 29 CI gates, 18 hooks (10 blocking, 8 advisory), 31 inline declarations that no inventory
+had ever listed, 3 git hooks. Graded every tier that refuses. Repaired seven defects. Removed zero.
+
+**What it found, and it is one thing wearing five costumes.** A guardrail can fail by reporting more
+than it established, and every repair but two was that:
+
+| | What it claimed | What was true |
+|---|---|---|
+| `preflight` | *"OK all fast gates passed"* | one gate had not run at all |
+| the marker gate | no drift | 87 of 147 markers were being checked; stripping all of them left it green |
+| `tests/ci-workflows.bats` | pins every input class | asserted a word in a prose comment; killed 1 of 5 mutations |
+| a macOS CI job | a red on a specific PR | non-deterministic — the same commit passed on re-run |
+| `substance-check` | *"empty test body"* | the test had four lines; a brace in a comment closed the block early |
+
+**What it cost to be sure.** Five hollow assertions were caught in this pass by mutation, none by
+reading — including two in the author's own new tests, one where a *mutation that did not mutate*
+looked exactly like a guardrail that does not catch, and one where a test helper read a documented
+example instead of the real thing. The technique kept paying because **a test that cannot fail looks
+exactly like a test that passes**.
+
+**What it deliberately did not do.** No removal without demonstrated native coverage (Phase 3 never
+became necessary — nothing was a candidate). No behavioural verdict on carried material, because
+that eval's generation half is billing-gated and no run was authorised. No drift guard on this
+record — see [`decision-d1.md`](./decision-d1.md); the harm is recoverable, an existing command
+re-derives the truth, and the guard would have to be fed before any new guardrail could land.
+
+**What is still open.** The independent read-through (T602) cannot be done by anyone who was here.
+The largest carried item, `docs/reference/best-practices.md` at 23 %, mixes instruction with
+reference and needs a content split rather than a frontmatter line. And `workflow.md` duplicates 7 of
+its 13 anti-pattern bullets from `CLAUDE.md`, the two copies already drifting apart.
+
+**The claim this record does not make**: that the foundation is now correct. It says what was
+measured, when, and by which route — twice, where a number mattered.
