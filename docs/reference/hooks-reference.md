@@ -151,7 +151,7 @@ longer needed after a clone; outside Claude Code, run the script directly.
 
 | Hook | Action |
 |------|--------|
-| `pre-commit` → **counts self-heal** | When a commit stages a counted artifact (`.claude/{commands,agents,skills,rules,presets}/**`, `docs/**`, the minimal manifest or `VERSION`), runs `scripts/sync-counts.sh`: regenerates the derived count files and `git add`s them, so a stale count can never reach CI. No-op (and node-free) for any other commit. Blocks only if counts drifted and regeneration is unavailable. Disable with `SKIP_COUNTS_SYNC=1`. |
+| `pre-commit` → **counts self-heal** | When a commit stages a counted artifact (`.claude/{commands,agents,skills,rules,presets}/**`, `docs/**`, `specs/marketplace-audit/**`, the minimal manifest or `VERSION`), runs `scripts/sync-counts.sh`: regenerates the derived count files and `git add`s them, so a stale count can never reach CI. No-op (and node-free) for any other commit. Blocks only if counts drifted and regeneration is unavailable. Disable with `SKIP_COUNTS_SYNC=1`. |
 | `pre-push` → **preflight** | Runs the foundation's own CI gates locally before a push (`scripts/preflight.sh --fast`: shellcheck · `validate-counts.sh` · `manifest-hooks-coverage`), so failures surface locally instead of post-push. Mirrors `ci.yml`; `scripts/preflight.sh --full` adds the complete bats suite. Bypass once with `SKIP_PREFLIGHT=1`. |
 
 `scripts/sync-counts.sh` mirrors the CI **"Counts gate"**: it regenerates and

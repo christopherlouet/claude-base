@@ -173,6 +173,14 @@ fixing a pre-existing guard mid-pass is what EF-011 forbids. They belong to Phas
 - **`_check_core` has no script-level coverage.** A mutant disabling it survives both
   `tests/validate-counts.bats` and `tests/modules.bats`; the latter re-implements the invariant
   against `counts.json`, so data drift is caught but the guard itself can be silently disabled.
+- **`tests/ci-workflows.bats` does not earn its own title.** The case named *"husky pre-commit:
+  self-heal trigger covers every counts-gate input class"* asserts four of the five live classes —
+  `specs/marketplace-audit` is never checked — and its `grep -q 'VERSION'` matches the surrounding
+  prose comment rather than the regex, so dropping `^VERSION$` from the trigger would not fail it.
+  **This is why the documentation gap survived**: the test that exists to pin the trigger cannot see
+  two of the things it claims to pin. The right repair is to extract the regex literal and assert
+  path-matching *behaviour* per class, not substring presence — the same hollow-assertion class this
+  change already fixed twice elsewhere in its own tests.
 - **The marker gate validates 4 of the 6 live keys.** `presets` (5 markers) and
   `marketplaceAuditPilots` (1) fall through `*) continue ;;`, and `byDomain.*` markers are never
   matched at all because the grep pattern `count:[a-zA-Z]+` excludes the dot. Only CI's
