@@ -120,9 +120,15 @@ run_inventory() { run bash "$INVENTORY" --root "$TEST_DIR"; }
 
 @test "source hooks: a semicolon-terminated exit 2 counts as blocking" {
     # Found by cross-checking two independent measurements that disagreed. The
-    # real pre-commit-tests.sh writes `…; exit 2; }` inside a brace group, and a
-    # pattern demanding whitespace-or-end after the 2 silently classified a
-    # blocking guardrail as advisory. A terminator is anything non-digit.
+    # real pre-commit-tests.sh terminates its refusal with a semicolon inside a
+    # brace group, and a pattern demanding whitespace-or-end after the 2 silently
+    # classified a blocking guardrail as advisory. A terminator is any non-digit.
+    #
+    # (This comment deliberately avoids writing a closing brace inline: the bats
+    # branch of substance-check.sh counts braces without stripping strings or
+    # comments, so a lone one here would close the test block early and the test
+    # would be reported as empty. Recorded in enumeration.md, not worked around
+    # silently.)
     printf '#!/usr/bin/env bash\n[ -z "$X" ] && { echo no; exit 2; }\n' \
         > "$TEST_DIR/scripts/hooks/semicolon.sh"
     run_inventory

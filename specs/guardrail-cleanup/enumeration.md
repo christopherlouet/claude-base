@@ -104,6 +104,41 @@ blocking. All three cases are pinned by tests.
 
 ---
 
+## A false positive found by shipping this phase — evidence for US2
+
+`scripts/substance-check.sh`, the foundation's anti-hollow-test detector, **failed this PR's own
+test file in CI** while the local suite was green. Dated entry for the *caused harm* column.
+
+**Cause, isolated by bisection then confirmed in two arms.** The finding was *"empty test body"* on a
+test with a four-line body. The bats branch of the scanner counts braces to find where a test block
+ends, and it counts them on the raw line — without stripping strings, and without skipping comments.
+A comment containing a closing brace inside backticks therefore closes the block early; the body
+collapses to comment lines only, all of which are skipped, and the test reads as empty.
+
+| Arm | Fixture | Verdict |
+|---|---|---|
+| trial | comment containing a lone closing brace in backticks | **flagged** "empty test body" |
+| control | the same comment without it | clean |
+
+**The repair already exists in the same file.** The JavaScript branch strips single-line string,
+template and char literals before counting, and its comment states the exact failure mode: *"a lone
+`}` inside a string cannot close the block early"*. The bats branch never received the same
+treatment — one line, `scripts/substance-check.sh:84`, against the model at line 175.
+
+**Not fixed here, and the trade-off is stated rather than hidden.** EF-011 forbids repairing a
+guardrail before the record is complete, and that discipline has been applied to four other
+pre-existing findings today. The comment was rephrased instead — which unblocks the work while
+leaving the defect in place for the next person. That is a real cost, accepted knowingly: the
+foundation's own lesson is that editing content to appease a scanner keeps the scanner's bug alive.
+It is recorded here with its reproduction and its one-line fix so Phase 2 or 4 can act on evidence
+rather than rediscover it.
+
+**Why it matters beyond itself**: the local suite passed and CI did not. The detector is invoked
+through a bats case that runs it over `tests/`, and it landed in shard 4 — so the failure was real,
+reproducible locally on demand, and simply not surfaced by the way the suite was run first.
+
+---
+
 ## Two gradings this enumeration already suggests
 
 Recorded here, decided in Phase 2:
