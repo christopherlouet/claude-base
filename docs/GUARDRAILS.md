@@ -98,8 +98,12 @@ tests-first, an audit report, a clean PR) are things a native session never make
 > pre-existing mention never blocks unrelated work and removing one is always
 > allowed. Names are matched as fixed strings, case-insensitively. Prefer a
 > distinctive form (`orchid-relay-backup`, not `relay`) — a name that is also an
-> ordinary word will block correct commits. Deliberate bypass:
-> `SKIP_PRIVATE_NAMES=1`.
+> ordinary word will block correct commits. An entry **shorter than 4 characters
+> is refused and named on stderr**: matched as a substring it would block
+> ordinary text (`K` inside `const kilo = 1000;`), and a gate that refuses every
+> second commit gets bypassed wholesale. Such a name cannot be protected this
+> way — give it a longer distinctive form. The rest of the list keeps working;
+> only the short entry is dropped. Deliberate bypass: `SKIP_PRIVATE_NAMES=1`.
 >
 > **Known limits** — the gate sees the staged *paths* and staged *content*, and
 > nothing else. A commit **message** or a **branch name** carrying a private name

@@ -225,3 +225,82 @@ commit_staged() { git commit --quiet --no-verify -m "seed"; }
     run bash "$CHECK"
     [ "$status" -ne 0 ]
 }
+
+# --- Fail-closed on an unreadable index ------------------------------------
+#
+# The staged-PATHS read used to be `… || true` followed by "empty means nothing
+# staged, exit 0". That made a git FAILURE indistinguishable from an empty
+# index, and because the check sits BEFORE the content scan, a failure skipped
+# the WHOLE gate, not merely the path check. The staged-DIFF read next to it
+# already failed closed; these pin the two to the same rule.
+
+# A `git` shim that fails only the subcommand carrying $1, passing everything
+# else through to the real binary (rev-parse must still work).
+fake_git_failing_on() {
+    mkdir -p "$BATS_TEST_TMPDIR/bin"
+    {
+        echo '#!/usr/bin/env bash'
+        echo "for a in \"\$@\"; do"
+        echo "    if [ \"\$a\" = \"$1\" ]; then"
+        echo '        echo "fatal: simulated index failure" >&2'
+        echo '        exit 128'
+        echo '    fi'
+        echo 'done'
+        echo 'exec /usr/bin/git "$@"'
+    } > "$BATS_TEST_TMPDIR/bin/git"
+    chmod +x "$BATS_TEST_TMPDIR/bin/git"
+}
+
+@test "unreadable staged paths: fails closed, never reads as 'nothing staged'" {
+    names "zephyr-ledger"
+    stage "docs/design.md" "zephyr-ledger here"
+    fake_git_failing_on "--name-only"
+    run env PATH="$BATS_TEST_TMPDIR/bin:$PATH" bash "$CHECK"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"refusing to pass silently"* ]]
+}
+
+@test "control: the shim is not blanket-breaking git (clean tree still exits 0)" {
+    names "zephyr-ledger"
+    stage "docs/design.md" "nothing sensitive here"
+    fake_git_failing_on "--name-only"
+    run env PATH="$BATS_TEST_TMPDIR/bin:$PATH" bash "$CHECK"
+    # Still non-zero — but for the REFUSAL reason, not because a name was found.
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"refusing to pass silently"* ]]
+    [[ "$output" != *"zephyr-ledger"* ]]
+}
+
+# --- Entries too short to be matched as substrings ---------------------------
+#
+# A short protected name searched as a substring blocks ordinary text ("K" in
+# `const kilo = 1000;`). The operator's answer to a gate that refuses every
+# second commit is SKIP_PRIVATE_NAMES=1 — which disarms the whole list. So a
+# too-short entry is skipped and SAID OUT LOUD, per entry: one name is lost
+# noisily instead of all of them silently. `grep -Fiw` is not the alternative —
+# it would trade these false positives for false NEGATIVES (monprojetApi), the
+# wrong direction for a privacy gate.
+
+@test "a too-short entry is not matched, and names itself as unprotected" {
+    names "K"
+    stage "src/units.ts" "const kilo = 1000;"
+    run bash "$CHECK"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"K"* ]]
+    [[ "$output" == *"NOT protected"* ]]
+}
+
+@test "a too-short entry does not disarm the rest of the list" {
+    names "K" "zephyr-ledger"
+    stage "docs/design.md" "zephyr-ledger here"
+    run bash "$CHECK"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"zephyr-ledger"* ]]
+}
+
+@test "a name at the length threshold is still protected" {
+    names "zeph"
+    stage "docs/design.md" "zeph here"
+    run bash "$CHECK"
+    [ "$status" -ne 0 ]
+}

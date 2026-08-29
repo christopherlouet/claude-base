@@ -60,6 +60,20 @@ CONTENT_FILE=$(mktemp)
 FINDINGS=$(mktemp)
 trap 'rm -f "$NAMES_FILE" "$STAGED_FILE" "$PATHS_FILE" "$CONTENT_FILE" "$FINDINGS"' EXIT
 
+# Shortest entry that can be searched as a substring without taxing ordinary
+# text. A one- or two-letter name matches inside unrelated words ("K" inside
+# `const kilo = 1000;`), so it would refuse a large share of honest commits --
+# and the answer to a gate like that is SKIP_PRIVATE_NAMES=1, which disarms the
+# ENTIRE list. Losing one name loudly beats losing all of them silently.
+#
+# Widening the match is NOT the alternative: `grep -Fiw` would stop the false
+# blocks by trading them for false NEGATIVES (a name would slip through inside
+# `monprojetApi` or `monprojet_api`, which is exactly how a project name appears
+# in code) -- the wrong direction for a privacy gate, where the miss is the
+# failure that costs something. A short name needs a longer distinctive form
+# instead, and this says so rather than matching it badly.
+MIN_NAME_LEN=4
+
 # Collect the protected names: strip comments, trim surrounding whitespace,
 # drop blanks. bash 3.2 safe (no mapfile, no associative arrays).
 while IFS= read -r raw || [ -n "$raw" ]; do
@@ -67,14 +81,28 @@ while IFS= read -r raw || [ -n "$raw" ]; do
     name="${raw#"${raw%%[![:space:]]*}"}"
     name="${name%"${name##*[![:space:]]}"}"
     [ -n "$name" ] || continue
+    if [ "${#name}" -lt "$MIN_NAME_LEN" ]; then
+        printf 'private-names: "%s" is shorter than %d characters -- searched as a substring it would block ordinary text. THIS ENTRY IS NOT protected; use a longer distinctive form.\n' \
+            "$name" "$MIN_NAME_LEN" >&2
+        continue
+    fi
     printf '%s\n' "$name" >> "$NAMES_FILE"
 done < "$LIST"
 
 [ -s "$NAMES_FILE" ] || exit 0
 
 # Staged, non-deleted paths, NUL-delimited so no path is mangled or quoted.
-git -c core.quotepath=off diff --cached --name-only -z --diff-filter=ACMR \
-    > "$STAGED_FILE" 2>/dev/null || true
+#
+# This read fails CLOSED, exactly like the staged-diff read below. It used to be
+# `... || true` followed by "empty means nothing staged": that made a git FAILURE
+# indistinguishable from an empty index, and because this check sits BEFORE the
+# content scan, a failure skipped the WHOLE gate rather than only the path check.
+if ! git -c core.quotepath=off diff --cached --name-only -z \
+         --diff-filter=ACMR > "$STAGED_FILE" 2>/dev/null; then
+    echo "private-names-check: cannot read the staged paths — refusing to pass silently." >&2
+    exit 1
+fi
+# Reaching here, the read SUCCEEDED, so an empty result really is an empty index.
 [ -s "$STAGED_FILE" ] || exit 0
 
 # ONE diff for the whole index, not one per file: a per-file diff costs a git
