@@ -1236,7 +1236,7 @@ install_claude_md_file() {
         fi
         if ! $DRY_RUN; then
             rewrite_claude_md_paths "$target_dir/CLAUDE.md"
-            # Align with update.sh: ensure the 7 canonical @imports
+            # Align with update.sh: ensure the canonical @imports
             ensure_claude_md_imports "$target_dir/CLAUDE.md"
         fi
         success "CLAUDE.md copied (${PROJECT_TYPE:-generic})"

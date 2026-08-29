@@ -40,6 +40,7 @@ Example of a project CLAUDE.md:
 
 @.claude/docs/reference/best-practices.md
 @.claude/docs/reference/project-structures.md
+@.claude/docs/reference/commands.md
 
 ## Mandatory Workflow
 

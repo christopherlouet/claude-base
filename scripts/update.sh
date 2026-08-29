@@ -1740,7 +1740,7 @@ upgrade_claude_md() {
     imports_before=$(grep -cE "^@\.claude/docs/reference/" "$claude_md" 2>/dev/null || true)
     imports_before=${imports_before:-0}
 
-    # Guarantee the 7 canonical @imports (factored in lib/common.sh)
+    # Guarantee the canonical @imports (factored in lib/common.sh)
     ensure_claude_md_imports "$claude_md"
 
     local imports_after
@@ -1757,7 +1757,7 @@ upgrade_claude_md() {
     if [[ -n "$backup_file" ]] && [[ -f "$backup_file" ]]; then
         if cmp -s "$claude_md" "$backup_file"; then
             rm -f "$backup_file"
-            success "CLAUDE.md already contains the 7 canonical @imports"
+            success "CLAUDE.md already contains the canonical @imports"
         else
             success "Backup created: $(basename "$backup_file")"
         fi
