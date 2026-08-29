@@ -238,6 +238,30 @@ it is the cheapest correction of the exact failure mode this entire pass was bui
 EF-011 forbids, and that discipline has held for six pre-existing findings today. This one is
 recorded with its reproduction so the decision is taken on evidence.
 
+### ✅ Repaired in Phase 4 — the reporting contract, not the skip
+
+Decision: **repair, keep the skip non-blocking.** The measurement indicted the *silence*, not the
+skip; a machine lacking a tool is still not blocked on it, because CI's Linux job is the
+authoritative run. What changed is that a gate which cannot run can no longer be read as one that
+passed:
+
+- a missing tool no longer substitutes an `echo` that *succeeds* — it sets a skip reason, and the
+  gate prints `[preflight] <gate>... SKIPPED (<tool> not installed)`;
+- the skip notice goes to stderr **unconditionally**: `--quiet` may hide a pass, never a non-run;
+- the run withholds `OK all <mode> gates passed` and prints instead which gates did not run, plus
+  *"this is NOT a complete run"*;
+- a failing gate no longer hides a skipped one — both are reported.
+
+**Proven by mutation, not by reading.** Four mutants, each killed by the arm that should kill it and
+by no other: dropping the skip summary, printing the success line anyway (the original defect),
+routing the skip notice through `say()` so `--quiet` swallows it, and dropping the gate name from
+the notice. The control arm — every tool present — is the one that runs first: it shows the
+instrument can produce a positive before any absence is believed.
+
+One arm was **hollow on its first version** and passed against the unrepaired script, because
+`preflight` prints a line per gate either way; it now asserts the gate name and the skip notice on
+the *same* line. That is the third hollow test caught in this pass by looking for one.
+
 **One consequence for the record itself**: every "the gates were green" statement in this repository's
 history carries this caveat. Green meant *"no gate objected"*, which is not the same as *"every gate
 ran"*. Nothing here suggests a specific past failure slipped through; it means the evidence cannot

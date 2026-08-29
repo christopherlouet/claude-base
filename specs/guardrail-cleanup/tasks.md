@@ -115,7 +115,35 @@ finds its grade and the specific evidence that earned it.
 
 ---
 
-## Phase 4: Decide and retire — US3
+## Phase 4: Decide, repair, retire — US3
+
+> **The pass called "cleanup" has no removal candidate.** Grading every tier that can refuse an
+> action produced zero. What it produced instead is a repair list: seven defects, each measured and
+> recorded at the time it was found, none fixed then (EF-011). Phase 4 is therefore mostly T306 —
+> and that outcome is itself the finding, so it is written here rather than quietly reinterpreted.
+>
+> Ordered by value, highest first; the order is the evidence, not taste. **(1) is done.**
+
+- [ ] **T306** [US3] Repair the seven recorded defects, one commit each, tests before code, and a
+      **mutation proof per repair** — a repair whose test cannot fail restores the exact class of
+      silence this pass exists to remove.
+  - [x] **(1)** `preflight` announces success while a gate did not run — **the spec's own worst
+        case, measured**. Repair is a *reporting contract*, not a regex: the skip stays non-blocking,
+        but a gate that could not run is never reported as one that passed. Shipped with four
+        mutants, each killed by its own arm; one hollow arm caught and hardened.
+  - [ ] **(2)** `substance-check.sh`'s bats branch counts braces on the raw line — a closing brace
+        in a comment closes the block early and the test reads as empty. **The repair already exists
+        100 lines below** in the JavaScript branch (`:175`); the bats branch (`:84`) never got it.
+  - [ ] **(3)** `validate-counts.sh` refuses a document that *quotes* a marker: quoting and violating
+        are indistinguishable to the scanner. Blocked real work on 2026-08-29.
+  - [ ] **(4)** No anti-vacuity floor on the marker scan — stripping all 93 markers from the 24
+        files carrying them leaves the gate green. An empty gate is a green gate.
+  - [ ] **(5)** `_check_core` has no script-level coverage: a mutant disabling it survives the suite.
+  - [ ] **(6)** The marker gate validates 4 of 6 live keys — `presets` and `marketplaceAuditPilots`
+        fall through `*) continue ;;`, and `byDomain.*` never matches (the pattern excludes the dot).
+  - [ ] **(7)** `tests/ci-workflows.bats` does not earn its title: 4 of 5 classes asserted, and its
+        `grep VERSION` matches the surrounding prose instead of the regex. This is the test that let
+        a documentation gap through on 2026-08-29.
 
 **Goal**: an explicit decision per entry; removals executed completely.
 
