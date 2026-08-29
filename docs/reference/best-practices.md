@@ -4,7 +4,7 @@
 
 These two lived here and in `CLAUDE.md`, which is carried into every session; the same fact in two
 places is how the anti-pattern lists in this repository drifted apart. They now have one home, in
-[`CLAUDE.md`](../../CLAUDE.md): give yourself the cheapest check that can fail, and match reasoning
+the project's `CLAUDE.md`: give yourself the cheapest check that can fail, and match reasoning
 depth to the task (`/effort`). This file keeps what is reference rather than instruction — consulted
 on demand, not carried (`specs/guardrail-cleanup/carried-material.md`).
 
