@@ -22,6 +22,7 @@
 - **Tests**: 80%+ coverage, no mocks except external deps, edge cases mandatory. Details in `.claude/rules/testing.md`
 - **Security**: validate inputs, escape outputs, parameterized queries. Details in `.claude/rules/security.md`
 - **Design**: art direction via `Style:` in the project's CLAUDE.md (terminal, cockpit, vitality, editorial, glass, signal). Details in `.claude/rules/design-style.md`
+- **When several rules apply** they all apply at once; on conflict the order is `security` → `verification` → `tdd-enforcement` → language → framework → `testing` → perf/a11y/design → interface conventions → process guardrails. The full catalogue lives in `.claude/rules/README.md`, scoped to that directory.
 
 ### Secrets management
 - IMPORTANT: Never commit secrets (.env, credentials, API keys)
