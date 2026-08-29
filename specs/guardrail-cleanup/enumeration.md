@@ -133,6 +133,33 @@ foundation's own lesson is that editing content to appease a scanner keeps the s
 It is recorded here with its reproduction and its one-line fix so Phase 2 or 4 can act on evidence
 rather than rediscover it.
 
+### ✅ Repaired in Phase 4 — and the one-line fix was not the whole fix
+
+The bats branch now strips single-line literals before counting braces, as the JavaScript branch
+did. Two things the record did not anticipate came out of doing it:
+
+1. **The model it was copied from was itself defective.** The naive `/"[^"]*"/` mispairs on an
+   embedded `\"`, so it can delete an *opening* brace while leaving its closing one — the opposite
+   of the JS branch's own comment, which claimed stripping "only REMOVES braces, never a new false
+   positive". Copying it verbatim turned a passing Go fixture in this repository into a false
+   *no-assertion*. The stripping is now escape-aware in **all three** branches (bats, JS, Go),
+   measured in two arms on the same well-formed fixture: naive flags a real test, escape-aware is
+   clean.
+2. **The first well-formed fixture was not well-formed.** `"x \\" } "` escapes a *backslash*, so
+   the string really does end and the brace really is code — the scanner was right and the fixture
+   was wrong. Caught by the arms disagreeing with the direct probe, not by reading. A plausible
+   wrong answer again, and again only visible from two measurements.
+
+**Two traps in writing the tests, both worth the next person's time.** A fixture written through a
+heredoc reaches the scanner *already transformed*: bats rewrites a literal `@test` line even inside
+heredoc data, so the fixture contained no test at all and the arms passed green while measuring
+nothing. And a closing brace at column 0 inside a heredoc terminates the enclosing `@test` in bats'
+own parser, silently truncating an arm to its first line. Both failures looked like passes. Fixtures
+are built with `printf`, like every other fixture in that file, for exactly these reasons.
+
+Proven by mutation: restoring the naive scanner fails **seven** arms, including the EF-008 scan of
+the foundation's own `tests/` — the same failure that started this entry.
+
 **Why it matters beyond itself**: the local suite passed and CI did not. The detector is invoked
 through a bats case that runs it over `tests/`, and it landed in shard 4 — so the failure was real,
 reproducible locally on demand, and simply not surfaced by the way the suite was run first.
