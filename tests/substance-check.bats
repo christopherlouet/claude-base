@@ -338,6 +338,77 @@ count_focused() { printf '%s\n' "$output" | grep -cE ': focused:' || true; }
     [[ "$output" == *"no-assertion"* ]]
 }
 
+# A decorator whose call spans lines has continuation lines that start with
+# neither `@` nor `def`. They fell through to the line that CLEARS pending_skip,
+# so a skip written across lines disabled a test silently -- and so did any
+# multi-line decorator stacked under a skip. Same mechanism as the signature.
+@test "substance-check: flags a skipped Python test whose skip decorator spans lines" {
+    printf '%s\n' "@pytest.mark.skip(" '    reason="later",' ")" \
+        "def test_skipped_ml():" "    assert foo() == 1" \
+        > "$TEST_DIR/test_mlskip.py"
+    run bash "$SC" "$TEST_DIR/test_mlskip.py"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -eq 1 ]
+    [[ "$output" == *"skipped"* ]]
+}
+
+@test "substance-check: a skip survives a multi-line decorator stacked below it" {
+    printf '%s\n' '@pytest.mark.skip(reason="later")' "@pytest.mark.parametrize(" \
+        '    "a", [1],' ")" "def test_stacked(a):" "    assert a" \
+        > "$TEST_DIR/test_stacked.py"
+    run bash "$SC" "$TEST_DIR/test_stacked.py"
+    [ "$(count_findings)" -eq 1 ]
+    [[ "$output" == *"skipped"* ]]
+}
+
+# CONTROL - a conditional skipif is a legit env-guard whether or not it spans
+# lines. Consuming the continuation lines must not start flagging it.
+@test "substance-check: CONTROL - a multi-line skipif is still NOT flagged" {
+    printf '%s\n' "@pytest.mark.skipif(" '    sys.platform == "win32",' \
+        '    reason="posix",' ")" "def test_posix_ml():" "    assert run() == 0" \
+        > "$TEST_DIR/test_mlskipif.py"
+    run bash "$SC" "$TEST_DIR/test_mlskipif.py"
+    [ "$(count_findings)" -eq 0 ]
+}
+
+# CONTROL - the ordinary multi-line decorator, which was already clean.
+@test "substance-check: CONTROL - a multi-line parametrize on a real test is clean" {
+    printf '%s\n' "@pytest.mark.parametrize(" '    "a,b",' "    [(1, 2)]," ")" \
+        "def test_param(a, b):" "    assert a < b" \
+        > "$TEST_DIR/test_mlparam.py"
+    run bash "$SC" "$TEST_DIR/test_mlparam.py"
+    [ "$(count_findings)" -eq 0 ]
+}
+
+# The decorator NAME must be `skip` exactly. `skip([^A-Za-z]|$)` also accepted
+# `@skip_on_not_implemented(only_if=LINUX)` -- a project helper that skips on a
+# CONDITION, which the doctrine above says not to flag. Found in a real suite:
+# the multi-line fix above stopped masking it, and it had been there all along.
+@test "substance-check: does NOT flag a conditional skip_* helper decorator" {
+    printf '%s\n' "@skip_on_not_implemented(only_if=LINUX)" "def test_helper():" \
+        "    assert compute() == 1" > "$TEST_DIR/test_helperskip.py"
+    run bash "$SC" "$TEST_DIR/test_helperskip.py"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -eq 0 ]
+}
+
+# CONTROLS - narrowing the name must not stop flagging the real thing.
+@test "substance-check: CONTROL - a bare @skip decorator is still flagged" {
+    printf '%s\n' "@skip" "def test_bare():" "    assert compute() == 1" \
+        > "$TEST_DIR/test_bareskip.py"
+    run bash "$SC" "$TEST_DIR/test_bareskip.py"
+    [ "$(count_findings)" -eq 1 ]
+    [[ "$output" == *"skipped"* ]]
+}
+
+@test "substance-check: CONTROL - @unittest.skip with a reason is still flagged" {
+    printf '%s\n' '@unittest.skip("flaky")' "def test_unittest():" \
+        "    assert compute() == 1" > "$TEST_DIR/test_unittestskip.py"
+    run bash "$SC" "$TEST_DIR/test_unittestskip.py"
+    [ "$(count_findings)" -eq 1 ]
+    [[ "$output" == *"skipped"* ]]
+}
+
 # --- Phase 2: Go hollow-test scanner ----------------------------------------
 
 @test "substance-check: flags a Go test with no assertion" {

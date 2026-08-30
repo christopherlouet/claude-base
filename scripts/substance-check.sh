@@ -216,7 +216,10 @@ _scan_js() {
 # from the def line until a line de-indents to the def's level. Skip is flagged
 # only for an UNCONDITIONAL decorator (`@pytest.mark.skip`, `@unittest.skip`,
 # `@skip`) — a conditional `@pytest.mark.skipif(...)` env-guard is NOT flagged
-# (same rationale as bats `skip`). `pass` / `...` / docstrings are non-meaningful.
+# (same rationale as bats `skip`), and neither is a `skip_*` helper such as
+# `@skip_on_access_denied(...)`: the name carries the condition, so the
+# decorator name must be `skip` EXACTLY. `pass` / `...` / docstrings are
+# non-meaningful.
 _scan_py() {
     local f="$1"
     awk -v file="$f" '
@@ -288,8 +291,20 @@ _scan_py() {
                 if (blank || ind > defind) { body[n++]=$0; next }
                 flush()   # de-indent ends the block; fall through to re-handle this line
             }
-            if ($0 ~ /^[[:space:]]*@([A-Za-z_][A-Za-z0-9_.]*\.)?skip([^A-Za-z]|$)/) { pending_skip=1; next }
-            if ($0 ~ /^[[:space:]]*@/) { next }   # other decorator: keep pending_skip across the stack
+            # A decorator call can span lines too, and its continuation lines start
+            # with neither @ nor def: they used to fall through to the line that
+            # CLEARS pending_skip, so a skip written across lines disabled a test
+            # silently, and so did any multi-line decorator stacked under a skip.
+            if (decdepth > 0) { decdepth += py_pdelta($0); next }
+            # The name must be `skip` EXACTLY (optionally dotted): `skip([^A-Za-z]|$)`
+            # also matched `@skip_on_not_implemented(only_if=LINUX)`, a helper that
+            # skips on a CONDITION -- which this scanner deliberately does not flag.
+            if ($0 ~ /^[[:space:]]*@([A-Za-z_][A-Za-z0-9_.]*\.)?skip[[:space:]]*($|\(|#)/) {
+                pending_skip=1; decdepth=py_pdelta($0); next
+            }
+            if ($0 ~ /^[[:space:]]*@/) {   # other decorator: keep pending_skip across the stack
+                decdepth=py_pdelta($0); next
+            }
             if ($0 ~ /^[[:space:]]*def[[:space:]]+test[A-Za-z0-9_]*[[:space:]]*\(/) {
                 inpy=1; startline=NR; n=0; defind=ind; skipflag=pending_skip; pending_skip=0
                 sigdepth=py_pdelta($0)   # >0 => the signature continues below
