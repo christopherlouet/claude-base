@@ -27,7 +27,7 @@ _A real `curl | bash` install + `claude-base init` scaffolding the foundation in
 curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash
 claude-base version          # ✓ should print the installed version, e.g. claude-base vX.Y.Z
 
-# 2. Install into a project (auto-detects the stack, picks the right preset)
+# 2. Install into a project (detects your stack and tells you which preset fits — `--detect-only` asks without installing)
 claude-base init --preset nextjs ./my-app
 # or just: claude-base init ./existing-project   (interactive, auto-detects)
 # ✓ prints a summary of the .claude/ files written into the project
