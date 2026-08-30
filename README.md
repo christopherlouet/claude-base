@@ -61,10 +61,7 @@ claude-base is the opinionated **discipline layer for Claude Code**.
 - **Learns across all your projects** — a human-gated, sanitized **lessons referential**: after a hard-won fix or a correction, claude-base proposes a one-line lesson and, on your approval, stores it in your own `~/.claude/rules/lessons.md` — loaded into *every* project. Unlike auto-learners, *you* approve each lesson, and it's never committed to a repo. [How it works →](docs/recipes/personal-lessons-referential.md)
 - **Curated vendor skills, kept fresh** — instead of guessing among 6,700+ community skills, you get a vetted shortlist of *which* ones to trust. A billing-safe engine re-checks them for rot/abandonment and surfaces new candidates — *observe-never-install*: nothing lands in your project without you.
 
-A capability comparison against similar projects (with sources) is in [**docs/POSITIONING.md**](docs/POSITIONING.md#capability-comparison). It composes with the tools below rather than competing with them:
-
-- **vs [Spec Kit](https://github.com/github/spec-kit)** (agent-agnostic SDD primitives) — spec-kit gives you `specify / plan / tasks / implement` across 30+ agents; claude-base adds what it doesn't: an Explore phase, *enforced* TDD, the audit-fix loop, path-specific rules, and hooks — Claude-Code-native. Use both: spec-kit for the primitives, claude-base for the discipline.
-- **vs the [official marketplace](https://code.claude.com/docs/en/discover-plugins)** (vendor-published single-tool skills) — the marketplace ships deep per-tool coverage; claude-base is the workflow layer + a curated, billing-safe list of *which* vendor skills to trust. They pair: foundation for the rigor, vendor skills for the depth.
+It **composes** with the neighbours rather than competing: Spec Kit for agent-agnostic SDD primitives, the official marketplace for per-tool depth. Both comparisons — with sources, and a capability table across seven similar projects — are in [**docs/POSITIONING.md**](docs/POSITIONING.md#capability-comparison).
 
 The complete net of enforced checkpoints a bare Claude project lacks — method, security, verification, anti-gaming, audit, integrity — is catalogued in [**docs/GUARDRAILS.md**](docs/GUARDRAILS.md), which is the count as well as the list.
 
@@ -198,30 +195,9 @@ If `~/.local/bin` is not on your `PATH`, add it (most modern distros already do)
 export PATH="$HOME/.local/bin:$PATH"  # add to ~/.bashrc or ~/.zshrc
 ```
 
-### Option 2: Manual git clone
+### Installing without the one-liner
 
-```bash
-git clone https://github.com/christopherlouet/claude-base.git
-cd claude-base
-
-# Install in an existing project (in-repo dispatcher — no PATH install yet)
-./bin/claude-base init --simple /path/to/your/project
-
-# Full install with CI/CD, hooks, Docker
-./bin/claude-base init --all /path/to/your/project
-```
-
-### Option 3: Manual copy (minimal)
-
-```bash
-# Copy the Claude configuration directly
-cp -r claude-base/.claude your-project/
-cp claude-base/CLAUDE.md your-project/
-
-# Optional
-cp claude-base/.mcp.json your-project/
-cp claude-base/.github your-project/ -r
-```
+A manual `git clone` + in-repo dispatcher, or a raw copy of `.claude/`, are both documented in [docs/QUICKSTART.md](docs/QUICKSTART.md).
 
 ### Keeping Claude Code itself up to date
 
@@ -268,30 +244,9 @@ Commands are grouped into 9 domains:
 
 → **By stack**: [docs/STACK-RECIPES.md](docs/STACK-RECIPES.md) lists the relevant commands for each stack (Web, Mobile, API, Auth, etc.).
 
-## Available Templates
+## Stack templates
 
-| Template | Language / Framework |
-|----------|---------------------|
-| `CLAUDE.react.md` | React |
-| `CLAUDE.vue.md` | Vue.js 3 |
-| `CLAUDE.node-api.md` | Node.js API |
-| `CLAUDE.python.md` | Python |
-| `CLAUDE.go.md` | Go |
-| `CLAUDE.rust.md` | Rust |
-| `CLAUDE.java.md` | Java / Spring Boot |
-| `CLAUDE.fullstack.md` | Fullstack monorepo |
-| `CLAUDE.flutter.md` | Flutter / Dart (Mobile) |
-| `CLAUDE.neovim.md` | Neovim / Lua config |
-
-```bash
-# Recommended: scaffold via the dispatcher (works post-install, any cwd)
-claude-base init --type react ./my-app
-
-# Or copy the template manually (from a foundation clone)
-cp templates/CLAUDE.react.md CLAUDE.md
-```
-
-The dispatcher path additionally wires hooks, settings, and preset-specific filtering ; the raw `cp` only installs the project-instructions file.
+Ten `CLAUDE.*.md` starting points (React, Vue, Node API, Python, Go, Rust, Java, fullstack, Flutter, Neovim) — `claude-base init --type react ./my-app` wires one in, hooks and settings included. The table and the manual route are in [docs/CUSTOMIZATION.md](docs/CUSTOMIZATION.md).
 
 ## Utility CLI (`claude-base`)
 
@@ -336,32 +291,9 @@ Maintenance tools without a dispatcher alias (still callable directly from a fou
 ./scripts/ide.sh setup vscode
 ```
 
-## IDE Integration
+## IDE and CI
 
-```bash
-./scripts/ide.sh setup <vscode|idea|vim|all>   # configure
-./scripts/ide.sh check  <vscode|idea|vim>      # verify
-./scripts/ide.sh remove <vscode|idea|vim>      # uninstall
-```
-
-Sets up Settings/Tasks/Extensions/Snippets (VSCode/Cursor), Run Configurations/Code Style/Templates (IntelliJ), or Abbreviations/Mappings/Autocmds (Vim/Neovim). Run `./scripts/ide.sh --help` for the full surface.
-
-## CI/CD Included
-
-### GitHub Actions
-
-- **ci.yml**: Tests (bats + node), shellcheck, lint, build
-- **security.yml**: Gitleaks + shellcheck-security workflow
-- **pr-check.yml**: PR format / size / labels validation (uses `amannn/action-semantic-pull-request`)
-- **docs.yml**: Builds and deploys the Docusaurus site to GitHub Pages
-- **release.yml**: Automated releases with changelog
-- **dependabot-auto-merge.yml**: Auto-merges dependabot PRs that pass CI
-
-Full file-by-file at `.github/workflows/`.
-
-### Pre-commit Hooks
-
-The foundation ships `.husky/` with auto-lint, Conventional Commits validation, and secret detection (gitleaks). Enabled automatically when `claude-base init` runs with `--hooks` or `--all`. To re-enable manually in an existing install : `npx husky install` (assumes husky + lint-staged + commitlint are already in your project's devDependencies).
+`./scripts/ide.sh setup <vscode|idea|vim|all>` wires settings, tasks and snippets — details in [docs/CUSTOMIZATION.md](docs/CUSTOMIZATION.md). Six GitHub Actions workflows and the `.husky/` pre-commit hooks ship with the foundation; what each one gates is in [docs/guides/TEAM-GUIDE.md](docs/guides/TEAM-GUIDE.md).
 
 ## Documentation
 
