@@ -278,6 +278,66 @@ count_focused() { printf '%s\n' "$output" | grep -cE ': focused:' || true; }
     [ "$(count_findings)" -eq 0 ]
 }
 
+# A `def test_*(` whose signature spans several lines closes on a `)` sitting at
+# the def's OWN indentation. Indentation alone therefore reads that `)` as the end
+# of the body, capturing only the parameters and hiding every assertion below it —
+# a FALSE POSITIVE, the one thing this scanner forbids itself (EF-007).
+@test "substance-check: does NOT flag a Python test whose signature spans lines" {
+    printf '%s\n' "def test_multiline(" "    alpha," "    beta," "):" \
+        "    result = alpha + beta" "    assert result == 3" \
+        > "$TEST_DIR/test_mlsig.py"
+    run bash "$SC" "$TEST_DIR/test_mlsig.py"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -eq 0 ]
+}
+
+@test "substance-check: does NOT flag a multi-line signature method in a class" {
+    printf '%s\n' "class TestThing:" "    def test_method(" "        self," \
+        "        alpha," "    ) -> None:" "        assert alpha == 1" \
+        > "$TEST_DIR/test_mlmethod.py"
+    run bash "$SC" "$TEST_DIR/test_mlmethod.py"
+    [ "$(count_findings)" -eq 0 ]
+}
+
+# The counterpart, and the reason the fix cannot just suppress these blocks: the
+# body BELOW a multi-line signature must still be scanned on its merits.
+@test "substance-check: still flags a hollow test whose signature spans lines" {
+    printf '%s\n' "def test_ml_hollow(" "    alpha," "):" \
+        "    value = compute(alpha)" "    print(value)" \
+        > "$TEST_DIR/test_mlhollow.py"
+    run bash "$SC" "$TEST_DIR/test_mlhollow.py"
+    [ "$(count_findings)" -eq 1 ]
+    [[ "$output" == *"no-assertion"* ]]
+}
+
+# Reads the body, rather than merely staying silent about it: a tautology under a
+# multi-line signature is `always-true`, which only the real body can produce.
+@test "substance-check: reads the body under a multi-line signature (always-true)" {
+    printf '%s\n' "def test_ml_taut(" "    alpha," "):" "    assert True" \
+        > "$TEST_DIR/test_mltaut.py"
+    run bash "$SC" "$TEST_DIR/test_mltaut.py"
+    [ "$(count_findings)" -eq 1 ]
+    [[ "$output" == *"always-true"* ]]
+}
+
+# The signature walk must be escape-aware: on `a="\""` a naive walk sees the
+# paren as still open, then swallows the whole file looking for a close.
+@test "substance-check: an escaped quote in a Python signature does not swallow the body" {
+    printf '%s\n' 'def test_esc(a="\""):' '    result = compute(a)' '    assert result == 3' \
+        > "$TEST_DIR/test_esc.py"
+    run bash "$SC" "$TEST_DIR/test_esc.py"
+    [ "$status" -eq 0 ]
+    [ "$(count_findings)" -eq 0 ]
+}
+
+@test "substance-check: CONTROL - a hollow Python test with an escaped quote is still flagged" {
+    printf '%s\n' 'def test_esc_hollow(a="\""):' '    compute(a)' \
+        > "$TEST_DIR/test_esc_hollow.py"
+    run bash "$SC" "$TEST_DIR/test_esc_hollow.py"
+    [ "$(count_findings)" -eq 1 ]
+    [[ "$output" == *"no-assertion"* ]]
+}
+
 # --- Phase 2: Go hollow-test scanner ----------------------------------------
 
 @test "substance-check: flags a Go test with no assertion" {
