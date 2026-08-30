@@ -230,6 +230,7 @@ After `curl | bash` install, the foundation lives at `~/.local/share/claude-base
 | `website/` | [Docusaurus site](https://christopherlouet.github.io/claude-base/) — `docs/` is auto-mirrored here by `npm --prefix website run generate` |
 | `specs/` | Feature specs consumed by the workflow agents (`/work:work-specify`, `/work:work-plan`) |
 | `tests/` | The bats suite — run with `./scripts/test.sh` |
+| `eval/` | Evidence harnesses — do the rules and gates actually change anything? `value-proof/`, `rule-efficacy/`, `gate-scorecard/`, `cold-start/`, `minimal-code/`, each with its own README and its own method |
 | `.github/workflows/` | CI : `ci.yml`, `security.yml`, `docs.yml`, `pr-check.yml`, `release.yml`, `dependabot-auto-merge.yml` |
 | `AGENTS.md`, `CHANGELOG.md`, `VERSION`, `LICENSE`, `SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `counts.json` | Project metadata |
 
@@ -494,6 +495,7 @@ Concrete signals rather than a self-assessment score :
 ### Security measures
 
 - **Gitleaks**: secret detection ruleset (CI workflow + local scan) — see `.gitleaks.toml`
+- **Private names**: a pre-commit gate stops an end user's private project names from reaching this public repo, in staged paths *or* staged content. The protected list is deliberately kept **outside** the repository (`~/.claude/private-names`, or `CLAUDE_BASE_PRIVATE_NAMES`), so it is never itself published — and no list means a silent no-op, so a fresh clone is never blocked. Scans only what a commit **adds**; bypass once with `SKIP_PRIVATE_NAMES=1`. See [`docs/GUARDRAILS.md`](docs/GUARDRAILS.md)
 - **ShellCheck**: bash linting on all `scripts/` (CI workflow `security.yml`, severity warning)
 - **Deny list**: dangerous commands blocked (`rm -rf /`, `sudo`, `git push --force`)
 - **Protection hooks**: blocks edits on main/master
