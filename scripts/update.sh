@@ -451,19 +451,24 @@ parse_args() {
 # =============================================================================
 
 create_backup() {
-    # C2 audit: a --clean run wipes ALL SIX managed .claude/ dirs
-    # (clean_claude_dirs), so its backup must cover all six too — the old
-    # commands-only backup silently lost user files in skills/agents/rules/
-    # output-styles/templates. backup_claude_dirs shares the exact dir list
-    # with clean_claude_dirs and honors the same stdout-is-only-the-path
-    # contract (diagnostics on stderr).
-    if $CLEAN_BEFORE_UPDATE; then
+    # A --clean run wipes ALL SIX managed .claude/ dirs (clean_claude_dirs), so
+    # its backup must cover all six too — the old commands-only backup silently
+    # lost user files in skills/agents/rules/output-styles/templates.
+    # backup_claude_dirs shares the exact dir list with clean_claude_dirs and
+    # honors the same stdout-is-only-the-path contract (diagnostics on stderr).
+    #
+    # --remove-orphans is the OTHER deleter, and it was never brought under that
+    # invariant: detect_all_orphans walks the same six directories and unlinks
+    # what it finds there, while the run behind it backed up commands/ only. On
+    # a real project that meant 30 of 49 removals had no copy anywhere
+    # (measured 2026-08-30). One list, one guarantee — for every deleter.
+    if $CLEAN_BEFORE_UPDATE || $REMOVE_ORPHANS; then
         backup_claude_dirs "$TARGET_DIR"
         return
     fi
 
-    # Non-clean runs keep the historical commands-only backup (nothing else
-    # is at wipe risk; per-file updates never delete).
+    # Runs that delete nothing keep the cheap commands-only backup: per-file
+    # updates never unlink, so there is nothing else to lose.
     local backup_dir
     backup_dir="$TARGET_DIR/$COMMANDS_SUBDIR.backup.$(date +%Y%m%d_%H%M%S)"
 
@@ -1495,6 +1500,14 @@ update_directory() {
     fi
 
     success "$label: $dir_added added, $dir_updated updated, $dir_identical identical, $dir_skipped skipped"
+
+    # Roll the per-directory tallies into the run totals. Without this the
+    # summary spoke for commands/ and support scripts alone, so an --all run
+    # that rewrote 200 files across six directories announced 58 — a report
+    # narrower than the work it had just done.
+    ADDED=$((ADDED + dir_added))
+    UPDATED=$((UPDATED + dir_updated))
+    SKIPPED=$((SKIPPED + dir_skipped))
 }
 
 # C2 audit — support scripts outside scripts/hooks/. The hook
@@ -1881,9 +1894,9 @@ detect_orphan_files() {
 detect_all_orphans() {
     section "Detecting orphan files"
 
-    local dirs_to_check=("commands" "skills" "agents" "rules" "output-styles" "templates")
-
-    for subdir in "${dirs_to_check[@]}"; do
+    # The managed-subdir list is a FACT, and it already has a home: writing it
+    # again here is how the copy drifts from the backup that must cover it.
+    for subdir in "${CLAUDE_MANAGED_SUBDIRS[@]}"; do
         if [[ -d "$TARGET_DIR/.claude/$subdir" ]]; then
             debug "Checking .claude/$subdir"
             detect_orphan_files "$subdir"

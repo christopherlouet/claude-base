@@ -357,6 +357,98 @@ teardown() {
     [ -f "$TEST_DIR/.claude/commands/work/orphan-command.md" ]
 }
 
+# --- the backup must cover what the deleter deletes (2026-08-30) -------------
+# CLAUDE_MANAGED_SUBDIRS exists so "a clean can never wipe a directory the
+# backup missed". --remove-orphans deletes across those same six directories,
+# and it was never brought under that invariant: the run backed up commands/
+# only. Measured on a real project: 30 of 49 orphans sat outside the net.
+
+@test "update.sh --remove-orphans backs up an orphan it deletes from agents/" {
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    mkdir -p "$TEST_DIR/.claude/agents"
+    echo "# orphan agent" > "$TEST_DIR/.claude/agents/orphan-agent.md"
+
+    run "$UPDATE_SCRIPT" -y --all --force --remove-orphans "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ ! -f "$TEST_DIR/.claude/agents/orphan-agent.md" ]   # it was indeed deleted
+
+    # ...and a copy survives in one of the backups the run created.
+    run bash -c 'find "$1"/.claude.backup.* "$1"/.claude/commands.backup.* -name orphan-agent.md 2>/dev/null | head -1' _ "$TEST_DIR"
+    [ -n "$output" ]
+}
+
+@test "update.sh --remove-orphans backs up an orphan it deletes from skills/" {
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    mkdir -p "$TEST_DIR/.claude/skills/orphan-skill"
+    echo "# orphan skill" > "$TEST_DIR/.claude/skills/orphan-skill/SKILL.md"
+
+    run "$UPDATE_SCRIPT" -y --all --force --remove-orphans "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    run bash -c 'find "$1"/.claude.backup.* "$1"/.claude/commands.backup.* -name SKILL.md -path "*orphan-skill*" 2>/dev/null | head -1' _ "$TEST_DIR"
+    [ -n "$output" ]
+}
+
+# CONTROL - the historical commands/ coverage must not regress.
+@test "update.sh --remove-orphans still backs up an orphan it deletes from commands/" {
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    echo "# orphan command" > "$TEST_DIR/.claude/commands/work/orphan-command.md"
+
+    run "$UPDATE_SCRIPT" -y --all --force --remove-orphans "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ ! -f "$TEST_DIR/.claude/commands/work/orphan-command.md" ]
+    run bash -c 'find "$1"/.claude.backup.* "$1"/.claude/commands.backup.* -name orphan-command.md 2>/dev/null | head -1' _ "$TEST_DIR"
+    [ -n "$output" ]
+}
+
+# CONTROL - a run that deletes nothing keeps the cheap commands-only backup;
+# widening the net must not start copying six directories on every update.
+@test "update.sh without --remove-orphans keeps the commands-only backup" {
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    run "$UPDATE_SCRIPT" -y --all --force "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    run bash -c 'ls -d "$1"/.claude.backup.* 2>/dev/null | wc -l' _ "$TEST_DIR"
+    [ "$output" -eq 0 ]
+}
+
+# The list is a fact, and a fact written twice rots in the unguarded copy.
+@test "update.sh derives the orphan scan from CLAUDE_MANAGED_SUBDIRS" {
+    run bash -c 'grep -n "dirs_to_check=(\"commands\"" "$1"' _ "$UPDATE_SCRIPT"
+    [ "$status" -ne 0 ]
+    run bash -c 'grep -c "CLAUDE_MANAGED_SUBDIRS" "$1"' _ "$UPDATE_SCRIPT"
+    [ "$output" -ge 1 ]
+}
+
+# The summary counted commands and support scripts only, so an --all run that
+# rewrote 200 files reported 58 (measured on a real project). update_directory
+# already kept per-directory tallies; it just never rolled them into the totals.
+# Asserted as a DELTA, so the test derives its expectation from the artifact
+# instead of pinning a number that only holds for today's catalogue.
+@test "update.sh counts a file it rewrote outside commands/ in the summary" {
+    run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    # settle: run once so a second identical run is the stable baseline
+    run "$UPDATE_SCRIPT" -y --all --force "$TEST_DIR"
+    run "$UPDATE_SCRIPT" -y --all --force "$TEST_DIR"
+    local base
+    base=$(printf '%s\n' "$output" | sed -nE 's/^[[:space:]]*Updated:[[:space:]]*([0-9]+).*/\1/p' | head -1)
+    [ -n "$base" ]
+
+    # dirty exactly one agent — a directory the old counter never looked at
+    local victim
+    victim=$(find "$TEST_DIR/.claude/agents" -name '*.md' | head -1)
+    [ -n "$victim" ]
+    printf '\n<!-- drifted -->\n' >> "$victim"
+
+    run "$UPDATE_SCRIPT" -y --all --force "$TEST_DIR"
+    local after
+    after=$(printf '%s\n' "$output" | sed -nE 's/^[[:space:]]*Updated:[[:space:]]*([0-9]+).*/\1/p' | head -1)
+    [ "$after" -eq "$((base + 1))" ]
+}
+
 @test "update.sh --remove-orphans removes files absent from the foundation" {
     run "$NEW_PROJECT_SCRIPT" -y --simple "$TEST_DIR"
     [ "$status" -eq 0 ]
