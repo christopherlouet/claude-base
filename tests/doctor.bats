@@ -260,6 +260,33 @@ EOF
     [[ "$output" == *"_policy-dangerous-commands.sh"* ]]
 }
 
+# The comparison was keyed on the _policy-* FILES, so a project predating the
+# policy extraction — its rules still inline in command-validator.sh, no
+# _policy-* on disk at all — had nothing to compare and scored clean. Found on a
+# real 4.2.0 project whose guard provably let the root deletion through.
+@test "doctor.sh flags a stale command-validator even with no _policy-* present" {
+    create_minimal_project "$TEST_DIR"
+    mkdir -p "$TEST_DIR/scripts/hooks"
+    cp "$BATS_TEST_DIRNAME/../scripts/hooks/command-validator.sh" \
+       "$TEST_DIR/scripts/hooks/command-validator.sh"
+    printf '# an older revision\n' >> "$TEST_DIR/scripts/hooks/command-validator.sh"
+    # no _policy-*.sh here on purpose — that is the whole point
+    [ ! -e "$TEST_DIR/scripts/hooks/_policy-dangerous-commands.sh" ]
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" == *"policy-stale"* ]]
+    [[ "$output" == *"command-validator.sh"* ]]
+}
+
+# CONTROL - an identical command-validator is not drift.
+@test "doctor.sh does NOT flag a command-validator identical to the foundation's" {
+    create_minimal_project "$TEST_DIR"
+    mkdir -p "$TEST_DIR/scripts/hooks"
+    cp "$BATS_TEST_DIRNAME/../scripts/hooks/command-validator.sh" \
+       "$TEST_DIR/scripts/hooks/command-validator.sh"
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" != *"policy-stale"* ]]
+}
+
 # CONTROL - a byte-identical policy is not drift.
 @test "doctor.sh does NOT flag a policy identical to the foundation's" {
     create_minimal_project "$TEST_DIR"

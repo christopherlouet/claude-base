@@ -440,11 +440,45 @@ EOF
     [ "$status" -eq 0 ]
 }
 
+# The hook is deliberately NOT named after a foundation-owned security guard:
+# this case asserts the CONTRACT (modern stdin hook, no mcp wildcard), and a
+# stub carrying a foundation guard's NAME with entirely different content is
+# drift by design — see the stale-guard case below.
 @test "detect_security_drift: clean target (modern hooks, no mcp allow) returns 0" {
     skip_if_no_jq
     mkdir -p "$TEST_DIR/scripts/hooks" "$TEST_DIR/.claude"
-    _write_modern_hook "$TEST_DIR/scripts/hooks/command-validator.sh"
+    _write_modern_hook "$TEST_DIR/scripts/hooks/custom-project-hook.sh"
     echo '{ "permissions": { "allow": ["Read", "Bash"] } }' > "$TEST_DIR/.claude/settings.json"
+    run detect_security_drift "$TEST_DIR"
+    [ "$status" -eq 0 ]
+}
+
+# A security guard the foundation owns must MATCH the foundation. Keying the
+# comparison on the _policy-* files alone let a project keep an old
+# command-validator.sh — rules inline, no _policy-* on disk — and score clean
+# while its guard let the filesystem-root deletion through (measured on a real
+# 4.2.0 install, 2026-08-30).
+@test "detect_security_drift: a command-validator behind the foundation is drift" {
+    skip_if_no_jq
+    mkdir -p "$TEST_DIR/scripts/hooks" "$TEST_DIR/.claude"
+    cp "$BATS_TEST_DIRNAME/../scripts/hooks/command-validator.sh" \
+       "$TEST_DIR/scripts/hooks/command-validator.sh"
+    printf '# an older revision\n' >> "$TEST_DIR/scripts/hooks/command-validator.sh"
+    echo '{ "permissions": { "allow": ["Read"] } }' > "$TEST_DIR/.claude/settings.json"
+    run detect_security_drift "$TEST_DIR"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"policy-stale"* ]]
+    [[ "$output" == *"command-validator.sh"* ]]
+}
+
+# CONTROL - byte-identical is not drift, so the rule cannot be a blanket "any
+# file named like a guard is stale".
+@test "detect_security_drift: a command-validator identical to the foundation is clean" {
+    skip_if_no_jq
+    mkdir -p "$TEST_DIR/scripts/hooks" "$TEST_DIR/.claude"
+    cp "$BATS_TEST_DIRNAME/../scripts/hooks/command-validator.sh" \
+       "$TEST_DIR/scripts/hooks/command-validator.sh"
+    echo '{ "permissions": { "allow": ["Read"] } }' > "$TEST_DIR/.claude/settings.json"
     run detect_security_drift "$TEST_DIR"
     [ "$status" -eq 0 ]
 }
