@@ -66,7 +66,7 @@ A capability comparison against similar projects (with sources) is in [**docs/PO
 - **vs [Spec Kit](https://github.com/github/spec-kit)** (agent-agnostic SDD primitives) — spec-kit gives you `specify / plan / tasks / implement` across 30+ agents; claude-base adds what it doesn't: an Explore phase, *enforced* TDD, the audit-fix loop, path-specific rules, and hooks — Claude-Code-native. Use both: spec-kit for the primitives, claude-base for the discipline.
 - **vs the [official marketplace](https://code.claude.com/docs/en/discover-plugins)** (vendor-published single-tool skills) — the marketplace ships deep per-tool coverage; claude-base is the workflow layer + a curated, billing-safe list of *which* vendor skills to trust. They pair: foundation for the rigor, vendor skills for the depth.
 
-The complete net of ~25 enforced checkpoints a bare Claude project lacks — method, security, verification, anti-gaming, audit, integrity — is catalogued in [**docs/GUARDRAILS.md**](docs/GUARDRAILS.md).
+The complete net of enforced checkpoints a bare Claude project lacks — method, security, verification, anti-gaming, audit, integrity — is catalogued in [**docs/GUARDRAILS.md**](docs/GUARDRAILS.md), which is the count as well as the list.
 
 Full positioning — comparison tables, the curation engine, and where it's heading — in [**docs/POSITIONING.md**](docs/POSITIONING.md).
 
