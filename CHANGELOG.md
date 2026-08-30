@@ -9,9 +9,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 > Earlier entries (v1.30.x and before) remain in their original French
 > as a historical record of the project's pre-i18n era.
 
-## [Unreleased]
+## [5.4.0] - 2026-08-30
+
+The maintenance-honesty release. A guardrail pass graded everything in this repository that can
+refuse an action — 29 CI gates, 18 hooks, 31 inline declarations no inventory had ever listed, 3 git
+hooks — and **removed none of them**: what it found instead was seven guardrails *reporting more than
+they had established*, and a real security gap the probe stumbled into. The same criterion then met
+the context every session carries: the foundation's own load fell **41 %**, an installed project's
+**73 %**, because catalogues and tool reference stopped travelling while the instructions stayed.
+Nothing was deleted — it stopped being carried. Suite 2 138 → 2 200+.
+
+### Security
+
+- **The command guard did not cover deletion of the filesystem root.** A probe that only asked
+  *"do the untraced guards fire?"* found that `command-validator.sh` refused every **named** system
+  directory yet let through the bare root, its glob form, the flag that disables the tool's own
+  protection, and — the sharpest one — **several system directories at once**: a single one was
+  refused, the same one listed *after another* was not, because only the first path following the
+  flag group was examined. Three defects, one of them an anchor requiring the path in first position
+  and a flag group written without a hyphen. The instrument was proven capable of a positive first
+  (every named directory refused), and the widening was judged by the **corpus delta** rather than by
+  re-reading the regex: 656 commands, 10 refusals, identical before and after. (#513)
 
 ### Added
+
+- **`scripts/guardrail-inventory.sh` — every guardrail in this repository, from all four sources.**
+  Nothing enumerated them together: the spec's "18 items" was right for `scripts/hooks/` and covered
+  one source of four. The enumerator reports **29 CI gates · 18 hooks (10 blocking / 8 advisory) · 31
+  inline `settings.json` declarations · 3 git hooks**, sorted and stable, and it **refuses nothing** —
+  it always exits 0. The 31 inline declarations had never appeared in any inventory; none can refuse
+  (verified), but all of them run. Its own first version was wrong in a *plausible* way — 9/9 instead
+  of 10/8, because the blocking pattern required a space after `exit 2` while the real script writes
+  `exit 2;` — and that was caught by two independent measurements disagreeing, never by review.
+  21 tests, including a non-vacuity control per source. (#512)
+- **The record the pass produced**: `specs/guardrail-cleanup/` — spec, plan and tasks (#511), the
+  graded inventory with both harms per entry and no score column (#514), the carried-material
+  measurements, and the D1 decision **not** to guard the record itself (#521). The reasoning is
+  written down rather than asserted: a stale record is recoverable, one existing command re-derives
+  the truth, and a drift guard would demand a hand-written graded entry before any new guardrail could
+  land — the *blocks all work* failure mode the spec names as worse than absence.
 
 - **An adversarial corpus for the command guard: its false-block rate is now measured, not eyeballed.** The `yes \|` false positive was found by tripping over it in normal work, and the response to "are the other patterns fine?" had been to re-read them — which measures nothing. `scripts/validator-corpus.sh` builds a corpus of **653 real commands** from the two places where a refusal is a self-contradiction — what CI executes (`.github/workflows` `run:` blocks) and what the docs prescribe (```bash fences across `docs/`, `templates/`, `.claude/`, `README.md`) — and runs the policy over it. Result on the current tree: **10 refusals, and none of them a false positive.** Every one is either host provisioning a human runs and an agent must not (`sudo systemctl`, `sudo npm install -g`) or a third-party installer piped into a shell — the pattern `CLAUDE.md` itself proscribes. `tests/validator-corpus.bats` pins that set: each refusal must be a reviewed exception, so a widening that starts taxing ordinary documented commands fails with the offending command named, while refusing *fewer* never fails. Proven by mutation — broadening pipe-to-shell to any `| bash` (a plausible "safer" edit) makes it fail and name the newly-taxed command, a benign troubleshooting one-liner from our own guide. The `base-maintenance` rule now points at the tool for the measure-the-delta step before widening any detector.
   - `README.md`'s own `curl … | bash` one-liner is among the ten, and it is a true positive like the rest: the README pairs the 30-second hook with a "Verify before executing (supply-chain conscious)" section that cites this repo's `security.md`, notes that a hook here blocks `curl … | sh` in agent sessions, and gives the `SHA256SUMS` download → verify → execute recipe against a pinned tag. The refusal is the policy working on a line written for a human, not a doc defect.
@@ -20,6 +56,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **The effort ladder documented up to `max`, and `ultracode` finally named.** Six places taught `/effort` and every one stopped at `xhigh`, three of them calling it "Maximum reasoning" — but the installed CLI accepts `low, medium, high, xhigh, max`, so the documented ceiling was one rung short and mislabelled. (The changelog alone was ambiguous here: 2.1.72 "removed max", while 2.1.221/2.1.232 still name it — settled by probing the binary, which prints its own valid list.) Every copy now carries `max` and frames `xhigh` as the deepest *routinely useful* level rather than the ceiling. Separately, the Dynamic Workflows section told readers to ask for *"a workflow that…"* — the exact phrasing that stopped triggering anything in **CC 2.1.160**, when the keyword became `ultracode`; the keyword appeared nowhere in the repo and is now documented, session-wide `/config` toggle included. Also added: `--safe-mode` (CLI 2.1.169+) to the troubleshooting guide as the *is-it-even-us* triage step ahead of the per-guard `SKIP_*` variables, the two hook events missing from the reference catalog (`DirectoryAdded` 2.1.219, `MessageDisplay` 2.1.152), and self-hosted environments (`claude self-hosted-runner`, public beta 2026-08-06) alongside the other cloud-execution features.
 
 ### Changed
+
+- **An installed project carried 109 914 bytes into every session; it now carries 29 634 — down 73 %.**
+  Seven documents were `@`-imported into every project's `CLAUDE.md`. Four of them *describe* rather
+  than instruct: 40 sections of Claude Code feature notes (one about a superseded model), a catalogue
+  of hooks that run whether or not they are documented, and catalogues of agents and skills **the
+  harness already lists natively**. The strongest argument was already in the repository — the
+  foundation, which *writes* those catalogues, imports none of them and works. A fifth left once
+  someone opened it: `commands.md` is titled *"Essential Commands"* and lists `npm install`,
+  `flutter run`, `pytest` — zero slash commands — while two documents described it as the command
+  catalogue. `update` **prunes** the retired imports rather than only stopping new installs, so
+  projects installed yesterday do not stay heavier than tomorrow's. (#523, #526)
+- **The foundation's own carried load fell from 35 162 to 20 731 bytes (−41 %).** `.claude/rules/README.md`
+  is a *catalogue of the 32 rules*, 83 % table rows, global only because a catalogue never got a
+  `paths:` scope; it is now scoped to `.claude/rules/**`, and the priority ladder — the one part that
+  instructs — moved to `CLAUDE.md` (#520). `best-practices.md` (23 % of the load, of which a third is
+  model prices and dated announcements) and `project-structures.md` stopped being `@`-imported; both
+  documents stay exactly where readers and the website expect them (#522). The anti-pattern list, which
+  existed in two carried files with **7 of 13 bullets identical and already drifting**, now has one
+  home. `tests/rules-frontmatter.bats` pins the carried set as an explicit list, because a rule made
+  global costs every session forever and nothing reports it.
+- **The bookkeeping stopped serialising work.** `tests` and `testFiles` were the only counters that
+  **verify themselves** — CI runs the suite on every PR, so a stored figure told a reader nothing —
+  while moving 112 and 48 count-lines across 95 commits and invalidating any change prepared in
+  parallel. They are no longer tracked; the structural counters, which do not verify themselves, are
+  untouched. The anti-drift property was proven to survive by mutation on the real repository, one
+  control per scanner. (#510)
 
 - **August-2026 news sweep: `/ultraplan` is gone, Sonnet 5's price is permanent.** The previous sweep (#492) pinned CC 2.1.218; the CLI has since moved to 2.1.233 and two documented facts rotted. `/ultraplan` was **removed outright in CC 2.1.222** — the foundation still advertised it in `CLAUDE.md`'s workflow table and gave it half a section in `advanced-features.md`, so a reader following the docs hit an unknown command with no replacement named. That section is now a `/code-review ultra` section (the canonical spelling; `/ultrareview`, which the docs used, is a still-working deprecated alias), and it names the local `/work:work-plan` fallback rather than leaving the cloud-planning hole unexplained. Separately, Anthropic made Sonnet 5's `$2/$10` per MTok **the permanent standard price on 2026-08-10**, cancelling the `$3/$15` rise the docs announced for September 1 — corrected in the model table and the Sonnet 5 section. Verified against the primary changelog rather than release summaries, which also walked back two items: the WebSearch session cap (2.1.212) and `SessionStart` reporting `source: "fork"` (2.1.214) predate the last sweep's cutoff, and 2.1.232's subagent-forking default concerns the Agent tool's `subagent_type: "fork"`, **not** the skill-level `context: fork` that #492's `background: false` pins address — that fix stands unchanged.
 
@@ -37,6 +99,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **`rewrite_claude_md_paths` refuses to run on the foundation's own checkout.** It is a destructive in-place adaptation meant for a copy; pointed at this repo it stripped the very rows that are correct here.
 
 ### Fixed
+
+- **`preflight` announced success while a gate had not run.** With a PATH mirroring the real one
+  minus a single tool, the output was **indistinguishable** from a complete run — same line per gate,
+  exit 0, *"OK all fast gates passed"* — and the skip notice never reached the output. Not
+  hypothetical: the GitHub macOS runner ships no `shellcheck`. Skipping stays non-blocking; what
+  changed is a **reporting contract** — a gate that cannot run prints `SKIPPED` on its own line, the
+  notice goes to stderr even under `--quiet`, and the run withholds the success line and names what
+  did not run. Four mutants, each killed by its own arm. (#515)
+- **The counts marker gate checked 87 of 147 markers and passed vacuously.** `presets` and
+  `marketplaceAuditPilots` fell through a silent `continue`, `byDomain.*` never matched because the
+  pattern excluded the dot, stripping every marker from the repository left the gate **green**, and a
+  document that *quoted* a marker was indistinguishable from one that violated it — which blocked
+  real work. Fenced blocks and inline code spans are documentation now; an unknown key is reported
+  rather than skipped; and the anti-vacuity floor stores **no number**, requiring only that each
+  structural key has at least one live marker. Proven on the real target: a planted drift passes the
+  old gate untouched and is named by the new one. `_check_core` also gained the script-level coverage
+  it never had. (#517)
+- **The anti-hollow-test detector failed a four-line test as "empty".** Its bats branch counted braces
+  on the raw line, so a closing brace inside a comment closed the block early. The repair was meant to
+  be the JavaScript branch's one line — but **that model was itself defective**: a naive `/"[^"]*"/`
+  mispairs on an embedded escaped quote and can delete an *opening* brace, which turned a passing Go
+  fixture into a false *no-assertion*. All three branches are escape-aware now. (#516)
+- **Two tests pinned a word where they meant a contract.** `ci-workflows.bats` claimed to cover every
+  counts-gate input class while asserting four of five, and its `grep VERSION` matched the surrounding
+  prose comment rather than the pattern — five mutations of the real hook: the old case killed **one**,
+  the new one **five**. And `audit-docs.bats` planted its fixture **in the shared checkout** while a
+  sibling case audited that same checkout under `bats --jobs`; sampling showed the tree modified in
+  **71 of 268 samples**, now 0 of 281. (#518, #519)
+- **The front door made five claims the code contradicts.** The prerequisites omitted `bash` 4.0+ —
+  fatal on the `init` path, and macOS ships 3.2 — while listing the `claude` CLI as required when
+  `init` only needs it for one optional step. *"picks the right preset"* overstated a tool that
+  detects and **suggests** (`init -y` records `preset: null`). QUICKSTART stated no prerequisites at
+  all. *"Available commands"* pointed, from two documents including the always-carried `CLAUDE.md`, at
+  a file with **zero** slash commands. And a *"~25 enforced checkpoints"* figure had drifted from its
+  own catalogue of 31 — in **two** places, the first fix catching one. (#525, #526, #527)
+- **The README stopped being a second copy of the documentation.** 33 474 → 28 950 bytes, 21 → 17
+  sections — but five of the sections a density pass would have "moved to a link" existed **only**
+  there: the stack templates, the `ide.sh` surface, the six CI workflows and the manual install
+  routes. They were written into `CUSTOMIZATION`, `TEAM-GUIDE` and `QUICKSTART` **first**, and linked
+  from the README second. (#528)
 
 - **An install from a symlinked checkout no longer fails wholesale.** `emit_assert_within_root` compared the symlink-**resolved** source against the **raw** `src_root`, so whenever the root itself was reached through a symlink every single manifest entry was refused with "source outside the repo". That is the default situation on macOS, where `/tmp` is a link to `/private/tmp`. Both sides are resolved now; a source that genuinely resolves outside the resolved root is still refused, which two tests pin — one for the symlinked root, one confirming an outgoing link is still caught in that same setup. The bug **predates all of this work** (reproduced against `0aea31a6`); `tests/emit.bats`, added in this batch, is simply the first test to exercise emit with a symlinked root, and CI's macOS column is where it surfaced.
 - **The `git-hooks-wire` self-application test asserted one machine's state.** It demanded silence on the real foundation, which held only on a checkout already repaired by hand. CI failed it on both Linux and macOS: a fresh clone carries no local config, so `core.hooksPath` is unset and the hook correctly repairs and says so — the commoner of the two breakages it exists for. It now asserts the invariant instead: the end state is `.husky`, and a second run has nothing left to say.
