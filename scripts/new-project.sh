@@ -1121,6 +1121,14 @@ update_gitignore_file() {
                 echo "CLAUDE.local.md" >> "$target_dir/.gitignore"
                 echo ".claude/settings.local.json" >> "$target_dir/.gitignore"
                 echo ".mcp.env" >> "$target_dir/.gitignore"
+                # What the foundation WRITES and no project should carry: the
+                # update's backups (both shapes) and Claude Code's worktrees.
+                # Versioning .claude/ made all three land in `git status` on
+                # the first four projects to adopt it, each excluded by hand.
+                echo ".claude/commands.backup.*/" >> "$target_dir/.gitignore"
+                echo ".claude.backup.*/" >> "$target_dir/.gitignore"
+                echo "CLAUDE.md.backup.*" >> "$target_dir/.gitignore"
+                echo ".claude/worktrees/" >> "$target_dir/.gitignore"
             else
                 echo -e "${DIM}[DRY-RUN]${NC} Adding Claude entries (local config) to .gitignore"
             fi

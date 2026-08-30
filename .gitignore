@@ -33,6 +33,13 @@ coverage/
 # Voir CONTRIBUTING.md : "Versionner .claude/ et CLAUDE.md dans git".
 CLAUDE.local.md
 .claude/settings.local.json
+# What an update WRITES and no checkout should carry. The worktree rule
+# lived only in .git/info/exclude — local to one clone, inherited by no
+# other checkout and impossible to seed into a project.
+.claude/commands.backup.*/
+.claude.backup.*/
+CLAUDE.md.backup.*
+.claude/worktrees/
 .mcp.env
 
 # Terraform artifacts in templates

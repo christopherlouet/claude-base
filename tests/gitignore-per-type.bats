@@ -29,6 +29,57 @@ install_as() {
     [ -f "$TEST_DIR/.gitignore" ]
 }
 
+# --- the foundation must ignore what the foundation WRITES (2026-08-30) ------
+# Versioning .claude/ is the doctrine, and the moment four projects started
+# doing it, three foundation-written artefacts landed in `git status`: the
+# update's backups in both shapes, the CLAUDE.md backups, and Claude Code's own
+# worktrees. Each had to be excluded by hand, in every project.
+
+@test "gitignore: the Claude block ignores the backups an update writes" {
+    printf 'node_modules/\n' > "$TEST_DIR/.gitignore"
+    run "$NEW_PROJECT_SCRIPT" -y -q --skip-prompts "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    grep -q '^\.claude/commands\.backup\.\*/$' "$TEST_DIR/.gitignore"
+    grep -q '^\.claude\.backup\.\*/$' "$TEST_DIR/.gitignore"
+    grep -q '^CLAUDE\.md\.backup\.\*$' "$TEST_DIR/.gitignore"
+}
+
+@test "gitignore: the Claude block ignores Claude Code worktrees" {
+    printf 'node_modules/\n' > "$TEST_DIR/.gitignore"
+    run "$NEW_PROJECT_SCRIPT" -y -q --skip-prompts "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    grep -q '^\.claude/worktrees/$' "$TEST_DIR/.gitignore"
+}
+
+# The other path: a project with NO .gitignore gets one seeded from the
+# foundation's, which must therefore carry the same four entries. Two code
+# paths, one contract.
+@test "gitignore: a seeded .gitignore carries the same foundation-written ignores" {
+    run "$NEW_PROJECT_SCRIPT" -y -q --skip-prompts "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    grep -q '^\.claude\.backup\.\*/$' "$TEST_DIR/.gitignore"
+    grep -q '^CLAUDE\.md\.backup\.\*$' "$TEST_DIR/.gitignore"
+    grep -q '^\.claude/worktrees/$' "$TEST_DIR/.gitignore"
+}
+
+# CONTROL - the doctrine itself must not move: .claude/ and CLAUDE.md stay
+# versioned. Widening the ignore list is exactly how that would get undone.
+@test "gitignore: the Claude block still leaves .claude/ and CLAUDE.md versioned" {
+    printf 'node_modules/\n' > "$TEST_DIR/.gitignore"
+    run "$NEW_PROJECT_SCRIPT" -y -q --skip-prompts "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    ! grep -qE '^\.claude/?$' "$TEST_DIR/.gitignore"
+    ! grep -qE '^CLAUDE\.md$' "$TEST_DIR/.gitignore"
+}
+
+# The foundation's OWN worktree rule lives in .git/info/exclude — local to one
+# clone, invisible to every other checkout and impossible to seed into a
+# project. Assert the TRACKED file, not `git check-ignore`, which would pass
+# vacuously wherever that local rule happens to exist.
+@test "gitignore: the foundation's tracked .gitignore ignores its own worktrees" {
+    grep -q 'worktrees' "$BATS_TEST_DIRNAME/../.gitignore"
+}
+
 @test "gitignore: a python install ignores Python build artefacts" {
     install_as python
 
