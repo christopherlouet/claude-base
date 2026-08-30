@@ -61,10 +61,7 @@ claude-base is the opinionated **discipline layer for Claude Code**.
 - **Learns across all your projects** — a human-gated, sanitized **lessons referential**: after a hard-won fix or a correction, claude-base proposes a one-line lesson and, on your approval, stores it in your own `~/.claude/rules/lessons.md` — loaded into *every* project. Unlike auto-learners, *you* approve each lesson, and it's never committed to a repo. [How it works →](docs/recipes/personal-lessons-referential.md)
 - **Curated vendor skills, kept fresh** — instead of guessing among 6,700+ community skills, you get a vetted shortlist of *which* ones to trust. A billing-safe engine re-checks them for rot/abandonment and surfaces new candidates — *observe-never-install*: nothing lands in your project without you.
 
-A capability comparison against similar projects (with sources) is in [**docs/POSITIONING.md**](docs/POSITIONING.md#capability-comparison). It composes with the tools below rather than competing with them:
-
-- **vs [Spec Kit](https://github.com/github/spec-kit)** (agent-agnostic SDD primitives) — spec-kit gives you `specify / plan / tasks / implement` across 30+ agents; claude-base adds what it doesn't: an Explore phase, *enforced* TDD, the audit-fix loop, path-specific rules, and hooks — Claude-Code-native. Use both: spec-kit for the primitives, claude-base for the discipline.
-- **vs the [official marketplace](https://code.claude.com/docs/en/discover-plugins)** (vendor-published single-tool skills) — the marketplace ships deep per-tool coverage; claude-base is the workflow layer + a curated, billing-safe list of *which* vendor skills to trust. They pair: foundation for the rigor, vendor skills for the depth.
+It **composes** with the neighbours rather than competing: Spec Kit for agent-agnostic SDD primitives, the official marketplace for per-tool depth. Both comparisons — with sources, and a capability table across seven similar projects — are in [**docs/POSITIONING.md**](docs/POSITIONING.md#capability-comparison).
 
 The complete net of enforced checkpoints a bare Claude project lacks — method, security, verification, anti-gaming, audit, integrity — is catalogued in [**docs/GUARDRAILS.md**](docs/GUARDRAILS.md), which is the count as well as the list.
 
@@ -121,7 +118,19 @@ After install, you `cd ./my-app && claude` and the foundation drives the workflo
 [work-pr]       Branch, commit, push, open the PR
 ```
 
-One command chains the 6 phases. Each phase is also runnable on its own (`/work:work-explore`, `/dev:dev-tdd`, etc.) if you prefer manual control.
+One command chains the 6 phases.
+
+### Or drive it yourself
+
+```
+/assistant              # guided: explains the workflow and suggests the next command
+/assistant-auto "..."   # automatic: routes your request to the right workflow
+```
+
+Each phase is also a command of its own — `/work:work-explore`, `/work:work-specify`,
+`/work:work-plan`, `/dev:dev-tdd`, `/qa:qa-loop "score 90"`, `/work:work-pr` — and the shape is
+identical for any stack; swap the arguments. A worked example per phase is in
+[docs/CHEATSHEET.md](docs/CHEATSHEET.md).
 
 ## Installation
 
@@ -186,30 +195,9 @@ If `~/.local/bin` is not on your `PATH`, add it (most modern distros already do)
 export PATH="$HOME/.local/bin:$PATH"  # add to ~/.bashrc or ~/.zshrc
 ```
 
-### Option 2: Manual git clone
+### Installing without the one-liner
 
-```bash
-git clone https://github.com/christopherlouet/claude-base.git
-cd claude-base
-
-# Install in an existing project (in-repo dispatcher — no PATH install yet)
-./bin/claude-base init --simple /path/to/your/project
-
-# Full install with CI/CD, hooks, Docker
-./bin/claude-base init --all /path/to/your/project
-```
-
-### Option 3: Manual copy (minimal)
-
-```bash
-# Copy the Claude configuration directly
-cp -r claude-base/.claude your-project/
-cp claude-base/CLAUDE.md your-project/
-
-# Optional
-cp claude-base/.mcp.json your-project/
-cp claude-base/.github your-project/ -r
-```
+A manual `git clone` + in-repo dispatcher, or a raw copy of `.claude/`, are both documented in [docs/QUICKSTART.md](docs/QUICKSTART.md).
 
 ### Keeping Claude Code itself up to date
 
@@ -256,63 +244,9 @@ Commands are grouped into 9 domains:
 
 → **By stack**: [docs/STACK-RECIPES.md](docs/STACK-RECIPES.md) lists the relevant commands for each stack (Web, Mobile, API, Auth, etc.).
 
-## Recommended Workflow
+## Stack templates
 
-The fastest way in is the built-in orchestrator — or run the six phases yourself:
-
-```
-/assistant              # guided: explains the workflow and suggests the next command
-/assistant-auto "..."   # automatic: routes your request to the right workflow
-```
-
-### Practical example (one phase at a time)
-
-```bash
-# 1. Explore the existing system
-/work:work-explore the authentication system
-
-# 2. Specify the feature (User Stories + acceptance criteria)
-/work:work-specify add OAuth2 Google sign-in
-
-# 3. Plan the implementation
-/work:work-plan OAuth2 Google
-
-# 4. Implement in TDD (tests BEFORE the code)
-/dev:dev-tdd OAuth2 authentication flow
-
-# 5. Audit + fix loop (score 90 required)
-/qa:qa-loop "score 90"
-
-# 6. Open the PR
-/work:work-pr OAuth2 Google authentication
-```
-
-The shape is identical for any stack — swap the arguments (e.g. `/dev:dev-tdd UserProfileScreen with BLoC + widget tests` for a Flutter screen). The single `/work:work-flow-feature "..."` command chains all six phases for you.
-
-## Available Templates
-
-| Template | Language / Framework |
-|----------|---------------------|
-| `CLAUDE.react.md` | React |
-| `CLAUDE.vue.md` | Vue.js 3 |
-| `CLAUDE.node-api.md` | Node.js API |
-| `CLAUDE.python.md` | Python |
-| `CLAUDE.go.md` | Go |
-| `CLAUDE.rust.md` | Rust |
-| `CLAUDE.java.md` | Java / Spring Boot |
-| `CLAUDE.fullstack.md` | Fullstack monorepo |
-| `CLAUDE.flutter.md` | Flutter / Dart (Mobile) |
-| `CLAUDE.neovim.md` | Neovim / Lua config |
-
-```bash
-# Recommended: scaffold via the dispatcher (works post-install, any cwd)
-claude-base init --type react ./my-app
-
-# Or copy the template manually (from a foundation clone)
-cp templates/CLAUDE.react.md CLAUDE.md
-```
-
-The dispatcher path additionally wires hooks, settings, and preset-specific filtering ; the raw `cp` only installs the project-instructions file.
+Ten `CLAUDE.*.md` starting points (React, Vue, Node API, Python, Go, Rust, Java, fullstack, Flutter, Neovim) — `claude-base init --type react ./my-app` wires one in, hooks and settings included. The table and the manual route are in [docs/CUSTOMIZATION.md](docs/CUSTOMIZATION.md).
 
 ## Utility CLI (`claude-base`)
 
@@ -357,32 +291,9 @@ Maintenance tools without a dispatcher alias (still callable directly from a fou
 ./scripts/ide.sh setup vscode
 ```
 
-## IDE Integration
+## IDE and CI
 
-```bash
-./scripts/ide.sh setup <vscode|idea|vim|all>   # configure
-./scripts/ide.sh check  <vscode|idea|vim>      # verify
-./scripts/ide.sh remove <vscode|idea|vim>      # uninstall
-```
-
-Sets up Settings/Tasks/Extensions/Snippets (VSCode/Cursor), Run Configurations/Code Style/Templates (IntelliJ), or Abbreviations/Mappings/Autocmds (Vim/Neovim). Run `./scripts/ide.sh --help` for the full surface.
-
-## CI/CD Included
-
-### GitHub Actions
-
-- **ci.yml**: Tests (bats + node), shellcheck, lint, build
-- **security.yml**: Gitleaks + shellcheck-security workflow
-- **pr-check.yml**: PR format / size / labels validation (uses `amannn/action-semantic-pull-request`)
-- **docs.yml**: Builds and deploys the Docusaurus site to GitHub Pages
-- **release.yml**: Automated releases with changelog
-- **dependabot-auto-merge.yml**: Auto-merges dependabot PRs that pass CI
-
-Full file-by-file at `.github/workflows/`.
-
-### Pre-commit Hooks
-
-The foundation ships `.husky/` with auto-lint, Conventional Commits validation, and secret detection (gitleaks). Enabled automatically when `claude-base init` runs with `--hooks` or `--all`. To re-enable manually in an existing install : `npx husky install` (assumes husky + lint-staged + commitlint are already in your project's devDependencies).
+`./scripts/ide.sh setup <vscode|idea|vim|all>` wires settings, tasks and snippets — details in [docs/CUSTOMIZATION.md](docs/CUSTOMIZATION.md). Six GitHub Actions workflows and the `.husky/` pre-commit hooks ship with the foundation; what each one gates is in [docs/guides/TEAM-GUIDE.md](docs/guides/TEAM-GUIDE.md).
 
 ## Documentation
 
@@ -402,7 +313,7 @@ It covers:
 - **[QUICKSTART.md](docs/QUICKSTART.md)**: 5-minute getting started
 - **[CHEATSHEET.md](docs/CHEATSHEET.md)**: Command quick reference
 - **[ARCHITECTURE.md](docs/ARCHITECTURE.md)**: Commands vs Agents vs Skills vs Rules
-- **[GUARDRAILS.md](docs/GUARDRAILS.md)**: The ~25 enforced checkpoints (method, security, verification, anti-gaming, audit, integrity) a bare Claude project lacks
+- **[GUARDRAILS.md](docs/GUARDRAILS.md)**: every enforced checkpoint a bare Claude project lacks — method, security, verification, anti-gaming, audit, integrity
 - **[WORKFLOWS.md](docs/WORKFLOWS.md)**: Workflow diagrams
 - **[STACK-RECIPES.md](docs/STACK-RECIPES.md)**: Commands/agents/skills per stack (Web, Mobile, API…)
 - **[CUSTOMIZATION.md](docs/CUSTOMIZATION.md)**: Customization guide
@@ -413,22 +324,9 @@ It covers:
 - **[guides/TROUBLESHOOTING-GUIDE.md](docs/guides/TROUBLESHOOTING-GUIDE.md)**: Common issues and fixes
 - **Learning path** (Docusaurus only): [9h30, 5 levels novice → pro](https://christopherlouet.github.io/claude-base/docs/guides/learning-path)
 
-## Resources
+### Elsewhere
 
-- [Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)
-- [Claude Code Documentation](https://code.claude.com/docs/en/overview)
-- [How Anthropic Teams Use Claude Code](https://www.anthropic.com/news/how-anthropic-teams-use-claude-code)
-
-## Secret Detection (gitleaks)
-
-The foundation ships a pre-configured [gitleaks](https://github.com/gitleaks/gitleaks) ruleset at `.gitleaks.toml`. It runs automatically via pre-commit hooks (when enabled) and on every PR through `security.yml`. Detected categories include AWS/GitHub/GitLab/Stripe/Slack tokens, JWTs, private keys, and database URLs — see `.gitleaks.toml` for the exact rules.
-
-Install gitleaks itself per the [upstream instructions](https://github.com/gitleaks/gitleaks#installing). Local scan :
-
-```bash
-gitleaks detect --source . --config .gitleaks.toml          # full scan
-gitleaks detect --staged --config .gitleaks.toml            # staged-only (pre-commit)
-```
+- [Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices) · [Claude Code docs](https://code.claude.com/docs/en/overview) · [How Anthropic teams use Claude Code](https://www.anthropic.com/news/how-anthropic-teams-use-claude-code)
 
 ## Automated Tests
 
@@ -439,20 +337,6 @@ The foundation ships with [bats-core](https://github.com/bats-core/bats-core) te
 ./scripts/test.sh validate       # filter to one suite (e.g. validate.bats)
 ./scripts/test.sh -v             # verbose
 ```
-
-### Test layout
-
-The bats suite runs on every PR. A few anchors :
-
-| Area | File | Tests |
-|---|---|---|
-| Smoke + utility | `smoke.bats`, `common.bats` | Fast integrity check + lib unit tests |
-| Installer + dispatcher | `install.bats`, `new-project.bats`, `dispatcher.bats` | One-liner installer, `claude-base init` flow, CLI dispatcher |
-| Update flow | `update.bats`, `update-presets.bats` | Refresh logic, preset-aware filters |
-| Preset system | `presets.bats`, `preset-detect.bats`, `preset-e2e.bats` | Manifest schema, data-driven detection, per-preset E2E |
-| Quality gates | `validate.bats`, `qa-loop.bats`, `audit-docs.bats` | Validation, audit-fix loop, doc-drift firewall |
-| End-to-end | `e2e.bats` | Full bootstrap → validate → uninstall cycle |
-| Drift guards | `manifest-hooks-coverage.bats`, `docs-under-claude.bats` | Hooks coverage, structural layout |
 
 Full file-by-file inventory at `tests/`. Run via `./scripts/test.sh` (parallel) or `bats tests/*.bats` (sequential).
 
@@ -494,7 +378,7 @@ Concrete signals rather than a self-assessment score :
 
 ### Security measures
 
-- **Gitleaks**: secret detection ruleset (CI workflow + local scan) — see `.gitleaks.toml`
+- **Gitleaks**: a pre-configured ruleset at `.gitleaks.toml` (AWS/GitHub/GitLab/Stripe/Slack tokens, JWTs, private keys, database URLs) runs on every PR via `security.yml` and in the pre-commit hook when enabled. Local scan: `gitleaks detect --source . --config .gitleaks.toml`, or `--staged` for the pre-commit shape
 - **Private names**: a pre-commit gate stops an end user's private project names from reaching this public repo, in staged paths *or* staged content. The protected list is deliberately kept **outside** the repository (`~/.claude/private-names`, or `CLAUDE_BASE_PRIVATE_NAMES`), so it is never itself published — and no list means a silent no-op, so a fresh clone is never blocked. Scans only what a commit **adds**; bypass once with `SKIP_PRIVATE_NAMES=1`. See [`docs/GUARDRAILS.md`](docs/GUARDRAILS.md)
 - **ShellCheck**: bash linting on all `scripts/` (CI workflow `security.yml`, severity warning)
 - **Deny list**: dangerous commands blocked (`rm -rf /`, `sudo`, `git push --force`)

@@ -500,3 +500,38 @@ Guides the new developer through the project.
 - Check the `matcher` matches the tool (e.g. `Edit|Write`, `Bash`)
 - Check that the hook script path exists and is executable
 - Consult the Claude logs
+
+## Stack templates for CLAUDE.md
+
+| Template | Language / Framework |
+|----------|---------------------|
+| `CLAUDE.react.md` | React |
+| `CLAUDE.vue.md` | Vue.js 3 |
+| `CLAUDE.node-api.md` | Node.js API |
+| `CLAUDE.python.md` | Python |
+| `CLAUDE.go.md` | Go |
+| `CLAUDE.rust.md` | Rust |
+| `CLAUDE.java.md` | Java / Spring Boot |
+| `CLAUDE.fullstack.md` | Fullstack monorepo |
+| `CLAUDE.flutter.md` | Flutter / Dart (Mobile) |
+| `CLAUDE.neovim.md` | Neovim / Lua config |
+
+```bash
+# Recommended: scaffold via the dispatcher (works post-install, any cwd)
+claude-base init --type react ./my-app
+
+# Or copy the template manually (from a foundation clone)
+cp templates/CLAUDE.react.md CLAUDE.md
+```
+
+The dispatcher path additionally wires hooks, settings, and preset-specific filtering ; the raw `cp` only installs the project-instructions file.
+
+## IDE Integration
+
+```bash
+./scripts/ide.sh setup <vscode|idea|vim|all>   # configure
+./scripts/ide.sh check  <vscode|idea|vim>      # verify
+./scripts/ide.sh remove <vscode|idea|vim>      # uninstall
+```
+
+Sets up Settings/Tasks/Extensions/Snippets (VSCode/Cursor), Run Configurations/Code Style/Templates (IntelliJ), or Abbreviations/Mappings/Autocmds (Vim/Neovim). Run `./scripts/ide.sh --help` for the full surface.

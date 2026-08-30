@@ -241,6 +241,23 @@ If you want auto-propagation without committing `.claude/` wholesale, a partial-
 
 ---
 
+### What ships in `.github/`
+
+### GitHub Actions
+
+- **ci.yml**: Tests (bats + node), shellcheck, lint, build
+- **security.yml**: Gitleaks + shellcheck-security workflow
+- **pr-check.yml**: PR format / size / labels validation (uses `amannn/action-semantic-pull-request`)
+- **docs.yml**: Builds and deploys the Docusaurus site to GitHub Pages
+- **release.yml**: Automated releases with changelog
+- **dependabot-auto-merge.yml**: Auto-merges dependabot PRs that pass CI
+
+Full file-by-file at `.github/workflows/`.
+
+### Pre-commit Hooks
+
+The foundation ships `.husky/` with auto-lint, Conventional Commits validation, and secret detection (gitleaks). Enabled automatically when `claude-base init` runs with `--hooks` or `--all`. To re-enable manually in an existing install : `npx husky install` (assumes husky + lint-staged + commitlint are already in your project's devDependencies).
+
 ## 3. Code conventions
 
 ### Shared rules (`.claude/rules/`)

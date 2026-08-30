@@ -36,6 +36,31 @@ claude-base add biz .          # opt into a module
 claude-base remove biz .       # opt back out
 ```
 
+### Alternative: 2: Manual git clone
+
+```bash
+git clone https://github.com/christopherlouet/claude-base.git
+cd claude-base
+
+# Install in an existing project (in-repo dispatcher — no PATH install yet)
+./bin/claude-base init --simple /path/to/your/project
+
+# Full install with CI/CD, hooks, Docker
+./bin/claude-base init --all /path/to/your/project
+```
+
+### Alternative: 3: Manual copy (minimal)
+
+```bash
+# Copy the Claude configuration directly
+cp -r claude-base/.claude your-project/
+cp claude-base/CLAUDE.md your-project/
+
+# Optional
+cp claude-base/.mcp.json your-project/
+cp claude-base/.github your-project/ -r
+```
+
 ## First usage
 
 The foundation's mandatory workflow, step by step:
