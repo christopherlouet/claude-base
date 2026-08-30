@@ -226,6 +226,33 @@ _scan_py() {
         function py_taut(s) {
             return s ~ /((^|[^A-Za-z0-9_.])assert[[:space:]]+(True|1)[[:space:]]*($|,|#)|(^|[^A-Za-z0-9_.])assert[[:space:]]+(True[[:space:]]*==[[:space:]]*True|1[[:space:]]*==[[:space:]]*1)([[:space:]]|$|,|#)|\.assertTrue\([[:space:]]*True[[:space:]]*\)|\.assertEqual\([[:space:]]*1[[:space:]]*,[[:space:]]*1[[:space:]]*\))/
         }
+        # Net bracket depth of one line, ignoring quoted text and comments. Used
+        # to walk a `def test_*(` signature that spans several lines: its closing
+        # paren sits at the def is OWN indentation, so indentation alone reads that
+        # line as the end of the body and hides every assertion below it.
+        #
+        # ESCAPE-AWARE, and that is not decoration: the copy this was ported from
+        # was not, and on `a="\""` it returned depth 1 for a signature that really
+        # closes (measured) - which would swallow the body instead of scanning it.
+        # A raw string (r"...") can still mispair; that direction over-counts, so
+        # the block is skipped rather than mis-flagged (EF-007 fail-safe).
+        function py_pdelta(s,   i, ch, d, q, len, dq, sq, bs) {
+            dq = sprintf("%c", 34); sq = sprintf("%c", 39); bs = sprintf("%c", 92)
+            d = 0; q = ""; len = length(s)
+            for (i = 1; i <= len; i++) {
+                ch = substr(s, i, 1)
+                if (q != "") {
+                    if (ch == bs) { i++; continue }   # escaped char, quote included
+                    if (ch == q) q = ""
+                    continue
+                }
+                if (ch == dq || ch == sq) { q = ch; continue }
+                if (ch == "#") break
+                if (ch == "(" || ch == "[" || ch == "{") d++
+                else if (ch == ")" || ch == "]" || ch == "}") d--
+            }
+            return d
+        }
         function py_meaningful(s) {
             if (s ~ /^[[:space:]]*$/) return 0
             if (s ~ /^[[:space:]]*#/) return 0
@@ -256,13 +283,17 @@ _scan_py() {
             blank = ($0 ~ /^[[:space:]]*$/)
             match($0, /^[ \t]*/); ind=RLENGTH
             if (inpy) {
+                # Still inside a signature that spans lines: these are not body.
+                if (sigdepth > 0) { sigdepth += py_pdelta($0); next }
                 if (blank || ind > defind) { body[n++]=$0; next }
                 flush()   # de-indent ends the block; fall through to re-handle this line
             }
             if ($0 ~ /^[[:space:]]*@([A-Za-z_][A-Za-z0-9_.]*\.)?skip([^A-Za-z]|$)/) { pending_skip=1; next }
             if ($0 ~ /^[[:space:]]*@/) { next }   # other decorator: keep pending_skip across the stack
             if ($0 ~ /^[[:space:]]*def[[:space:]]+test[A-Za-z0-9_]*[[:space:]]*\(/) {
-                inpy=1; startline=NR; n=0; defind=ind; skipflag=pending_skip; pending_skip=0; next
+                inpy=1; startline=NR; n=0; defind=ind; skipflag=pending_skip; pending_skip=0
+                sigdepth=py_pdelta($0)   # >0 => the signature continues below
+                next
             }
             if (!blank) pending_skip=0
         }
