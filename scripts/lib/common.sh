@@ -1071,13 +1071,13 @@ enable_error_handler() {
 # (jq / cat / /dev/stdin), which avoids false-positiving on modern scripts that
 # merely *name* a variable TOOL_NAME after parsing it from stdin.
 # Arguments: $1 - path to the hook script
-hook_uses_legacy_contract() {
-    local file="$1"
-    [ -f "$file" ] || return 1
-    # Strip comment-only lines so a stray mention in a comment can't flip the
-    # classification (a `# jq ...` note must not make a legacy hook look modern).
-    local code
-    code=$(grep -vE '^[[:space:]]*#' "$file" 2>/dev/null || true)
+# The legacy-contract rule, on a COMMAND STRING. Split out of the file-based
+# check because a hook does not have to live in a file: most of them live inline
+# in settings.json, and that surface was never examined — an installed project
+# scored "no security drift" while carrying 19 dead inline hooks (measured
+# 2026-08-30).
+hook_command_uses_legacy_contract() {
+    local code="$1"
     # Modern hooks read their JSON payload from stdin. Anchor on real stdin-read
     # idioms — NOT a bare "jq" (which can sit in a comment or a string and does
     # not by itself prove the input came from stdin).
@@ -1090,6 +1090,16 @@ hook_uses_legacy_contract() {
         return 0
     fi
     return 1
+}
+
+hook_uses_legacy_contract() {
+    local file="$1"
+    [ -f "$file" ] || return 1
+    # Strip comment-only lines so a stray mention in a comment can't flip the
+    # classification (a `# jq ...` note must not make a legacy hook look modern).
+    local code
+    code=$(grep -vE '^[[:space:]]*#' "$file" 2>/dev/null || true)
+    hook_command_uses_legacy_contract "$code"
 }
 
 # Scans a downstream project for security configuration that has drifted behind
@@ -1128,6 +1138,56 @@ detect_security_drift() {
             printf 'mcp-allow: bare "%s" wildcard in permissions.allow grants every MCP tool — scope it to specific mcp__server__tool entries\n' "$rule"
             count=$((count + 1))
         done < <(jq -r '[.permissions.allow[]? | select(. == "mcp__*")] | .[]' "$settings" 2>/dev/null || true)
+    fi
+
+    # --- surfaces the file-only scan above cannot see -----------------------
+    # A hook does not have to be a script. Most live inline in settings.json,
+    # and one can also POINT at a script that is not on disk (exit 127 on every
+    # invocation, silently). Both shapes were found on a real installed project
+    # that this very function had just declared clean.
+    if [ -f "$settings" ] && command_exists jq; then
+        # Aggregated per event: a v4-era project carries a dozen of these, and a
+        # dozen identical lines is noise, not a report. bash 3.2 has no
+        # associative arrays (macOS), so the events drive the outer loop.
+        local ev cmd ref n
+        while IFS= read -r ev; do
+            [ -z "$ev" ] && continue
+            n=0
+            while IFS= read -r cmd; do
+                [ -z "$cmd" ] && continue
+                if hook_command_uses_legacy_contract "$cmd"; then n=$((n + 1)); fi
+                # Every scripts/hooks/NAME.sh the command names must exist on disk.
+                for ref in $(printf '%s' "$cmd" | grep -oE 'scripts/hooks/[A-Za-z0-9_-]+\.sh' | sort -u); do
+                    if [ ! -f "$target/$ref" ]; then
+                        printf 'hook-missing-script: the %s hook runs %s, which is not on disk — it exits 127 on every invocation; re-sync with `update --hook-scripts --force`\n' "$ev" "$(basename "$ref")"
+                        count=$((count + 1))
+                    fi
+                done
+            done < <(jq -r --arg ev "$ev" '(.hooks[$ev] // [])[] | (.hooks // [])[] | select(.command) | (.command | gsub("\n"; " "))' "$settings" 2>/dev/null || true)
+            if [ "$n" -gt 0 ]; then
+                printf 'hook-contract-inline: %d %s hook(s) read tool input from a TOOL_* env var (pre-stdin contract) — they run, never match, and pass; re-sync with `update --settings --force`\n' "$n" "$ev"
+                count=$((count + 1))
+            fi
+        done < <(jq -r '(.hooks // {}) | keys[]' "$settings" 2>/dev/null || true)
+    fi
+
+    # A security policy that has fallen behind the foundation is the shape that
+    # actually cost something: the guard was wired, its script present, its
+    # contract modern — and the rule it needed had been added upstream after the
+    # copy was taken. Only the _policy-* core is compared; a stale formatter is
+    # not a security finding. Absent locally = nothing to compare (fail-safe).
+    local base_root policy pname
+    base_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+    if [ -d "$base_root/scripts/hooks" ] && [ "$base_root" != "$(cd "$target" 2>/dev/null && pwd)" ]; then
+        for policy in "$base_root"/scripts/hooks/_policy-*.sh; do
+            [ -e "$policy" ] || continue
+            pname="$(basename "$policy")"
+            [ -f "$target/scripts/hooks/$pname" ] || continue
+            if ! cmp -s "$policy" "$target/scripts/hooks/$pname"; then
+                printf 'policy-stale: %s differs from the foundation — a rule added upstream is missing here, so what it refuses is not what you think; re-sync with `update --hook-scripts --force`\n' "$pname"
+                count=$((count + 1))
+            fi
+        done
     fi
 
     [ "$count" -eq 0 ]
