@@ -201,6 +201,84 @@ EOF
     [[ "$output" == *"No security drift detected"* ]]
 }
 
+# --- the three surfaces the drift check could not see (2026-08-30) ------------
+# A real installed project scored "No security drift detected" while its
+# dangerous-command guard was provably dead. The rule was right; it was pointed
+# at hook FILES only, so hooks living inline in settings.json, hooks pointing at
+# a script that is not on disk, and a stale security policy all went unseen.
+
+@test "doctor.sh flags an INLINE settings.json hook on the legacy TOOL_* contract" {
+    skip_if_no_jq
+    create_minimal_project "$TEST_DIR"
+    printf '%s\n' '{ "hooks": { "PostToolUse": [ { "matcher": "Edit", "hooks": [ { "type": "command", "command": "bash -c '"'"'echo \"$TOOL_FILE\" | grep -q x'"'"'" } ] } ] } }' \
+        > "$TEST_DIR/.claude/settings.json"
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" == *"hook-contract-inline"* ]]
+}
+
+# CONTROL - the foundation's OWN inline idiom assigns a shell variable named
+# TOOL_FILE *from stdin*. Flagging that would make every healthy project drift.
+@test "doctor.sh does NOT flag an inline hook that reads its payload from stdin" {
+    skip_if_no_jq
+    create_minimal_project "$TEST_DIR"
+    printf '%s\n' '{ "hooks": { "PostToolUse": [ { "matcher": "Edit", "hooks": [ { "type": "command", "command": "bash -c '"'"'TOOL_FILE=$(cat | jq -r .tool_input.file_path); echo \"$TOOL_FILE\"'"'"'" } ] } ] } }' \
+        > "$TEST_DIR/.claude/settings.json"
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" != *"hook-contract-inline"* ]]
+}
+
+@test "doctor.sh flags a hook pointing at a script that is not on disk" {
+    skip_if_no_jq
+    create_minimal_project "$TEST_DIR"
+    printf '%s\n' '{ "hooks": { "PreToolUse": [ { "matcher": "Bash", "hooks": [ { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/command-validator.sh\"" } ] } ] } }' \
+        > "$TEST_DIR/.claude/settings.json"
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" == *"hook-missing-script"* ]]
+    [[ "$output" == *"command-validator.sh"* ]]
+}
+
+# CONTROL - the same wiring with the script actually present must stay clean.
+@test "doctor.sh does NOT flag a hook whose script is present" {
+    skip_if_no_jq
+    create_minimal_project "$TEST_DIR"
+    printf '%s\n' '{ "hooks": { "PreToolUse": [ { "matcher": "Bash", "hooks": [ { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/command-validator.sh\"" } ] } ] } }' \
+        > "$TEST_DIR/.claude/settings.json"
+    mkdir -p "$TEST_DIR/scripts/hooks"
+    printf '#!/usr/bin/env bash\nCMD=$(cat)\nexit 0\n' > "$TEST_DIR/scripts/hooks/command-validator.sh"
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" != *"hook-missing-script"* ]]
+}
+
+@test "doctor.sh flags a security policy that has fallen behind the foundation" {
+    create_minimal_project "$TEST_DIR"
+    mkdir -p "$TEST_DIR/scripts/hooks"
+    cp "$BATS_TEST_DIRNAME/../scripts/hooks/_policy-dangerous-commands.sh" \
+       "$TEST_DIR/scripts/hooks/_policy-dangerous-commands.sh"
+    printf '# stale copy\n' >> "$TEST_DIR/scripts/hooks/_policy-dangerous-commands.sh"
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" == *"policy-stale"* ]]
+    [[ "$output" == *"_policy-dangerous-commands.sh"* ]]
+}
+
+# CONTROL - a byte-identical policy is not drift.
+@test "doctor.sh does NOT flag a policy identical to the foundation's" {
+    create_minimal_project "$TEST_DIR"
+    mkdir -p "$TEST_DIR/scripts/hooks"
+    cp "$BATS_TEST_DIRNAME/../scripts/hooks/_policy-dangerous-commands.sh" \
+       "$TEST_DIR/scripts/hooks/_policy-dangerous-commands.sh"
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" != *"policy-stale"* ]]
+}
+
+# The hardest constraint: the foundation is the reference, so it must never
+# report drift against itself. This is what stops the three new rules from
+# being written loosely.
+@test "doctor.sh reports no security drift on the foundation itself" {
+    skip_if_no_jq
+    run "$DOCTOR_SCRIPT" "$BATS_TEST_DIRNAME/.."
+    [[ "$output" == *"No security drift detected"* ]]
+}
+
 @test "doctor.sh --json stays valid with the security-drift section" {
     skip_if_no_jq
     create_minimal_project "$TEST_DIR"
