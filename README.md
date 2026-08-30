@@ -20,14 +20,14 @@ _A real `curl | bash` install + `claude-base init` scaffolding the foundation in
 
 ## Try it (30 seconds)
 
-**Requires:** the [Claude Code CLI](https://code.claude.com/docs/en/overview) (the `claude` command), plus `git` and `jq` on your PATH (`claude-base init` reads JSON manifests with `jq`).
+**Requires:** `bash` **4.0 or newer**, `git` and `jq` on your PATH — `claude-base init` refuses to run without them (it reads JSON manifests with `jq`). ⚠️ macOS ships bash **3.2** as `/bin/bash`: the installer in step 1 runs fine on it, but `claude-base init` in step 2 stops with *"Bash 4.0+ required"*, so install a current one first (`brew install bash`). Plus the [Claude Code CLI](https://code.claude.com/docs/en/overview) — `init` itself only needs it to install a preset's marketplace plugins, and warns and skips when it is absent, but you need it to *use* the foundation afterwards.
 
 ```bash
 # 1. Install the foundation (clones to ~/.local/share/claude-base, symlinks to ~/.local/bin)
 curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash
 claude-base version          # ✓ should print the installed version, e.g. claude-base vX.Y.Z
 
-# 2. Install into a project (auto-detects the stack, picks the right preset)
+# 2. Install into a project (detects your stack and tells you which preset fits — `--detect-only` asks without installing)
 claude-base init --preset nextjs ./my-app
 # or just: claude-base init ./existing-project   (interactive, auto-detects)
 # ✓ prints a summary of the .claude/ files written into the project

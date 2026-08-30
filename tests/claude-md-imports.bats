@@ -15,11 +15,15 @@
 #   agents-catalog.md      9 756  the harness already lists agent types natively
 #   skills-catalog.md      7 305  the harness already lists skills natively
 #
-# The three that stay are the ones with no native equivalent or a user-facing
-# purpose: commands.md (the harness does NOT list slash commands), plus
-# best-practices.md and project-structures.md, kept deliberately because a
-# downstream user may be new to the tool — an argument that did not apply to the
-# foundation's own copy (specs/guardrail-cleanup/carried-material.md).
+# commands.md was kept in the first pass on a premise that turned out to be
+# false: it is titled "Essential Commands" and lists npm/flutter/pytest per
+# stack, not the foundation's 106 slash commands — two documents said otherwise
+# and neither had been opened. A stack cheat sheet is generic knowledge, so it
+# went too.
+#
+# The two that stay are kept deliberately for a downstream user who may be new
+# to the tool — an argument that did not apply to the foundation's own copy
+# (specs/guardrail-cleanup/carried-material.md).
 #
 # The invariant this function exists for is unchanged and is NOT the count:
 # install and update must produce the SAME set, or a project's CLAUDE.md depends
@@ -31,10 +35,10 @@ load 'test_helper'
 CARRIED=(
     "@.claude/docs/reference/best-practices.md"
     "@.claude/docs/reference/project-structures.md"
-    "@.claude/docs/reference/commands.md"
 )
 
 RETIRED=(
+    "@.claude/docs/reference/commands.md"
     "@.claude/docs/reference/agents-catalog.md"
     "@.claude/docs/reference/hooks-reference.md"
     "@.claude/docs/reference/skills-catalog.md"

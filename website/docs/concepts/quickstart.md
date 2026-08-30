@@ -14,6 +14,10 @@ tags:
 
 ## Installation (30 seconds)
 
+**Requires** `bash` 4.0+, `git` and `jq` on your PATH — `claude-base init` stops without them, and
+macOS ships bash 3.2, so `brew install bash` first. Full prerequisites in the repository's `README.md`,
+under "Try it (30 seconds)".
+
 ```bash
 # After installing the foundation (curl | bash — see README)
 claude-base init --simple /path/to/your-project

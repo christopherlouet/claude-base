@@ -421,7 +421,6 @@ EOF
     local expected_imports=(
         "@.claude/docs/reference/best-practices.md"
         "@.claude/docs/reference/project-structures.md"
-        "@.claude/docs/reference/commands.md"
     )
     for import in "${expected_imports[@]}"; do
         grep -qF "$import" "$TEST_DIR/CLAUDE.md" || {
@@ -433,6 +432,7 @@ EOF
     # And the four retired ones are not carried back in — 75 061 bytes per
     # session that describe rather than instruct.
     local retired_imports=(
+        "@.claude/docs/reference/commands.md"
         "@.claude/docs/reference/agents-catalog.md"
         "@.claude/docs/reference/hooks-reference.md"
         "@.claude/docs/reference/skills-catalog.md"

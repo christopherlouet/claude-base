@@ -517,6 +517,7 @@ Files and directories never to read in their entirety:
 ## Resources
 
 - [Configured hooks](../reference/hooks-reference.md) - Complete list of hooks and their variables
-- [Available commands](../reference/commands.md) - Catalog of `/work:`, `/dev:`, `/qa:`, `/ops:` commands
+- [Available commands](../CHEATSHEET.md) - the `/work:`, `/dev:`, `/qa:`, `/ops:` commands, by intent
+- [Essential shell commands](../reference/commands.md) - npm, flutter, pytest… per stack
 - [Advanced features](../reference/advanced-features.md) - Workflow Explore → Specify → Plan → TDD → Audit → Commit
 - [Best practices](../reference/best-practices.md) - Verification, models, effort levels
