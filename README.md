@@ -121,7 +121,19 @@ After install, you `cd ./my-app && claude` and the foundation drives the workflo
 [work-pr]       Branch, commit, push, open the PR
 ```
 
-One command chains the 6 phases. Each phase is also runnable on its own (`/work:work-explore`, `/dev:dev-tdd`, etc.) if you prefer manual control.
+One command chains the 6 phases.
+
+### Or drive it yourself
+
+```
+/assistant              # guided: explains the workflow and suggests the next command
+/assistant-auto "..."   # automatic: routes your request to the right workflow
+```
+
+Each phase is also a command of its own — `/work:work-explore`, `/work:work-specify`,
+`/work:work-plan`, `/dev:dev-tdd`, `/qa:qa-loop "score 90"`, `/work:work-pr` — and the shape is
+identical for any stack; swap the arguments. A worked example per phase is in
+[docs/CHEATSHEET.md](docs/CHEATSHEET.md).
 
 ## Installation
 
@@ -256,39 +268,6 @@ Commands are grouped into 9 domains:
 
 → **By stack**: [docs/STACK-RECIPES.md](docs/STACK-RECIPES.md) lists the relevant commands for each stack (Web, Mobile, API, Auth, etc.).
 
-## Recommended Workflow
-
-The fastest way in is the built-in orchestrator — or run the six phases yourself:
-
-```
-/assistant              # guided: explains the workflow and suggests the next command
-/assistant-auto "..."   # automatic: routes your request to the right workflow
-```
-
-### Practical example (one phase at a time)
-
-```bash
-# 1. Explore the existing system
-/work:work-explore the authentication system
-
-# 2. Specify the feature (User Stories + acceptance criteria)
-/work:work-specify add OAuth2 Google sign-in
-
-# 3. Plan the implementation
-/work:work-plan OAuth2 Google
-
-# 4. Implement in TDD (tests BEFORE the code)
-/dev:dev-tdd OAuth2 authentication flow
-
-# 5. Audit + fix loop (score 90 required)
-/qa:qa-loop "score 90"
-
-# 6. Open the PR
-/work:work-pr OAuth2 Google authentication
-```
-
-The shape is identical for any stack — swap the arguments (e.g. `/dev:dev-tdd UserProfileScreen with BLoC + widget tests` for a Flutter screen). The single `/work:work-flow-feature "..."` command chains all six phases for you.
-
 ## Available Templates
 
 | Template | Language / Framework |
@@ -402,7 +381,7 @@ It covers:
 - **[QUICKSTART.md](docs/QUICKSTART.md)**: 5-minute getting started
 - **[CHEATSHEET.md](docs/CHEATSHEET.md)**: Command quick reference
 - **[ARCHITECTURE.md](docs/ARCHITECTURE.md)**: Commands vs Agents vs Skills vs Rules
-- **[GUARDRAILS.md](docs/GUARDRAILS.md)**: The ~25 enforced checkpoints (method, security, verification, anti-gaming, audit, integrity) a bare Claude project lacks
+- **[GUARDRAILS.md](docs/GUARDRAILS.md)**: every enforced checkpoint a bare Claude project lacks — method, security, verification, anti-gaming, audit, integrity
 - **[WORKFLOWS.md](docs/WORKFLOWS.md)**: Workflow diagrams
 - **[STACK-RECIPES.md](docs/STACK-RECIPES.md)**: Commands/agents/skills per stack (Web, Mobile, API…)
 - **[CUSTOMIZATION.md](docs/CUSTOMIZATION.md)**: Customization guide
@@ -413,22 +392,9 @@ It covers:
 - **[guides/TROUBLESHOOTING-GUIDE.md](docs/guides/TROUBLESHOOTING-GUIDE.md)**: Common issues and fixes
 - **Learning path** (Docusaurus only): [9h30, 5 levels novice → pro](https://christopherlouet.github.io/claude-base/docs/guides/learning-path)
 
-## Resources
+### Elsewhere
 
-- [Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)
-- [Claude Code Documentation](https://code.claude.com/docs/en/overview)
-- [How Anthropic Teams Use Claude Code](https://www.anthropic.com/news/how-anthropic-teams-use-claude-code)
-
-## Secret Detection (gitleaks)
-
-The foundation ships a pre-configured [gitleaks](https://github.com/gitleaks/gitleaks) ruleset at `.gitleaks.toml`. It runs automatically via pre-commit hooks (when enabled) and on every PR through `security.yml`. Detected categories include AWS/GitHub/GitLab/Stripe/Slack tokens, JWTs, private keys, and database URLs — see `.gitleaks.toml` for the exact rules.
-
-Install gitleaks itself per the [upstream instructions](https://github.com/gitleaks/gitleaks#installing). Local scan :
-
-```bash
-gitleaks detect --source . --config .gitleaks.toml          # full scan
-gitleaks detect --staged --config .gitleaks.toml            # staged-only (pre-commit)
-```
+- [Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices) · [Claude Code docs](https://code.claude.com/docs/en/overview) · [How Anthropic teams use Claude Code](https://www.anthropic.com/news/how-anthropic-teams-use-claude-code)
 
 ## Automated Tests
 
@@ -439,20 +405,6 @@ The foundation ships with [bats-core](https://github.com/bats-core/bats-core) te
 ./scripts/test.sh validate       # filter to one suite (e.g. validate.bats)
 ./scripts/test.sh -v             # verbose
 ```
-
-### Test layout
-
-The bats suite runs on every PR. A few anchors :
-
-| Area | File | Tests |
-|---|---|---|
-| Smoke + utility | `smoke.bats`, `common.bats` | Fast integrity check + lib unit tests |
-| Installer + dispatcher | `install.bats`, `new-project.bats`, `dispatcher.bats` | One-liner installer, `claude-base init` flow, CLI dispatcher |
-| Update flow | `update.bats`, `update-presets.bats` | Refresh logic, preset-aware filters |
-| Preset system | `presets.bats`, `preset-detect.bats`, `preset-e2e.bats` | Manifest schema, data-driven detection, per-preset E2E |
-| Quality gates | `validate.bats`, `qa-loop.bats`, `audit-docs.bats` | Validation, audit-fix loop, doc-drift firewall |
-| End-to-end | `e2e.bats` | Full bootstrap → validate → uninstall cycle |
-| Drift guards | `manifest-hooks-coverage.bats`, `docs-under-claude.bats` | Hooks coverage, structural layout |
 
 Full file-by-file inventory at `tests/`. Run via `./scripts/test.sh` (parallel) or `bats tests/*.bats` (sequential).
 
@@ -494,7 +446,7 @@ Concrete signals rather than a self-assessment score :
 
 ### Security measures
 
-- **Gitleaks**: secret detection ruleset (CI workflow + local scan) — see `.gitleaks.toml`
+- **Gitleaks**: a pre-configured ruleset at `.gitleaks.toml` (AWS/GitHub/GitLab/Stripe/Slack tokens, JWTs, private keys, database URLs) runs on every PR via `security.yml` and in the pre-commit hook when enabled. Local scan: `gitleaks detect --source . --config .gitleaks.toml`, or `--staged` for the pre-commit shape
 - **Private names**: a pre-commit gate stops an end user's private project names from reaching this public repo, in staged paths *or* staged content. The protected list is deliberately kept **outside** the repository (`~/.claude/private-names`, or `CLAUDE_BASE_PRIVATE_NAMES`), so it is never itself published — and no list means a silent no-op, so a fresh clone is never blocked. Scans only what a commit **adds**; bypass once with `SKIP_PRIVATE_NAMES=1`. See [`docs/GUARDRAILS.md`](docs/GUARDRAILS.md)
 - **ShellCheck**: bash linting on all `scripts/` (CI workflow `security.yml`, severity warning)
 - **Deny list**: dangerous commands blocked (`rm -rf /`, `sudo`, `git push --force`)
