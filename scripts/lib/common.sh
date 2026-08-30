@@ -1171,15 +1171,25 @@ detect_security_drift() {
         done < <(jq -r '(.hooks // {}) | keys[]' "$settings" 2>/dev/null || true)
     fi
 
-    # A security policy that has fallen behind the foundation is the shape that
-    # actually cost something: the guard was wired, its script present, its
-    # contract modern — and the rule it needed had been added upstream after the
-    # copy was taken. Only the _policy-* core is compared; a stale formatter is
-    # not a security finding. Absent locally = nothing to compare (fail-safe).
+    # A security guard that has fallen behind the foundation is the shape that
+    # actually cost something: it was wired, its script present, its contract
+    # modern — and the rule it needed had been added upstream after the copy was
+    # taken. Only the security core is compared; a stale formatter is not a
+    # security finding. Absent locally = nothing to compare, and that is not a
+    # hole: a hook WIRED to a script that is not on disk is already reported by
+    # hook-missing-script above.
+    #
+    # The set is the _policy-* libraries AND the guards that can carry the rules
+    # inline. Keying on _policy-* alone missed a project predating the policy
+    # extraction: its command-validator.sh held the rules directly, there was no
+    # _policy-* to compare, and it scored clean while letting the root deletion
+    # through (measured 2026-08-30).
     local base_root policy pname
     base_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
     if [ -d "$base_root/scripts/hooks" ] && [ "$base_root" != "$(cd "$target" 2>/dev/null && pwd)" ]; then
-        for policy in "$base_root"/scripts/hooks/_policy-*.sh; do
+        for policy in "$base_root"/scripts/hooks/_policy-*.sh \
+                      "$base_root/scripts/hooks/command-validator.sh" \
+                      "$base_root/scripts/hooks/secret-scan.sh"; do
             [ -e "$policy" ] || continue
             pname="$(basename "$policy")"
             [ -f "$target/scripts/hooks/$pname" ] || continue
