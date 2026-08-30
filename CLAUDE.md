@@ -46,7 +46,8 @@ on demand rather than carried into every session.
 
 | Reference | Path |
 |-----------|------|
-| Available commands | `docs/reference/commands.md` |
+| Available commands (the 106 slash commands) | `docs/CHEATSHEET.md` — by intent; `README.md` has the by-domain overview |
+| Shell commands per stack (npm, flutter, pytest…) | `docs/reference/commands.md` |
 | Agents/commands catalog | `docs/reference/agents-catalog.md` |
 | Configured hooks | `docs/reference/hooks-reference.md` |
 | Available skills | `docs/reference/skills-catalog.md` |
