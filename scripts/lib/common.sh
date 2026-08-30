@@ -967,9 +967,11 @@ seed_gitignore_from_foundation() {
 # of Claude Code feature notes (including one about a superseded model), a
 # catalogue of hooks that run whether or not they are documented, and catalogues
 # of agents and skills that the harness already lists natively. The three that
-# stay have no native equivalent (commands.md) or serve a downstream user who may
-# be new to the tool (best-practices, project-structures) — an argument that did
-# not apply to the foundation's own copy. See
+# stay serve a downstream user who may be new to the tool (best-practices,
+# project-structures) — an argument that did not apply to the foundation's own
+# copy. commands.md left with them once opened: it is titled "Essential
+# Commands" and lists npm/flutter/pytest per stack, not slash commands, so the
+# "only catalogue with no native equivalent" reason for keeping it was false. See
 # specs/guardrail-cleanup/carried-material.md.
 #
 # Arguments:
@@ -982,7 +984,6 @@ ensure_claude_md_imports() {
     local all_imports=(
         "@.claude/docs/reference/best-practices.md"
         "@.claude/docs/reference/project-structures.md"
-        "@.claude/docs/reference/commands.md"
     )
 
     # Retired: carried by every install made before 2026-08-30. Removed here
@@ -990,6 +991,7 @@ ensure_claude_md_imports() {
     # ever ADDS would leave every existing project heavy forever. Only these
     # exact generated lines are touched; a project's own @imports are not.
     local retired_imports=(
+        "@.claude/docs/reference/commands.md"
         "@.claude/docs/reference/agents-catalog.md"
         "@.claude/docs/reference/hooks-reference.md"
         "@.claude/docs/reference/skills-catalog.md"

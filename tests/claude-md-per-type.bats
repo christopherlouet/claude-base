@@ -198,7 +198,7 @@ assert_no_dead_pointers() {
     install_into "$TEST_DIR/p" --simple -t python
 
     grep -q '^@\.claude/docs/reference/best-practices\.md' "$TEST_DIR/p/CLAUDE.md"
-    grep -q '^@\.claude/docs/reference/commands\.md' "$TEST_DIR/p/CLAUDE.md"
+    ! grep -q '^@\.claude/docs/reference/commands\.md' "$TEST_DIR/p/CLAUDE.md"
     # advanced-features.md is shipped but no longer CARRIED: 37 179 bytes of
     # feature notes about the tool, in every session (2026-08-30).
     ! grep -q '^@\.claude/docs/reference/advanced-features\.md' "$TEST_DIR/p/CLAUDE.md"

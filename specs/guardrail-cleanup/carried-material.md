@@ -203,7 +203,7 @@ inference turned out exact to the byte, which is worth knowing for next time:
 | `agents-catalog.md` | 9 756 | the harness **already lists agent types natively** (observed in this session's own context) |
 | `skills-catalog.md` | 7 305 | same — the harness lists skills natively |
 | `best-practices.md` | 6 953 | reference, **kept** |
-| `commands.md` | 5 035 | **kept** — the one catalogue with no native equivalent |
+| `commands.md` | 5 035 | first kept as *"the one catalogue with no native equivalent"* — **that premise was false**, see below |
 | `project-structures.md` | 1 927 | reference, **kept** |
 | `CLAUDE.md` + the four global rules | 20 938 | |
 | **total carried per session** | **109 914** | **5.3× the foundation's own** |
@@ -219,7 +219,26 @@ maintainer knows the tool, a downstream user may be new to it. That argument doe
 so the two decisions differ on purpose rather than by oversight. Cost of the choice: 8 percentage
 points of the possible saving.
 
-**Result, measured on the real project**: 109 914 → **34 681 bytes, −68 %**.
+**Result, measured on the real project**: 109 914 → **34 681 bytes, −68 %** — then **29 634, −73 %**
+once `commands.md` was opened.
+
+### ⚠️ A decision taken on a file nobody had opened
+
+`commands.md` survived the first cut on a stated reason: *the one catalogue with no native
+equivalent, since the harness does not list slash commands*. Reading it a few hours later showed the
+reason to be false. The file is titled **"Essential Commands"** and lists `npm install`,
+`flutter run`, `pytest` — shell commands per stack. It contains **zero** of the foundation's 106
+slash commands.
+
+Two documents had said otherwise, and both were believed instead of the file: `CLAUDE.md`'s
+reference table — carried into every session — and `TROUBLESHOOTING-GUIDE.md`, which spelled it out
+as *"Catalog of `/work:`, `/dev:`, `/qa:`, `/ops:` commands"*. Both are corrected; a stack cheat
+sheet is generic knowledge the model already has, so it left the carried set too.
+
+**The lesson generalises past this file**: this pass spent two days learning that a *guardrail* can
+report more than it established. A **pointer** does the same thing — it asserts what a file contains,
+and that assertion is not evidence. Nothing in the repository checks it, which is why two documents
+could describe the same file wrongly for months.
 
 ⚠️ **The fleet path needed proving separately, and a false negative nearly hid it.** An update that
 only ever ADDS would leave every existing project heavy forever, so the retired imports are pruned as
