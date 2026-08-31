@@ -1606,9 +1606,80 @@ _remove_section_from_file() {
     echo "$tmp_cleaned"
 }
 
+# Doc filenames the foundation shipped under docs/guides/ or docs/reference/ and
+# has since retired. A legacy target still holds them, and they are the
+# foundation's, not the project's -- checking only what ships TODAY would hand
+# them back as if the project had written them. The stack guides were retired
+# when they were consolidated into STACK-RECIPES.md.
+# tests/docs-under-claude.bats asserts this list stays complete against history.
+FOUNDATION_RETIRED_DOCS="API-GUIDE.md
+AUTH-GUIDE.md
+BIZ-GUIDE.md
+DATA-GUIDE.md
+DATABASE-GUIDE.md
+GO-GUIDE.md
+GROWTH-GUIDE.md
+INFRA-GUIDE.md
+MIGRATION-GUIDE.md
+MOBILE-GUIDE.md
+OBSERVABILITY-GUIDE.md
+PYTHON-GUIDE.md
+TESTING-GUIDE.md
+WEB-GUIDE.md
+qa-chrome-vs-agent-browser.md"
+
+# True when $2 is a doc the foundation owns under docs/$1 -- either one it ships
+# now, or one it used to ship. Everything else belongs to the project.
+is_foundation_doc() {
+    local sub="$1" base="$2"
+    [[ -e "$BASE_DIR/docs/$sub/$base" ]] && return 0
+    printf '%s\n' "$FOUNDATION_RETIRED_DOCS" | grep -Fqx -- "$base"
+}
+
+# Moves ONE docs/<sub>/ directory into .claude/docs/<sub>/, taking only the
+# files the foundation owns (see is_foundation_doc). A legacy docs/guides/ is
+# routinely a mix: the foundation's own guides beside documentation the project
+# wrote. Moving the directory wholesale put project-authored files into a config
+# directory the updater rewrites. Anything the foundation does not own stays
+# where it is -- leaving a file behind is recoverable, moving someone else's
+# document is not.
+# Arguments: $1 = subdirectory name ("reference" or "guides").
+migrate_foundation_docs_subdir() {
+    local sub="$1"
+    local src="$TARGET_DIR/docs/$sub"
+    local dst="$TARGET_DIR/.claude/docs/$sub"
+
+    [[ -d "$src" ]] || return 0
+
+    local f base moved=0 kept=0
+    for f in "$src"/*; do
+        [[ -e "$f" ]] || continue
+        base="$(basename "$f")"
+        if is_foundation_doc "$sub" "$base"; then
+            make_dir "$dst"
+            if cp -r "$f" "$dst/"; then
+                rm -rf "$f"
+                moved=$((moved + 1))
+            fi
+        else
+            kept=$((kept + 1))
+        fi
+    done
+
+    if [[ $moved -gt 0 ]]; then
+        success "Migrated: $moved file(s) docs/$sub/ → .claude/docs/$sub/"
+    fi
+    if [[ $kept -gt 0 ]]; then
+        info "Kept $kept file(s) in docs/$sub/ — not shipped by the foundation, so yours."
+    else
+        rmdir "$src" 2>/dev/null || true
+    fi
+    return 0
+}
+
 # Migrates a legacy install (docs/reference/, @docs/reference/) to the
 # .claude/docs/ layout introduced in v1.30. Idempotent: no-op if nothing to migrate.
-# Preserves user-customized guides.
+# Preserves the project's own docs: only foundation-shipped files are moved.
 # Arguments: none (uses $TARGET_DIR)
 migrate_legacy_docs() {
     local claude_md="$TARGET_DIR/CLAUDE.md"
@@ -1628,25 +1699,15 @@ migrate_legacy_docs() {
     info "Legacy migration detected: docs/ → .claude/docs/"
 
     if $DRY_RUN; then
-        echo -e "${DIM}[DRY-RUN]${NC} Migrate docs/reference/ → .claude/docs/reference/"
-        echo -e "${DIM}[DRY-RUN]${NC} Migrate docs/guides/ → .claude/docs/guides/ (if present)"
+        echo -e "${DIM}[DRY-RUN]${NC} Migrate foundation-shipped files only: docs/reference/ → .claude/docs/reference/"
+        echo -e "${DIM}[DRY-RUN]${NC} Migrate foundation-shipped files only: docs/guides/ → .claude/docs/guides/ (if present)"
+        echo -e "${DIM}[DRY-RUN]${NC} Anything else under docs/ stays where it is"
         echo -e "${DIM}[DRY-RUN]${NC} Rewrite @docs/reference/ → @.claude/docs/reference/ in CLAUDE.md"
         return 0
     fi
 
-    if [[ -d "$TARGET_DIR/docs/reference" ]]; then
-        make_dir "$TARGET_DIR/.claude/docs/reference"
-        cp -r "$TARGET_DIR/docs/reference/"* "$TARGET_DIR/.claude/docs/reference/" 2>/dev/null || true
-        rm -rf "$TARGET_DIR/docs/reference"
-        success "Migrated: docs/reference/ → .claude/docs/reference/"
-    fi
-
-    if [[ -d "$TARGET_DIR/docs/guides" ]]; then
-        make_dir "$TARGET_DIR/.claude/docs/guides"
-        cp -r "$TARGET_DIR/docs/guides/"* "$TARGET_DIR/.claude/docs/guides/" 2>/dev/null || true
-        rm -rf "$TARGET_DIR/docs/guides"
-        success "Migrated: docs/guides/ → .claude/docs/guides/"
-    fi
+    migrate_foundation_docs_subdir "reference"
+    migrate_foundation_docs_subdir "guides"
 
     if [[ -f "$claude_md" ]] && $has_legacy_imports; then
         local backup_file

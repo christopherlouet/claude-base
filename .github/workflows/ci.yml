@@ -102,6 +102,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          # Full history: tests/docs-under-claude.bats re-derives every doc the
+          # foundation ever shipped from git log, to check FOUNDATION_RETIRED_DOCS
+          # is still complete. At the default depth 1 that set collapses to
+          # "currently tracked" and the guard skips itself. Cost: ~1s (9 MB).
+          fetch-depth: 0
 
       - name: Setup Bats
         uses: bats-core/bats-action@4.0.0
@@ -176,6 +182,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          # Full history — see the ubuntu bats matrix above. Sharding is
+          # independent per OS, so the guard can land on either one.
+          fetch-depth: 0
 
       - name: Setup Bats, Bash 5+, GNU grep (macOS via Homebrew)
         # macOS ships bash 3.2 (Apple froze updates since GPLv3 in 2007) and
