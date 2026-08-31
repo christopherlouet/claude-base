@@ -435,17 +435,28 @@ EOF
 @test "[US2b] FOUNDATION_RETIRED_DOCS still covers every doc the foundation ever shipped" {
     cd "$BATS_TEST_DIRNAME/.." || return 1
 
+    # The retired names are only recoverable from history, and CI checks out at
+    # depth 1 (actions/checkout's default). Skip loudly rather than re-derive an
+    # "ever shipped" set that is really just "currently tracked" and pass on it:
+    # that would be the very defect this guard exists to catch.
+    if [ "$(git rev-parse --is-shallow-repository 2>/dev/null)" = "true" ]; then
+        skip "shallow clone: history unavailable, the retired-docs list cannot be checked here"
+    fi
+
     local ever current listed missing=""
     ever=$( { git log --all --diff-filter=A --name-only --format='' -- 'docs/guides/*' 'docs/reference/*'; \
               git ls-files docs/guides docs/reference; } \
-            | sed 's#^docs/\(guides\|reference\)/##' | grep -v '^$' | LC_ALL=C sort -u )
+            | sed -e 's#^docs/guides/##' -e 's#^docs/reference/##' | grep -v '^$' | LC_ALL=C sort -u )
     current=$(ls docs/guides docs/reference 2>/dev/null | grep -v ':' | grep -v '^$' | LC_ALL=C sort -u)
     listed=$(sed -n '/^FOUNDATION_RETIRED_DOCS="/,/"$/p' scripts/update.sh \
              | sed -e 's/^FOUNDATION_RETIRED_DOCS="//' -e 's/"$//' | grep -v '^$')
 
     # Anti-vacuity: the three extractions must actually have found something.
     [ -n "$ever" ] && [ -n "$current" ] && [ -n "$listed" ]
-    [ "$(printf '%s\n' "$ever" | wc -l)" -gt 10 ]
+    # Anti-vacuity, second layer: a full clone must yield MORE names than are
+    # currently tracked -- otherwise history was not really read, and every
+    # retired name would slip through unchecked.
+    [ "$(printf '%s\n' "$ever" | wc -l)" -gt "$(printf '%s\n' "$current" | wc -l)" ]
 
     local name
     while read -r name; do
