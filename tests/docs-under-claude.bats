@@ -378,3 +378,81 @@ EOF
     run grep -E '^@docs/reference/' "$TEST_DIR/CLAUDE.md"
     [ "$status" -ne 0 ]
 }
+
+# =============================================================================
+# US2b — the migration must not take the project's own documentation with it
+#
+# A legacy docs/guides/ is routinely a mix: the foundation's four guides beside
+# documentation the project authored itself. Moving the directory wholesale put
+# project-authored files into a config directory the updater rewrites.
+# =============================================================================
+
+@test "[US2b] migration leaves project-authored guides in docs/guides/" {
+    make_legacy_install "$TEST_DIR"
+    mkdir -p "$TEST_DIR/docs/guides"
+    cp "$BATS_TEST_DIRNAME/../docs/guides/TEAM-GUIDE.md" "$TEST_DIR/docs/guides/TEAM-GUIDE.md"
+    printf '# Trading Guide\n\nMine, not the foundation.\n' > "$TEST_DIR/docs/guides/TRADING-GUIDE.md"
+
+    run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # The foundation's guide moves under .claude/docs/...
+    [ -f "$TEST_DIR/.claude/docs/guides/TEAM-GUIDE.md" ]
+    [ ! -f "$TEST_DIR/docs/guides/TEAM-GUIDE.md" ]
+    # ...and the project's own stays put, with its content intact.
+    [ -f "$TEST_DIR/docs/guides/TRADING-GUIDE.md" ]
+    grep -q "Mine, not the foundation" "$TEST_DIR/docs/guides/TRADING-GUIDE.md"
+    [ ! -f "$TEST_DIR/.claude/docs/guides/TRADING-GUIDE.md" ]
+}
+
+@test "[US2b] migration leaves a project-authored file in docs/reference/" {
+    make_legacy_install "$TEST_DIR"
+    printf '# Our API contract\n\nProject-owned.\n' > "$TEST_DIR/docs/reference/api-contract.md"
+
+    run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    [ -f "$TEST_DIR/docs/reference/api-contract.md" ]
+    grep -q "Project-owned" "$TEST_DIR/docs/reference/api-contract.md"
+    [ -f "$TEST_DIR/.claude/docs/reference/best-practices.md" ]
+    [ ! -f "$TEST_DIR/docs/reference/best-practices.md" ]
+}
+
+@test "[US2b] a docs/ holding only foundation files is still cleaned up" {
+    make_legacy_install "$TEST_DIR"
+
+    run "$UPDATE_SCRIPT" -y --upgrade-claude-md "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    # Nothing of the project's was there, so nothing is left behind.
+    [ ! -d "$TEST_DIR/docs/reference" ]
+}
+
+# Drift guard: the retired-docs list is a hand-written copy of a fact that lives
+# in git history. Retire another doc upstream without adding it here and the
+# migration hands it back to the project as if the project had authored it --
+# which is exactly the defect this list exists to prevent.
+@test "[US2b] FOUNDATION_RETIRED_DOCS still covers every doc the foundation ever shipped" {
+    cd "$BATS_TEST_DIRNAME/.." || return 1
+
+    local ever current listed missing=""
+    ever=$( { git log --all --diff-filter=A --name-only --format='' -- 'docs/guides/*' 'docs/reference/*'; \
+              git ls-files docs/guides docs/reference; } \
+            | sed 's#^docs/\(guides\|reference\)/##' | grep -v '^$' | LC_ALL=C sort -u )
+    current=$(ls docs/guides docs/reference 2>/dev/null | grep -v ':' | grep -v '^$' | LC_ALL=C sort -u)
+    listed=$(sed -n '/^FOUNDATION_RETIRED_DOCS="/,/"$/p' scripts/update.sh \
+             | sed -e 's/^FOUNDATION_RETIRED_DOCS="//' -e 's/"$//' | grep -v '^$')
+
+    # Anti-vacuity: the three extractions must actually have found something.
+    [ -n "$ever" ] && [ -n "$current" ] && [ -n "$listed" ]
+    [ "$(printf '%s\n' "$ever" | wc -l)" -gt 10 ]
+
+    local name
+    while read -r name; do
+        printf '%s\n' "$current" | grep -Fqx -- "$name" && continue
+        printf '%s\n' "$listed" | grep -Fqx -- "$name" && continue
+        missing="$missing $name"
+    done <<< "$ever"
+
+    [ -z "$missing" ] || { echo "not current and not listed as retired:$missing"; return 1; }
+}
