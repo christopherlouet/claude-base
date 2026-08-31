@@ -271,6 +271,42 @@ check_claude_code() {
     fi
 }
 
+# True when $2 (".claude/", "CLAUDE.md") is spelled literally in $1's .gitignore.
+# Only the canonical spelling — this answers "is a rule written for it", which is
+# all a text match can establish; git itself answers what is actually hidden.
+matches_canonical_ignore() {
+    local target="$1" label="$2" canonical
+    canonical="^$(printf '%s' "${label%/}" | sed 's/[.]/[.]/g')/?$"
+    [[ -f "$target/.gitignore" ]] && grep -qE "$canonical" "$target/.gitignore" 2>/dev/null
+}
+
+# Warn when git hides a path that project doctrine says must be versioned.
+# $1 target dir · $2 label shown to the user · $3 path probed · $4 fix hint.
+# Outside a git repo (or with no git binary) fall back to a text match on the
+# canonical spelling, which is all that can be established there.
+check_versionable() {
+    local target="$1" label="$2" probe="$3" fix="$4"
+
+    if command_exists git && git -C "$target" rev-parse --git-dir >/dev/null 2>&1; then
+        if git -C "$target" check-ignore -q "$probe" 2>/dev/null; then
+            check_warn ".gitignore: $label IS ignored by git (should be versioned)" "$fix"
+        elif matches_canonical_ignore "$target" "$label"; then
+            # Tracked files escape .gitignore, so git rightly says "not ignored".
+            # The rule is still a trap: remove and re-add the file and it vanishes.
+            check_warn ".gitignore: $label is versioned but .gitignore would hide it if re-added" "$fix"
+        else
+            check_pass ".gitignore: $label versionable (shared config)"
+        fi
+        return 0
+    fi
+
+    if matches_canonical_ignore "$target" "$label"; then
+        check_warn ".gitignore: $label IS ignored (should be versioned)" "$fix"
+    else
+        check_pass ".gitignore: $label versionable (shared config)"
+    fi
+}
+
 check_project_config() {
     section "4. Project configuration"
 
@@ -358,19 +394,16 @@ check_project_config() {
         else
             check_warn ".gitignore: .claude/settings.local.json not included" "Add .claude/settings.local.json to .gitignore"
         fi
-        # .claude/ MUST NOT be gitignored (shared team config)
-        if grep -qE "^\.claude/?$" "$target/.gitignore" 2>/dev/null; then
-            check_warn ".gitignore: .claude/ IS included (should be versioned)" "Remove .claude/ from .gitignore — team config to share in git"
-        else
-            check_pass ".gitignore: .claude/ versionable (shared team config)"
-        fi
-        # CLAUDE.md MUST NOT be gitignored
-        if grep -q "^CLAUDE\.md$" "$target/.gitignore" 2>/dev/null; then
-            check_warn ".gitignore: CLAUDE.md IS included (should be versioned)" "Remove CLAUDE.md from .gitignore — project config to share in git"
-        else
-            check_pass ".gitignore: CLAUDE.md versionable (shared project config)"
-        fi
     fi
+
+    # The shared config MUST NOT be hidden from git. Asked of git itself rather
+    # than matched against the .gitignore text: `/.claude/`, `.claude/*` and
+    # .git/info/exclude all hide it while a grep for one spelling reports clean.
+    # Runs outside the .gitignore branch above — .git/info/exclude needs no file.
+    check_versionable "$target" ".claude/" ".claude/settings.json" \
+        "Remove the pattern hiding .claude/ — team config to share in git"
+    check_versionable "$target" "CLAUDE.md" "CLAUDE.md" \
+        "Remove the pattern hiding CLAUDE.md — project config to share in git"
 }
 
 check_foundation() {

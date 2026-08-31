@@ -314,3 +314,130 @@ EOF
     run "$DOCTOR_SCRIPT" --json "$TEST_DIR"
     echo "$output" | jq -e '.checks' > /dev/null
 }
+
+# =============================================================================
+# .gitignore doctrine: .claude/ and CLAUDE.md must stay versionable
+#
+# The verdict must come from what git ACTUALLY does, not from a text match on
+# one spelling of the pattern. `/.claude/`, `.claude/*` and `.git/info/exclude`
+# are ordinary idioms that all hide the directory from git while a grep for
+# `^\.claude/?$` reports a clean bill of health.
+# =============================================================================
+
+# Build a git repo whose .claude/ is hidden from git by $1 (a gitignore line),
+# written to $2 (".gitignore" or "exclude" for .git/info/exclude).
+setup_ignored_claude_project() {
+    local pattern="$1"
+    local where="${2:-.gitignore}"
+    create_minimal_project "$TEST_DIR"
+    git -C "$TEST_DIR" init -q
+    if [ "$where" = "exclude" ]; then
+        printf '%s\n' "$pattern" >> "$TEST_DIR/.git/info/exclude"
+        printf '# no .claude line here\n' > "$TEST_DIR/.gitignore"
+    else
+        printf '%s\n' "$pattern" > "$TEST_DIR/.gitignore"
+    fi
+}
+
+@test "doctor.sh flags a bare .claude/ in .gitignore" {
+    setup_ignored_claude_project '.claude/'
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" == *".claude/ IS ignored by git"* ]]
+}
+
+@test "doctor.sh flags a root-anchored /.claude/ in .gitignore" {
+    setup_ignored_claude_project '/.claude/'
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" == *".claude/ IS ignored by git"* ]]
+}
+
+@test "doctor.sh flags a .claude/* contents glob in .gitignore" {
+    setup_ignored_claude_project '.claude/*'
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" == *".claude/ IS ignored by git"* ]]
+}
+
+@test "doctor.sh flags a .claude/ hidden in .git/info/exclude" {
+    setup_ignored_claude_project '.claude/' exclude
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" == *".claude/ IS ignored by git"* ]]
+}
+
+@test "doctor.sh flags a root-anchored /CLAUDE.md in .gitignore" {
+    setup_ignored_claude_project '/CLAUDE.md'
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" == *"CLAUDE.md IS ignored by git"* ]]
+}
+
+# --- Controls: these must NOT fire (a guard that flags everything proves nothing)
+
+@test "doctor.sh does NOT flag settings.local.json, which SHOULD be ignored" {
+    setup_ignored_claude_project '.claude/settings.local.json'
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" != *".claude/ IS ignored by git"* ]]
+    [[ "$output" != *"CLAUDE.md IS ignored by git"* ]]
+}
+
+@test "doctor.sh does NOT flag the foundation's own written-artifact ignores" {
+    create_minimal_project "$TEST_DIR"
+    git -C "$TEST_DIR" init -q
+    printf '.claude/settings.local.json\n.claude/commands.backup.*/\n.claude.backup.*/\n.claude/worktrees/\nCLAUDE.md.backup.*\n' > "$TEST_DIR/.gitignore"
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" != *"IS ignored by git"* ]]
+}
+
+# --- Anti-vacuity: the clean verdict must be PRINTED, not merely absent
+
+@test "doctor.sh prints the positive versionable verdict on a compliant project" {
+    setup_ignored_claude_project '.claude/settings.local.json'
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" == *".claude/ versionable"* ]]
+    [[ "$output" == *"CLAUDE.md versionable"* ]]
+}
+
+# --- Fallback: outside a git repo the check still has to say something
+
+@test "doctor.sh still flags a bare .claude/ outside a git repository" {
+    create_minimal_project "$TEST_DIR"
+    printf '.claude/\n' > "$TEST_DIR/.gitignore"
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" == *".claude/"* ]]
+    [[ "$output" == *"versioned"* ]] || [[ "$output" == *"ignored"* ]]
+}
+
+@test "doctor.sh flags a .claude/ hidden with no .gitignore at all" {
+    create_minimal_project "$TEST_DIR"
+    git -C "$TEST_DIR" init -q
+    printf '.claude/\n' >> "$TEST_DIR/.git/info/exclude"
+    [ ! -f "$TEST_DIR/.gitignore" ]
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" == *".claude/ IS ignored by git"* ]]
+}
+
+@test "doctor.sh flags a DORMANT contradiction: tracked file, but .gitignore would hide it" {
+    create_minimal_project "$TEST_DIR"
+    git -C "$TEST_DIR" init -q
+    git -C "$TEST_DIR" config user.email t@t
+    git -C "$TEST_DIR" config user.name t
+    printf 'CLAUDE.md\n' > "$TEST_DIR/.gitignore"
+    git -C "$TEST_DIR" add -f CLAUDE.md .gitignore
+    git -C "$TEST_DIR" commit -qm init
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    # Tracked, so git does NOT ignore it — the honest verdict is not "ignored"...
+    [[ "$output" != *"CLAUDE.md IS ignored by git"* ]]
+    # ...but the rule is a trap the moment the file is removed and re-added.
+    [[ "$output" == *"CLAUDE.md is versioned but .gitignore would hide it"* ]]
+}
+
+@test "doctor.sh does NOT report a dormant contradiction when no rule matches" {
+    create_minimal_project "$TEST_DIR"
+    git -C "$TEST_DIR" init -q
+    git -C "$TEST_DIR" config user.email t@t
+    git -C "$TEST_DIR" config user.name t
+    printf '.claude/settings.local.json\n' > "$TEST_DIR/.gitignore"
+    git -C "$TEST_DIR" add -f CLAUDE.md .gitignore
+    git -C "$TEST_DIR" commit -qm init
+    run "$DOCTOR_SCRIPT" "$TEST_DIR"
+    [[ "$output" != *"would hide it"* ]]
+    [[ "$output" == *"CLAUDE.md versionable"* ]]
+}
