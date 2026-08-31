@@ -122,43 +122,82 @@ finds its grade and the specific evidence that earned it.
 > recorded at the time it was found, none fixed then (EF-011). Phase 4 is therefore mostly T306 —
 > and that outcome is itself the finding, so it is written here rather than quietly reinterpreted.
 >
-> Ordered by value, highest first; the order is the evidence, not taste. **All seven are done.**
+> Ordered by value, highest first; the order is the evidence, not taste. **All seven are done**, plus
+> an eighth found while the pass was running — see (8) below, which had no task ID for days.
+>
+> **They are not one commit each.** Five commits carry them: #515, #516, #517 (which bundles four),
+> #518 and #519. The PR is named on every item, because a repair list a reader cannot map back to
+> the history is an archaeology exercise, not a record.
 >
 > Four of the seven turned out to be guardrails that *reported* something they had not established:
 > a success line for a gate that never ran, a clean verdict from a scan with nothing in it, four
 > keys checked out of six, and a test asserting the presence of a word rather than the behaviour it
 > named. That is one failure mode, not four — and it is the one the spec was written around.
 
-- [ ] **T306** [US3] Repair the seven recorded defects, one commit each, tests before code, and a
+- [x] **T306** [US3] Repair the seven recorded defects, tests before code, and a
       **mutation proof per repair** — a repair whose test cannot fail restores the exact class of
       silence this pass exists to remove.
-  - [x] **(1)** `preflight` announces success while a gate did not run — **the spec's own worst
+  - [x] **(1)** [#515] `preflight` announces success while a gate did not run — **the spec's own worst
         case, measured**. Repair is a *reporting contract*, not a regex: the skip stays non-blocking,
         but a gate that could not run is never reported as one that passed. Shipped with four
         mutants, each killed by its own arm; one hollow arm caught and hardened.
-  - [x] **(2)** `substance-check.sh`'s bats branch counts braces on the raw line — a closing brace
+  - [x] **(2)** [#516] `substance-check.sh`'s bats branch counts braces on the raw line — a closing brace
         in a comment closes the block early and the test reads as empty. The repair was supposed to
         be the JavaScript branch's one line; **that model was itself defective** (naive stripping
         mispairs on an embedded escaped quote and can delete an *opening* brace, which flagged a
         real test here as hollow), so all three branches are now escape-aware. Seven arms detect
         the old scanner, including the EF-008 scan of the foundation's own tests.
-  - [x] **(3)** `validate-counts.sh` refuses a document that *quotes* a marker: quoting and violating
+  - [x] **(3)** [#517] `validate-counts.sh` refuses a document that *quotes* a marker: quoting and violating
         are indistinguishable to the scanner. Blocked real work on 2026-08-29. Fenced blocks and
         inline code spans are now documentation; measured side effect on the tree: **none**.
-  - [x] **(4)** No anti-vacuity floor on the marker scan — stripping all markers leaves the gate
+  - [x] **(4)** [#517] No anti-vacuity floor on the marker scan — stripping all markers leaves the gate
         green. An empty gate is a green gate. The floor stores **no number** (that would be one more
         counter to feed): each structural key must have at least one live marker.
-  - [x] **(5)** `_check_core` has no script-level coverage: a mutant disabling it survives the suite.
+  - [x] **(5)** [#517] `_check_core` has no script-level coverage: a mutant disabling it survives the suite.
         Covered through the script now; that exact mutant dies, and by its own arm only.
-  - [x] **(6)** The marker gate validates 4 of 6 live keys — `presets` and `marketplaceAuditPilots`
+  - [x] **(6)** [#517] The marker gate validates 4 of 6 live keys — `presets` and `marketplaceAuditPilots`
         fall through `*) continue ;;`, and `byDomain.*` never matches (the pattern excludes the dot).
         Coverage measured: **87 of 147 markers before, 147 after**; an unknown key is reported, not
         skipped.
-  - [x] **(7)** `tests/ci-workflows.bats` does not earn its title: 4 of 5 classes asserted, and its
+  - [x] **(7)** [#518] `tests/ci-workflows.bats` does not earn its title: 4 of 5 classes asserted, and its
         `grep VERSION` matches the surrounding prose instead of the regex. This is the test that let
         a documentation gap through on 2026-08-29. Now extracts the regex and asserts path-matching
         behaviour per class, both ways. Measured against five mutations of the real hook: the old
         test killed **one of five**, the new one **five of five**.
+
+  - [x] **(8)** [#519] `tests/audit-docs.bats` planted its fixtures **in the shared checkout** (a file
+        under `templates/`, an appended line in `README.md`) while a third case audits that same
+        checkout, under `bats --jobs`: the suite mutated the tree it was auditing. Surfaced by a
+        macOS job red on a PR whose diff cannot reach that scanner, green on re-running the identical
+        commit. Measured: the checkout is dirty in **71 of 268** samples before, **0 of 281** after;
+        widening the window makes the failure deterministic, but **32 runs at the real window did not
+        reproduce it**, so the causal link to that particular red is *unproven and stays unproven*.
+        A control case (a fake root with nothing planted must audit clean) is what makes the positive
+        arms mean anything. **This repair had no task ID and appeared in no list** until T602 asked a
+        reader to audit it and the reader could not find it.
+
+
+**What the eight repairs cost, in tests (added 2026-08-31 — T602 found no cost stated anywhere).**
+
+| repair | PR | test lines | `@test` cases added |
+|---|---|---:|---:|
+| (1) preflight reporting contract | #515 | +96 / −0 | 7 |
+| (2) substance-check brace counting | #516 | +82 / −0 | 8 |
+| (3)(4)(5)(6) marker gate, four defects | #517 | +158 / −0 | 14 |
+| (7) ci-workflows behaviour pinning | #518 | +51 / −14 | 3 |
+| (8) audit-docs shared-state race | #519 | +39 / −17 | 1 |
+| **total** | 5 commits | **+426 / −31** | **33** |
+
+The two negative columns are rewrites, not deletions of coverage: (7) replaced substring assertions
+with behavioural ones, (8) moved the fixtures out of the shared checkout.
+
+**Was the hazard class swept, or only the two cases? (T602 asked; measured 2026-08-31.)** Swept, for
+the pattern that caused it: a redirect, `sed -i`, `rm -rf` or `mkdir` whose target is `$BASE_DIR`
+appears **0 times** across `tests/*.bats` today. The check is not a blind zero — run against the
+pre-repair `tests/audit-docs.bats` (`4452c22d^`) the same pattern finds **1**, which is the faulty
+form itself. What remains uncovered: `cp` *from* `$BASE_DIR` into a temporary directory is common and
+harmless, so the pattern deliberately ignores it; a future test writing through an indirection this
+pattern does not name would not be caught by it. There is no guard for this, by choice — see D1.
 
 **Goal**: an explicit decision per entry; removals executed completely.
 
@@ -254,12 +293,32 @@ guardrail criterion here would pass everything.
       `inventory.md`, so it is not re-added by someone who only sees the gap. **Vacuously satisfied
       and worth saying so: nothing was removed.** What the record must instead survive is the
       opposite — someone reading a repair as a removal.
-- [ ] **T602** [P] [US7] Independent read-through: a reader who was not present picks three removed
+- [x] **T602** [P] [US7] Independent read-through: a reader who was not present picks three removed
       items and states why each went. Failure here is a defect in the record, not in the reader.
-      **Adapted, and deliberately left open**: nothing was removed, so the question becomes *why was
-      each of three repairs made, and what did it cost* — asked of `preflight`'s reporting contract,
-      the marker gate's 87-of-147, and the `audit-docs` non-determination. It **cannot be done by
-      anyone who was present**, which rules out the author of the record; it waits for a real reader.
+      **Adapted**: nothing was removed, so the question became *why was each of three repairs made,
+      and what did it cost* — asked of `preflight`, "a marker gate", and the `audit-docs` checks,
+      named as areas with no figure or finding supplied.
+      **Run 2026-08-31 by a reader with no context of this pass. Verdict: NO.**
+      Each repair is reconstructible *in isolation* — the reader recovered the defects, the evidence
+      and the numbers unaided, which is the part that cost the most to write. What the record does
+      not support is understanding the pass **as a whole**. Three findings, worst first:
+      1. *"Phase 3 never became necessary — nothing was a candidate"* reported an **unrun phase as a
+         conclusion**, and contradicted the `config-protection.sh` entry naming it a strong Phase 3
+         candidate. Phase 3 was the only route to a removal, so zero removals was **untested**, not
+         established. Fixed in `inventory.md`.
+      2. The repair set **could not be enumerated from the record**: "seven defects, one commit each"
+         against five commits, one bundling four — and repair (8), the very one this task asked the
+         reader to audit, appeared in **no list and had no ID**. Fixed above.
+      3. **87 / 147 against 93 / 24 files, never reconciled and neither scope defined**; the reader
+         reproduced neither. Re-measured with the gate's exact scope and reconciled in
+         `us4-demonstration.md`: **93 was the dot-blind count, produced by the very pattern the
+         repair fixed** — the defect measuring itself.
+      Still open from that read-through, recorded rather than fixed here: `bash-write-guard.sh` is
+      kept with recoverable harm and a dated block but **no argued EF-013 departure**; the
+      `.husky`/`preflight` chain (~9 gates) is ungraded while the record claims every refusing tier
+      is graded; the `audit-docs` repair never says whether the shared-state hazard **class** was
+      swept beyond the two cases fixed; and no engineering cost (tests added, suite delta) is stated
+      for any repair.
 - [x] **T603** [US1] Re-run `scripts/guardrail-inventory.sh` and confirm the record still matches the
       repository after all removals. **Confirmed after the seven repairs**: 29 CI gates · 18 hooks
       (10 blocking / 8 advisory) · 31 inline declarations · 3 git hooks — the inline figure

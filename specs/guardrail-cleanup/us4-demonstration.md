@@ -166,10 +166,12 @@ the correction instead of editing the sentence and moving on is what US7 is for.
 Surfaced while auditing this PR, verified **identical on `main`**, and therefore *not* fixed here —
 fixing a pre-existing guard mid-pass is what EF-011 forbids. They belong to Phase 2's record.
 
-- **No anti-vacuity floor on the marker scan.** Stripping all 93 `count:` markers from the 24 files
+- **No anti-vacuity floor on the marker scan.** Stripping every `count:` marker from the 24 files
   carrying them leaves `validate-counts.sh` at exit 0 and the suite at zero failures. An empty gate
   is a green gate. This PR is itself a marker-removal change (README went from 11 markers to 8) and
-  nothing asserted a floor — the same diff could have removed all 93 unnoticed.
+  nothing asserted a floor — the same diff could have removed them all unnoticed.
+  *(This bullet first said "all 93 markers", a figure that could not be reproduced from the
+  repository and is reconciled in the table below. The count is not what the finding rests on.)*
 - **`_check_core` has no script-level coverage.** A mutant disabling it survives both
   `tests/validate-counts.bats` and `tests/modules.bats`; the latter re-implements the invariant
   against `counts.json`, so data drift is caught but the guard itself can be silently disabled.
@@ -211,10 +213,29 @@ catch. The mutation is now applied by exact-string replacement that **asserts it
 
 ### ✅ All four repaired in Phase 4, and the coverage delta was measured
 
+**Scope, stated because two earlier figures here could not be reproduced without it.** The gate
+reads every `*.md` under the repository root except `node_modules`, `.git`, `build`, `.docusaurus`,
+`memory` and `worktrees`, and ignores fenced blocks and inline code (`_marker_lines` in
+`scripts/validate-counts.sh`). `website/` and `specs/` are therefore **in** scope. Re-measured with
+that exact scope on 2026-08-31:
+
 | | Markers the gate actually validated |
 |---|---|
-| before | **87** of 147 in the tree (59 %) |
+| before | **87** of 147 (59 %) |
 | after | **147** — every live one |
+
+The 147 live in **24 files** (101 under `website/`, 46 outside). The three figures that appear in
+this record reconcile as follows, and the arithmetic is the point:
+
+| figure | what it counts |
+|---:|---|
+| **147** | every marker in scope — the denominator |
+| **87** | the four structural keys only: commands 26 + agents 24 + skills 20 + rules 17 — what the old gate validated |
+| **93** | 147 − 54, i.e. what a **dot-blind** `count:[a-zA-Z]+` pattern sees: it silently drops the nine `byDomain.*` keys (9 × 6 = 54) |
+
+**93 was measured with the very pattern this repair fixed.** It was never a second, independent
+count; it was the defect looking at itself. Two plausible numbers sat two screens apart in this
+document for days, unreconciled — the failure mode this record spends its length warning about.
 
 Proven on the real target rather than only in fixtures: a wrong `byDomain.work` and a wrong
 `presets` marker planted in a real file pass the old gate untouched (*"All counters are

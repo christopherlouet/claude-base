@@ -46,7 +46,7 @@ Ten scripts under `scripts/hooks/` that can refuse an action (`exit 2`).
 | `destructive-ops.sh` | **C** | preventive, nothing recorded | **yes** — an erased database or disk | none recorded | **keep** |
 | `destructive-migration.sh` | **C** | preventive, nothing recorded | **yes** — a dropped column | none recorded | **keep** |
 | `config-protection.sh` | **C** | preventive, sourced from external review; no in-repo incident | no — a weakened lint config is revertible | none recorded | **keep** — pending |
-| `bash-write-guard.sh` | **C** | preventive, nothing recorded | no | **2026-07-12** (#469) over-blocks in the Bash guards | **keep** |
+| `bash-write-guard.sh` | **C** | **2026-08-31** — refused a Bash write to a tracked test file while on `main` | no | **2026-07-12** (#469) over-blocks in the Bash guards | **keep** — see entry |
 | `pre-commit-tests.sh` | **C** | preventive, nothing recorded | no — a failing test is visible | none recorded | **keep** — pending |
 | `pre-push-ci.sh` | **C** | preventive, nothing recorded | no — a red CI is recoverable | none recorded | **keep** — pending |
 | `pre-deploy-build.sh` | **C** | preventive, nothing recorded | no | none recorded | **keep** — pending |
@@ -120,6 +120,26 @@ commit on the wrong branch can be moved), and it has a recorded block against it
    occasion, not to do. Recoverable-in-principle is not recoverable-in-practice here.
 
 This departure is recorded rather than silently taken, per EF-013.
+
+### `bash-write-guard.sh` — a departure this record took without arguing it
+
+**This entry exists because the pass failed to write it.** The row above reads recoverable harm, one
+dated over-block (#469), decision *keep* — which is EF-013's letter pointing at removal, and EF-013
+requires any departure to state its reason. No reason was stated anywhere. The independent
+read-through (T602) found it as the one row where the pass applied its own rule without following
+it: a single unflagged departure sitting in a table full of correctly flagged ones.
+
+**The keep is argued now, from evidence dated after the pass.** On 2026-08-31 the guardrail refused
+a Bash heredoc appending to `tests/doctor.bats` while the session was on `main` — a tracked file, an
+interpreter write, the exact shape a `>` or `sed -i` matcher does not see. The work moved to a branch
+and proceeded. That is one recorded prevention against one recorded over-block, and it is the class
+of write that escapes every narrower matcher.
+
+**What that does not settle.** One prevention is not a pattern, and the harm it prevents remains
+recoverable in principle. The honest grade is the same departure `main-branch-guard.sh` takes and for
+the same reason — recovery on a public repository is a history rewrite, and an unattended agent
+accumulates the damage faster than a human notices it. Recorded rather than silently taken, per
+EF-013, and dated so it can be re-judged.
 
 ### `config-protection.sh` — preventive and *sourced*, which is a grade of its own
 
@@ -262,6 +282,23 @@ One arm was **hollow on its first version** and passed against the unrepaired sc
 `preflight` prints a line per gate either way; it now asserts the gate name and the skip notice on
 the *same* line. That is the third hollow test caught in this pass by looking for one.
 
+**What the repair does NOT reach — the exit code (added 2026-08-31, found by T602).** The before-table
+above makes **Exit** a column; the after-state had none, and that omission hid a residual. Re-measured
+with the same two-arm method — a mirror of the real `PATH`, **4,466 binaries**, one tool removed so
+only that varies:
+
+| arm | exit | `OK all fast gates passed` | notice |
+|---|---:|---|---|
+| full mirror (control) | **0** | present | — |
+| minus `shellcheck` | **0** | **absent** (0 occurrences) | stderr only |
+
+The repair holds where it was aimed: the success line is withheld and the non-run is announced. But
+**the exit code is 0 in both arms**. Every caller that reads only `$?` — `.husky/pre-push` among them
+— is exactly as blind to an incomplete run as it was before. That is deliberate (the skip is
+non-blocking by design, CI's Linux job being authoritative), but it was never stated, and a reader
+who checked the before-table's Exit column would have looked for it. The repair changed what a
+*human* reads, not what a *script* reads.
+
 **One consequence for the record itself**: every "the gates were green" statement in this repository's
 history carries this caveat. Green meant *"no gate objected"*, which is not the same as *"every gate
 ran"*. Nothing here suggests a specific past failure slipped through; it means the evidence cannot
@@ -341,8 +378,10 @@ Listed so the record can say it examined everything, and stated rather than left
 | Inline `settings.json` declarations | 31 | none can refuse (verified). They belong to the carried-cost question, Phase 6 |
 | `.husky` chain + `preflight` gates | ~9 | partly measured — `preflight`'s silent skip is above. What remains is whether its duplication of CI earns its keep, which needs Phase 3's demonstration, not an opinion |
 
-**Every tier that can refuse an action is now graded**, apart from the `.husky`/`preflight` chain,
-which is measured but undecided. The two tiers left are graded by Phase 6's criterion — *does this
+**Every tier that can refuse an action is graded except one**: the `.husky`/`preflight` chain, ~9
+gates, is measured but **ungraded and undecided**. An earlier version of this sentence opened with
+"Every tier that can refuse an action is now graded" and then excepted a tier in the same breath —
+a claim and its own counter-example, one comma apart. The honest figure is *all but one tier*. The two tiers left are graded by Phase 6's criterion — *does this
 change what the assistant does?* — not by this phase's.
 
 ---
@@ -466,13 +505,18 @@ looked exactly like a guardrail that does not catch, and one where a test helper
 example instead of the real thing. The technique kept paying because **a test that cannot fail looks
 exactly like a test that passes**.
 
-**What it deliberately did not do.** No removal without demonstrated native coverage (Phase 3 never
-became necessary — nothing was a candidate). No behavioural verdict on carried material, because
+**What it deliberately did not do.** No removal without demonstrated native coverage — and **Phase 3
+was never performed** (T201-T203 are unchecked). An earlier version of this line read "Phase 3 never
+became necessary — nothing was a candidate", which reports an unrun phase as a finding and
+contradicts the `config-protection.sh` entry above, where it is named a strong Phase 3 candidate.
+Phase 3 was the only route by which anything could have been removed, so **zero removals is a result
+that has not been tested**, not one that was established. No behavioural verdict on carried material, because
 that eval's generation half is billing-gated and no run was authorised. No drift guard on this
 record — see [`decision-d1.md`](./decision-d1.md); the harm is recoverable, an existing command
 re-derives the truth, and the guard would have to be fed before any new guardrail could land.
 
-**What is still open.** The independent read-through (T602) cannot be done by anyone who was here.
+**What is still open.** Phase 3 itself, and with it the four decisions this record marks
+"keep — pending", which EF-005 does not allow to stand as defaults.
 The largest carried item, `docs/reference/best-practices.md` at 23 %, mixes instruction with
 reference and needs a content split rather than a frontmatter line. And `workflow.md` duplicates 7 of
 its 13 anti-pattern bullets from `CLAUDE.md`, the two copies already drifting apart.
