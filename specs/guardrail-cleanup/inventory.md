@@ -45,14 +45,19 @@ Ten scripts under `scripts/hooks/` that can refuse an action (`exit 2`).
 | `main-branch-guard.sh` | **C** | preventive, nothing recorded | no — a commit on the wrong branch is movable | **2026-08-29** (#501) branched the repo for edits outside its worktree | **keep** — see entry |
 | `destructive-ops.sh` | **C** | preventive, nothing recorded | **yes** — an erased database or disk | none recorded | **keep** |
 | `destructive-migration.sh` | **C** | preventive, nothing recorded | **yes** — a dropped column | none recorded | **keep** |
-| `config-protection.sh` | **C** | preventive, sourced from external review; no in-repo incident | no — a weakened lint config is revertible | none recorded | **keep** — pending |
+| `config-protection.sh` | **C** | preventive, sourced from external review; no in-repo incident | no — a weakened lint config is revertible | none recorded | **keep** — unproven, see [native-coverage](./native-coverage.md) |
 | `bash-write-guard.sh` | **C** | **2026-08-31** — refused a Bash write to a tracked test file while on `main` | no | **2026-07-12** (#469) over-blocks in the Bash guards | **keep** — see entry |
-| `pre-commit-tests.sh` | **C** | preventive, nothing recorded | no — a failing test is visible | none recorded | **keep** — pending |
-| `pre-push-ci.sh` | **C** | preventive, nothing recorded | no — a red CI is recoverable | none recorded | **keep** — pending |
-| `pre-deploy-build.sh` | **C** | preventive, nothing recorded | no | none recorded | **keep** — pending |
+| `pre-commit-tests.sh` | **C** | preventive, nothing recorded | no — a failing test is visible | none recorded | **keep** — not covered, demonstrated |
+| `pre-push-ci.sh` | **C** | preventive, nothing recorded | no — a red CI is recoverable | none recorded | **keep** — not covered, demonstrated |
+| `pre-deploy-build.sh` | **C** | preventive, nothing recorded | no | none recorded | **keep** — not covered, demonstrated |
 
-Decisions marked *pending* depend on Phase 3 (native coverage must be **demonstrated**, EF-015) and
-are not final.
+**Phase 3 ran on 2026-09-01** and these four are no longer pending — see
+[`native-coverage.md`](./native-coverage.md). Three are kept because the backstop their own header
+names does not exist: no git hook runs the test suite, here or downstream, so only CI does and only
+after the push. `config-protection.sh` is kept as **unproven**, which EF-016 treats as a keep: the
+platform refuses to let an agent disable its own guardrails through the settings file, which blocks
+the very demonstration the rule demands. That refusal was measured twice, through two different
+tools, and is itself recorded as native coverage the foundation does not have.
 
 ---
 
@@ -505,18 +510,28 @@ looked exactly like a guardrail that does not catch, and one where a test helper
 example instead of the real thing. The technique kept paying because **a test that cannot fail looks
 exactly like a test that passes**.
 
-**What it deliberately did not do.** No removal without demonstrated native coverage — and **Phase 3
-was never performed** (T201-T203 are unchecked). An earlier version of this line read "Phase 3 never
-became necessary — nothing was a candidate", which reports an unrun phase as a finding and
-contradicts the `config-protection.sh` entry above, where it is named a strong Phase 3 candidate.
-Phase 3 was the only route by which anything could have been removed, so **zero removals is a result
-that has not been tested**, not one that was established. No behavioural verdict on carried material, because
+**What it deliberately did not do.** No removal without demonstrated native coverage. **Phase 3 was
+finally performed on 2026-09-01** — see [`native-coverage.md`](./native-coverage.md) — after two
+earlier versions of this line got it wrong in opposite directions: the first reported an unrun phase
+as a finding ("Phase 3 never became necessary"), the second correctly called zero removals
+*untested*. It is tested now. Eight candidates, of which **seven are demonstrably not covered or
+unprovable and one is covered**: the `.husky`/`preflight` chain, whose five fast gates all have a CI
+equivalent. So the pass does have a removal candidate after all, and it is about duplicated local
+feedback rather than a guard that fails to earn its place. The decision is the maintainer's; Phase 3
+records, it does not retire. No behavioural verdict on carried material, because
 that eval's generation half is billing-gated and no run was authorised. No drift guard on this
 record — see [`decision-d1.md`](./decision-d1.md); the harm is recoverable, an existing command
 re-derives the truth, and the guard would have to be fed before any new guardrail could land.
 
-**What is still open.** Phase 3 itself, and with it the four decisions this record marks
-"keep — pending", which EF-005 does not allow to stand as defaults.
+**What is still open.** Three demonstrations Phase 3 could not stage, each kept per EF-016 and each
+with the observation that would settle it named in `native-coverage.md`: `config-protection.sh` and
+`bash-write-guard.sh` (the platform blocks the disable the protocol requires — only the maintainer
+can set those variables), and `main-branch-guard.sh` (needs an observer who does not already know
+the guard exists). The `.husky`/`preflight` removal decision. Whether the three test/build gates can
+have their value observed *anywhere the maintainer can see it*, since this repository does not have
+the shape they guard. And two gaps Phase 3 found without looking for them: nine of the 29 native
+deny rules cover less than they read as, and `rm -rf /home/<user>` passes both the native layer and
+`command-validator.sh`.
 The largest carried item, `docs/reference/best-practices.md` at 23 %, mixes instruction with
 reference and needs a content split rather than a frontmatter line. And `workflow.md` duplicates 7 of
 its 13 anti-pattern bullets from `CLAUDE.md`, the two copies already drifting apart.

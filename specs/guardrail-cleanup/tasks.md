@@ -102,16 +102,26 @@ finds its grade and the specific evidence that earned it.
 
 **Goal**: no guardrail is removed because the platform "now does it" unless that was *observed here*.
 
-- [ ] **T201** [US1] List the guardrails suspected of native overlap. Source the suspicion, and note
+- [x] **T201** [US1] List the guardrails suspected of native overlap. Source the suspicion, and note
       that on the day this was decided **two of this repository's own comments asserted the opposite
       of what the tool actually did** — documentation is not evidence.
-- [ ] **T202** [US1] For each: disable the guardrail, trigger the real case on this repository,
+      → **8 candidates**, `native-coverage.md`. The one that mattered was invisible to Phase 1: the
+      **29 native `permissions.deny` rules** in `.claude/settings.json`, a fifth source that refuses
+      actions and that the enumeration's four sources never covered.
+- [x] **T202** [US1] For each: disable the guardrail, trigger the real case on this repository,
       observe whether the platform refuses, record what was observed in
       `specs/guardrail-cleanup/native-coverage.md`. One factor varied per arm.
-- [ ] **T203** [US1] A demonstration producing no refusal is recorded **"not covered"**. One that
+      → Staged for **5 of 8**. Three could not be: the platform refuses to let an agent disable its
+      own guardrails through the settings file (measured twice, two different tools), which blocks
+      the protocol for `config-protection.sh` and `bash-write-guard.sh`; and `main-branch-guard.sh`
+      needs an observer without this context. The block is itself recorded as an observation.
+- [x] **T203** [US1] A demonstration producing no refusal is recorded **"not covered"**. One that
       cannot be safely staged is recorded **"unproven"** — and unproven items are **kept** (EF-016).
+      → 4 not covered, 3 unproven and kept, **1 covered**: the `.husky`/`preflight` chain, 5 of 5
+      fast gates duplicated in CI. The pass's first entry whose removal would lose no coverage.
 
-**Checkpoint**: every native-coverage claim in the record points at an observation, not a doc.
+**Checkpoint**: every native-coverage claim in the record points at an observation, not a doc. ✅ —
+and each claim derived from a measured law rather than staged separately says so in its own row.
 
 ---
 
