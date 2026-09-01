@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+# Downstream pre-commit hook, installed by `claude-base init --hooks`.
+#
+# Deliberately NOT a copy of the foundation's own .husky/pre-commit: that one
+# invokes scripts that exist only in the foundation checkout (the private-names
+# check, the derived-counts self-heal). An install does not ship them, so the
+# copy called files that were not there and refused every commit once
+# git-hooks-wire.sh set core.hooksPath on the first session.
+#
+# What is left is what a project actually has: lint-staged, and only when the
+# project is set up for it. Absent npx or package.json this hook is a no-op —
+# a gate nobody feeds must step aside, not block the work.
+
+if command -v npx >/dev/null 2>&1 && [ -f "package.json" ]; then
+  npx lint-staged
+fi

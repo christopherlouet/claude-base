@@ -256,7 +256,17 @@ Full file-by-file at `.github/workflows/`.
 
 ### Pre-commit Hooks
 
-The foundation ships `.husky/` with auto-lint, Conventional Commits validation, and secret detection (gitleaks). Enabled automatically when `claude-base init` runs with `--hooks` or `--all`. To re-enable manually in an existing install : `npx husky install` (assumes husky + lint-staged + commitlint are already in your project's devDependencies).
+`claude-base init --hooks` (or `--all`) installs two git hooks into `.husky/`: **auto-lint** on staged
+files (`lint-staged`, `pre-commit`) and **Conventional Commits validation** (`commitlint`,
+`commit-msg`). Both are guarded on `npx` **and** a `package.json` — without them each one steps
+aside rather than refusing the commit, so a project that never set up the Node tooling is not
+blocked by a hook it cannot feed. To re-enable manually in an existing install: `npx husky install`
+(assumes husky + lint-staged + commitlint are in your project's devDependencies).
+
+Secret detection is **not** in these hooks. It ships in `.pre-commit-config.yaml` (the Python
+`pre-commit` framework, `detect-secrets`), opt-in via `pip install pre-commit && pre-commit install`
+— a separate tool with its own installation step. On the assistant side, `secret-scan.sh` covers
+the same ground on every Edit/Write.
 
 ## 3. Code conventions
 
