@@ -117,8 +117,12 @@ hook, two only by the native rules. Removing `command-validator.sh` because "the
 would have opened `dd if=…of=/dev/sda`, `mkfs.ext4`, and any multi-directory `rm -rf` — the exact
 class Phase 2 had just widened it to catch.
 
-One gap belongs to neither layer and is recorded rather than fixed here: **`rm -rf /home/<user>`
-passes both**. Measured on a nonexistent path.
+One gap belonged to neither layer: **`rm -rf /home/<user>` passed both**, measured on a nonexistent
+path. ✅ **Closed 2026-09-01** in `_policy-dangerous-commands.sh` — `/home` and `/Users` are
+containers of homes, so both the container and one whole home are refused while anything *inside* a
+home stays allowed. Corpus delta measured before and after: **648 commands / 10 blocked, identical**,
+the 10 being the pre-existing reviewed exceptions. The native rule still does not match it; the hook
+now does, which is what "complementary" means here.
 
 `destructive-ops.sh` (candidate 2) was probed with the same commands and refused none of them — but
 that is **out of its regime**, not a negative: it guards destructive DDL and media/upload trees. In

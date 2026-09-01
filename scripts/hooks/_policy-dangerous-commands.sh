@@ -176,8 +176,38 @@ validate_command() {
   # block only the bare root (`rm -rf /var`, optional trailing slash) — a real
   # subpath like /var/www/html stays allowed. Closes the gap where `rm -rf /usr`
   # slipped through while `/usr/lib` was blocked.
-  if echo "$CMD_NQ" | grep -qE 'rm\s+([^;|&]*\s)?/(usr|var|opt)/?(\s|$)'; then
-    printf '%s\n' "BLOCKED: Deletion of a system tree root (/usr, /var or /opt)."
+  # /root is root's own home: a leaf like /usr rather than a container, so it
+  # belongs to the bare-root rule and not to the home rule below.
+  if echo "$CMD_NQ" | grep -qE 'rm\s+([^;|&]*\s)?/(usr|var|opt|root)/?(\s|$)'; then
+    printf '%s\n' "BLOCKED: Deletion of a system tree root (/usr, /var, /opt or /root)."
+    return 1
+  fi
+  # Home directories. Found by Phase 3 of the guardrail-cleanup pass while
+  # measuring the platform's native deny layer: `rm -rf /home/<user>` passed
+  # BOTH layers. The native rule `Bash(rm -rf /:*)` ends mid-token, so it covers
+  # only the bare root, and this policy had no rule for a home at all.
+  #
+  # /home and /Users are CONTAINERS of homes, which needs a shape neither
+  # neighbour above has — /etc blocks at any depth, /usr blocks only its bare
+  # root. Here BOTH the container and one whole home are irreversible, while
+  # anything inside a home is ordinary work:
+  #
+  #   /home              blocked      the container
+  #   /home/alice        blocked      one entire home, with or without a
+  #                                   trailing slash or a /* glob
+  #   /home/alice/build  ALLOWED      the single most common legitimate rm
+  #
+  # /Users is macOS's spelling of the same tree, and this foundation ships to
+  # macOS. It is spelled LOWERCASE here on purpose: CMD_NQ is derived from
+  # CMD_LOWER, so the stream this pattern reads has already been case-folded — a
+  # capitalised `/Users` in the pattern can never match. (The test for the macOS
+  # form is what caught it; the Linux cases passed and hid it.)
+  #
+  # `~` and `$HOME` are deliberately out of scope: same harm, different lexical
+  # form, and their false-positive profile (`rm -rf ~/.cache/foo`) needs its own
+  # corpus measurement before any widening.
+  if echo "$CMD_NQ" | grep -qE 'rm\s+([^;|&]*\s)?/(home|users)(/[^/[:space:];|&]+)?/?\*?(\s|$)'; then
+    printf '%s\n' "BLOCKED: Deletion of a home directory."
     return 1
   fi
   # The bare filesystem root, which had no rule at all until the guardrail-cleanup

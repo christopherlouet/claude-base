@@ -529,13 +529,12 @@ with the observation that would settle it named in `native-coverage.md`: `config
 `bash-write-guard.sh` (the platform blocks the disable the protocol requires — only the maintainer
 can set those variables), and `main-branch-guard.sh` (needs an observer who does not already know
 the guard exists). Whether the three test/build gates can have their value observed *anywhere the
-maintainer can see it*, since this repository does not have the shape they guard. And one gap Phase
-3 found without looking for it: **`rm -rf /home/<user>` passes both the native layer and
-`command-validator.sh`** — irreversible harm, uncovered on both sides, and unlike the native deny
-list it has an instrument to price a widening (`scripts/validator-corpus.sh`).
+maintainer can see it*, since this repository does not have the shape they guard.
 
-Closed since: the `.husky`/`preflight` decision (D3 — kept), and the three native deny rules that
-could never fire, removed with a test pinning their *shape* rather than the list.
+Closed since: the `.husky`/`preflight` decision (D3 — kept); the three native deny rules that could
+never fire, removed with a test pinning their *shape* rather than the list; and the one gap Phase 3
+found without looking for it — `rm -rf /home/<user>` passed both layers, and now the hook refuses it
+(corpus measured identical before and after, 648/10).
 The largest carried item, `docs/reference/best-practices.md` at 23 %, mixes instruction with
 reference and needs a content split rather than a frontmatter line. And `workflow.md` duplicates 7 of
 its 13 anti-pattern bullets from `CLAUDE.md`, the two copies already drifting apart.
