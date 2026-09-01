@@ -9,6 +9,96 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 > Earlier entries (v1.30.x and before) remain in their original French
 > as a historical record of the project's pre-i18n era.
 
+## [5.4.1] - 2026-09-01
+
+Eleven fixes, and one shape under most of them: **a check aimed at the wrong surface**. v5.4.0's
+release was about guardrails reporting more than they had established; this one is its sibling — the
+rule was present, the rule was correct, and it was pointed somewhere the failure could not be. A
+drift check that scanned the hooks living in *files* while the rotten ones lived inline. A
+versionable check that read the *text* of a `.gitignore` for a question only git can answer. A
+backup covering one of the two things that delete. A deny rule ending mid-token. Each was found by
+probing a real target, not by re-reading the code.
+
+Two of them could not be recovered from by the person they would have hit.
+
+### Security
+
+- **Erasing an entire home directory passed both guard layers.** `rm -rf /home/<user>` was refused
+  by neither the platform's native `permissions.deny` rules nor `command-validator.sh`. Neither had
+  a reason to catch it: the native rule `Bash(rm -rf /:*)` **ends mid-token**, so it matches the bare
+  root and nothing continuing that token — measured, with the matcher's token-boundary behaviour
+  established by a controlled pair (`rm -rf node_modules` refused, `rm -rf /tmp/<probe>` allowed,
+  same binary, same flags). And the policy had rules for system trees at any depth (`/etc`) and for
+  system roots holding legitimate subdirectories (`/usr`, `/var`, `/opt`), but a **home is a third
+  shape**: a container of homes, where both the container and one whole home are irreversible while
+  anything *inside* one is the most common legitimate `rm`. Now refused: `/home`, `/home/<user>`
+  (bare, trailing slash, or `/*`), the macOS `/Users` spelling, and `/root`. Still allowed:
+  everything below a home. Judged by the corpus delta, not by re-reading the regex — 648 commands,
+  10 refusals, identical before and after. (#541)
+- **Three native `deny` rules could never refuse anything.** `Bash(dd if=:*)` ends inside the token
+  its value continues — measured, `dd if=/dev/null …` ran unrefused. `Bash(> /dev/sda:*)` and its
+  nvme sibling would need a command whose first token is a redirection operator. Removed: they
+  matched nothing while reading as protection, and the class they appear to cover is refused by
+  `command-validator.sh`, demonstrated. Four cases in `tests/settings-guards.bats` now pin the
+  **shape** rather than the list, so a future rule of either kind fails. (#541)
+
+### Fixed
+
+- **`init --hooks` refused every commit in a freshly installed project.** The installer copied the
+  foundation's own `.husky/*` verbatim; those hooks invoke three scripts the manifest does not ship.
+  It stayed invisible because `core.hooksPath` is unset at install time — the installer printed
+  "Pre-commit hooks installed" over three inert files — and then `git-hooks-wire.sh` wired them on
+  the first Claude session, at which point every commit and push was refused. Both failure modes the
+  guardrail spec names, in sequence on the same object. Downstream now gets its own hooks
+  (`lint-staged`, `commitlint`), each guarded on `npx` **and** `package.json` so a project without
+  the Node tooling is not blocked by a gate it cannot feed. Measured end to end, with the control:
+  the same commit succeeds once the hooks are unwired. No project in the maintainer's fleet was
+  affected — reproducible, not yet exercised. (#540)
+- **`update --remove-orphans` deleted files the backup never copied.** The rule that a clean can
+  never wipe an unbacked directory was written down and applied to `--clean` alone; the other
+  deleter walked the same six directories while the backup took `commands/` only. Replayed on a real
+  project's pre-repair state, matched by **path** rather than by basename (an orphan agent and a live
+  command can share a name): 30 files deleted with no copy before, **0 after**. A non-deleting run
+  still keeps the cheap commands-only backup — that is a control, not a detail. (#533)
+- **The docs migration took the project's own files with it.** (#537)
+- **`doctor` reported "no security drift" on a project whose command guard was provably dead.** The
+  rule was neither missing nor wrong: it scanned `scripts/hooks/*.sh`, and every rotted hook on that
+  project lived somewhere else. Three surfaces added, each measured on the real target first — hooks
+  declared **inline** in `settings.json` on the pre-stdin contract (19 on that project), hooks
+  pointing at a script **not on disk** (exit 127, silently, on every invocation), and a `_policy-*`
+  library taken before a security rule existed upstream. The hardest control is that the foundation
+  must report no drift against **itself**. (#532, #534)
+- **`doctor`'s versionable check read the text of a `.gitignore` for a question that belongs to
+  git.** Four blind spots, including `.git/info/exclude`. Re-run across the fleet afterwards: it
+  revealed **no** additional affected project, which is itself the result. (#536)
+- **The foundation did not ignore what the foundation writes.** The moment installed projects
+  actually started versioning `.claude/`, three artefacts the tooling itself produces appeared in
+  `git status` — update backups in both shapes, `CLAUDE.md.backup.*`, and `.claude/worktrees/`. The
+  worktree case is the one worth recording: it *was* ignored, through `.git/info/exclude` — a file
+  local to one clone, so the rule worked on the machine that wrote it and was inherited by no other
+  checkout. The control pins the doctrine itself: `.claude/` and `CLAUDE.md` stay versioned, because
+  widening an ignore list is exactly how that gets quietly undone. (#535)
+- **`substance-check` reported two classes of false positive on real Python.** A `def test_*(`
+  signature spanning lines closes on a `)` at the def's own indentation, so the indentation-based
+  reader took it for the end of the body and never saw the assertions below. And a `@pytest.mark.skip`
+  spread over lines had continuation lines starting with neither `@` nor `def`, which cleared the
+  pending skip. Measured on **400 real pytest files**: 778 findings → 756, twenty-two false positives
+  lifted, **zero findings added**, each one opened and confirmed. A false positive is the one thing
+  this scanner forbids itself. (#530, #531)
+
+### Documentation
+
+- **Phase 3 of the guardrail pass finally ran**, and with it the pass's headline stops being
+  untested. It had never been performed; the record said so. Eight candidates for native coverage,
+  each demonstrated rather than read: four not covered, three unprovable and therefore kept, and
+  **one covered** — the `.husky`/`preflight` chain, whose five fast gates all have a CI equivalent.
+  That made it the only removal candidate the pass produced across seven phases. It is **kept**, and
+  the argument is recorded in `decision-d3.md` along with the bias it had to survive: after seven
+  phases and zero removals, a pass called "cleanup" that removes nothing invites taking the one
+  candidate on offer, which is precisely the reasoning the spec forbids. *Duplicated* is not
+  *useless*. Every tier that can refuse an action is now graded, without an exception. (#538, #540,
+  #541)
+
 ## [5.4.0] - 2026-08-30
 
 The maintenance-honesty release. A guardrail pass graded everything in this repository that can
