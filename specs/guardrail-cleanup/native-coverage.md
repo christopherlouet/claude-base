@@ -237,9 +237,14 @@ Two facts that bear on the decision and are recorded here rather than argued:
 - The harm it prevents is a red CI and a wasted merge slot: **recoverable**. Under EF-012 that is
   the class the spec says friction should not be spent on.
 
-**T203 verdict: COVERED (by CI, demonstrated).** The removal decision is the maintainer's, and it is
-a decision about local feedback, not about coverage. Recorded as a candidate; not executed here,
-because Phase 4 closed and executing a removal from Phase 3 would skip the deciding step.
+**T203 verdict: COVERED (by CI, demonstrated).** The removal decision is a decision about local
+feedback, not about coverage.
+
+**Decided 2026-09-01: kept** — see [`decision-d3.md`](./decision-d3.md). It survives abandonment,
+which is the spec's actual criterion: skips are announced unconditionally, the success line is
+withheld when a gate did not run, a real failure exits 1. And the decision had to survive the bias
+EF-014 names — after seven phases, a pass called "cleanup" that removes nothing invites taking the
+one candidate on offer. *Duplicated* is not *useless*.
 
 ---
 
