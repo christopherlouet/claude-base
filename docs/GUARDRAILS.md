@@ -76,9 +76,10 @@ Two consequences worth stating plainly:
   refused by `tests/settings-guards.bats`; a rule that cannot fire is worse than an absent one,
   because it reads as protection.
 - **The hook is what covers the destructive class.** `command-validator.sh` refuses `rm -rf /`,
-  several system directories at once, `dd if=/dev/zero of=/dev/sda` and `mkfs.ext4 /dev/sda1` —
-  all measured. The two layers are complementary, and neither replaces the other. One gap belongs
-  to both and is open: `rm -rf /home/<user>` passes each of them.
+  several system directories at once, `dd if=/dev/zero of=/dev/sda`, `mkfs.ext4 /dev/sda1` and — since
+  the gap was measured on 2026-09-01 — an entire home directory (`/home/<user>`, `/Users/<user>`,
+  and the `/home` container itself), while anything *inside* a home stays allowed. All measured.
+  The two layers are complementary, and neither replaces the other.
 
 Widening a deny rule is a *widening*, with the usual obligation to measure what it costs in false
 blocks first — and note that `scripts/validator-corpus.sh` measures the **hook**, not this list.

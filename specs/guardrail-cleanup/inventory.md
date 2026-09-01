@@ -381,13 +381,14 @@ Listed so the record can say it examined everything, and stated rather than left
 |---|---:|---|
 | Advisory `scripts/hooks/` scripts | 8 | graded by a different question — do they change what the assistant does? — which is Phase 6's criterion, not this one |
 | Inline `settings.json` declarations | 31 | none can refuse (verified). They belong to the carried-cost question, Phase 6 |
-| `.husky` chain + `preflight` gates | ~9 | partly measured — `preflight`'s silent skip is above. What remains is whether its duplication of CI earns its keep, which needs Phase 3's demonstration, not an opinion |
+| ~~`.husky` chain + `preflight` gates~~ | ~~~9~~ | ✅ **graded and decided 2026-09-01** — Phase 3 measured 5 of 5 fast gates duplicated in CI, the pass's only *covered* entry; kept, see [`decision-d3.md`](./decision-d3.md) |
 
-**Every tier that can refuse an action is graded except one**: the `.husky`/`preflight` chain, ~9
-gates, is measured but **ungraded and undecided**. An earlier version of this sentence opened with
-"Every tier that can refuse an action is now graded" and then excepted a tier in the same breath —
-a claim and its own counter-example, one comma apart. The honest figure is *all but one tier*. The two tiers left are graded by Phase 6's criterion — *does this
-change what the assistant does?* — not by this phase's.
+**Every tier that can refuse an action is now graded.** The `.husky`/`preflight` chain was the last
+one outstanding — measured but ungraded — and Phase 3 supplied the demonstration it was waiting for.
+An earlier version of this sentence made the same claim while excepting a tier in the same breath, a
+claim and its own counter-example one comma apart; it is stated without the exception now because
+there is no longer one. The two tiers still listed above are graded by Phase 6's criterion — *does
+this change what the assistant does?* — not by this phase's.
 
 ---
 
@@ -527,11 +528,13 @@ re-derives the truth, and the guard would have to be fed before any new guardrai
 with the observation that would settle it named in `native-coverage.md`: `config-protection.sh` and
 `bash-write-guard.sh` (the platform blocks the disable the protocol requires — only the maintainer
 can set those variables), and `main-branch-guard.sh` (needs an observer who does not already know
-the guard exists). The `.husky`/`preflight` removal decision. Whether the three test/build gates can
-have their value observed *anywhere the maintainer can see it*, since this repository does not have
-the shape they guard. And two gaps Phase 3 found without looking for them: nine of the 29 native
-deny rules cover less than they read as, and `rm -rf /home/<user>` passes both the native layer and
-`command-validator.sh`.
+the guard exists). Whether the three test/build gates can have their value observed *anywhere the
+maintainer can see it*, since this repository does not have the shape they guard.
+
+Closed since: the `.husky`/`preflight` decision (D3 — kept); the three native deny rules that could
+never fire, removed with a test pinning their *shape* rather than the list; and the one gap Phase 3
+found without looking for it — `rm -rf /home/<user>` passed both layers, and now the hook refuses it
+(corpus measured identical before and after, 648/10).
 The largest carried item, `docs/reference/best-practices.md` at 23 %, mixes instruction with
 reference and needs a content split rather than a frontmatter line. And `workflow.md` duplicates 7 of
 its 13 anti-pattern bullets from `CLAUDE.md`, the two copies already drifting apart.

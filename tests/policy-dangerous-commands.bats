@@ -469,3 +469,87 @@ assert_allow() {
     run_policy ""
     assert_allow
 }
+
+# --- Home directories -------------------------------------------------------
+#
+# Found by Phase 3 of specs/guardrail-cleanup/ while measuring the NATIVE deny
+# layer: `rm -rf /home/<user>` was observed passing BOTH layers — the platform's
+# `Bash(rm -rf /:*)` rule does not match it (that rule ends mid-token and covers
+# only the bare root), and this policy had no rule for it either. Probed on a
+# nonexistent path; see specs/guardrail-cleanup/native-coverage.md.
+#
+# /home and /Users are containers of homes, so they need the two-level shape
+# that neither /etc (block any depth) nor /usr (block the bare root only) has:
+#
+#   the container itself   /home            irreversible, block
+#   one whole home         /home/alice      irreversible, block
+#   anything inside one    /home/alice/x    ordinary work, ALLOW
+#
+# /Users is macOS's spelling of the same thing, and this foundation ships to
+# macOS — CI runs a macOS column. /root is root's own home, so it is a bare-root
+# case like /usr rather than a container.
+#
+# Deliberately NOT covered here: `~` and `$HOME`. They are the same harm in a
+# different lexical form, with their own false-positive profile
+# (`rm -rf ~/.cache/foo` is ordinary), and widening to shell expansions is a
+# separate question that deserves its own corpus measurement.
+
+@test "policy-dc: denies deletion of an entire home directory" {
+    run_policy "rm -rf /home/someuser"
+    assert_deny
+}
+
+@test "policy-dc: denies an entire home with a trailing slash" {
+    run_policy "rm -rf /home/someuser/"
+    assert_deny
+}
+
+@test "policy-dc: denies the glob wipe of an entire home" {
+    run_policy "rm -rf /home/someuser/*"
+    assert_deny
+}
+
+@test "policy-dc: denies the bare /home container" {
+    run_policy "rm -rf /home"
+    assert_deny
+}
+
+@test "policy-dc: denies a macOS home (/Users/<name>)" {
+    run_policy "rm -rf /Users/someuser"
+    assert_deny
+}
+
+@test "policy-dc: denies root's own home" {
+    run_policy "rm -rf /root"
+    assert_deny
+}
+
+@test "policy-dc: denies a home listed AFTER another path" {
+    # The multi-path defect Phase 2 fixed for system directories must not
+    # reappear for this rule: only the first path used to be examined.
+    run_policy "rm -rf ./build /home/someuser"
+    assert_deny
+}
+
+# The allow side is what keeps this rule from taxing ordinary work. Without
+# these the rule could be widened to /home and nobody would notice.
+
+@test "policy-dc: ALLOWS deleting a directory inside a home" {
+    run_policy "rm -rf /home/someuser/project/build"
+    assert_allow
+}
+
+@test "policy-dc: ALLOWS deleting a dotfile directory inside a home" {
+    run_policy "rm -rf /home/someuser/.cache/pip"
+    assert_allow
+}
+
+@test "policy-dc: ALLOWS a macOS path inside a home" {
+    run_policy "rm -rf /Users/someuser/src/app/dist"
+    assert_allow
+}
+
+@test "policy-dc: ALLOWS a path merely containing the word home" {
+    run_policy "rm -rf ./homepage/dist"
+    assert_allow
+}

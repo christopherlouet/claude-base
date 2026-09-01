@@ -174,6 +174,21 @@ They refuse an action (a merge), so by the spec's own criterion they qualify. Th
 **Consequence**: the record covers ~34 entries — 18 Claude Code hooks, ~6 git-hook gates, ~10 CI
 gates. Phase 2 is sized accordingly, and EF-001 is satisfied without reservation.
 
+### D3 — Is the `.husky`/`preflight` chain retired as CI duplication? → **RESOLVED 2026-09-01: no, keep**
+
+Raised by Phase 3, which measured five of five `preflight --fast` gates as duplicated in CI — the
+only entry in the whole pass that came back *covered*, and so the only one whose removal would lose
+no coverage.
+
+| Option | Consequence |
+|---|---|
+| **A — keep** ✅ **CHOSEN** | It survives abandonment: skips are announced unconditionally, the success line is withheld when a gate did not run (#515), a real failure exits 1. Neither of the spec's two rot modes applies. |
+| B — retire it | Saves maintaining a script that is already written, already tested, and whose caused-harm column is empty *after being genuinely exercised*. Costs the local loop before a push. |
+
+Full argument, including the bias it had to survive — after seven phases, a "cleanup" that removes
+nothing invites taking the one candidate on offer, which is the reasoning EF-014 exists to block —
+in [`decision-d3.md`](./decision-d3.md).
+
 ---
 
 ## Impacted Files
