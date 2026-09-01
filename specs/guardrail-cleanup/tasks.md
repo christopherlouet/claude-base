@@ -90,9 +90,16 @@ finds its grade and the specific evidence that earned it.
 - [x] **T105** [US1] Probe every **grade D** item (never observed to fire): is it dormant, or does it
       not run at all? A guardrail that cannot be triggered may simply be dead — the spec names this
       explicitly. Probing is instrumentation, **not** grounds for removal.
-- [ ] **T106** [P] [US6] Transcribe portability verdicts **already measured** — travels / lost /
+- [x] **T106** [P] [US6] Transcribe portability verdicts **already measured** — travels / lost /
       arrives broken — from the July import run. Anything unmeasured is written "not measured".
       **This task opens no investigation** (EF-007); if it starts to, stop and drop it.
+      → **Pointed at, not transcribed.** The verdicts live in
+      `specs/agnostic-core/portability-map.md`, which classifies every `scripts/hooks/*.sh` as
+      portable / shell+core / shell-env / assistant-only and is **drift-guarded** by
+      `tests/policy-structure.bats`. Copying them here would create a second home for a fact whose
+      first home is guarded and this one would not be — the failure mode this pass documented three
+      times. The other three sources (CI gates, inline declarations, git hooks) are **not measured**
+      for portability, and that is written rather than inferred.
 
 **Checkpoint**: no blank cells; every grade is bounded by the evidence beside it.
 
@@ -211,19 +218,38 @@ pattern does not name would not be caught by it. There is no guard for this, by 
 
 **Goal**: an explicit decision per entry; removals executed completely.
 
-- [ ] **T301** [US3] Apply the decision rule (EF-013): where evidence points both ways,
+- [x] **T301** [US3] Apply the decision rule (EF-013): where evidence points both ways,
       **irreversible keeps, recoverable removes**. Any departure states its reason in the entry.
       **No decision may cite the count of one column against the other** (EF-014).
-- [ ] **T302** [US3] For every keep, write the one-sentence justification. For every removal, state
+      → Applied throughout `inventory.md`. Two departures are argued rather than taken silently
+      (`main-branch-guard.sh`, `bash-write-guard.sh`), and the last four "pending" decisions were
+      settled by Phase 3 on 2026-09-01.
+- [x] **T302** [US3] For every keep, write the one-sentence justification. For every removal, state
       **the failure mode now uncovered and whether anything else covers it** (EF-006).
-- [ ] **T303** [US3] Execute removals — script, its tests, its `.claude/settings.json` declaration,
+      → Every keep carries its rationale. The pass's only removal — three native `permissions.deny`
+      rules — states what it uncovers (nothing: they matched nothing, measured) and what covers the
+      class they appeared to (`command-validator.sh`, demonstrated).
+- [x] **T303** [US3] Execute removals — script, its tests, its `.claude/settings.json` declaration,
       and its `docs/GUARDRAILS.md` row, in one commit per guardrail. A test that existed only to
       cover a removed guardrail is removed with it **and named in the record**.
-- [ ] **T304** [US3] Check every removal against the installation path: `init`/`update` copy only
+      → One removal, one commit, with its `docs/GUARDRAILS.md` section written in the same change.
+      **No test was removed**: the removal *added* four, pinning the rule shape rather than the list.
+- [x] **T304** [US3] Check every removal against the installation path: `init`/`update` copy only
       `scripts/hooks/*.sh`, so a removal there reaches ~20 installed projects while one in `scripts/`
       does not. State the reach of each removal.
-- [ ] **T305** [US3] State the resulting count **and the reason for it**, so a later reader can tell
+      → **The premise needed correcting before the task could be answered.** `.claude/settings.json`
+      is itself in `scripts/lib/minimal-manifest.txt`, so the removal is not confined to the
+      foundation — but `update` only rewrites it under the **opt-in** `--settings` (or `--all`).
+      Reach: every **fresh install** from v5.4.1 on, plus any existing project updated with
+      `--settings`. Behavioural reach: **nil** — the three rules could not refuse anything anywhere.
+- [x] **T305** [US3] State the resulting count **and the reason for it**, so a later reader can tell
       a decision from an accumulation (EF-005 §3).
+      → Re-derived by `guardrail-inventory.sh` on 2026-09-01, and the inline figure confirmed twice
+      by two routes (16 aggregated rows; multipliers summing to 31): **29 CI gates · 18 hooks (10
+      blocking, 8 advisory) · 31 inline `settings.json` declarations · 3 git hooks — 81 entries, 42
+      of which can refuse an action.** Unchanged from Phase 1, and that is the point: the reason for
+      the count is a **decision**, entry by entry, not an accumulation. See the reach section in
+      `inventory.md`, which also records where this count is knowingly incomplete.
 
 **Checkpoint**: suite green; no doc or declaration references anything removed.
 

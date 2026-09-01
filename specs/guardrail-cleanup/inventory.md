@@ -539,5 +539,52 @@ The largest carried item, `docs/reference/best-practices.md` at 23 %, mixes inst
 reference and needs a content split rather than a frontmatter line. And `workflow.md` duplicates 7 of
 its 13 anti-pattern bullets from `CLAUDE.md`, the two copies already drifting apart.
 
+## The count, its reach, and where it is knowingly incomplete
+
+Re-derived by `scripts/guardrail-inventory.sh` on **2026-09-01**, not carried forward from an
+earlier reading. The inline figure was confirmed by two independent routes — 16 aggregated rows, and
+their multipliers summing to 31 — because this is a place where a number matters and this repository
+has already been burnt by a plausible wrong one.
+
+| Source | Entries | Can refuse |
+|---|---:|---:|
+| CI gates | 29 | 29 |
+| `scripts/hooks/` | 18 | 10 |
+| inline `settings.json` declarations | 31 | 0 |
+| git hooks (`.husky/`) | 3 | 3 |
+| **Total** | **81** | **42** |
+
+**Unchanged from Phase 1, and that is the point.** EF-005 asks that a later reader be able to tell a
+decision from an accumulation: every one of these 81 was graded and decided, and the count held
+because the decisions were *keeps*, not because nobody looked.
+
+### The reach of the pass's only removal
+
+Three native `permissions.deny` rules that could never fire. The task that asks this question assumed
+removals live in `scripts/hooks/`, which the installer ships; **that premise needed correcting**.
+`.claude/settings.json` is itself in `scripts/lib/minimal-manifest.txt`, so the removal is not
+confined to the foundation — but `update` rewrites that file only under the **opt-in** `--settings`
+(or `--all`).
+
+- **Reach**: every fresh install from v5.4.1 onward, plus any existing project updated with
+  `--settings`.
+- **Behavioural reach**: **nil**. The three rules could not refuse anything, anywhere, which is why
+  they were removed.
+
+### Where this record is incomplete, by its own rule
+
+EF-001 requires every guardrail the foundation ships to appear here. **It does not hold yet.** Phase
+3 found a **fifth source** that refuses actions and that `guardrail-inventory.sh` does not enumerate:
+the **29 native `permissions.deny` rules** in `.claude/settings.json`. They are a real refusal — two
+of them were observed refusing a live tool call — and no inventory has ever listed them.
+
+Stated rather than quietly fixed, for the reason the whole pass is built on: the record's job is to
+say what is true, including about itself. Extending the enumerator to a fifth source is the natural
+next work if this chantier reopens, and it is *work*, not a formality — the deny rules are matched by
+a platform matcher whose behaviour had to be established empirically (see
+[`native-coverage.md`](./native-coverage.md)), so enumerating them without also modelling that
+matcher would list rules without saying which ones can fire, which is the defect Phase 3 found in the
+first place.
+
 **The claim this record does not make**: that the foundation is now correct. It says what was
 measured, when, and by which route — twice, where a number mattered.
