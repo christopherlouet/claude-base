@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+# Downstream commit-msg hook, installed by `claude-base init --hooks`.
+#
+# Validates the Conventional Commits format via commitlint (config shipped
+# alongside as .commitlintrc.json). Guarded on both npx and package.json: with
+# neither present it no-ops rather than refusing the commit.
+
+if command -v npx >/dev/null 2>&1 && [ -f "package.json" ]; then
+  npx --no -- commitlint --edit "$1"
+fi

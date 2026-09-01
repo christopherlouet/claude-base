@@ -1068,6 +1068,15 @@ install_cicd_files() {
 }
 
 # Install pre-commit hooks (husky)
+#
+# The source is templates/husky/, NOT the foundation's own .husky/. The
+# foundation's hooks invoke scripts that only exist in its checkout
+# (private-names-check.sh, sync-counts.sh, preflight.sh) and that
+# minimal-manifest.txt does not install — copying them verbatim shipped hooks
+# calling files that were not there, which refused every commit and push as
+# soon as git-hooks-wire.sh set core.hooksPath on the first session. Pinned by
+# tests/husky-downstream.bats.
+#
 # Arguments:
 #   $1 - Target directory (absolute path)
 install_hooks_files() {
@@ -1079,7 +1088,7 @@ install_hooks_files() {
     if $DRY_RUN; then
         echo -e "${DIM}[DRY-RUN]${NC} cp -r husky + config files → $target_dir/"
     else
-        cp -r "$BASE_DIR/.husky/"* "$target_dir/.husky/"
+        cp -r "$BASE_DIR/templates/husky/"* "$target_dir/.husky/"
         cp "$BASE_DIR/.pre-commit-config.yaml" "$target_dir/" 2>/dev/null || true
         cp "$BASE_DIR/.lintstagedrc.json" "$target_dir/"
         cp "$BASE_DIR/.commitlintrc.json" "$target_dir/"
