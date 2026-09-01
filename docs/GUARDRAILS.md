@@ -51,6 +51,39 @@ tests-first, an audit report, a clean PR) are things a native session never make
 | **Bash-write guard** | dodging the guards above by writing via Bash (`>`/`tee`/`sed -i`) to a lint config, a secrets file, or a tracked file on `main` | PreToolUse `bash-write-guard.sh` | No |
 | **Pre-deploy build** | deploying when the prod build is broken | PreToolUse deploy guard | No |
 
+### The native layer beside them: `permissions.deny`, and what it cannot express
+
+`.claude/settings.json` also ships native `permissions.deny` rules. They are a real refusal — not
+a hook — and they cover things no foundation hook does: `git reset --hard`, `git clean -fdx`,
+`git push --force`. Keep them.
+
+But **do not read coverage into a deny rule without checking its shape.** Measured on this
+repository (2026-09-01, `specs/guardrail-cleanup/native-coverage.md`): the Bash deny matcher is
+**token-boundary aware**. A rule matches a command that continues with a *new* token, never one
+that continues the *same* token.
+
+| Rule | Refuses | Does not refuse |
+|---|---|---|
+| `Bash(rm -rf node_modules:*)` | `rm -rf node_modules`, `rm -rf node_modules foo` | `rm -rf node_modules/.cache` |
+| `Bash(rm -rf /:*)` | `rm -rf /` — the bare root, and only that | `rm -rf /home/<user>`, `rm -rf /usr` |
+| `Bash(mkfs:*)` | `mkfs …` | `mkfs.ext4 …` — a different token |
+
+Two consequences worth stating plainly:
+
+- **A rule ending mid-token can never fire.** `Bash(dd if=:*)` was measured never to match, because
+  the device path continues that token. A rule beginning with a redirection (`Bash(> /dev/sda:*)`)
+  cannot fire either — a command's first token is a program, not an operator. Both shapes are now
+  refused by `tests/settings-guards.bats`; a rule that cannot fire is worse than an absent one,
+  because it reads as protection.
+- **The hook is what covers the destructive class.** `command-validator.sh` refuses `rm -rf /`,
+  several system directories at once, `dd if=/dev/zero of=/dev/sda` and `mkfs.ext4 /dev/sda1` —
+  all measured. The two layers are complementary, and neither replaces the other. One gap belongs
+  to both and is open: `rm -rf /home/<user>` passes each of them.
+
+Widening a deny rule is a *widening*, with the usual obligation to measure what it costs in false
+blocks first — and note that `scripts/validator-corpus.sh` measures the **hook**, not this list.
+There is no corpus instrument for the native layer yet.
+
 ## 3. Verification gates — *proof, not the model's word*
 
 | Gate | What it prevents | How enforced | Native? |

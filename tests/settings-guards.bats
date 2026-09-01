@@ -65,3 +65,76 @@ GUARD_MATCHER='Edit|Write|MultiEdit|NotebookEdit'
     [[ "$output" == *"pre-push-ci.sh"* ]]
     [[ "$output" != *"grep -q"* ]]
 }
+
+# =============================================================================
+# permissions.deny — rules that cannot match anything (Phase 3, 2026-09-01)
+#
+# Measured on this repository: the platform's Bash deny matcher is
+# token-boundary aware. `rm -rf node_modules` is refused; `rm -rf /tmp/<probe>`
+# is not, though the list carries `Bash(rm -rf /:*)`. Same binary, same flags —
+# the rule's text ends inside a token the real command continues.
+#
+# Two shapes follow from that law and can never refuse anything:
+#   - a rule whose text ends with `=` (`dd if=`) — the value continues the token;
+#     measured: `dd if=/dev/null of=/dev/null count=0` ran unrefused.
+#   - a rule whose text begins with a redirection (`> /dev/sda`) — a command's
+#     first token is a program, never an operator.
+#
+# A rule that cannot fire is worse than an absent one: it reads as coverage.
+# That class is covered by command-validator.sh instead, demonstrated —
+# `dd if=/dev/zero of=/dev/sda` and `mkfs.ext4 /dev/sda1` are both refused by
+# the hook. See specs/guardrail-cleanup/native-coverage.md.
+#
+# These pin the SHAPE, not the list: a new rule of either shape fails here.
+# =============================================================================
+
+# The command text a Bash deny rule matches on: "Bash(dd if=:*)" -> "dd if=".
+DENY_FILTER='.permissions.deny[]
+    | select(startswith("Bash("))
+    | ltrimstr("Bash(") | rtrimstr(")") | rtrimstr(":*")'
+
+@test "settings: no deny rule ends mid-token on '=' (it could never match)" {
+    run jq -r "$DENY_FILTER | select(endswith(\"=\"))" "$SETTINGS"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ] || {
+        echo "deny rules ending on '=' can never match: $output" >&2
+        false
+    }
+}
+
+@test "settings: no deny rule starts with a redirection (never in command position)" {
+    run jq -r "$DENY_FILTER | select(test(\"^[<>]\"))" "$SETTINGS"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ] || {
+        echo "deny rules starting with a redirection can never match: $output" >&2
+        false
+    }
+}
+
+@test "settings: the deny scanner is not vacuous — it flags both planted shapes" {
+    # Without this the two cases above would pass on an empty list, on a
+    # missing key, or on a filter that silently matches nothing.
+    local fixture="$BATS_TEST_TMPDIR/planted-settings.json"
+    printf '%s\n' \
+        '{"permissions":{"deny":["Bash(sudo:*)","Bash(dd if=:*)","Bash(> /dev/sda:*)"]}}' \
+        > "$fixture"
+
+    run jq -r "$DENY_FILTER | select(endswith(\"=\"))" "$fixture"
+    [ "$output" = "dd if=" ]
+
+    run jq -r "$DENY_FILTER | select(test(\"^[<>]\"))" "$fixture"
+    [ "$output" = "> /dev/sda" ]
+
+    # And the healthy rule beside them is flagged by neither.
+    run jq -r "$DENY_FILTER | select(endswith(\"=\") or test(\"^[<>]\"))" "$fixture"
+    [[ "$output" != *"sudo"* ]]
+}
+
+@test "settings: the deny list still carries the rules measured to fire" {
+    # chmod 777 and eval were each observed refusing a real, harmless tool call.
+    # They are the evidence that this layer refuses at all, so a removal here
+    # would take the instrument with it.
+    run jq -r "$DENY_FILTER" "$SETTINGS"
+    [[ "$output" == *"chmod 777"* ]]
+    [[ "$output" == *"eval"* ]]
+}
