@@ -82,21 +82,21 @@ module "web_servers" {
   source   = "./modules/vm"
   for_each = local.web_servers
 
-  name           = "${var.environment}-web-${each.key}"
-  description    = "Web server ${each.key} - ${var.environment}"
-  target_node    = var.default_node
-  template_id    = var.vm_template_id
+  name        = "${var.environment}-web-${each.key}"
+  description = "Web server ${each.key} - ${var.environment}"
+  target_node = var.default_node
+  template_id = var.vm_template_id
 
-  cpu_cores      = each.value.cores
-  memory_mb      = each.value.memory
-  disk_size_gb   = 30
+  cpu_cores    = each.value.cores
+  memory_mb    = each.value.memory
+  disk_size_gb = 30
 
   network_bridge = "vmbr0"
   ip_address     = "${each.value.ip}/24"
   gateway        = var.network_gateway
 
-  ssh_keys       = var.ssh_public_keys
-  tags           = concat(local.common_tags, ["web", "frontend"])
+  ssh_keys = var.ssh_public_keys
+  tags     = concat(local.common_tags, ["web", "frontend"])
 }
 
 # -----------------------------------------------------------------------------
@@ -107,21 +107,21 @@ module "api_servers" {
   source   = "./modules/vm"
   for_each = local.api_servers
 
-  name           = "${var.environment}-api-${each.key}"
-  description    = "API server ${each.key} - ${var.environment}"
-  target_node    = var.default_node
-  template_id    = var.vm_template_id
+  name        = "${var.environment}-api-${each.key}"
+  description = "API server ${each.key} - ${var.environment}"
+  target_node = var.default_node
+  template_id = var.vm_template_id
 
-  cpu_cores      = each.value.cores
-  memory_mb      = each.value.memory
-  disk_size_gb   = 50
+  cpu_cores    = each.value.cores
+  memory_mb    = each.value.memory
+  disk_size_gb = 50
 
   network_bridge = "vmbr0"
   ip_address     = "${each.value.ip}/24"
   gateway        = var.network_gateway
 
-  ssh_keys       = var.ssh_public_keys
-  tags           = concat(local.common_tags, ["api", "backend"])
+  ssh_keys = var.ssh_public_keys
+  tags     = concat(local.common_tags, ["api", "backend"])
 }
 
 # -----------------------------------------------------------------------------
@@ -138,19 +138,19 @@ module "service_containers" {
   template_file_id = var.lxc_template
   os_type          = "ubuntu"
 
-  cpu_cores        = each.value.cores
-  memory_mb        = each.value.memory
-  disk_size_gb     = 10
+  cpu_cores    = each.value.cores
+  memory_mb    = each.value.memory
+  disk_size_gb = 10
 
-  network_bridge   = "vmbr0"
-  ip_address       = "${each.value.ip}/24"
-  gateway          = var.network_gateway
+  network_bridge = "vmbr0"
+  ip_address     = "${each.value.ip}/24"
+  gateway        = var.network_gateway
 
-  ssh_keys         = var.ssh_public_keys
-  unprivileged     = true
-  nesting          = each.value.nesting
+  ssh_keys     = var.ssh_public_keys
+  unprivileged = true
+  nesting      = each.value.nesting
 
-  tags             = concat(local.common_tags, ["service", each.key])
+  tags = concat(local.common_tags, ["service", each.key])
 }
 
 # -----------------------------------------------------------------------------
@@ -160,14 +160,14 @@ module "service_containers" {
 module "database" {
   source = "./modules/vm"
 
-  name           = "${var.environment}-db-01"
-  description    = "PostgreSQL database - ${var.environment}"
-  target_node    = var.default_node
-  template_id    = var.vm_template_id
+  name        = "${var.environment}-db-01"
+  description = "PostgreSQL database - ${var.environment}"
+  target_node = var.default_node
+  template_id = var.vm_template_id
 
-  cpu_cores      = 4
-  memory_mb      = 8192
-  disk_size_gb   = 30
+  cpu_cores    = 4
+  memory_mb    = 8192
+  disk_size_gb = 30
 
   # Separate data disk
   additional_disks = [
@@ -182,8 +182,8 @@ module "database" {
   ip_address     = "10.0.1.30/24"
   gateway        = var.network_gateway
 
-  ssh_keys       = var.ssh_public_keys
-  tags           = concat(local.common_tags, ["database", "postgresql"])
+  ssh_keys = var.ssh_public_keys
+  tags     = concat(local.common_tags, ["database", "postgresql"])
 }
 
 # -----------------------------------------------------------------------------
@@ -199,22 +199,22 @@ module "docker_host" {
   template_file_id = var.lxc_template
   os_type          = "ubuntu"
 
-  cpu_cores        = 4
-  memory_mb        = 4096
-  disk_size_gb     = 50
+  cpu_cores    = 4
+  memory_mb    = 4096
+  disk_size_gb = 50
 
-  network_bridge   = "vmbr0"
-  ip_address       = "10.0.1.40/24"
-  gateway          = var.network_gateway
+  network_bridge = "vmbr0"
+  ip_address     = "10.0.1.40/24"
+  gateway        = var.network_gateway
 
-  ssh_keys         = var.ssh_public_keys
-  unprivileged     = true
+  ssh_keys     = var.ssh_public_keys
+  unprivileged = true
 
   # Features for Docker
-  nesting          = true
-  keyctl           = true
+  nesting = true
+  keyctl  = true
 
-  tags             = concat(local.common_tags, ["docker", "container-host"])
+  tags = concat(local.common_tags, ["docker", "container-host"])
 }
 
 # -----------------------------------------------------------------------------

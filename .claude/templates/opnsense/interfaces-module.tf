@@ -26,10 +26,10 @@ variable "interfaces" {
     gateway = optional(string) # Gateway name if static
 
     # Options
-    block_private   = optional(bool, false) # Block private networks (WAN)
-    block_bogons    = optional(bool, false) # Block bogons (WAN)
-    promiscuous     = optional(bool, false) # Promiscuous mode
-    mtu             = optional(number)      # Custom MTU
+    block_private = optional(bool, false) # Block private networks (WAN)
+    block_bogons  = optional(bool, false) # Block bogons (WAN)
+    promiscuous   = optional(bool, false) # Promiscuous mode
+    mtu           = optional(number)      # Custom MTU
   }))
 
   default = []
@@ -74,14 +74,14 @@ resource "opnsense_interface" "this" {
 variable "gateways" {
   description = "List of gateways to configure"
   type = list(object({
-    name           = string                    # Gateway name
-    interface      = string                    # Associated interface
-    gateway        = string                    # Gateway IP address
-    default        = optional(bool, false)     # Default gateway
-    monitor_ip     = optional(string)          # Monitoring IP (ping)
-    priority       = optional(number, 255)     # Priority (0-255)
-    weight         = optional(number, 1)       # Weight for load balancing
-    description    = optional(string)
+    name        = string                # Gateway name
+    interface   = string                # Associated interface
+    gateway     = string                # Gateway IP address
+    default     = optional(bool, false) # Default gateway
+    monitor_ip  = optional(string)      # Monitoring IP (ping)
+    priority    = optional(number, 255) # Priority (0-255)
+    weight      = optional(number, 1)   # Weight for load balancing
+    description = optional(string)
   }))
 
   default = []
@@ -90,14 +90,14 @@ variable "gateways" {
 resource "opnsense_gateway" "this" {
   for_each = { for gw in var.gateways : gw.name => gw }
 
-  name           = each.value.name
-  interface      = each.value.interface
-  gateway        = each.value.gateway
-  default_gw     = each.value.default
-  monitor        = each.value.monitor_ip
-  priority       = each.value.priority
-  weight         = each.value.weight
-  description    = each.value.description
+  name        = each.value.name
+  interface   = each.value.interface
+  gateway     = each.value.gateway
+  default_gw  = each.value.default
+  monitor     = each.value.monitor_ip
+  priority    = each.value.priority
+  weight      = each.value.weight
+  description = each.value.description
 
   depends_on = [opnsense_interface.this]
 }

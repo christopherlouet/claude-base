@@ -12,12 +12,12 @@
 variable "dhcp_servers" {
   description = "DHCP server configuration per interface"
   type = list(object({
-    interface = string                       # Interface (lan, opt1...)
+    interface = string # Interface (lan, opt1...)
     enabled   = optional(bool, true)
 
     # Address range
-    range_start = string                     # First IP of the range
-    range_end   = string                     # Last IP of the range
+    range_start = string # First IP of the range
+    range_end   = string # Last IP of the range
 
     # Network options
     gateway     = optional(string)           # Gateway (default: interface IP)
@@ -38,10 +38,10 @@ variable "dhcp_servers" {
 variable "dhcp_reservations" {
   description = "DHCP reservations (fixed IPs per MAC address)"
   type = list(object({
-    interface   = string                     # DHCP interface
-    mac         = string                     # MAC address (format: 00:11:22:33:44:55)
-    ip          = string                     # IP to assign
-    hostname    = optional(string)           # Hostname
+    interface   = string           # DHCP interface
+    mac         = string           # MAC address (format: 00:11:22:33:44:55)
+    ip          = string           # IP to assign
+    hostname    = optional(string) # Hostname
     description = optional(string)
   }))
 
@@ -74,9 +74,9 @@ variable "dns_interfaces" {
 variable "dns_forwarders" {
   description = "Upstream DNS servers (forwarders)"
   type = list(object({
-    host     = string                        # DNS server IP
-    port     = optional(number, 53)          # Port
-    domain   = optional(string)              # Specific domain (optional)
+    host     = string               # DNS server IP
+    port     = optional(number, 53) # Port
+    domain   = optional(string)     # Specific domain (optional)
     priority = optional(number, 10)
   }))
 
@@ -86,9 +86,9 @@ variable "dns_forwarders" {
 variable "dns_overrides" {
   description = "Local DNS entries (host overrides)"
   type = list(object({
-    hostname    = string                     # Hostname
-    domain      = string                     # Domain
-    ip          = string                     # Associated IP
+    hostname    = string # Hostname
+    domain      = string # Domain
+    ip          = string # Associated IP
     description = optional(string)
   }))
 
@@ -98,8 +98,8 @@ variable "dns_overrides" {
 variable "dns_domain_overrides" {
   description = "Domains to resolve via specific servers"
   type = list(object({
-    domain      = string                     # Domain
-    server      = string                     # DNS server for this domain
+    domain      = string # Domain
+    server      = string # DNS server for this domain
     description = optional(string)
   }))
 
@@ -191,10 +191,10 @@ output "dhcp_servers" {
   description = "Configured DHCP servers"
   value = {
     for iface, dhcp in opnsense_dhcp_v4_server.this : iface => {
-      id          = dhcp.id
-      interface   = dhcp.interface
-      range_from  = dhcp.range_from
-      range_to    = dhcp.range_to
+      id         = dhcp.id
+      interface  = dhcp.interface
+      range_from = dhcp.range_from
+      range_to   = dhcp.range_to
     }
   }
 }

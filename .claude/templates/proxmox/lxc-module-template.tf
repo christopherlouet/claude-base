@@ -236,10 +236,10 @@ resource "proxmox_virtual_environment_container" "this" {
 
   # Features
   features {
-    nesting     = var.nesting
-    fuse        = var.fuse
-    keyctl      = var.keyctl
-    mount       = var.mount_types
+    nesting = var.nesting
+    fuse    = var.fuse
+    keyctl  = var.keyctl
+    mount   = var.mount_types
   }
 
   # Lifecycle

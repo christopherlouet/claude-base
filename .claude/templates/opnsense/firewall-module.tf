@@ -13,19 +13,19 @@ variable "firewall_rules" {
   description = "List of firewall rules"
   type = list(object({
     # Identifier
-    name        = string                     # Unique rule name
-    description = optional(string)           # Description
+    name        = string           # Unique rule name
+    description = optional(string) # Description
 
     # Matching
-    interface   = string                     # Interface (wan, lan, opt1...)
-    direction   = optional(string, "in")     # in, out
-    ip_protocol = optional(string, "inet")   # inet (IPv4), inet6 (IPv6)
-    protocol    = optional(string, "any")    # tcp, udp, icmp, any, etc.
+    interface   = string                   # Interface (wan, lan, opt1...)
+    direction   = optional(string, "in")   # in, out
+    ip_protocol = optional(string, "inet") # inet (IPv4), inet6 (IPv6)
+    protocol    = optional(string, "any")  # tcp, udp, icmp, any, etc.
 
     # Source
-    source_net    = optional(string, "any")  # IP, network, alias, or "any"
-    source_port   = optional(string)         # Source port (rare)
-    source_invert = optional(bool, false)    # Invert source
+    source_net    = optional(string, "any") # IP, network, alias, or "any"
+    source_port   = optional(string)        # Source port (rare)
+    source_invert = optional(bool, false)   # Invert source
 
     # Destination
     destination_net    = optional(string, "any") # IP, network, alias, "(self)"
@@ -33,15 +33,15 @@ variable "firewall_rules" {
     destination_invert = optional(bool, false)   # Invert destination
 
     # Action
-    action   = optional(string, "pass")      # pass, block, reject
-    log      = optional(bool, false)         # Log matches
-    sequence = optional(number)              # Order (1 = first, default auto)
-    enabled  = optional(bool, true)          # Rule active
+    action   = optional(string, "pass") # pass, block, reject
+    log      = optional(bool, false)    # Log matches
+    sequence = optional(number)         # Order (1 = first, default auto)
+    enabled  = optional(bool, true)     # Rule active
 
     # Advanced options
-    quick        = optional(bool, true)      # Stop at first match
-    gateway      = optional(string)          # Force a gateway (policy routing)
-    state_type   = optional(string)          # keep state, sloppy state, etc.
+    quick      = optional(bool, true) # Stop at first match
+    gateway    = optional(string)     # Force a gateway (policy routing)
+    state_type = optional(string)     # keep state, sloppy state, etc.
   }))
 
   default = []

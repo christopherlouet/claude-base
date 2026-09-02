@@ -12,19 +12,19 @@
 variable "aliases" {
   description = "List of aliases to create"
   type = list(object({
-    name        = string                     # Unique alias name
-    type        = string                     # Type: host, network, port, url, urltable
-    description = optional(string)           # Description
+    name        = string           # Unique alias name
+    type        = string           # Type: host, network, port, url, urltable
+    description = optional(string) # Description
     enabled     = optional(bool, true)
 
     # Content depending on type
-    content = list(string)                   # List of IPs, networks, ports, URLs
+    content = list(string) # List of IPs, networks, ports, URLs
 
     # Options for URL/URLTable
-    refresh_frequency = optional(number)     # Refresh frequency (days)
+    refresh_frequency = optional(number) # Refresh frequency (days)
 
     # Statistics
-    counters = optional(bool, false)         # Enable pfTables counters
+    counters = optional(bool, false) # Enable pfTables counters
   }))
 
   default = []

@@ -1052,19 +1052,49 @@ copy_base_dir() {
 # Install GitHub Actions
 # Arguments:
 #   $1 - Target directory (absolute path)
+# A file the PROJECT already has is the project's. Never overwritten, and the
+# skip is reported — a guard that protects in silence leaves the user believing
+# the install applied.
+#
+# Space-separated string rather than an array on purpose: expanding an empty
+# array under `set -u` errors on macOS bash 3.2, which CI runs.
+PRESERVED_FILES=""
+
+# copy_unless_present <src> <dest>
+copy_unless_present() {
+    local src="$1" dest="$2"
+    if [[ -e "$dest" ]]; then
+        PRESERVED_FILES="$PRESERVED_FILES $(basename "$dest")"
+        return 0
+    fi
+    copy_file "$src" "$dest"
+}
+
+report_preserved() {
+    [[ -n "$PRESERVED_FILES" ]] || return 0
+    warning "Kept the project's own files, not overwritten:$PRESERVED_FILES"
+    PRESERVED_FILES=""
+}
+
 install_cicd_files() {
     local target_dir="$1"
 
     info "Installing GitHub Actions..."
     make_dir "$target_dir/.github/workflows"
 
-    if $DRY_RUN; then
-        echo -e "${DIM}[DRY-RUN]${NC} cp -r $BASE_DIR/.github/workflows/* → $target_dir/.github/workflows/"
-    else
-        cp -r "$BASE_DIR/.github/workflows/"* "$target_dir/.github/workflows/"
-    fi
+    # Copied one by one rather than `cp -r …/*`: the blunt form replaced a real
+    # project's own ci.yml — 510 lines, silently — on 2026-09-02. Per-file is
+    # also strictly better than the all-or-nothing detection guard it replaces:
+    # the workflows the project lacks still land. Pinned by
+    # tests/install-preserves-project-files.bats.
+    local wf
+    for wf in "$BASE_DIR/.github/workflows/"*; do
+        [[ -f "$wf" ]] || continue
+        copy_unless_present "$wf" "$target_dir/.github/workflows/$(basename "$wf")"
+    done
 
     success "GitHub Actions installed"
+    report_preserved
 }
 
 # Install pre-commit hooks (husky)
@@ -1088,16 +1118,24 @@ install_hooks_files() {
     if $DRY_RUN; then
         echo -e "${DIM}[DRY-RUN]${NC} cp -r husky + config files → $target_dir/"
     else
-        cp -r "$BASE_DIR/templates/husky/"* "$target_dir/.husky/"
-        cp "$BASE_DIR/.pre-commit-config.yaml" "$target_dir/" 2>/dev/null || true
-        cp "$BASE_DIR/.lintstagedrc.json" "$target_dir/"
-        cp "$BASE_DIR/.commitlintrc.json" "$target_dir/"
+        # Same rule as the CI workflows: a hook or a lint config the project
+        # already wrote is the project's, and is kept.
+        local h
+        for h in "$BASE_DIR/templates/husky/"*; do
+            [[ -f "$h" ]] || continue
+            copy_unless_present "$h" "$target_dir/.husky/$(basename "$h")"
+        done
+        [[ -f "$BASE_DIR/.pre-commit-config.yaml" ]] && \
+            copy_unless_present "$BASE_DIR/.pre-commit-config.yaml" "$target_dir/.pre-commit-config.yaml"
+        copy_unless_present "$BASE_DIR/.lintstagedrc.json" "$target_dir/.lintstagedrc.json"
+        copy_unless_present "$BASE_DIR/.commitlintrc.json" "$target_dir/.commitlintrc.json"
         if ! chmod +x "$target_dir/.husky/"* 2>/dev/null; then
                 warning "Unable to make husky hooks executable"
             fi
     fi
 
     success "Pre-commit hooks installed"
+    report_preserved
 }
 
 # Install MCP configuration
@@ -2245,9 +2283,16 @@ main() {
         # Use defaults for unspecified options
         # (Options are already false by default, --ci/--hooks/etc enable them)
 
-        # Honor detection to avoid duplicates
-        $DETECTED_CICD && INCLUDE_CICD=false
-        $DETECTED_HOOKS && INCLUDE_HOOKS=false
+        # Honor detection to avoid duplicates.
+        #
+        # CI and hooks are NOT disabled wholesale here any more. That guard was
+        # all-or-nothing — it skipped the entire install when the project had
+        # any CI at all, so the workflows it lacked never landed — and it never
+        # fired on the --preset path regardless: a trace of a failing run showed
+        # DETECTED_CICD assigned exactly once, its initialiser, because
+        # detect_stack does not run on that branch. Preservation now happens
+        # per file in install_cicd_files / install_hooks_files, which covers
+        # every path into them. See tests/install-preserves-project-files.bats.
         $DETECTED_DOCKER && INCLUDE_DOCKER=false
 
         # An explicit --ci-existing flag drives merge/replace of existing CI/CD.
