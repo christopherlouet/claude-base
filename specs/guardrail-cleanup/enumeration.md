@@ -1,6 +1,6 @@
 # Phase 1 — the enumeration, and how completeness was established
 
-**Date**: 2026-08-29
+**Date**: 2026-08-29 · **extended 2026-09-02** with a fifth source, see the last section
 **Tasks**: T001–T004 (US1)
 **Tool**: `scripts/guardrail-inventory.sh` — reports, refuses nothing, exits 0 always
 **Tests**: `tests/guardrail-inventory.bats`
@@ -14,9 +14,10 @@ while grading fails by overclaim, which review can catch.
 
 ## The method
 
-Four sources are read independently and reconciled **against each other**, because any single list
+Five sources are read independently and reconciled **against each other**, because any single list
 is exactly what the spec's own edge case warns about — *"a guardrail exists but is not listed
-anywhere"*.
+anywhere"*. The fifth was itself an instance of that edge case: it refused actions for as long as
+the others were being enumerated, and no inventory listed it.
 
 | # | Source | What it yields | How an item is classified |
 |---|---|---|---|
@@ -24,6 +25,7 @@ anywhere"*.
 | 2 | `.claude/settings.json` | 31 inline declarations, in 16 event groups | same test, applied to the inline command |
 | 3 | `.husky/*` | 3 git hooks, plus what each invokes | a git hook refuses by non-zero exit |
 | 4 | `.github/workflows/*.yml` | 29 named steps | a CI step refuses a merge (decision D2) |
+| 5 | `permissions.deny` | 26 native rules | can the rule fire beyond its own literal? (2026-09-02) |
 
 Underscore-prefixed files in source 1 are **excluded**, and the justification is a measurement rather
 than a naming convention: all nine are **never declared** in `settings.json`, so they are libraries
@@ -38,17 +40,24 @@ Reproduce with `scripts/guardrail-inventory.sh`. Output is `source | name | kind
 
 ```
 29  ci             .github/workflows/*.yml
+26  deny           permissions.deny            (18 blocking · 8 literal-only)
 18  hooks          scripts/hooks/*.sh          (10 blocking · 8 advisory)
 16  settings.json  inline declarations         (31 declarations, grouped by event)
  3  husky          .husky/*
 ```
+
+92 rows, and **107 entries** once the inline rows are read at their own granularity
+(29 + 26 + 18 + 31 + 3). **68 of them can refuse**: the 29 CI steps, the 26 native rules, the 10
+blocking hooks and the 3 git hooks. Every figure here is produced by the tool and re-derived on the
+day it is written; the inline multiplier is confirmed by a second, independent read of the settings
+file.
 
 ### Reconciliation with the spec's figure (T004)
 
 The spec scopes the first half to *"18 items, ten blocking and eight advisory"*.
 
 **That figure is confirmed** — by two independent measurements that were made to agree (see the
-discrepancy below). It is also **one source out of four**. The three others ship things that refuse
+discrepancy below). It is also **one source out of five**. The four others ship things that refuse
 an action and appear in none of it:
 
 | Not in the 18 | Why it was missed |
@@ -189,3 +198,68 @@ Recorded here, decided in Phase 2:
   breaking its own rule on its first move.
 - **No grading.** Every row above is unjudged. Phase 2 attaches evidence, both harms, and the
   irreversible/recoverable classification.
+
+---
+
+# The fifth source, added 2026-09-02
+
+Phase 3 found a source this phase had not enumerated: the **native `permissions.deny` rules** in
+`.claude/settings.json`. They refuse before any hook is consulted, two of them were observed
+refusing a live tool call, and `.claude/settings.json` ships to every installed project. The record
+stated the gap rather than closing it quietly; this section closes it.
+
+## Why enumerating them was not a formality
+
+The rules are matched by a platform matcher, and **listing them without modelling it would name
+refusals without saying which can fire** — the defect Phase 3 had just found in this very layer,
+reproduced by the fix for it. So each row carries a class:
+
+| Class | Meaning | Count today |
+|---|---|---|
+| `blocking` | the prefix ends on a whole token, so every command it aims at continues with a space and is matched | 18 |
+| `blocking-literal-only` | the refusal stops at the end of the rule's final token: the bare form is refused, anything extending that token is not | 8 |
+
+Three routes reach the second class, ordered by how much each claims:
+
+1. **the final token is path punctuation** (`/`, `/*`, `.`, `..`, `~`) — readable off the rule's own
+   text, since such a token is always continued from within;
+2. **the rule carries no `:*` wildcard** — an exact-match rule by construction;
+3. **the command's normal form is suffixed** — a judgement about a tool, so it is a **named list
+   with a reason per entry** rather than a pattern, and each entry is pinned by a test. It holds one
+   name, `mkfs`, whose normal form `mkfs.ext4` is a different token.
+
+The law was measured on the **Bash** matcher. A `Read` or `WebFetch` rule is enumerated but keeps
+the unqualified class: carrying a Bash finding to a matcher nobody probed would be the same
+overclaim in a new place.
+
+## What the tool found that the hand-derived list had not
+
+Phase 3 derived, by hand, that nine rules covered less than they read as. Three of those were
+removed in #540, so **six** of them survive in today's 26. The tool flags **eight**.
+
+The two it adds are `git checkout .` and `git restore .` — the same lexical class as the five
+`rm -rf` literals, missed because the list was produced by reading rather than by applying the rule.
+
+**Measured, not derived**, on 2026-09-02, and it is a second instance of the token-boundary law on a
+command family other than the one that established it:
+
+| Arm | Command | Observed |
+|---|---|---|
+| instrument | `chmod 777 <probe dir>` | **refused** by the permission layer |
+| control | `git checkout .` | **refused** by the permission layer |
+| test | `git checkout ./<nonexistent path>` | **allowed** — it reached git, which rejected the pathspec |
+
+Same binary, same subcommand; the only difference is whether the command continues the rule's final
+token. The refusal message names its layer, so a native refusal is distinguishable from a hook's —
+which is what makes the middle row a control rather than a coincidence.
+
+What escapes those two rules is `git checkout ./<path>` and `git restore ./<path>`: the same harm at
+a smaller scope. **Not widened**, deliberately, for the reason already recorded for `dd if=` — a
+wider rule is an ENLARGEMENT, and `validator-corpus.sh` measures the hook, not the native list. That
+layer still has **no corpus instrument**, and building one remains the clean candidate.
+
+## What this does not claim
+
+That the deny list is now correct. Eight of its 26 rules still cover less than they read as, six of
+them for the reason Phase 3 recorded and two found here. What changed is that no rule is missing
+from the record any more, and that every rule says which it is.
