@@ -12,7 +12,7 @@
 # (plan decision D1, task T604), so it can be judged by the same criteria as
 # everything else it will sit beside.
 #
-# WHY FOUR SOURCES. The spec scopes the guardrails to "18 items, ten blocking
+# WHY FIVE SOURCES. The spec scopes the guardrails to "18 items, ten blocking
 # and eight advisory". Measured, that is exactly right — for scripts/hooks/, one
 # directory out of four. EF-001 requires completeness to be ESTABLISHED rather
 # than asserted, and an inventory built from that directory alone would match
@@ -34,11 +34,26 @@
 #                               it is absent from the spec's 18.
 #   4. .github/workflows/*.yml  named steps. A CI gate refuses a merge, so by the
 #                               spec's own criterion it qualifies (decision D2).
+#   5. permissions.deny         the native rules. They refuse before any hook is
+#                               consulted, and no inventory listed them until
+#                               2026-09-02 — the gap this file's own record
+#                               named rather than quietly closed.
+#
+# WHY SOURCE 5 CARRIES A CLASS AND THE OTHERS DO NOT. The native rules are
+# matched by a platform matcher whose behaviour had to be established
+# empirically. Measured on 2026-09-01 (specs/guardrail-cleanup/native-coverage.md,
+# T202): THE MATCHER IS TOKEN-BOUNDARY AWARE. `rm -rf node_modules` is refused
+# while a rule whose prefix stops mid-token is not, on the same binary with the
+# same flags. So a rule whose prefix ends on an incomplete path fragment covers
+# its bare literal and nothing beyond it. Listing the rules without that class
+# would name refusals without saying which can fire — the exact defect Phase 3
+# found in this layer.
 #
 # Output: one row per item, `source | name | kind | invoked-from`, LC_ALL=C
 # sorted so two runs differ only when the repository really changed.
 #
-# Usage: guardrail-inventory.sh [--root DIR] [--source hooks|settings|husky|ci]
+# Usage: guardrail-inventory.sh [--root DIR]
+#                              [--source hooks|settings|husky|ci|deny]
 # Exit:  0 always. A missing source is a row-less source, never an error.
 #
 # bash 3.2 safe (macOS): no mapfile, no associative arrays, no empty-array
@@ -159,6 +174,79 @@ if wanted ci && [ -d "$ROOT/.github/workflows" ]; then
             row "ci" "$step" "blocking" "$wf"
         done
     done
+fi
+
+
+# --- 5. the native permissions.deny rules -----------------------------------
+# Enumerated with the class the MEASURED matcher law assigns each rule, because
+# a list of refusals that does not say which can fire is the defect this pass
+# exists to remove. Two classes, and the boundary between them is the law:
+#
+#   blocking               the prefix ends on a whole token, so every command
+#                          it aims at continues with a SPACE and is matched.
+#   blocking-literal-only  the prefix ends where a real target keeps going
+#                          INSIDE the same token, so only the bare literal is
+#                          ever refused.
+#
+# Three routes reach the second class, and they are ordered by how much they
+# claim. The first two are lexical, readable off the rule's own text; the third
+# is a judgement about a tool's normal form, so it is a NAMED list with a reason
+# per entry rather than a pattern, and each entry is pinned by a test.
+#
+# The law was measured on the BASH matcher. A Read/Write/WebFetch rule is
+# enumerated but keeps the unqualified class: applying a Bash finding to a
+# matcher nobody probed would be the same overclaim in a new place.
+if wanted deny && [ -f "$ROOT/.claude/settings.json" ] && command -v python3 >/dev/null 2>&1; then
+    python3 - "$ROOT/.claude/settings.json" <<'PY' 2>/dev/null || true
+import json, re, sys
+
+# Command words whose NORMAL form carries a suffix, so a bare-word rule never
+# meets them. One entry per measured miss; the value is the form that escapes.
+SUFFIXABLE = {
+    'mkfs': 'mkfs.ext4',   # mkfs.ext4 / mkfs.xfs are different tokens
+}
+
+# A token made only of these can always be continued within itself, so a rule
+# ending on one covers its literal alone: `/`, `/*`, `.`, `..`, `~`.
+PATH_PUNCT = '/.~*'
+
+
+def classify(rule):
+    """(kind, note) for one deny rule. Claims nothing it cannot read."""
+    m = re.match(r'^([A-Za-z_][A-Za-z_0-9]*)\((.*)\)$', rule, re.S)
+    if not m:
+        return 'blocking', ''
+    tool, payload = m.group(1), m.group(2)
+    if tool != 'Bash':
+        return 'blocking', ''
+    if not payload.endswith(':*'):
+        return 'blocking-literal-only', 'exact-match rule: no :* prefix wildcard'
+    toks = payload[:-2].split()
+    if not toks:
+        return 'blocking', ''
+    last = toks[-1]
+    if last.strip(PATH_PUNCT) == '':
+        return 'blocking-literal-only', ''
+    if last in SUFFIXABLE:
+        return ('blocking-literal-only',
+                'normal form %s is a different token' % SUFFIXABLE[last])
+    return 'blocking', ''
+
+
+try:
+    d = json.load(open(sys.argv[1]))
+except Exception:
+    sys.exit(0)
+
+for rule in ((d.get('permissions') or {}).get('deny') or []):
+    if not isinstance(rule, str) or not rule.strip():
+        continue
+    kind, note = classify(rule)
+    where = 'permissions.deny'
+    if note:
+        where = '%s — %s' % (where, note)
+    print('deny | %s | %s | %s' % (rule, kind, where))
+PY
 fi
 
 }
