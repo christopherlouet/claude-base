@@ -166,16 +166,16 @@ resource "opnsense_firewall_filter" "lan_to_ntp" {
 
 # Allow outbound ICMP (ping)
 resource "opnsense_firewall_filter" "lan_to_icmp" {
-  interface   = "lan"
-  direction   = "in"
-  action      = "pass"
-  ip_protocol = "inet"
-  protocol    = "icmp"
-  source_net  = "lannet"
+  interface       = "lan"
+  direction       = "in"
+  action          = "pass"
+  ip_protocol     = "inet"
+  protocol        = "icmp"
+  source_net      = "lannet"
   destination_net = "any"
-  description = "Allow outbound ICMP (ping)"
-  sequence    = 14
-  enabled     = true
+  description     = "Allow outbound ICMP (ping)"
+  sequence        = 14
+  enabled         = true
 }
 
 # Block and log everything else

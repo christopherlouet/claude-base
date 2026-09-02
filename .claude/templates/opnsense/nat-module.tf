@@ -12,19 +12,19 @@
 variable "port_forwards" {
   description = "List of port forwarding rules"
   type = list(object({
-    name        = string                    # Unique name
-    description = optional(string)          # Description
+    name        = string           # Unique name
+    description = optional(string) # Description
 
     # Interface and protocol
-    interface = optional(string, "wan")     # Source interface (wan)
-    protocol  = optional(string, "tcp")     # tcp, udp, tcp/udp
+    interface = optional(string, "wan") # Source interface (wan)
+    protocol  = optional(string, "tcp") # tcp, udp, tcp/udp
 
     # External port
-    external_port = string                  # Port or range (443, 8000:8100)
+    external_port = string # Port or range (443, 8000:8100)
 
     # Internal target
-    target_ip   = string                    # Internal server IP
-    target_port = optional(string)          # Target port (if different)
+    target_ip   = string           # Internal server IP
+    target_port = optional(string) # Target port (if different)
 
     # Options
     enabled     = optional(bool, true)
@@ -54,21 +54,21 @@ variable "nat_outbound_mode" {
 variable "nat_outbound_rules" {
   description = "Manual NAT outbound rules (hybrid or manual mode)"
   type = list(object({
-    name        = string                      # Unique name
+    name        = string # Unique name
     description = optional(string)
 
     # Matching
-    interface   = string                      # Outbound interface (wan)
-    protocol    = optional(string, "any")     # tcp, udp, any
-    source_net  = string                      # Source network (e.g., 192.168.10.0/24)
+    interface   = string                  # Outbound interface (wan)
+    protocol    = optional(string, "any") # tcp, udp, any
+    source_net  = string                  # Source network (e.g., 192.168.10.0/24)
     source_port = optional(string)
 
     destination_net  = optional(string, "any")
     destination_port = optional(string)
 
     # Translation
-    translation_target = optional(string)     # Translated source IP (default: interface)
-    translation_port   = optional(string)     # Translated port
+    translation_target = optional(string) # Translated source IP (default: interface)
+    translation_port   = optional(string) # Translated port
 
     # Options
     enabled  = optional(bool, true)

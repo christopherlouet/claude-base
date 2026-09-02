@@ -131,12 +131,12 @@ variable "additional_disks" {
 # -----------------------------------------------------------------------------
 
 resource "proxmox_virtual_environment_vm" "this" {
-  name          = var.name
-  description   = var.description
-  tags          = var.tags
-  node_name     = var.target_node
-  on_boot       = var.start_on_boot
-  started       = true
+  name        = var.name
+  description = var.description
+  tags        = var.tags
+  node_name   = var.target_node
+  on_boot     = var.start_on_boot
+  started     = true
 
   # Clone from template
   clone {
@@ -211,8 +211,8 @@ resource "proxmox_virtual_environment_vm" "this" {
   # Lifecycle
   lifecycle {
     ignore_changes = [
-      initialization,       # Do not recreate on cloud-init change
-      disk[0].size,        # Allow manual resize
+      initialization, # Do not recreate on cloud-init change
+      disk[0].size,   # Allow manual resize
     ]
   }
 }

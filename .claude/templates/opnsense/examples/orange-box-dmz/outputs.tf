@@ -19,11 +19,11 @@ output "wan_interface" {
 output "lan_interface" {
   description = "Configured LAN interface"
   value = {
-    id        = opnsense_interface.lan.id
-    device    = opnsense_interface.lan.device
-    ip        = opnsense_interface.lan.ipv4_addr
-    mask      = opnsense_interface.lan.ipv4_mask
-    network   = "${opnsense_interface.lan.ipv4_addr}/${opnsense_interface.lan.ipv4_mask}"
+    id      = opnsense_interface.lan.id
+    device  = opnsense_interface.lan.device
+    ip      = opnsense_interface.lan.ipv4_addr
+    mask    = opnsense_interface.lan.ipv4_mask
+    network = "${opnsense_interface.lan.ipv4_addr}/${opnsense_interface.lan.ipv4_mask}"
   }
 }
 
@@ -34,11 +34,11 @@ output "lan_interface" {
 output "dhcp_server" {
   description = "Configured DHCP server"
   value = {
-    id         = opnsense_dhcp_v4_server.lan.id
-    interface  = opnsense_dhcp_v4_server.lan.interface
-    range      = "${opnsense_dhcp_v4_server.lan.range_from} - ${opnsense_dhcp_v4_server.lan.range_to}"
-    gateway    = opnsense_dhcp_v4_server.lan.gateway
-    domain     = opnsense_dhcp_v4_server.lan.domain
+    id        = opnsense_dhcp_v4_server.lan.id
+    interface = opnsense_dhcp_v4_server.lan.interface
+    range     = "${opnsense_dhcp_v4_server.lan.range_from} - ${opnsense_dhcp_v4_server.lan.range_to}"
+    gateway   = opnsense_dhcp_v4_server.lan.gateway
+    domain    = opnsense_dhcp_v4_server.lan.domain
   }
 }
 
@@ -48,7 +48,7 @@ output "dhcp_server" {
 
 output "firewall_rules_count" {
   description = "Number of firewall rules created"
-  value       = 7  # anti_lockout + web + dns_udp + dns_tcp + ntp + icmp + block_all
+  value       = 7 # anti_lockout + web + dns_udp + dns_tcp + ntp + icmp + block_all
 }
 
 output "anti_lockout_rule" {
@@ -92,7 +92,7 @@ output "dns_forwarders" {
 
 output "summary" {
   description = "Configuration summary"
-  value = <<-EOT
+  value       = <<-EOT
     ╔═══════════════════════════════════════════════════════════════╗
     ║           OPNsense - Orange Box Configuration                  ║
     ╠═══════════════════════════════════════════════════════════════╣
