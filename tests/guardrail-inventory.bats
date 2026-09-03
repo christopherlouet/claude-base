@@ -13,7 +13,8 @@
 #
 # WHY FIVE SOURCES. The spec scopes the guardrails to "18 items, ten blocking
 # and eight advisory". That figure is exactly right for scripts/hooks/ — and it
-# enumerates one directory of four. EF-001 requires completeness to be
+# enumerates one of the five places a refusal can live. EF-001 requires
+# completeness to be
 # ESTABLISHED, not asserted, so the enumerator reads:
 #
 #   1. scripts/hooks/*.sh          — classified by whether they can `exit 2`
@@ -236,6 +237,29 @@ run_inventory() { run bash "$INVENTORY" --root "$TEST_DIR"; }
     [[ "$output" =~ Bash\(chmod\ 777:\*\)[[:space:]]*\|[[:space:]]*blocking[[:space:]]*\| ]]
 }
 
+@test "source deny: a rule naming a real path is literal-only too" {
+    # The first version tested "the whole token is punctuation" when the law
+    # says "a real target continues this token". A rule naming a directory
+    # therefore read as covering everything under it, which is the same
+    # overclaim one level down — worst on a trailing slash, unambiguously an
+    # incomplete token, reported as blocking.
+    python3 -c 'import json,sys;p=sys.argv[1];d=json.load(open(p));d["permissions"]["deny"] += ["Bash(rm -rf /var/log/:*)","Bash(rm -rf ~/.ssh:*)"];json.dump(d,open(p,"w"))' \
+        "$TEST_DIR/.claude/settings.json"
+    run_inventory
+    [[ "$output" =~ /var/log/:\*\)[[:space:]]*\|[[:space:]]*blocking-literal-only ]]
+    [[ "$output" =~ \.ssh:\*\)[[:space:]]*\|[[:space:]]*blocking-literal-only ]]
+}
+
+@test "source deny: a bare word target keeps the stronger class" {
+    # The boundary of the previous test. `node_modules` is not a path prefix,
+    # and it is the one rule of this shape MEASURED to fire (native-coverage.md,
+    # arm 4). Without this case the fix above could quietly demote everything.
+    python3 -c 'import json,sys;p=sys.argv[1];d=json.load(open(p));d["permissions"]["deny"].append("Bash(rm -rf node_modules:*)");json.dump(d,open(p,"w"))' \
+        "$TEST_DIR/.claude/settings.json"
+    run_inventory
+    [[ "$output" =~ node_modules:\*\)[[:space:]]*\|[[:space:]]*blocking[[:space:]]*\| ]]
+}
+
 @test "source deny: a rule ending on a path fragment is literal-only" {
     # A prefix ending on a bare slash lands INSIDE the last token of any real
     # command that names a directory under it, and the command continues that
@@ -328,7 +352,14 @@ run_inventory() { run bash "$INVENTORY" --root "$TEST_DIR"; }
     run bash "$INVENTORY" --source deny
     local reported expected
     reported=$(printf '%s\n' "$output" | grep -c '^deny | ' || true)
-    expected=$(python3 -c 'import json;print(len(json.load(open(".claude/settings.json"))["permissions"]["deny"]))')
+    # Anchored on the test file, not on the caller's directory. Read relative
+    # to $PWD it compared the tool's output — resolved from BASH_SOURCE — with
+    # a DIFFERENT file whenever the suite ran from anywhere but the repo root:
+    # `cd tests && bats guardrail-inventory.bats` failed outright, and from
+    # another project that has its own settings file the two "independent
+    # counts" would have come from two different repositories.
+    expected=$(python3 -c 'import json,sys;print(len(json.load(open(sys.argv[1]))["permissions"]["deny"]))' \
+        "$BATS_TEST_DIRNAME/../.claude/settings.json")
     [ "$expected" -gt 0 ]
     [ "$reported" -eq "$expected" ]
 }

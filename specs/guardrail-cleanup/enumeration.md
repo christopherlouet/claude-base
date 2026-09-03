@@ -220,7 +220,12 @@ reproduced by the fix for it. So each row carries a class:
 | `blocking-literal-only` | the refusal stops at the end of the rule's final token: the bare form is refused, anything extending that token is not | 8 |
 | `blocking-unmodelled` | the rule refuses and no measured model says how far: a non-Bash matcher, or a rule the tool cannot parse | 0 |
 
-The third class was **added by reviewing the change itself**. The first version fell back to
+Route 1 and the third class were both **added by reviewing the change itself**, and the first
+version of route 1 tested *"the whole token is punctuation"* where the law says *"a real target
+continues this token"* — so a rule naming a directory read as covering everything under it, worst on
+a trailing slash. Today's counts are unaffected: no rule the foundation ships has that shape.
+
+The third class came from the same pass. The first version fell back to
 `blocking` for everything it could not read — a non-Bash rule, a malformed one — which is a claim of
 coverage nothing established: the pass's own dominant failure mode, reintroduced by the fix for it.
 The same review measured a second instance: a `deny` value that is a string rather than a list was
@@ -230,8 +235,11 @@ well-formed Bash rules — which is exactly why only a deliberate probe could fi
 
 Three routes reach the second class, ordered by how much each claims:
 
-1. **the final token is path punctuation** (`/`, `/*`, `.`, `..`, `~`) — readable off the rule's own
-   text, since such a token is always continued from within;
+1. **the final token is a path prefix** — punctuation alone (`/`, `/*`, `.`, `..`, `~`), a token
+   ending in a slash, or one naming a real directory (`/etc`, `~/.ssh`, `./build`). A path is by
+   definition a prefix of everything beneath it, so the target continues the token. Judged by shape,
+   which is what keeps a bare word such as `node_modules` — the one rule of that form **measured** to
+   fire — in the stronger class;
 2. **the rule carries no `:*` wildcard** — an exact-match rule by construction;
 3. **the command's normal form is suffixed** — a judgement about a tool, so it is a **named list
    with a reason per entry** rather than a pattern, and each entry is pinned by a test. It holds one
@@ -240,6 +248,13 @@ Three routes reach the second class, ordered by how much each claims:
 The law was measured on the **Bash** matcher. A `Read` or `WebFetch` rule is therefore enumerated as
 **unmodelled** rather than as blocking: carrying a Bash finding to a matcher nobody probed would be
 the same overclaim in a new place.
+
+**One route is knowingly not modelled**, and it is written down rather than smoothed over: a final
+token that is a short flag cluster continues the same way, so `chown -R` misses `chown -Rf`. Such a
+rule keeps the `blocking` class, because the form it aims at — the flag followed by a space — really
+is matched, and calling it literal-only would understate it just as badly. The repository has
+already met that escape and worked around it by hand: the deny list carries **both** `git clean -fd`
+and `git clean -fdx`, which is what adding a second rule for a longer cluster looks like.
 
 ## What the tool found that the hand-derived list had not
 

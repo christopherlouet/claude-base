@@ -14,7 +14,8 @@
 #
 # WHY FIVE SOURCES. The spec scopes the guardrails to "18 items, ten blocking
 # and eight advisory". Measured, that is exactly right — for scripts/hooks/, one
-# directory out of four. EF-001 requires completeness to be ESTABLISHED rather
+# of the five places a refusal can live. EF-001 requires completeness to be
+# ESTABLISHED rather
 # than asserted, and an inventory built from that directory alone would match
 # the stated number while failing the stated requirement. It would also
 # reproduce, at the level of the audit itself, the edge case the spec names:
@@ -201,6 +202,15 @@ fi
 # The law was measured on the BASH matcher, so a Read/Write/WebFetch rule is
 # enumerated as unmodelled rather than as blocking: carrying a Bash finding to a
 # matcher nobody probed would be the same overclaim in a new place.
+#
+# ONE ROUTE IS KNOWINGLY NOT MODELLED, and it is stated rather than smoothed
+# over: a final token that is a SHORT FLAG CLUSTER can be continued the same
+# way, so `chown -R` misses `chown -Rf`. Such a rule keeps the `blocking` class
+# because the form it aims at — the flag followed by a space — really is
+# matched, and calling it literal-only would understate it just as badly. This
+# repository has already met the escape and worked around it by hand: the deny
+# list carries BOTH `git clean -fd` and `git clean -fdx`, which is what adding a
+# second rule for a longer cluster looks like.
 if wanted deny && [ -f "$ROOT/.claude/settings.json" ] && command -v python3 >/dev/null 2>&1; then
     python3 - "$ROOT/.claude/settings.json" <<'PY' 2>/dev/null || true
 import json, re, sys
@@ -211,9 +221,26 @@ SUFFIXABLE = {
     'mkfs': 'mkfs.ext4',   # mkfs.ext4 / mkfs.xfs are different tokens
 }
 
-# A token made only of these can always be continued within itself, so a rule
-# ending on one covers its literal alone: `/`, `/*`, `.`, `..`, `~`.
+# A token made only of these can always be continued within itself: `/`, `/*`,
+# `.`, `..`, `~`.
 PATH_PUNCT = '/.~*'
+
+
+def is_path_prefix(tok):
+    """Does a real target continue this token?
+
+    Punctuation alone is the obvious case, but it is not the whole one: a rule
+    naming a real directory is a prefix of everything under it, so `/etc` misses
+    `/etc/passwd` exactly as `/` misses a whole home. A trailing slash is the
+    same statement made out loud. Judged by SHAPE, so a bare word target such as
+    `node_modules` — the one rule of that shape measured to fire — keeps the
+    stronger class.
+    """
+    if tok.strip(PATH_PUNCT) == '':
+        return True
+    if tok.endswith('/'):
+        return True
+    return tok.startswith(('/', '~/', './', '../'))
 
 
 def classify(rule):
@@ -230,7 +257,7 @@ def classify(rule):
     if not toks:
         return 'blocking-unmodelled', 'empty prefix'
     last = toks[-1]
-    if last.strip(PATH_PUNCT) == '':
+    if is_path_prefix(last):
         return 'blocking-literal-only', ''
     if last in SUFFIXABLE:
         return ('blocking-literal-only',
