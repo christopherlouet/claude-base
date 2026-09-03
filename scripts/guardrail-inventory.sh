@@ -180,21 +180,26 @@ fi
 # --- 5. the native permissions.deny rules -----------------------------------
 # Enumerated with the class the MEASURED matcher law assigns each rule, because
 # a list of refusals that does not say which can fire is the defect this pass
-# exists to remove. Two classes, and the boundary between them is the law:
+# exists to remove. Three classes: two are the law, the third is its absence:
 #
 #   blocking               the prefix ends on a whole token, so every command
 #                          it aims at continues with a SPACE and is matched.
 #   blocking-literal-only  the prefix ends where a real target keeps going
 #                          INSIDE the same token, so only the bare literal is
 #                          ever refused.
+#   blocking-unmodelled    the rule refuses, and no MEASURED model says how far.
+#                          A non-Bash matcher nobody probed, or a rule this tool
+#                          cannot parse. Reporting either as `blocking` would
+#                          claim a coverage nothing established — the very
+#                          failure mode this source exists to expose.
 #
 # Three routes reach the second class, and they are ordered by how much they
 # claim. The first two are lexical, readable off the rule's own text; the third
 # is a judgement about a tool's normal form, so it is a NAMED list with a reason
 # per entry rather than a pattern, and each entry is pinned by a test.
 #
-# The law was measured on the BASH matcher. A Read/Write/WebFetch rule is
-# enumerated but keeps the unqualified class: applying a Bash finding to a
+# The law was measured on the BASH matcher, so a Read/Write/WebFetch rule is
+# enumerated as unmodelled rather than as blocking: carrying a Bash finding to a
 # matcher nobody probed would be the same overclaim in a new place.
 if wanted deny && [ -f "$ROOT/.claude/settings.json" ] && command -v python3 >/dev/null 2>&1; then
     python3 - "$ROOT/.claude/settings.json" <<'PY' 2>/dev/null || true
@@ -215,15 +220,15 @@ def classify(rule):
     """(kind, note) for one deny rule. Claims nothing it cannot read."""
     m = re.match(r'^([A-Za-z_][A-Za-z_0-9]*)\((.*)\)$', rule, re.S)
     if not m:
-        return 'blocking', ''
+        return 'blocking-unmodelled', 'not parsed as tool(pattern)'
     tool, payload = m.group(1), m.group(2)
     if tool != 'Bash':
-        return 'blocking', ''
+        return 'blocking-unmodelled', 'the token law was measured on Bash only'
     if not payload.endswith(':*'):
         return 'blocking-literal-only', 'exact-match rule: no :* prefix wildcard'
     toks = payload[:-2].split()
     if not toks:
-        return 'blocking', ''
+        return 'blocking-unmodelled', 'empty prefix'
     last = toks[-1]
     if last.strip(PATH_PUNCT) == '':
         return 'blocking-literal-only', ''
@@ -235,10 +240,17 @@ def classify(rule):
 
 try:
     d = json.load(open(sys.argv[1]))
+    rules = ((d.get('permissions') or {}).get('deny') or [])
 except Exception:
     sys.exit(0)
 
-for rule in ((d.get('permissions') or {}).get('deny') or []):
+# A `deny` that is not a list is malformed, and iterating it anyway is not
+# harmless: a bare string yields ONE ROW PER CHARACTER, each announcing a
+# refusal that does not exist. Measured on a planted fixture, 12 of them.
+if not isinstance(rules, list):
+    sys.exit(0)
+
+for rule in rules:
     if not isinstance(rule, str) or not rule.strip():
         continue
     kind, note = classify(rule)

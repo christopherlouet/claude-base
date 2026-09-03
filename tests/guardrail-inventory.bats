@@ -262,11 +262,33 @@ run_inventory() { run bash "$INVENTORY" --root "$TEST_DIR"; }
     [[ "$output" =~ Bash\(eval\)[[:space:]]*\|[[:space:]]*blocking-literal-only ]]
 }
 
-@test "source deny: the token law is a Bash claim, so a non-Bash rule keeps it" {
-    # The law was measured on the Bash matcher. Applying it to a Read rule
-    # would be exactly the overclaim this pass exists to remove.
+@test "source deny: a non-Bash rule is unmodelled, not blocking" {
+    # The law was measured on the Bash matcher. Reporting a Read rule as
+    # `blocking` would claim a coverage nothing established — the overclaim
+    # this whole source exists to expose, reintroduced by its own fix.
     run_inventory
-    [[ "$output" =~ Read\(\./secrets/\*\*\)[[:space:]]*\|[[:space:]]*blocking[[:space:]]*\| ]]
+    [[ "$output" =~ Read\(\./secrets/\*\*\)[[:space:]]*\|[[:space:]]*blocking-unmodelled ]]
+}
+
+@test "source deny: a rule this tool cannot parse is unmodelled, not blocking" {
+    python3 -c 'import json,sys;p=sys.argv[1];d=json.load(open(p));d["permissions"]["deny"].append("Bash(unclosed");json.dump(d,open(p,"w"))' \
+        "$TEST_DIR/.claude/settings.json"
+    run_inventory
+    [[ "$output" =~ Bash\(unclosed[[:space:]]*\|[[:space:]]*blocking-unmodelled ]]
+}
+
+@test "source deny: a malformed deny value invents no refusals" {
+    # A bare string where a list belongs iterates CHARACTER BY CHARACTER, and
+    # each character came out as a row announcing a refusal that does not
+    # exist. Measured before the guard: 12 fabricated rows from one value.
+    python3 -c 'import json,sys;p=sys.argv[1];d=json.load(open(p));d["permissions"]["deny"]="Bash(sudo:*)";json.dump(d,open(p,"w"))' \
+        "$TEST_DIR/.claude/settings.json"
+    run_inventory
+    local rows
+    rows=$(printf '%s\n' "$output" | grep -c '^deny | ' || true)
+    [ "$rows" -eq 0 ]
+    # …and the tool is not simply dead: the other sources still report.
+    [[ "$output" == *"blocker-one.sh"* ]]
 }
 
 @test "source deny: an allow rule is not reported as a refusal" {

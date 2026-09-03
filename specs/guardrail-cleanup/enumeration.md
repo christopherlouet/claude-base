@@ -218,6 +218,15 @@ reproduced by the fix for it. So each row carries a class:
 |---|---|---|
 | `blocking` | the prefix ends on a whole token, so every command it aims at continues with a space and is matched | 18 |
 | `blocking-literal-only` | the refusal stops at the end of the rule's final token: the bare form is refused, anything extending that token is not | 8 |
+| `blocking-unmodelled` | the rule refuses and no measured model says how far: a non-Bash matcher, or a rule the tool cannot parse | 0 |
+
+The third class was **added by reviewing the change itself**. The first version fell back to
+`blocking` for everything it could not read — a non-Bash rule, a malformed one — which is a claim of
+coverage nothing established: the pass's own dominant failure mode, reintroduced by the fix for it.
+The same review measured a second instance: a `deny` value that is a string rather than a list was
+iterated character by character, inventing **12 rows, each announcing a refusal that does not
+exist**. Both are pinned by tests. Neither changes today's counts, because all 26 rules are
+well-formed Bash rules — which is exactly why only a deliberate probe could find them.
 
 Three routes reach the second class, ordered by how much each claims:
 
@@ -228,9 +237,9 @@ Three routes reach the second class, ordered by how much each claims:
    with a reason per entry** rather than a pattern, and each entry is pinned by a test. It holds one
    name, `mkfs`, whose normal form `mkfs.ext4` is a different token.
 
-The law was measured on the **Bash** matcher. A `Read` or `WebFetch` rule is enumerated but keeps
-the unqualified class: carrying a Bash finding to a matcher nobody probed would be the same
-overclaim in a new place.
+The law was measured on the **Bash** matcher. A `Read` or `WebFetch` rule is therefore enumerated as
+**unmodelled** rather than as blocking: carrying a Bash finding to a matcher nobody probed would be
+the same overclaim in a new place.
 
 ## What the tool found that the hand-derived list had not
 
