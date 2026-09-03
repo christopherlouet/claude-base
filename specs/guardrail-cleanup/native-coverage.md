@@ -75,6 +75,14 @@ Two independent rules on each side of the law (`chmod 777`/`eval` fire; `rm -rf 
 and one controlled pair on the same command word. That is the strongest form the evidence can take
 without running something dangerous.
 
+> **Replicated 2026-09-02 on a different command family.** Enumerating this layer
+> ([`enumeration.md`](./enumeration.md), last section) put the law to work mechanically, and a second
+> controlled pair was measured to check it: `git checkout .` is **refused**, while
+> `git checkout ./<nonexistent path>` is **allowed** and reaches git, which rejects the pathspec.
+> Same binary, same subcommand, differing only in whether the command continues the rule's final
+> token. The law is therefore not a property of `rm -rf`, and the two rules it newly implicates —
+> `git checkout .`, `git restore .` — were missed by the hand-derived list below.
+
 ### The side finding: nine rules cover less than they read as
 
 Applying the measured law to the 29 rules — **derived, not each separately staged**, because staging
@@ -89,6 +97,12 @@ the rest means running `mkfs` or writing to a disk device:
 Nine of twenty-nine. This is the pass's dominant failure mode — a guard that *reports* more than it
 has established — found this time in the **native** layer rather than in a foundation hook. And
 `.claude/settings.json` ships to every installed project.
+
+⚠️ **This list was derived by reading, and it was short by two.** Three of the nine were removed in
+#540; of the six that survive, the mechanical application of the law on 2026-09-02 agrees. It also
+flags `git checkout .` and `git restore .`, of the same class and not named here. A hand-applied law
+misses cases a tool does not, which is the argument for the fifth source of the enumerator carrying
+the class rather than a document carrying a list.
 
 ### Does the guardrail cover what the native layer misses?
 

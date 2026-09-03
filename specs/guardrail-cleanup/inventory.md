@@ -571,20 +571,29 @@ confined to the foundation — but `update` rewrites that file only under the **
 - **Behavioural reach**: **nil**. The three rules could not refuse anything, anywhere, which is why
   they were removed.
 
-### Where this record is incomplete, by its own rule
+### Where this record was incomplete, by its own rule — closed 2026-09-02
 
-EF-001 requires every guardrail the foundation ships to appear here. **It does not hold yet.** Phase
-3 found a **fifth source** that refuses actions and that `guardrail-inventory.sh` does not enumerate:
-the **29 native `permissions.deny` rules** in `.claude/settings.json`. They are a real refusal — two
-of them were observed refusing a live tool call — and no inventory has ever listed them.
+EF-001 requires every guardrail the foundation ships to appear here. **It did not hold.** Phase 3
+found a **fifth source** that refuses actions and that `guardrail-inventory.sh` did not enumerate:
+the native `permissions.deny` rules in `.claude/settings.json`. They are a real refusal — two of
+them were observed refusing a live tool call — and no inventory had ever listed them.
+
+✅ **Closed on 2026-09-02.** The enumerator reads the fifth source, and each rule carries the class
+the measured matcher law assigns it, so the list says which rules can fire rather than merely naming
+them. Today that is **26 rules, 18 blocking and 8 covering their bare literal alone**. Applying the
+law mechanically also found **two rules the hand-derived list had missed**, `git checkout .` and
+`git restore .`, and the finding was then measured rather than left derived. The method, the counts
+and the arms are in [`enumeration.md`](./enumeration.md), last section.
+
+What is still open in this layer is **not** an enumeration gap: eight rules cover less than they read
+as, and widening them needs a corpus instrument that does not exist for the native list — the same
+reason `dd if=` was removed rather than repaired.
 
 Stated rather than quietly fixed, for the reason the whole pass is built on: the record's job is to
-say what is true, including about itself. Extending the enumerator to a fifth source is the natural
-next work if this chantier reopens, and it is *work*, not a formality — the deny rules are matched by
-a platform matcher whose behaviour had to be established empirically (see
-[`native-coverage.md`](./native-coverage.md)), so enumerating them without also modelling that
-matcher would list rules without saying which ones can fire, which is the defect Phase 3 found in the
-first place.
+say what is true, including about itself. The prediction it made about the work turned out to hold:
+enumerating the rules without modelling the matcher would have listed refusals without saying which
+ones can fire, which is the defect Phase 3 found in the first place, so the class carried by every
+row is the substance of the change rather than an ornament on it.
 
 **The claim this record does not make**: that the foundation is now correct. It says what was
 measured, when, and by which route — twice, where a number mattered.

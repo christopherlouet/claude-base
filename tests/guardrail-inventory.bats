@@ -11,15 +11,18 @@
 # would keep the inventory true is deliberately deferred (plan decision D1, task
 # T604) until the record is complete and it can be judged like everything else.
 #
-# WHY FOUR SOURCES. The spec scopes the guardrails to "18 items, ten blocking and
-# eight advisory". That figure is exactly right for scripts/hooks/ — and it
-# enumerates one directory of four. EF-001 requires completeness to be
+# WHY FIVE SOURCES. The spec scopes the guardrails to "18 items, ten blocking
+# and eight advisory". That figure is exactly right for scripts/hooks/ — and it
+# enumerates one of the five places a refusal can live. EF-001 requires
+# completeness to be
 # ESTABLISHED, not asserted, so the enumerator reads:
 #
 #   1. scripts/hooks/*.sh          — classified by whether they can `exit 2`
 #   2. .claude/settings.json       — including INLINE commands that have no script
 #   3. .husky/*                    — the git hooks, and what they invoke
 #   4. .github/workflows/*.yml     — named steps that can fail a check
+#   5. permissions.deny            — the native rules, each carrying the class
+#                                    the measured matcher law assigns it
 #
 # An inventory built from source 1 alone would satisfy the stated number while
 # failing the stated requirement — and would reproduce, at the level of the audit
@@ -60,6 +63,17 @@ setup() {
     ],
     "SessionStart": [
       { "hooks": [ { "type": "command", "command": "echo '=== banner ==='" } ] }
+    ]
+  },
+  "permissions": {
+    "allow": [ "Bash(git status:*)" ],
+    "deny": [
+      "Bash(sudo:*)",
+      "Bash(chmod 777:*)",
+      "Bash(rm -rf /:*)",
+      "Bash(mkfs:*)",
+      "Bash(eval)",
+      "Read(./secrets/**)"
     ]
   }
 }
@@ -196,6 +210,167 @@ run_inventory() { run bash "$INVENTORY" --root "$TEST_DIR"; }
     run_inventory
     [[ "$output" != *"Run ShellCheck"* ]]
     [[ "$output" == *"blocker-one.sh"* ]]
+}
+
+# --- Source 5: the native permissions.deny rules ----------------------------
+#
+# These refuse before any hook is consulted, and no inventory listed them until
+# now. Enumerating them without saying which ones can FIRE would reproduce the
+# defect Phase 3 found, so each row carries the class the measured law assigns
+# it (native-coverage.md, T202): the native Bash matcher is token-boundary
+# aware, so a rule whose prefix ends mid-token matches only its exact literal.
+
+@test "source deny: a native deny rule is enumerated" {
+    run_inventory
+    [[ "$output" == *"Bash(sudo:*)"* ]]
+}
+
+@test "source deny: a rule ending on a whole token is reported as blocking" {
+    # `sudo` is continued by a SPACE in every command it aims at, so the
+    # boundary falls where the rule ends and the rule covers what it reads as.
+    run_inventory
+    [[ "$output" =~ Bash\(sudo:\*\)[[:space:]]*\|[[:space:]]*blocking[[:space:]]*\| ]]
+}
+
+@test "source deny: a multi-token prefix ending on a whole token is blocking" {
+    run_inventory
+    [[ "$output" =~ Bash\(chmod\ 777:\*\)[[:space:]]*\|[[:space:]]*blocking[[:space:]]*\| ]]
+}
+
+@test "source deny: a rule naming a real path is literal-only too" {
+    # The first version tested "the whole token is punctuation" when the law
+    # says "a real target continues this token". A rule naming a directory
+    # therefore read as covering everything under it, which is the same
+    # overclaim one level down — worst on a trailing slash, unambiguously an
+    # incomplete token, reported as blocking.
+    python3 -c 'import json,sys;p=sys.argv[1];d=json.load(open(p));d["permissions"]["deny"] += ["Bash(rm -rf /var/log/:*)","Bash(rm -rf ~/.ssh:*)"];json.dump(d,open(p,"w"))' \
+        "$TEST_DIR/.claude/settings.json"
+    run_inventory
+    [[ "$output" =~ /var/log/:\*\)[[:space:]]*\|[[:space:]]*blocking-literal-only ]]
+    [[ "$output" =~ \.ssh:\*\)[[:space:]]*\|[[:space:]]*blocking-literal-only ]]
+}
+
+@test "source deny: a bare word target keeps the stronger class" {
+    # The boundary of the previous test. `node_modules` is not a path prefix,
+    # and it is the one rule of this shape MEASURED to fire (native-coverage.md,
+    # arm 4). Without this case the fix above could quietly demote everything.
+    python3 -c 'import json,sys;p=sys.argv[1];d=json.load(open(p));d["permissions"]["deny"].append("Bash(rm -rf node_modules:*)");json.dump(d,open(p,"w"))' \
+        "$TEST_DIR/.claude/settings.json"
+    run_inventory
+    [[ "$output" =~ node_modules:\*\)[[:space:]]*\|[[:space:]]*blocking[[:space:]]*\| ]]
+}
+
+@test "source deny: a rule ending on a path fragment is literal-only" {
+    # A prefix ending on a bare slash lands INSIDE the last token of any real
+    # command that names a directory under it, and the command continues that
+    # token. Measured, arms 1 and 5 of native-coverage.md.
+    run_inventory
+    [[ "$output" =~ Bash\(rm\ -rf\ /:\*\)[[:space:]]*\|[[:space:]]*blocking-literal-only ]]
+}
+
+@test "source deny: a command whose normal form is suffixed is literal-only" {
+    # `mkfs` never appears bare in the harm it names — `mkfs.ext4` is a
+    # different token. Lexically the prefix ends on a whole word, so this class
+    # is carried by a named exception rather than by the shape of the string.
+    run_inventory
+    [[ "$output" =~ Bash\(mkfs:\*\)[[:space:]]*\|[[:space:]]*blocking-literal-only ]]
+}
+
+@test "source deny: the missed form is named on the row that claims one" {
+    run_inventory
+    [[ "$output" =~ Bash\(mkfs:\*\).*mkfs\.ext4 ]]
+}
+
+@test "source deny: a rule with no :* suffix matches its literal and nothing else" {
+    run_inventory
+    [[ "$output" =~ Bash\(eval\)[[:space:]]*\|[[:space:]]*blocking-literal-only ]]
+}
+
+@test "source deny: a non-Bash rule is unmodelled, not blocking" {
+    # The law was measured on the Bash matcher. Reporting a Read rule as
+    # `blocking` would claim a coverage nothing established — the overclaim
+    # this whole source exists to expose, reintroduced by its own fix.
+    run_inventory
+    [[ "$output" =~ Read\(\./secrets/\*\*\)[[:space:]]*\|[[:space:]]*blocking-unmodelled ]]
+}
+
+@test "source deny: a rule this tool cannot parse is unmodelled, not blocking" {
+    python3 -c 'import json,sys;p=sys.argv[1];d=json.load(open(p));d["permissions"]["deny"].append("Bash(unclosed");json.dump(d,open(p,"w"))' \
+        "$TEST_DIR/.claude/settings.json"
+    run_inventory
+    [[ "$output" =~ Bash\(unclosed[[:space:]]*\|[[:space:]]*blocking-unmodelled ]]
+}
+
+@test "source deny: a malformed deny value invents no refusals" {
+    # A bare string where a list belongs iterates CHARACTER BY CHARACTER, and
+    # each character came out as a row announcing a refusal that does not
+    # exist. Measured before the guard: 12 fabricated rows from one value.
+    python3 -c 'import json,sys;p=sys.argv[1];d=json.load(open(p));d["permissions"]["deny"]="Bash(sudo:*)";json.dump(d,open(p,"w"))' \
+        "$TEST_DIR/.claude/settings.json"
+    run_inventory
+    local rows
+    rows=$(printf '%s\n' "$output" | grep -c '^deny | ' || true)
+    [ "$rows" -eq 0 ]
+    # …and the tool is not simply dead: the other sources still report.
+    [[ "$output" == *"blocker-one.sh"* ]]
+}
+
+@test "source deny: an allow rule is not reported as a refusal" {
+    # Paired with the presence it depends on: an enumerator that reads nothing
+    # would satisfy the absence for free, and prove nothing.
+    run_inventory
+    [[ "$output" == *"Bash(sudo:*)"* ]]
+    [[ "$output" != *"git status"* ]]
+}
+
+@test "CONTROL: dropping the deny list drops its rows, not the others" {
+    # The before-reading is part of the control: without it this passes on an
+    # enumerator that never had a fifth source.
+    run_inventory
+    [[ "$output" == *"Bash(sudo:*)"* ]]
+
+    python3 -c 'import json,sys;p=sys.argv[1];d=json.load(open(p));d["permissions"].pop("deny");json.dump(d,open(p,"w"))' \
+        "$TEST_DIR/.claude/settings.json"
+    run_inventory
+    [[ "$output" != *"Bash(sudo:*)"* ]]
+    [[ "$output" == *"blocker-one.sh"* ]]
+    [[ "$output" == *"inline"* ]]
+}
+
+@test "source deny: --source deny reports the deny rules and nothing else" {
+    run bash "$INVENTORY" --root "$TEST_DIR" --source deny
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Bash(sudo:*)"* ]]
+    [[ "$output" != *"blocker-one.sh"* ]]
+    [[ "$output" != *"Run ShellCheck"* ]]
+}
+
+@test "self-application: every deny rule of the real foundation is reported" {
+    # DERIVED from the file, never copied: a pinned number would pass while the
+    # tool went half-blind, and would teach the next reader to bump it. The law
+    # asserted here is that two independent counts agree.
+    run bash "$INVENTORY" --source deny
+    local reported expected
+    reported=$(printf '%s\n' "$output" | grep -c '^deny | ' || true)
+    # Anchored on the test file, not on the caller's directory. Read relative
+    # to $PWD it compared the tool's output — resolved from BASH_SOURCE — with
+    # a DIFFERENT file whenever the suite ran from anywhere but the repo root:
+    # `cd tests && bats guardrail-inventory.bats` failed outright, and from
+    # another project that has its own settings file the two "independent
+    # counts" would have come from two different repositories.
+    expected=$(python3 -c 'import json,sys;print(len(json.load(open(sys.argv[1]))["permissions"]["deny"]))' \
+        "$BATS_TEST_DIRNAME/../.claude/settings.json")
+    [ "$expected" -gt 0 ]
+    [ "$reported" -eq "$expected" ]
+}
+
+@test "self-application: the real foundation shows both ends of the measured law" {
+    # The pair that established the law lives in the real settings file. If
+    # either end stops being reported, the model has drifted from what was
+    # measured on 2026-09-01.
+    run bash "$INVENTORY" --source deny
+    [[ "$output" =~ Bash\(rm\ -rf\ /:\*\)[[:space:]]*\|[[:space:]]*blocking-literal-only ]]
+    [[ "$output" =~ Bash\(sudo:\*\)[[:space:]]*\|[[:space:]]*blocking[[:space:]]*\| ]]
 }
 
 # --- Output shape -----------------------------------------------------------

@@ -38,13 +38,16 @@ not appear here, and a reader may take the record as current when it is not.
 Two things bound that, neither of them a guard:
 
 - **The enumerator already exists, is tested, and refuses nothing.** Running
-  `scripts/guardrail-inventory.sh` re-derives the real list from all four sources in one command. The
+  `scripts/guardrail-inventory.sh` re-derives the real list from all five sources in one command. The
   record's job is to hold *dated evidence and reasoning*; the live list is regenerated, not stored.
 - **T603 set the precedent for using it.** At the end of this pass the enumerator was re-run and
   reconciled with the record — 29 CI gates, 18 hooks (10 blocking / 8 advisory), 31 inline
   declarations, 3 git hooks, confirmed by a second independent count from `.claude/settings.json`
   (49 invocations across 27 scripts). Doing that again is the freshness check, and it costs one
-  command whenever someone cares.
+  command whenever someone cares. **Re-run 2026-09-02** after the fifth source landed: the same
+  figures, plus 26 native `permissions.deny` rules (18 blocking / 8 literal-only). This paragraph
+  going stale on the day the enumerator grew a source is itself the argument the decision records —
+  a fact stated in one place rots in every unguarded copy of it.
 
 So the mitigation is: **the record carries a date, not a promise of currency.** That is a weaker
 claim than a guard would give, and it is the honest one.
