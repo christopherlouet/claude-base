@@ -57,6 +57,8 @@ setup() {
 JSON
 }
 
+teardown() { teardown_test_dir; }
+
 # Feed the matcher a command directly: "source<TAB>command" on stdin.
 #
 # The command reaches the tool through a FILE, never through a pipe into `run`:
@@ -69,7 +71,10 @@ probe() {
     run bash "$TOOL" --root "$TEST_DIR" --stdin < "$TEST_DIR/probe.tsv"
 }
 
-refused() { [ -n "$output" ]; }
+# `run` merges stderr into $output, so "not empty" is satisfied by a warning or
+# a traceback that never modelled a refusal at all. A refusal is a TSV row whose
+# first field is the rule.
+refused() { [[ "$output" == Bash\(* ]]; }
 
 # An absence of refusal proves nothing on its own: with no tool on disk, every
 # such case passed. So `allowed` first shows the matcher answering on the same
@@ -215,6 +220,57 @@ allowed() {
         < "$TEST_DIR/probe.tsv"
     [ "$status" -eq 0 ]
     [[ "$output" == *"not covered"* ]]
+}
+
+@test "model: a separator INSIDE a quoted string does not split the command" {
+    # Measured on this tool before the fix: `grep -E "foo|chmod 777 bar" file`
+    # was reported as refused by the chmod rule. It contradicts the model's own
+    # measured law — the rule text in an argument position does not match — and
+    # it is not merely noise: these refusals feed the reviewed-exception gate,
+    # so one such example added to a docs fence would fail CI on a command
+    # nothing actually refuses.
+    probe 'grep -E "foo|chmod 777 bar" file'
+    allowed
+}
+
+@test "model: a separator inside SINGLE quotes does not split either" {
+    probe "awk '{print \$1; chmod 777 x}' file"
+    allowed
+}
+
+@test "CONTROL: a separator OUTSIDE quotes still splits" {
+    # The boundary of the two cases above: a quote-aware splitter that stopped
+    # splitting altogether would pass them both.
+    probe 'echo "safe text" && chmod 777 /tmp/x'
+    refused
+}
+
+@test "no corpus source: the zero is named, not left to speak" {
+    # The one path with no blindness warning. A --root without the corpus
+    # builder printed `corpus: 0 commands` and exit 0 — the reassuring zero
+    # this whole tool exists to refuse.
+    run bash "$TOOL" --root "$TEST_DIR" --summary
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"no corpus source"* ]]
+}
+
+@test "flag order: --with-rule is not discarded by a later --summary" {
+    # MODE was last-writer-wins, so `--with-rule X --summary` answered a
+    # different question with no diagnostic: the reader prices a widening,
+    # reads "5 refused", and has priced nothing.
+    printf 'probe\tnpm run build\n' > "$TEST_DIR/probe.tsv"
+    run bash "$TOOL" --root "$TEST_DIR" --stdin --with-rule 'Bash(dd:*)' --summary \
+        < "$TEST_DIR/probe.tsv"
+    [[ "$output" == *"support:"* ]]
+}
+
+@test "a flag missing its value exits 0 with a diagnostic, as documented" {
+    # `shift 2` on a single remaining argument returns non-zero and `set -e`
+    # aborted before any exit 0 — measured rc=1, no output, against a header
+    # that promises "Exit: 0 always".
+    run bash "$TOOL" --root
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"needs a value"* ]]
 }
 
 # --- The two tools must not drift apart -------------------------------------

@@ -70,18 +70,31 @@ CANDIDATES=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        --root) ROOT="${2:-}"; shift 2 ;;
+        # `shift 2` on a lone argument returns non-zero, and `set -e` then
+        # aborts before any exit — measured rc=1 with no output at all, against
+        # a header promising "Exit: 0 always".
+        --root)
+            [ $# -ge 2 ] || { echo "native-deny-corpus: --root needs a value" >&2; exit 0; }
+            ROOT="$2"; shift 2 ;;
         --stdin) USE_STDIN=1; shift ;;
         --summary) MODE="summary"; shift ;;
         --with-rule)
-            CANDIDATES="${CANDIDATES}${2:-}
+            [ $# -ge 2 ] || { echo "native-deny-corpus: --with-rule needs a value" >&2; exit 0; }
+            CANDIDATES="${CANDIDATES}${2}
 "
-            MODE="candidate"; shift 2 ;;
+            shift 2 ;;
         -h|--help)
             sed -nE 's/^# ?//p' "$0" | sed -nE '/^native-deny-corpus/,/^Exit:/p'; exit 0 ;;
         *) echo "native-deny-corpus: unknown option: $1" >&2; exit 0 ;;
     esac
 done
+
+# A candidate always wins the mode. MODE used to be last-writer-wins, so
+# `--with-rule X --summary` quietly answered a different question: the reader
+# prices a widening, reads a count, and has priced nothing.
+if [ -n "$CANDIDATES" ]; then
+    MODE="candidate"
+fi
 
 if [ -z "$ROOT" ]; then
     ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
@@ -98,6 +111,13 @@ corpus() {
         cat
     elif [ -x "$ROOT/scripts/validator-corpus.sh" ]; then
         bash "$ROOT/scripts/validator-corpus.sh" --list
+    else
+        # The one path that could print a reassuring zero with no warning
+        # attached: a root without the corpus builder measures nothing and
+        # reports "0 refused", which reads like a clean bill of health.
+        echo "native-deny-corpus: no corpus source at" \
+             "$ROOT/scripts/validator-corpus.sh — the count below is 0 for want" \
+             "of input, not for want of refusals." >&2
     fi
 }
 
@@ -109,14 +129,64 @@ import json, os, re, sys
 
 settings, mode = sys.argv[1], sys.argv[2]
 
-# Segment separators. `&&` and `;` are measured; the rest are derived by
-# analogy and deliberately kept, since over-reporting refusals is the safe
-# direction for a tool that prices a widening.
-SEP = re.compile(r'\s*(?:&&|\|\||;|\||\n)\s*')
-
-
+# Segment separators: `&&` and `;` are measured, `||`, `|` and a newline are
+# derived by analogy and deliberately kept, since over-reporting refusals is
+# the safe direction for a tool that prices a widening.
+#
+# QUOTES ARE HONOURED, and that is not a refinement. A regex split cut inside
+# string literals, so `grep -E "foo|chmod 777 bar" file` came back refused by
+# the chmod rule — contradicting the model's own measured law that the rule
+# text in an argument position does not match. Those refusals feed the
+# reviewed-exception gate, so one such line in a docs fence would have failed
+# CI over a command nothing refuses. Escapes are honoured too: a naive
+# stripper unpairs on a backslashed quote, which this repository has already
+# been bitten by once.
 def segments(cmd):
-    return [s.strip() for s in SEP.split(cmd) if s.strip()]
+    out, buf = [], []
+    quote = None
+    i, n = 0, len(cmd)
+    while i < n:
+        ch = cmd[i]
+        if quote is not None:
+            buf.append(ch)
+            if ch == '\\' and quote == '"' and i + 1 < n:
+                buf.append(cmd[i + 1])
+                i += 2
+                continue
+            if ch == quote:
+                quote = None
+            i += 1
+            continue
+        if ch in ('"', "'"):
+            quote = ch
+            buf.append(ch)
+            i += 1
+            continue
+        if ch == '\\' and i + 1 < n:
+            buf.append(ch)
+            buf.append(cmd[i + 1])
+            i += 2
+            continue
+        if ch in (';', '\n'):
+            out.append(''.join(buf))
+            buf = []
+            i += 1
+            continue
+        if ch == '&' and i + 1 < n and cmd[i + 1] == '&':
+            out.append(''.join(buf))
+            buf = []
+            i += 2
+            continue
+        if ch == '|':
+            step = 2 if (i + 1 < n and cmd[i + 1] == '|') else 1
+            out.append(''.join(buf))
+            buf = []
+            i += step
+            continue
+        buf.append(ch)
+        i += 1
+    out.append(''.join(buf))
+    return [seg.strip() for seg in out if seg.strip()]
 
 
 def parse(rules):

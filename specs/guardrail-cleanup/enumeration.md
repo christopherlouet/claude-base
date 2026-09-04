@@ -283,10 +283,14 @@ wider rule is an ENLARGEMENT, and `validator-corpus.sh` measures the hook, not t
 layer had **no corpus instrument**, which is why the question could not be settled on evidence.
 
 ✅ **Built on 2026-09-04**: `scripts/native-deny-corpus.sh` runs a model of the native matcher over
-the same 648-command corpus `validator-corpus.sh` uses — the corpus is defined in one place, not
-two. The model rests on **six measured properties** (prefix-plus-space matches; the bare literal
-matches; a continuation inside the final token does not; the rule text in an argument position does
-not; `&&` and `;` split the command), each observed as a live tool call. That `|`, `||` and a
+the same corpus `validator-corpus.sh` builds — defined in one place, not two. Its size moves with
+the repository, and this change moved it: **648 commands before, 649 after**, because the usage
+example added to `docs/GUARDRAILS.md` is itself a documented command and therefore a corpus entry.
+The instrument measures the docs it is documented in. The model rests on **six measured properties** (prefix-plus-space matches; the bare literal
+matches; a continuation inside the final token does not, and the rule naming `/` therefore misses a
+whole home directory; the rule text in an argument position does not match; `&&` and `;` split the
+command), each observed as a live tool call. The list is six because the count was checked against
+the arms rather than written from memory. That `|`, `||` and a
 newline separate the same way is **derived**, and the model keeps them because over-reporting
 refusals is the safe direction when pricing a widening.
 
@@ -297,8 +301,9 @@ them. **A zero with no support is an absence of measurement, not a cost of nothi
 prints the support beside every delta and names a zero-support delta as blindness. Widening those
 rules still needs evidence — from a corpus that contains the command word, which this one does not.
 
-Where it can see, it already reports: **5 of 648** commands are refused today, all `sudo` in
-operator procedures, all reviewed and pinned by a subset gate.
+Where it can see, it already reports: **5 refusals** (of 649 commands, measured 2026-09-04), all
+`sudo` in operator procedures, all reviewed and pinned by a subset gate. The gate is a SUBSET check,
+never a count: refusing fewer never fails, because docs getting better is not a regression.
 
 ## What this does not claim
 
