@@ -586,8 +586,11 @@ law mechanically also found **two rules the hand-derived list had missed**, `git
 and the arms are in [`enumeration.md`](./enumeration.md), last section.
 
 What is still open in this layer is **not** an enumeration gap: eight rules cover less than they read
-as, and widening them needs a corpus instrument that does not exist for the native list — the same
-reason `dd if=` was removed rather than repaired.
+as, and widening them needs evidence of what a wider rule would cost. The instrument for that was
+built on 2026-09-04 (`scripts/native-deny-corpus.sh`), and its first reading is that **this
+repository's corpus cannot answer for `dd`, `mkfs`, `rm` or `chown`** — it contains no command with
+those command words. So the `dd if=` decision stays where #540 left it, but for a reason that is now
+measured rather than assumed.
 
 Stated rather than quietly fixed, for the reason the whole pass is built on: the record's job is to
 say what is true, including about itself. The prediction it made about the work turned out to hold:

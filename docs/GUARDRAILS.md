@@ -82,8 +82,19 @@ Two consequences worth stating plainly:
   The two layers are complementary, and neither replaces the other.
 
 Widening a deny rule is a *widening*, with the usual obligation to measure what it costs in false
-blocks first — and note that `scripts/validator-corpus.sh` measures the **hook**, not this list.
-There is no corpus instrument for the native layer yet.
+blocks first. `scripts/validator-corpus.sh` measures the **hook**, not this list; the instrument for
+this layer is `scripts/native-deny-corpus.sh`, which runs a model of the native matcher over the same
+corpus:
+
+```bash
+scripts/native-deny-corpus.sh --with-rule 'Bash(dd:*)'
+```
+
+It prints the delta **and the support** — how many corpus commands the candidate could have caught.
+A delta of zero over a support of zero is an absence of measurement, not a cost of nothing, and the
+tool says so rather than leaving the zero to speak. Today the corpus holds no `dd`, `mkfs`, `rm` or
+`chown` command at all, so for those families it is blind and a wider rule still needs evidence from
+somewhere else.
 
 ## 3. Verification gates — *proof, not the model's word*
 
