@@ -280,7 +280,25 @@ which is what makes the middle row a control rather than a coincidence.
 What escapes those two rules is `git checkout ./<path>` and `git restore ./<path>`: the same harm at
 a smaller scope. **Not widened**, deliberately, for the reason already recorded for `dd if=` — a
 wider rule is an ENLARGEMENT, and `validator-corpus.sh` measures the hook, not the native list. That
-layer still has **no corpus instrument**, and building one remains the clean candidate.
+layer had **no corpus instrument**, which is why the question could not be settled on evidence.
+
+✅ **Built on 2026-09-04**: `scripts/native-deny-corpus.sh` runs a model of the native matcher over
+the same 648-command corpus `validator-corpus.sh` uses — the corpus is defined in one place, not
+two. The model rests on **six measured properties** (prefix-plus-space matches; the bare literal
+matches; a continuation inside the final token does not; the rule text in an argument position does
+not; `&&` and `;` split the command), each observed as a live tool call. That `|`, `||` and a
+newline separate the same way is **derived**, and the model keeps them because over-reporting
+refusals is the safe direction when pricing a widening.
+
+🔑 **Its first measurement answers the `dd` question, and refuses to answer it.** Adding
+`Bash(dd:*)` costs **0** new refusals — and the corpus holds **0** commands whose command word is
+`dd`. It also holds none for `mkfs`, `rm` or `chown`: this repository's CI and docs never invoke
+them. **A zero with no support is an absence of measurement, not a cost of nothing**, so the tool
+prints the support beside every delta and names a zero-support delta as blindness. Widening those
+rules still needs evidence — from a corpus that contains the command word, which this one does not.
+
+Where it can see, it already reports: **5 of 648** commands are refused today, all `sudo` in
+operator procedures, all reviewed and pinned by a subset gate.
 
 ## What this does not claim
 
