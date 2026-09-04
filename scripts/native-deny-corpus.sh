@@ -46,6 +46,12 @@
 # about. So every candidate is reported with its SUPPORT, and a support of zero
 # is named as blindness, not as a cost of nothing.
 #
+# SUPPORT IS COUNTED AT THE RULE'S GRANULARITY — the commands ONE TOKEN away
+# from matching, not the ones merely sharing a command word. The difference is
+# not academic: counted by word, a candidate about `git clean` reported a
+# support of 82 over a corpus holding zero `git clean` commands, and so kept
+# quiet precisely where it was blind.
+#
 # Usage:
 #   scripts/native-deny-corpus.sh                     # TSV: rule, source, command
 #   scripts/native-deny-corpus.sh --summary           # counts only
@@ -184,12 +190,32 @@ if mode == 'candidate':
     print('corpus:         %d commands' % len(corpus))
     print('current:        %d refused' % len(hits))
     print('with candidate: %d refused   (delta +%d)' % (n_after, n_after - len(hits)))
-    for rule, prefix, _ in parse(cand):
-        word = prefix.split(' ')[0]
-        support = len([1 for _s, c in corpus
-                       if any(seg.split(' ')[0] == word for seg in segments(c))])
-        print('support: %d command(s) in the corpus whose command word is `%s`  [%s]'
-              % (support, word, rule))
+    parsed_cand = parse(cand)
+    for rule in cand:
+        if not any(r == rule for r, _p, _w in parsed_cand):
+            # A non-Bash matcher, or a rule this model cannot read. Its delta is
+            # 0 because nothing was measured, and a bare 0 reads as "free".
+            print('support: not covered by the model  [%s] — the token law was '
+                  'measured on the Bash matcher only, so this candidate was '
+                  'priced at nothing because nothing was priced.' % rule)
+    for rule, prefix, _ in parsed_cand:
+        # Support is the set of commands ONE TOKEN away from matching, not the
+        # set sharing a command word. Counting the word made a rule about
+        # `git clean` report the support of every `git` command in the corpus —
+        # 82 against 0 real ones — so it stayed silent exactly where it was
+        # blind, which is the single thing this figure exists to prevent.
+        toks = prefix.split()
+        if len(toks) <= 1:
+            stem = toks[0] if toks else ''
+            support = len([1 for _s, c in corpus
+                           if any(seg.split(' ')[0] == stem for seg in segments(c))])
+        else:
+            stem = ' '.join(toks[:-1])
+            support = len([1 for _s, c in corpus
+                           if any(seg == stem or seg.startswith(stem + ' ')
+                                  for seg in segments(c))])
+        print('support: %d command(s) in the corpus beginning with `%s`  [%s]'
+              % (support, stem, rule))
         if support == 0:
             print('  ^ the corpus is blind to this rule: a delta of 0 here is an '
                   'ABSENCE OF MEASUREMENT, not a cost of nothing.')

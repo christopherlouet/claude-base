@@ -183,6 +183,40 @@ allowed() {
     [[ "$output" == *"delta +1"* ]]
 }
 
+@test "support: it is counted at the RULE's granularity, not its command word" {
+    # The first version counted the command WORD, so a rule about `git clean`
+    # reported the support of every `git` command in the corpus — measured, 82
+    # against 0 real `git clean` commands. It therefore stayed silent exactly
+    # where it was blind, which is the one thing the support figure exists to
+    # prevent. Support is now the set of commands ONE TOKEN away from matching.
+    printf 'probe\tgit status --short\n' > "$TEST_DIR/probe.tsv"
+    run bash "$TOOL" --root "$TEST_DIR" --stdin --with-rule 'Bash(git clean -fdx:*)' \
+        < "$TEST_DIR/probe.tsv"
+    [[ "$output" == *"support: 0"* ]]
+    [[ "$output" == *"blind"* ]]
+}
+
+@test "support: a rule one token from the corpus is NOT called blind" {
+    # The boundary of the case above: without it, a support that always
+    # answered zero would pass, and every candidate would read as blind.
+    printf 'probe\tgit status --short\n' > "$TEST_DIR/probe.tsv"
+    run bash "$TOOL" --root "$TEST_DIR" --stdin --with-rule 'Bash(git status:*)' \
+        < "$TEST_DIR/probe.tsv"
+    [[ "$output" == *"support: 1"* ]]
+    [[ "$output" != *"blind"* ]]
+}
+
+@test "support: a candidate the model does not cover says so" {
+    # A Read rule went through as "delta +0" with no support line at all — a
+    # reader takes that for "this rule is free" when the model measured
+    # nothing. The law was established on the Bash matcher only.
+    printf 'probe\tgit status --short\n' > "$TEST_DIR/probe.tsv"
+    run bash "$TOOL" --root "$TEST_DIR" --stdin --with-rule 'Read(./secrets/**)' \
+        < "$TEST_DIR/probe.tsv"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"not covered"* ]]
+}
+
 # --- The two tools must not drift apart -------------------------------------
 
 @test "consistency: every rule the inventory calls literal-only behaves as one" {
