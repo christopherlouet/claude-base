@@ -72,6 +72,10 @@ content_fixture() {
         > "$TEST_DIR/fx/$(printf '%s' "repos/$1/contents/$3?ref=$2" | tr '/' '_')"
 }
 llm_response() { printf '%s' "$1" > "$TEST_DIR/llm-response.json"; }
+# digest_json — the digest line alone. `run` merges stderr into $output, so a run
+# that emits a warning (an unanswered judge does) puts non-JSON ahead of it and a
+# bare `jq` on $output dies on the first word instead of testing anything.
+digest_json() { printf '%s\n' "$output" | grep '^{' | tail -n 1; }
 # list_fixture <list-repo> <readme-markdown> — register the list's README (served
 # at the default branch, i.e. the contents API WITHOUT ?ref=).
 list_fixture() {
@@ -381,6 +385,55 @@ healthy_candidate() {
     run_discover --digest-dir "$TEST_DIR/out"
     grep -qiE 'sources? failed' "$TEST_DIR/out/proposals.md"
     grep -q "missing/list" "$TEST_DIR/out/proposals.md"
+}
+
+# =============================================================================
+# a judge that never answered is NOT a verdict (EF-012, same shape as the
+# failed-source reporting above). Measured 2026-09-05 on a real run: 6 of 15
+# model calls came back unparseable and all six were counted as REJECTED, so a
+# digest reading "0 proposed, 15 rejected" was indistinguishable from a month
+# where fifteen candidates were judged and found wanting. One of the six, replayed
+# alone, scored a proposable fit.
+# =============================================================================
+
+@test "discover: a candidate the judge never answered for is UNJUDGED, not rejected" {
+    healthy_candidate "newauthor/next-skill"
+    llm_response 'I am sorry, I cannot help with that.'   # unparseable = no verdict
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.counts.unjudged')" -eq 1 ]
+    [ "$(digest_json | jq -r '.counts.rejected')" -eq 0 ]
+    [ "$(digest_json | jq -r '.proposals | length')" -eq 0 ]
+}
+
+@test "discover: an unjudged candidate does not claim the budget was exhausted" {
+    # `deferred` means the budget stopped the run and the digest says so. An
+    # unanswered call is a different fact and must not borrow that sentence.
+    healthy_candidate "newauthor/next-skill"
+    llm_response 'not json at all'
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.budget.exhausted')" = "false" ]
+    [ "$(digest_json | jq -r '.counts.deferred')" -eq 0 ]
+}
+
+@test "discover: a candidate the judge DID answer on is still rejected (control)" {
+    # Without this, a fix that labels everything "unjudged" would pass the two
+    # tests above while destroying the gate.
+    healthy_candidate "newauthor/next-skill"
+    llm_response '{"neutrality":"pass","fit":1,"rationale":"weak fit","borderline":false,"tokensUsed":50}'
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(printf '%s' "$output" | jq -r '.counts.rejected')" -eq 1 ]
+    [ "$(digest_json | jq -r '.counts.unjudged')" -eq 0 ]
+}
+
+@test "discover: --digest-dir names the unjudged candidates in the markdown" {
+    healthy_candidate "newauthor/next-skill"
+    llm_response 'still not json'
+    run_discover --digest-dir "$TEST_DIR/out"
+    grep -qiE 'never judged|unjudged' "$TEST_DIR/out/proposals.md"
+    grep -q "newauthor/next-skill" "$TEST_DIR/out/proposals.md"
 }
 
 # =============================================================================
