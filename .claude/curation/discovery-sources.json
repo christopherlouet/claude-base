@@ -15,6 +15,7 @@
     { "domain": "i18n",     "query": "claude skill i18n lingui OR next-intl in:name,description,readme" },
     { "domain": "neovim",   "query": "claude skill neovim OR nvim in:name,description,readme" },
     { "domain": "homelab",  "query": "claude skill proxmox OR opnsense in:name,description,readme" },
+    { "domain": "smarthome", "query": "claude skill homeassistant in:name,description,readme" },
     { "domain": "devops",   "query": "claude skill docker OR github-actions OR devops in:name,description,readme" },
 
     { "domain": "list-composio",   "kind": "list", "repo": "ComposioHQ/awesome-claude-skills" },

@@ -291,6 +291,24 @@ healthy_candidate() {
     [ "$status" -eq 0 ]
 }
 
+@test "discovery-sources.json (shipped): the smarthome query spells homeassistant UNHYPHENATED" {
+    # Home automation had no source at all until 2026-09-05, so a Home Assistant
+    # skill could not be discovered however popular it got.
+    #
+    # The spelling is load-bearing, and it is the one a reader would "correct".
+    # Measured against the live API the way the pipeline queries it (per_page=15,
+    # sort=stars): `claude skill homeassistant …` returns BOTH known Home
+    # Assistant skills, at ranks 7 and 10. Writing it the way the project itself
+    # spells it — `home-assistant` — returns NEITHER, and so does adding that form
+    # with OR. The hyphen reads like a typo; fixing it makes this source dark.
+    local f="$BATS_TEST_DIRNAME/../.claude/curation/discovery-sources.json"
+    run jq -r '.sources[] | select(.domain == "smarthome") | .query' "$f"
+    [ "$status" -eq 0 ]
+    [ -n "$output" ]                        # the source exists at all
+    [[ "$output" == *homeassistant* ]]
+    [[ "$output" != *home-assistant* ]]
+}
+
 @test "discovery-sources.json (shipped): the hesreallyhim list points at the RENAMED upstream CSV" {
     # Upstream renamed THE_RESOURCES_TABLE.csv → THE_RESOURCES_TABLE_NEW.csv
     # (old path 404s, verified live 2026-07-13); the stale path left the biggest
