@@ -53,7 +53,7 @@ After running `claude-base init`, install the vendor skills that match your dete
 | `astro` (Astro content/static-first) | `frontend-design@claude-plugins-official` | `vercel-labs/agent-skills` (if using React islands), `shadcn-ui/ui (skills/shadcn)` (if using shadcn/ui) |
 | `cli-tools` (CLI tools / automation scripts) | — | — |
 | `fastapi` (FastAPI backend (Python async)) | — | `supabase/agent-skills` (if using Postgres or Supabase), `mongodb/agent-skills` (if using MongoDB), `grafana/skills` (if using Grafana / observability stack), `antonbabenko/terraform-skill` (if deploying via Terraform/OpenTofu) |
-| `homelab-proxmox` (Proxmox VE homelab) | `antonbabenko/terraform-skill` | `pulumi/agent-skills` (if using Pulumi instead of Terraform), `grafana/skills` (if using Grafana / Prometheus stack) |
+| `homelab-proxmox` (Proxmox VE homelab) | `antonbabenko/terraform-skill` | `pulumi/agent-skills` (if using Pulumi instead of Terraform), `grafana/skills` (if using Grafana / Prometheus stack), `homeassistant-ai/skills (skills/home-assistant-best-practices)` (if the project holds a Home Assistant configuration) |
 | `mongodb` (MongoDB (vendor-pointer)) | `mongodb/agent-skills` | — |
 | `nextjs` (Next.js full-stack) | `vercel-labs/agent-skills`, `frontend-design@claude-plugins-official` | `supabase/agent-skills` (if using Supabase), `prisma/skills` (if using Prisma), `shadcn-ui/ui (skills/shadcn)` (if using shadcn/ui), `apollographql/skills` (if using Apollo GraphQL) |
 | `phaser` (Phaser (vendor-pointer)) | `phaserjs/phaser/skills` | — |
