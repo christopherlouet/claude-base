@@ -9,6 +9,76 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 > Earlier entries (v1.30.x and before) remain in their original French
 > as a historical record of the project's pre-i18n era.
 
+## [5.5.0] - 2026-09-05
+
+Two instruments, and one data loss that had already happened. The thread under all three is the one
+v5.4.1 pulled on: a layer that refuses things, and numbers that claim more than they measured. The
+native `permissions.deny` rules refuse actions on every install and had never appeared in any
+inventory; nothing could price a change to them either. Both tools now exist, and the first thing
+each did was decline to answer a question the evidence could not support.
+
+### Added
+
+- **The guardrail inventory reads a fifth source: the native `permissions.deny` rules.** Listing
+  them would have been the formality the record warns about, so every row carries the class the
+  measured matcher law assigns it — the law from `native-coverage.md`, established on one controlled
+  pair where the only difference is whether the rule's text stops at the end of a token or inside
+  one. `blocking` means the prefix ends on a whole token, so every command it aims at is matched;
+  `blocking-literal-only` means the bare form is refused and anything extending that final token is
+  not. Three routes reach the second class, two lexical and one a NAMED list with a reason per
+  entry, pinned by a test, holding one name today. Re-derived on the day of this release: 92 rows
+  over five sources, **26 deny rules, 8 of them literal-only**. The record's hand-derived list had
+  named 6. The two it missed, `git checkout .` and `git restore .`, are the same lexical class as
+  the five `rm -rf` literals — which is the argument for a tool over a list. A `Read` or `WebFetch`
+  rule is enumerated but keeps the unqualified class: the law was measured on the Bash matcher, and
+  carrying a Bash finding to a matcher nobody probed would be the same overclaim in a new place.
+
+- **`scripts/native-deny-corpus.sh` prices a candidate deny rule** against the commands this
+  repository really runs. The native matcher belongs to the platform and no script can invoke it, so
+  what runs here is a MODEL of it, worth exactly its arms: six properties, each observed as a live
+  tool call rather than read off the docs, with the derived parts labelled separately in the header.
+  The corpus is not redefined — it comes from `validator-corpus.sh --list`, so the two instruments
+  cannot drift into two ideas of the same corpus.
+
+  Its first measurement answers the `dd` question left open by v5.4.1 **by refusing to answer it**.
+  Adding `Bash(dd:*)` costs 0 new refusals over 649 commands, and the corpus holds 0 commands whose
+  command word is `dd`. Same for `mkfs`, `rm` and `chown`. A zero with no support is an absence of
+  measurement, not a cost of nothing, so every candidate prints its support beside the delta and a
+  zero-support delta is named as blindness on the spot. Where the corpus can see: 5 refusals of 649,
+  all `sudo` in operator procedures, pinned by a subset gate that fails on the command it newly
+  refuses rather than taxing every reader quietly.
+
+### Fixed
+
+- **The installer overwrote files the project already had.** Measured on a real repository on
+  2026-09-02: `new-project.sh -y --preset <name>` on a Terraform project replaced its own
+  `.github/workflows/ci.yml` with the foundation's generic one. 510 lines, no prompt, no backup, no
+  line in the output. There WAS a guard, and it works on the explicit path; it never fires on the
+  `--preset` path, because `detect_stack` does not run there while the preset's `defaults.ci` sets
+  the include flag back to true. The fix is at the point of harm, where every path meets: the
+  workflows are copied file by file and a file the project already has is kept. Same rule for
+  `.husky/*`, `.pre-commit-config.yaml`, `.lintstagedrc.json` and `.commitlintrc.json`.
+
+  The all-or-nothing detection guard is removed with it, and the replacement is strictly better: it
+  skipped the *entire* CI install when the project had any CI at all, so the workflows the project
+  lacked never landed either. Per-file preservation keeps what exists and installs what is missing,
+  **and the skip is reported** — a guard that protects in silence leaves the user believing the
+  install applied.
+
+- **10 of the 13 `.tf` templates failed `terraform fmt`.** A downstream Terraform project with the
+  standard pre-commit hook could not commit them; that is how this was found. Formatted at the
+  source. No gate added: the harm is recoverable, the hook auto-fixes, and terraform is not a
+  foundation dependency.
+
+### Documentation
+
+- `docs/GUARDRAILS.md` no longer states that the deny layer has no corpus instrument — it was the
+  only user-facing home of that fact, and nothing guarded it.
+- The guardrail pass's record now satisfies its own completeness rule (EF-001), and its checkboxes
+  match its content: six tasks were unchecked while five were done in substance. Counts were
+  re-derived on the day they were written rather than copied forward, and the inline figure was
+  confirmed by a second independent read of the settings file.
+
 ## [5.4.1] - 2026-09-01
 
 Eleven fixes, and one shape under most of them: **a check aimed at the wrong surface**. v5.4.0's
