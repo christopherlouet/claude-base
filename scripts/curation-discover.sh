@@ -265,7 +265,9 @@ PROMPT
         printf '%s' "$out"
     else
         curation_warn "llm judge failed/unparseable for $repo"
-        jq -cn '{neutrality:"flag", fit:0, rationale:"llm-unavailable", borderline:false, tokensUsed:0}'
+        # `unavailable` is what stops the caller reporting this as a VERDICT. The
+        # rejecting shape is kept so any reader of the object still fails safe.
+        jq -cn '{neutrality:"flag", fit:0, rationale:"llm-unavailable", borderline:false, tokensUsed:0, unavailable:true}'
     fi
 }
 
@@ -287,8 +289,9 @@ fi
 [ -n "$SOURCE_FAIL_LOG" ] && rm -f "$SOURCE_FAIL_LOG"
 
 spent=0
-proposed=0 rejected=0 deferred=0 moat=0 graduation=0
+proposed=0 rejected=0 deferred=0 moat=0 graduation=0 unjudged=0
 proposals_arr=()
+unjudged_arr=()
 moat_arr=()
 
 if [ "$n_candidates" -gt 0 ]; then
@@ -323,6 +326,16 @@ if [ "$n_candidates" -gt 0 ]; then
     if [ "$(printf '%s' "$verdict" | jq -r '.borderline // false')" = "true" ] && [ "$spent" -lt "$BUDGET" ]; then
         verdict=$(llm_judge "$repo" "$ref" "$content" "$ESCALATE_MODEL")
         spent=$((spent + $(printf '%s' "$verdict" | jq -r '(.tokensUsed | numbers | floor) // 1000')))
+    fi
+
+    # No verdict came back. That is an outage, not a judgement: counting it as a
+    # rejection makes a broken model look like a month of unfit candidates, and
+    # the count is the only thing the digest carries. Reported separately, and
+    # NOT as `deferred` — that word already means the budget stopped the run.
+    if [ "$(printf '%s' "$verdict" | jq -r '.unavailable // false')" = "true" ]; then
+        unjudged=$((unjudged + 1))
+        unjudged_arr+=("$repo")
+        continue
     fi
 
     neutrality=$(printf '%s' "$verdict" | jq -r '.neutrality')
@@ -370,16 +383,23 @@ else
 fi
 
 exhausted=$([ "$deferred" -gt 0 ] && echo true || echo false)
+if [ "${#unjudged_arr[@]}" -gt 0 ]; then
+    unjudged_repos=$(printf '%s\n' "${unjudged_arr[@]}" | jq -R . | jq -s '.')
+else
+    unjudged_repos='[]'
+fi
 digest=$(jq -cn \
     --arg now "$NOW" --argjson cand "$n_candidates" \
     --argjson srcFailed "$sources_failed" --argjson srcFailures "$sources_failed_list" \
     --argjson proposed "$proposed" --argjson rejected "$rejected" --argjson deferred "$deferred" \
+    --argjson unjudged "$unjudged" --argjson unjudgedRepos "$unjudged_repos" \
     --argjson moat "$moat" --argjson graduation "$graduation" \
     --argjson limit "$BUDGET" --argjson spent "$spent" --argjson exhausted "$exhausted" \
     --argjson proposals "$proposals" --argjson moatSignals "$moat_signals" \
     '{generatedAt:$now, scope:{candidates:$cand},
       sourcesFailed:$srcFailed, sourceFailures:$srcFailures,
-      counts:{proposed:$proposed, rejected:$rejected, deferred:$deferred, moat:$moat, graduation:$graduation},
+      counts:{proposed:$proposed, rejected:$rejected, deferred:$deferred, unjudged:$unjudged, moat:$moat, graduation:$graduation},
+      unjudgedRepos:$unjudgedRepos,
       budget:{limit:$limit, spent:$spent, exhausted:$exhausted},
       proposals:$proposals, moatSignals:$moatSignals}')
 
@@ -387,6 +407,10 @@ render_markdown() {
     printf '# Curation discovery — %s\n\n' "$NOW"
     printf -- '- Candidates: **%s** · proposed **%s** · rejected **%s** · deferred **%s**\n' \
         "$n_candidates" "$proposed" "$rejected" "$deferred"
+    if [ "$unjudged" -gt 0 ]; then
+        printf -- '- ⚠️ **never judged** (the model call failed — these are NOT rejections): %s — %s\n' \
+            "$unjudged" "$(printf '%s' "$unjudged_repos" | jq -r 'join("; ")')"
+    fi
     if [ "$sources_failed" -gt 0 ]; then
         printf -- '- ⚠️ Discovery **sources failed** to fetch (%s — coverage incomplete): %s\n' \
             "$sources_failed" "$(printf '%s' "$sources_failed_list" | jq -r 'join("; ")')"
