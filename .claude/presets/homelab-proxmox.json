@@ -86,6 +86,16 @@
       "trustTrack": "authority",
       "provenance": "Grafana Labs",
       "lastVerified": "2026-07-11"
+    },
+    {
+      "id": "homeassistant-ai/skills (skills/home-assistant-best-practices)",
+      "url": "https://github.com/homeassistant-ai/skills/tree/main/skills/home-assistant-best-practices",
+      "rationale": "Idiomatic Home Assistant configuration: native triggers over templates, entity_id over device_id, automation modes",
+      "condition": "if the project holds a Home Assistant configuration",
+      "pinnedRef": "196c134692cccde0de3c37b9d6533fa3b1946af9",
+      "trustTrack": "community",
+      "provenance": "homeassistant-ai (community — the official Home Assistant org publishes no skills)",
+      "lastVerified": "2026-09-05"
     }
   ],
   "defaults": {
