@@ -295,6 +295,30 @@ healthy_candidate() {
     [ "$status" -eq 0 ]
 }
 
+@test "curation-discover.sh (shipped): the fit rubric names what the foundation actually ships" {
+    # The rubric enumerates the domains a candidate is scored against. It listed
+    # six and stopped at "testing", while the foundation ships a whole
+    # `self-hosted` module (proxmox, opnsense, vps) — so a homelab or home
+    # automation skill was scored against a list that did not contain it.
+    #
+    # Measured 2026-09-05, same repo, same content, same model, one factor varied
+    # (three draws each):
+    #
+    #   komal-SkyNET/claude-skill-homeassistant   old rubric 2,2,3   new 5,4,5
+    #   unixorn/awesome-zsh-plugins (control)     old rubric 1,1,1   new 2,1,2
+    #
+    # The subject crosses the fit threshold of 4; the unrelated control stays
+    # 2 points below it, so the gate still discriminates. The control DID move by
+    # about a point, so this is a real, if small, general loosening — recorded
+    # rather than hidden.
+    local f="$BATS_TEST_DIRNAME/../scripts/curation-discover.sh"
+    run grep -c 'how well it covers a domain the foundation points at' "$f"
+    [ "$status" -eq 0 ]
+    [ "$output" -eq 1 ]                       # the rubric line exists at all
+    run grep -q 'self-hosted homelab and home automation' "$f"
+    [ "$status" -eq 0 ]
+}
+
 @test "discovery-sources.json (shipped): the smarthome query spells homeassistant UNHYPHENATED" {
     # Home automation had no source at all until 2026-09-05, so a Home Assistant
     # skill could not be discovered however popular it got.

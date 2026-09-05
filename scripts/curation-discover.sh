@@ -244,7 +244,7 @@ Judge the skill below and reply with ONLY a JSON object:
 - advice-neutrality: "flag" if it pushes the user toward proprietary lock-in or away
   from their chosen stack / Claude; "pass" otherwise. Publisher identity is NOT a
   criterion — judge the advice, not who wrote it.
-- fit: 0-5, how well it covers a domain the foundation points at (web/app/api/db/infra/testing).
+- fit: 0-5, how well it covers a domain the foundation points at (web/app/api/db/infra/testing/self-hosted homelab and home automation).
 - borderline: true if you are unsure and a stronger model should re-judge.
 - encroachesMoat: true if the skill covers a DURABLE WORKFLOW-ORCHESTRATION pattern the
   foundation itself owns — TDD enforcement, the audit/review loop, the
