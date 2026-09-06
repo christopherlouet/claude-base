@@ -86,6 +86,11 @@ command -v jq >/dev/null 2>&1 || { echo "[ERROR] jq is required" >&2; exit 2; }
 COLLAPSE_PCT=$(jq -r '(.global.collapseDropPct | numbers) // 50' "$CURATION_THRESHOLDS" 2>/dev/null || echo 50)
 [ -n "$COLLAPSE_PCT" ] || COLLAPSE_PCT=50
 
+# Days an open re-pin PR may hold the #458 lock before the digest escalates from
+# a note to a warning. Same read-with-a-documented-default shape as above.
+LOCK_STALE_DAYS=$(jq -r '(.global.repinLockStaleDays | numbers) // 3' "$CURATION_THRESHOLDS" 2>/dev/null || echo 3)
+[ -n "$LOCK_STALE_DAYS" ] || LOCK_STALE_DAYS=3
+
 # _repo_root <vendorId-or-url> — the scoreable owner/repo (first two path
 # segments), derived from a registry vendorId (owner/repo[/subpath…]) or a
 # github.com URL. Echoes nothing for a non-github / non-repo identifier.
@@ -474,11 +479,53 @@ digest=$(jq -cn \
     '{generatedAt:$generatedAt, scope:{targets:$targets, watchlist:$watchlist},
       counts:$counts, findingCount:($findings|length), findings:$findings}')
 
+# The #458 open-PR lock, as reported by emit_repin_pr (empty when the lock was
+# not consulted: no --emit-pr, --dry-run, or no re-pin finding to emit).
+REPIN_LOCK=""
+
+# render_lock_notice — say, in the digest itself, that the re-pin emission was
+# locked out. Without it the table's `re-pin` rows read as actions being taken
+# while nothing is being opened: the lock once held for 7 nights on a single
+# unreviewed draft and every digest of that week looked like a normal night.
+# Past LOCK_STALE_DAYS the note becomes a warning; an unknown age (an undatable
+# createdAt) escalates too rather than passing for fresh.
+render_lock_notice() {
+    [ -n "$REPIN_LOCK" ] || return 0
+    local num age url count
+    num=$(printf '%s' "$REPIN_LOCK" | jq -r '.number // "?"')
+    age=$(printf '%s' "$REPIN_LOCK" | jq -r '.ageDays // "?"')
+    url=$(printf '%s' "$REPIN_LOCK" | jq -r '.url // empty')
+    count=$(printf '%s' "$REPIN_LOCK" | jq -r '.count // 1')
+    local ref="#$num"; [ -n "$url" ] && ref="[#$num]($url)"
+    if _lock_is_stale; then
+        printf '> ⚠️ **Re-pin emission has been locked for %s day(s)** by %s.\n' "$age" "$ref"
+        printf '> No re-pin PR can be opened until it is merged or closed, so the drift below keeps accumulating.\n\n'
+    else
+        printf -- '- Re-pin emission is **locked** by %s (open %s day(s)): the `re-pin` rows below are proposals, not opened PRs.\n\n' \
+            "$ref" "$age"
+    fi
+    [ "$count" -gt 1 ] 2>/dev/null && printf -- '- %s open re-pin PRs hold the lock; the oldest is shown.\n\n' "$count"
+    return 0
+}
+
+# _lock_is_stale — true when the lock has been held at least LOCK_STALE_DAYS, or
+# when its age could not be determined (fail toward escalation: an unknown age
+# must never read as "opened today").
+_lock_is_stale() {
+    [ -n "$REPIN_LOCK" ] || return 1
+    local age; age=$(printf '%s' "$REPIN_LOCK" | jq -r '.ageDays // empty')
+    case "$age" in
+        ''|*[!0-9]*) return 0 ;;
+        *) [ "$age" -ge "$LOCK_STALE_DAYS" ] ;;
+    esac
+}
+
 # render_markdown — the human-readable digest (also the issue body). Defined here
 # so the emission step below can reuse it before the file-persistence step runs.
 render_markdown() {
     printf '# Curation digest — %s\n\n' "$NOW"
     printf -- '- Targets scored: **%s**\n- Findings: **%s**\n\n' "$n_targets" "$n_surfaced"
+    render_lock_notice
     if [ "$n_surfaced" -eq 0 ]; then
         printf 'No rot or drift detected. lastVerified refreshed.\n'
         return
@@ -499,6 +546,12 @@ if [ "$DRY_RUN" = false ]; then
         repin_summary=$(emit_repin_pr "$surfaced" "$REGISTRY" "$PRESETS_DIR" "$PR_DRAFT" "$NOW")
         n_drafted=$(printf '%s' "$repin_summary" | jq -r '.drafted | length' 2>/dev/null || echo 0)
         [ "${n_drafted:-0}" -gt 0 ] && echo "[OK] re-pin draft PR: $n_drafted skill(s)" >&2
+        REPIN_LOCK=$(printf '%s' "$repin_summary" | jq -c '.lock // empty' 2>/dev/null) || REPIN_LOCK=""
+        # Escalate on stderr as well: the box's journal is the ops channel, and a
+        # lock silently starving the auto-heal must be greppable there.
+        if _lock_is_stale; then
+            curation_warn "re-pin lock is STALE: PR #$(printf '%s' "$REPIN_LOCK" | jq -r '.number // "?"') has held it for $(printf '%s' "$REPIN_LOCK" | jq -r '.ageDays // "?"') day(s) — merge or close it to release the auto-heal"
+        fi
     fi
     if [ "$EMIT_ISSUE" = true ] && [ "$n_surfaced" -gt 0 ]; then
         issue_body=$(mktemp 2>/dev/null)
@@ -506,6 +559,15 @@ if [ "$DRY_RUN" = false ]; then
         emit_issue "Curation digest — $NOW" "$issue_body" "watch-digest"
         rm -f "$issue_body"
     fi
+fi
+
+# Record the lock in the machine-readable digest too, so a consumer can alert on
+# it without parsing the markdown. Absent entirely on an unlocked night.
+if [ -n "$REPIN_LOCK" ]; then
+    lock_stale=false
+    _lock_is_stale && lock_stale=true
+    digest=$(printf '%s' "$digest" | jq -c --argjson l "$REPIN_LOCK" --argjson s "$lock_stale" \
+        '.repinLock = ($l + {stale:$s})' 2>/dev/null) || :
 fi
 
 # Idempotent lastVerified update — only records whose repo was ACTUALLY verified
