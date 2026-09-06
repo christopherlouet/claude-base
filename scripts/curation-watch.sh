@@ -87,9 +87,14 @@ COLLAPSE_PCT=$(jq -r '(.global.collapseDropPct | numbers) // 50' "$CURATION_THRE
 [ -n "$COLLAPSE_PCT" ] || COLLAPSE_PCT=50
 
 # Days an open re-pin PR may hold the #458 lock before the digest escalates from
-# a note to a warning. Same read-with-a-documented-default shape as above.
+# a note to a warning. Same read-with-a-documented-default shape as above, plus
+# an INTEGER check: `numbers` lets a float through and `[ 7 -ge 3.5 ]` aborts
+# with status 2, which every caller reads as "not stale" — a config typo would
+# have turned the escalation off silently, the opposite of failing safe.
 LOCK_STALE_DAYS=$(jq -r '(.global.repinLockStaleDays | numbers) // 3' "$CURATION_THRESHOLDS" 2>/dev/null || echo 3)
-[ -n "$LOCK_STALE_DAYS" ] || LOCK_STALE_DAYS=3
+case "$LOCK_STALE_DAYS" in
+    ''|*[!0-9]*) LOCK_STALE_DAYS=3 ;;
+esac
 
 # _repo_root <vendorId-or-url> — the scoreable owner/repo (first two path
 # segments), derived from a registry vendorId (owner/repo[/subpath…]) or a
@@ -497,12 +502,13 @@ render_lock_notice() {
     url=$(printf '%s' "$REPIN_LOCK" | jq -r '.url // empty')
     count=$(printf '%s' "$REPIN_LOCK" | jq -r '.count // 1')
     local ref="#$num"; [ -n "$url" ] && ref="[#$num]($url)"
+    local unit="days"; [ "$age" = "1" ] && unit="day"
     if _lock_is_stale; then
-        printf '> ⚠️ **Re-pin emission has been locked for %s day(s)** by %s.\n' "$age" "$ref"
+        printf '> ⚠️ **Re-pin emission has been locked for %s %s** by %s.\n' "$age" "$unit" "$ref"
         printf '> No re-pin PR can be opened until it is merged or closed, so the drift below keeps accumulating.\n\n'
     else
-        printf -- '- Re-pin emission is **locked** by %s (open %s day(s)): the `re-pin` rows below are proposals, not opened PRs.\n\n' \
-            "$ref" "$age"
+        printf -- '- Re-pin emission is **locked** by %s (open %s %s): the `re-pin` rows below are proposals, not opened PRs.\n\n' \
+            "$ref" "$age" "$unit"
     fi
     [ "$count" -gt 1 ] 2>/dev/null && printf -- '- %s open re-pin PRs hold the lock; the oldest is shown.\n\n' "$count"
     return 0
@@ -559,15 +565,33 @@ if [ "$DRY_RUN" = false ]; then
         emit_issue "Curation digest — $NOW" "$issue_body" "watch-digest"
         rm -f "$issue_body"
     fi
+elif [ "$EMIT_PR" = true ] \
+    && [ "$(printf '%s' "$surfaced" | jq '[.[] | select(.proposedAction == "re-pin")] | length')" -gt 0 ]; then
+    # --dry-run still CONSULTS the lock (a `gh pr list` READ, never a mutation).
+    # Without this, the one command a maintainer runs to inspect a suspicious
+    # digest by hand returns exactly the digest that hid the lock in the first
+    # place. Gated on --emit-pr and on there being a re-pin to be locked out of,
+    # so an observe-only or quiet preview spends no extra call.
+    REPIN_LOCK=$(curation_repin_lock) || REPIN_LOCK=""
 fi
 
 # Record the lock in the machine-readable digest too, so a consumer can alert on
 # it without parsing the markdown. Absent entirely on an unlocked night.
+#
+# The merged value is assigned ONLY on success. Written as `digest=$(…) || :`
+# the assignment lands FIRST and the `|| :` only swallows the status afterwards,
+# so a jq failure would blank the whole digest — a guard that destroys exactly
+# what it protects. CURATION_LOCK_MERGE_FILTER is a test seam for that path.
 if [ -n "$REPIN_LOCK" ]; then
     lock_stale=false
     _lock_is_stale && lock_stale=true
-    digest=$(printf '%s' "$digest" | jq -c --argjson l "$REPIN_LOCK" --argjson s "$lock_stale" \
-        '.repinLock = ($l + {stale:$s})' 2>/dev/null) || :
+    # The default is built on its own line: a `}` inside a ${VAR:-default} word
+    # closes the expansion early, which would hand jq a truncated program.
+    lock_filter="${CURATION_LOCK_MERGE_FILTER:-}"
+    [ -n "$lock_filter" ] || lock_filter='.repinLock = ($l + {stale:$s})'
+    merged=$(printf '%s' "$digest" | jq -c --argjson l "$REPIN_LOCK" --argjson s "$lock_stale" \
+        "$lock_filter" 2>/dev/null) \
+        && [ -n "$merged" ] && digest="$merged"
 fi
 
 # Idempotent lastVerified update — only records whose repo was ACTUALLY verified

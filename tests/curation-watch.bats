@@ -861,6 +861,52 @@ drifting_target() {
     grep -q '⚠️' "$TEST_DIR/digest/digest.md"
 }
 
+@test "watch: a NON-INTEGER staleness threshold still escalates (never silently off)" {
+    # `jq numbers` lets a float through and `[ 7 -ge 3.5 ]` aborts with status 2,
+    # which every caller reads as "not stale" — a config typo would have turned
+    # the whole escalation off silently (review finding, 2026-09-06).
+    setup_emit_fakes
+    drifting_target
+    jq '.global.repinLockStaleDays = 3.5' "$THRESHOLDS" > "$TEST_DIR/th.json"
+    export FAKE_REPIN_ROWS="$(lock_rows 12 2026-06-06T09:00:00Z)"   # 7 days old
+    run env PATH="$TEST_DIR/fakebin:$PATH" CURATION_NOW=2026-06-13 \
+        CURATION_GH_RETRIES=1 CURATION_GH_BACKOFF=0 CURATION_THRESHOLDS="$TEST_DIR/th.json" \
+        bash "$WATCH" --registry "$TEST_DIR/registry.json" --presets-dir "$TEST_DIR/presets" \
+        --emit-pr --draft --digest-dir "$TEST_DIR/digest"
+    [ "$status" -eq 0 ]
+    grep -q '⚠️' "$TEST_DIR/digest/digest.md"
+}
+
+@test "watch: --dry-run --emit-pr previews the lock instead of the misleading normal night" {
+    # The lookup is a READ, so a preview can consult it. Without this, the one
+    # command a maintainer runs to inspect a suspicious digest by hand returns
+    # exactly the pre-fix digest that hid the lock (review finding, 2026-09-06).
+    setup_emit_fakes
+    drifting_target
+    export FAKE_REPIN_ROWS="$(lock_rows 12 2026-06-06T09:00:00Z)"
+    run_watch --emit-pr --draft --dry-run --digest-dir "$TEST_DIR/digest"
+    [ "$status" -eq 0 ]
+    grep -q '#12' "$TEST_DIR/digest/digest.md"
+    grep -q '⚠️' "$TEST_DIR/digest/digest.md"
+    # still a preview: no PR, no pin bump
+    [ "$(grep -c 'pr create' "$TEST_DIR/gh.log")" -eq 0 ]
+    [ "$(jq -r '.records[0].pinnedRef' "$TEST_DIR/registry.json")" = "v1.0.0" ]
+}
+
+@test "watch: the digest survives a lock it cannot fold into the JSON" {
+    # Regression for an inverted guard: `digest=$(… ) || :` assigns the EMPTY
+    # output first and only then swallows the status, so a jq failure blanked
+    # the entire digest — the guard destroyed what it meant to protect.
+    setup_emit_fakes
+    drifting_target
+    export FAKE_REPIN_ROWS="$(lock_rows 12 2026-06-06T09:00:00Z)"
+    export CURATION_LOCK_MERGE_FILTER='this is not a jq program'
+    run_watch --emit-pr --draft --digest-dir "$TEST_DIR/digest"
+    [ "$status" -eq 0 ]
+    [ "$(jq -r '.generatedAt' "$TEST_DIR/digest/digest.json")" = "2026-06-13" ]
+    [ "$(jq -r '.findings | length' "$TEST_DIR/digest/digest.json")" -eq 1 ]
+}
+
 @test "watch: an unlocked night's digest carries NO lock notice" {
     setup_emit_fakes
     drifting_target

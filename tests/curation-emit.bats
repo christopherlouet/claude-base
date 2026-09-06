@@ -225,3 +225,25 @@ mkt_registry() {
     [ "$(summary | jq -r '.lock.number')" = "5" ]
     [ "$(summary | jq -r '.lock.ageDays')" = "null" ]
 }
+
+@test "emit_repin_pr: an undatable PR does not hijack the report from a datable older one" {
+    # A blank createdAt sorts ahead of every real timestamp, so the naive sort
+    # reported the UNDATABLE row and an unknown age while a perfectly datable
+    # 10-day age was available (review finding, 2026-09-06).
+    local rows='[{"number":4,"createdAt":"2026-07-03T09:00:00Z","headRefName":"curation/re-pin-a","url":"u4"},
+                 {"number":8,"createdAt":"","headRefName":"curation/re-pin-b","url":"u8"}]'
+    run_repin FAKE_REPIN_ROWS="$rows"
+    [ "$status" -eq 0 ]
+    [ "$(summary | jq -r '.lock.number')" = "4" ]
+    [ "$(summary | jq -r '.lock.ageDays')" = "10" ]
+}
+
+@test "emit_repin_pr: a clock skew never reports a NEGATIVE lock age" {
+    # curation_days_since subtracts against the BOX clock, so a host running a
+    # day behind makes a fresh PR look future-dated. Report it as just-opened,
+    # never as "-1 day(s)" — and never let skew fake a staleness escalation.
+    local rows='[{"number":6,"createdAt":"2026-07-20T09:00:00Z","headRefName":"curation/re-pin-c","url":"u6"}]'
+    run_repin FAKE_REPIN_ROWS="$rows" CURATION_NOW=2026-07-13
+    [ "$status" -eq 0 ]
+    [ "$(summary | jq -r '.lock.ageDays')" = "0" ]
+}
