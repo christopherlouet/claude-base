@@ -78,6 +78,14 @@ jobs:
         # current (patched) transitive versions at build time.
         run: npm --prefix website install
 
+      - name: Website script tests
+        # These four (now five) `scripts/*.test.ts` files existed and passed but
+        # no workflow ran them, so they guarded nothing. They cover the doc
+        # generators, whose output under website/docs/{skills,commands,agents,
+        # rules}/ is NOT versioned — the counts gate's `git diff` cannot see it.
+        # 54 tests, ~0.3s; the dependencies are already installed above.
+        run: npm --prefix website run test:scripts
+
       - name: Counts gate (regenerate counts.json + injector + git diff)
         run: |
           npm --prefix website run generate

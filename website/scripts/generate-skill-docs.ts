@@ -36,7 +36,7 @@ interface SkillExample {
   content: string;
 }
 
-interface SkillInfo {
+export interface SkillInfo {
   name: string;
   description: string;
   allowedTools: string[];
@@ -401,4 +401,7 @@ async function generateSkillDocs(): Promise<void> {
 // Run if called directly
 generateSkillDocs().catch(console.error);
 
-export { generateSkillDocs };
+// Exported for tests: the manual-only branch is the whole point of the guard in
+// scripts/generate-skill-docs.test.ts, and it lives in these two functions.
+export { generateSkillDocs, parseSkillFile, generateSkillPage };
+export type { SkillInfo };
