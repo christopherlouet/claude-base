@@ -2,32 +2,39 @@
 
 In addition to commands, the project includes **<!-- count:skills -->53<!-- /count --> Skills** in `.claude/skills/`:
 
+**Trigger column.** A phrase list means the skill auto-loads when the conversation
+matches it. **manual only** means the opposite: the skill carries
+`disable-model-invocation: true`, so the model cannot load it — not on a phrase match, and
+not from inside the same-named command either. Only you can start it, by running the slash
+command shown. Pinned by `tests/skills-catalog-drift.bats`, so a row and its frontmatter
+cannot drift apart.
+
 ## Core skills
-| Skill | Automatic trigger | Context |
+| Skill | Trigger | Context |
 |-------|-------------------|---------|
 | `dev-tdd` | "TDD", "test first", "write the tests" | fork |
-| `work-commit` | "commit", "commit message" | fork |
+| `work-commit` | **manual only** — run `/work-commit` | fork |
 | `dev-debug` | "bug", "error", "debug" | fork |
 | `qa-review` | "review", "code review" | fork |
 | `qa-security` | "security audit", "OWASP" | fork |
-| `work-plan` | "plan", "architecture" | fork |
-| `work-explore` | "explore", "understand the code" | fork |
-| `work-brainstorm` | "brainstorm", "ideation", "alternatives" | fork |
-| `work-pr` | "PR", "pull request" | fork |
+| `work-plan` | **manual only** — run `/work-plan` | fork |
+| `work-explore` | **manual only** — run `/work-explore` | fork |
+| `work-brainstorm` | **manual only** — run `/work-brainstorm` | fork |
+| `work-pr` | **manual only** — run `/work-pr` | fork |
 | `dev-api` | "API", "endpoint", "REST" | fork |
 
 ## Additional skills
-| Skill | Automatic trigger | Context |
+| Skill | Trigger | Context |
 |-------|-------------------|---------|
 | `dev-flutter` | "Flutter", "widget", "BLoC" | fork |
 | `dev-supabase` | "Supabase", "auth", "RLS" | fork |
 | `dev-react-perf` | "React perf", "re-render", "memo" | fork |
-| `ops-docker` | "Docker", "container", "Dockerfile" | fork |
-| `ops-ci` | "CI/CD", "GitHub Actions", "pipeline" | fork |
-| `ops-database` | "schema", "migration", "index" | fork |
-| `ops-monitoring` | "logs", "metrics", "traces" | fork |
-| `doc-generate` | "document", "README", "JSDoc" | fork |
-| `doc-changelog` | "changelog", "release notes" | fork |
+| `ops-docker` | **manual only** — run `/ops-docker` | fork |
+| `ops-ci` | **manual only** — run `/ops-ci` | fork |
+| `ops-database` | **manual only** — run `/ops-database` | fork |
+| `ops-monitoring` | **manual only** — run `/ops-monitoring` | fork |
+| `doc-generate` | **manual only** — run `/doc-generate` | fork |
+| `doc-changelog` | **manual only** — run `/doc-changelog` | fork |
 | `dev-refactor` | "refactor", "clean code", "restructure" | fork |
 | `dev-error-handling` | "error handling", "exceptions", "error boundary" | fork |
 | `dev-graphql` | "GraphQL", "resolver", "schema" | fork |
@@ -51,7 +58,7 @@ In addition to commands, the project includes **<!-- count:skills -->53<!-- /cou
 | `agent-teams` | "agent team", "swarm", "agent team", "parallel agents" | fork |
 | `session-handoff` | "handoff", "resume", "session transfer", "context" | fork |
 | `git-worktrees` | "worktree", "parallel dev", "simultaneous branches" | fork |
-| `qa-chrome` | "Chrome", "visual test", "DOM debugging", "capture" | fork |
+| `qa-chrome` | **manual only** — run `/qa-chrome` | fork |
 | `dev-frontend-design` | "UI design", "landing page", "art direction", "fonts" | fork |
 | `dev-shadcn` | "shadcn", "shadcn/ui", "Radix", "React components" | fork |
 | `dev-nextjs` | "Next.js", "App Router", "Server Components", "RSC", "Server Actions" | fork |
