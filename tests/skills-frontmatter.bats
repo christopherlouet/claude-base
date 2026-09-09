@@ -79,11 +79,16 @@ _fm() {
 # at all — not by auto-trigger, and not by a Skill call made from inside a
 # command either. Measured, not assumed: invoking one returns
 # "cannot be used with Skill tool due to disable-model-invocation".
-# So a command telling the model to use such a skill states an impossibility,
-# and the pointer reads as working prose while doing nothing.
+# So any file telling the model to use such a skill states an impossibility, and
+# the pointer reads as working prose while doing nothing.
+#
+# Scope is the whole `.claude/` tree, not just commands: skills point at each
+# other too. The pattern is the IMPERATIVE form ("Use the `x` skill") and only
+# that, because a catalogue row or a "see also" line naming a manual-only skill
+# is correct prose — a guard that accused it would be a bug in the guard.
 # -----------------------------------------------------------------------------
 
-COMMANDS_DIR="$BASE_DIR/.claude/commands"
+CLAUDE_DIR="$BASE_DIR/.claude"
 
 # _manual_only_skills — print the name of every model-disabled skill.
 _manual_only_skills() {
@@ -96,48 +101,59 @@ _manual_only_skills() {
     done
 }
 
-# _dead_pointers <skills-dir> <commands-dir> — print "command -> skill" for each
-# command instructing the model to use a manual-only skill. The backticks in the
-# pattern are load-bearing: they stop `ops-ci` from matching `ops-ci-fix`.
+# _scanned_files — every markdown file the guard inspects.
+_scanned_files() {
+    find "$CLAUDE_DIR" -name '*.md' 2>/dev/null
+}
+
+# _dead_pointers — print "file -> skill" for each imperative pointer at a
+# manual-only skill. The backticks are load-bearing: they stop `ops-ci` from
+# matching `ops-ci-fix`.
 _dead_pointers() {
     local name f
     for name in $(_manual_only_skills); do
-        for f in $(find "$COMMANDS_DIR" -name '*.md' 2>/dev/null); do
-            if grep -qE '(`'"$name"'` skill|skill `'"$name"'`)' "$f"; then
-                echo "$(basename "$f") -> $name"
+        for f in $(_scanned_files); do
+            if grep -qE 'Use the `'"$name"'` skill' "$f"; then
+                echo "${f#"$BASE_DIR/"} -> $name"
             fi
         done
     done
 }
 
-@test "commands: none tells the model to use a manual-only skill" {
+@test "claude tree: nothing tells the model to use a manual-only skill" {
     local dead
     dead=$(_dead_pointers)
     if [ -n "$dead" ]; then
-        echo "commands pointing at a skill the model cannot invoke:" >&2
+        echo "files instructing the model to use a skill it cannot invoke:" >&2
         echo "$dead" >&2
         return 1
     fi
 }
 
-@test "commands: manual-only skills exist (the guard has something to check)" {
-    # Without this, the guard above passes vacuously the day the flag disappears.
+@test "claude tree: the scan is not vacuous (both halves have subjects)" {
+    # Without this, the guard above passes by scanning nothing — proven: pointing
+    # it at a missing directory left every case green.
+    local files
     [ -n "$(_manual_only_skills)" ]
+    files=$(_scanned_files | wc -l)
+    [ "$files" -gt 50 ]
 }
 
-@test "commands: negative probe — a dead pointer IS caught" {
+@test "claude tree: negative probe — the real helper catches a dead pointer" {
     setup_test_dir
     mkdir -p "$TEST_DIR/skills/probe" "$TEST_DIR/commands"
     printf -- '---\nname: probe\ndescription: x\ncontext: fork\nbackground: false\ndisable-model-invocation: true\n---\nbody\n' \
         > "$TEST_DIR/skills/probe/SKILL.md"
     printf -- '# Probe\n\nUse the `probe` skill for the detailed methodology.\n' \
         > "$TEST_DIR/commands/probe.md"
-    run bash -c 'grep -qE "(\`probe\` skill|skill \`probe\`)" "$1"' _ "$TEST_DIR/commands/probe.md"
-    [ "$status" -eq 0 ]
-    # and the substring trap: `probe-extra` must NOT match the `probe` pattern
-    printf -- '# Other\n\nUse the `probe-extra` skill for the detailed methodology.\n' \
+    # a descriptive mention and a substring near-miss must NOT be flagged
+    printf -- '# Other\n\n| `probe` skill | see also |\nUse the `probe-extra` skill here.\n' \
         > "$TEST_DIR/commands/other.md"
-    run bash -c 'grep -qE "(\`probe\` skill|skill \`probe\`)" "$1"' _ "$TEST_DIR/commands/other.md"
-    [ "$status" -ne 0 ]
+
+    # drive the REAL helpers by repointing their inputs at the fixture tree
+    SKILLS_DIR="$TEST_DIR/skills" CLAUDE_DIR="$TEST_DIR" run _dead_pointers
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"probe.md -> probe"* ]]
+    [[ "$output" != *"other.md"* ]]
     teardown_test_dir
 }
