@@ -31,7 +31,7 @@ Extract LLM-ready web content without hacking around: clean markdown, structured
 
 - Quick web search without structured extraction -> `WebSearch` is enough
 - A single static URL, simple page -> `WebFetch` is enough
-- Visual test / browser interaction -> skill `qa-chrome` or agent-browser
+- Visual test / browser interaction -> agent-browser, or ask the user to run `/qa:qa-chrome` (the `qa-chrome` skill is manual-only)
 - Form / login automation -> agent-browser or Playwright directly
 
 ## Prerequisites
