@@ -10,7 +10,10 @@ $ARGUMENTS
 Explore approaches, challenge assumptions, and converge on an approved design.
 Phase between "I have an idea" and "here are the user stories".
 
-Use the `work-brainstorm` skill for the detailed methodology.
+The matching skill is manual-only and cannot be loaded from here: it carries
+`disable-model-invocation`, so a Skill call is refused. Follow the process below,
+which is self-contained. If the user wants the full methodology, ask them to run
+`/work-brainstorm` themselves.
 
 ## Process
 
