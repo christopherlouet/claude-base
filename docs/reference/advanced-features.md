@@ -312,16 +312,17 @@ Read the columns before reading the verdict:
 | 7d tokens | tokens attributed to the skill over the **last 7 days** of sessions on this machine |
 | invocations / last used | a **persistent history across sessions**, counted in days since last use — not a snapshot of the session you run it in |
 
-Relevant to any project that installs a large skill set — this foundation ships 53 — and to the same
+Relevant to any project that installs a large skill set — this foundation ships <!-- count:skills -->53<!-- /count --> — and to the same
 question for any always-loaded file: the cost is context, so measure what actually fires before
 setting a size budget by argument.
 
 One trap, and it is the whole reason this section names the columns. **The counters are
 machine-wide, not scoped to the repository you run them from.** The instinct is the opposite: a
-foundation repo authors skills and rarely invokes them, so its own reading looks like it must
-understate the catalogue. It does not, because the reading was never about that repo. Measured here:
-the tab credits `qa:qa-chrome` with 5 invocations, and all five were typed in a different project,
-zero in this one. The same holds for every command checked.
+repository that authors skills rarely invokes them, so its own reading looks like it must understate
+the catalogue. It does not, because the reading was never about that repository — a skill you have
+only ever used in another project still shows its count here. Check it rather than trust the shape of
+the argument: pick a skill you know you have never run in the repository you are sitting in, and see
+whether the tab counts it anyway.
 
 What follows is that a "never invoked" row is fleet evidence, not local evidence, and that the number
 describes **your** use of the catalogue rather than the catalogue's worth to anyone else. Both
