@@ -103,14 +103,9 @@ MARK="manual only"
     teardown_test_dir
 }
 
-@test "generator: per-skill pages branch on disable-model-invocation" {
-    # website/docs/skills/ is NOT versioned and no workflow runs `test:scripts`,
-    # so neither the counts gate nor a vitest file can see the generated pages.
-    # This is a coarse source check, but it is one that actually runs in CI: it
-    # fails if the branch is ever removed from the generator.
-    local gen="$BASE_DIR/website/scripts/generate-skill-docs.ts"
-    [ -f "$gen" ]
-    grep -q "disable-model-invocation" "$gen"
-    grep -q "manualOnly" "$gen"
-    grep -q "Manual invocation only" "$gen"
-}
+# The generator's manual-only branch is NOT guarded here. It was, by a source
+# grep, back when nothing ran `website/scripts/*.test.ts`. Now that CI runs them
+# (Lint & Counts, unconditional — the job has no `if:` and no `needs:`), the real
+# check lives in `website/scripts/generate-skill-docs.test.ts`: it renders both
+# branches and asserts on the output, and re-renders every real skill. A grep
+# beside it would only be a weaker second way to fail on the same fact.
