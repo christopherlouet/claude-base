@@ -86,7 +86,8 @@ Each skill defines:
 - **allowed-tools**: Tools authorized for the skill
 - **context: fork**: Execution in an isolated context (recommended)
 
-Skills are triggered automatically by Claude based on context.
+Skills are triggered automatically by Claude based on context — except those marked **manual only**
+in the tables above, which carry `disable-model-invocation: true` and can be started by you alone.
 
 ## Skill overrides (CLI 2.1.129+)
 

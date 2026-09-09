@@ -37,13 +37,18 @@ _row() {
     grep -E '^\|[[:space:]]*`'"$1"'`[[:space:]]*\|' "$CATALOG" | head -1
 }
 
+# MARK — the single token both directions match on. Asymmetric matching was the
+# earlier bug: one test accepted any "manual" anywhere in the row, the other
+# required "manual only", so a row could satisfy one and escape the other.
+MARK="manual only"
+
 @test "catalog: every model-disabled skill is marked manual in the catalogue" {
     local bad="" name row
     for name in $(_manual_only); do
         row=$(_row "$name")
         [ -n "$row" ] || continue          # not listed at all: nothing promised
         case "$row" in
-            *manual*|*Manual*) ;;
+            *"$MARK"*) ;;
             *) bad="$bad $name" ;;
         esac
     done
@@ -65,7 +70,7 @@ _row() {
         row=$(_row "$name")
         [ -n "$row" ] || continue
         case "$row" in
-            *"manual only"*|*"Manual only"*) bad="$bad $name" ;;
+            *"$MARK"*) bad="$bad $name" ;;
         esac
     done
     [ -z "$bad" ] || { echo "marked manual but model-invocable:$bad" >&2; return 1; }
@@ -79,15 +84,33 @@ _row() {
     [ "$listed" -gt 0 ]
 }
 
-@test "catalog: negative probe — an unmarked row IS caught" {
+@test "catalog: negative probe — the real _row drives the check" {
+    # Drives _row itself, not a copy of its regex beside it: an inline copy stays
+    # green on the day _row stops matching rows it used to match.
     setup_test_dir
-    printf -- '| `probe` | "plan", "architecture" | fork |\n' > "$TEST_DIR/cat.md"
-    run bash -c 'grep -E "^\|[[:space:]]*\`probe\`[[:space:]]*\|" "$1" | grep -qi manual' \
-        _ "$TEST_DIR/cat.md"
+    CATALOG="$TEST_DIR/cat.md"
+    printf -- '| `probe` | "plan", "architecture" | fork |\n' > "$CATALOG"
+    run bash -c 'case "$(grep -E "^\|[[:space:]]*\`probe\`[[:space:]]*\|" "$1")" in *"manual only"*) exit 0;; *) exit 1;; esac' _ "$CATALOG"
     [ "$status" -ne 0 ]
-    printf -- '| `probe` | **manual only** — run `/probe` | fork |\n' > "$TEST_DIR/cat.md"
-    run bash -c 'grep -E "^\|[[:space:]]*\`probe\`[[:space:]]*\|" "$1" | grep -qi manual' \
-        _ "$TEST_DIR/cat.md"
-    [ "$status" -eq 0 ]
+
+    printf -- '| `probe` | **manual only** — run `/probe` | fork |\n' > "$CATALOG"
+    [ -n "$(_row probe)" ]
+    case "$(_row probe)" in *"$MARK"*) ;; *) return 1 ;; esac
+
+    # a row _row cannot see must not be silently treated as compliant
+    printf -- '| **`probe`** | "plan" | fork |\n' > "$CATALOG"
+    [ -z "$(_row probe)" ]
     teardown_test_dir
+}
+
+@test "generator: per-skill pages branch on disable-model-invocation" {
+    # website/docs/skills/ is NOT versioned and no workflow runs `test:scripts`,
+    # so neither the counts gate nor a vitest file can see the generated pages.
+    # This is a coarse source check, but it is one that actually runs in CI: it
+    # fails if the branch is ever removed from the generator.
+    local gen="$BASE_DIR/website/scripts/generate-skill-docs.ts"
+    [ -f "$gen" ]
+    grep -q "disable-model-invocation" "$gen"
+    grep -q "manualOnly" "$gen"
+    grep -q "Manual invocation only" "$gen"
 }

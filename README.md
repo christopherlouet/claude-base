@@ -80,7 +80,7 @@ your-project/
 │   ├── settings.json      # Hooks, permissions, plugin enablement
 │   ├── commands/          # Slash commands grouped by domain (work, dev, qa, ops, ...)
 │   ├── agents/            # Sub-agents with isolated context
-│   ├── skills/            # Auto-triggered on keywords
+│   ├── skills/            # Auto-triggered on keywords (some manual-only)
 │   ├── rules/             # Path-specific rules (TDD, security, a11y, performance)
 │   ├── presets/           # Stack-specific bundle manifests
 │   └── output-styles/     # Output rendering styles

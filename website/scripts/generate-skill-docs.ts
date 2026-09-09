@@ -27,6 +27,7 @@ interface SkillFrontmatter {
   description?: string;
   'allowed-tools'?: string[];
   context?: string;
+  'disable-model-invocation'?: boolean;
 }
 
 interface SkillExample {
@@ -40,6 +41,7 @@ interface SkillInfo {
   description: string;
   allowedTools: string[];
   context: 'fork' | 'shared';
+  manualOnly: boolean;
   keywords: string[];
   content: string;
   examples: SkillExample[];
@@ -145,6 +147,7 @@ function parseSkillFile(dirPath: string): SkillInfo | null {
       description: data.description || description || heading || `Skill ${skillName}`,
       allowedTools: data['allowed-tools'] || [],
       context: (data.context as 'fork' | 'shared') || 'fork',
+      manualOnly: data['disable-model-invocation'] === true,
       keywords: extractKeywords(markdownContent, skillName),
       content: markdownContent,
       examples: readSkillExamples(dirPath),
@@ -203,13 +206,17 @@ ${contextBadge}
 |-----------|--------|
 | **Context** | ${skill.context} |
 | **Allowed tools** | ${toolsList} |
-| **Keywords** | ${keywordsList} |
+| **Trigger** | ${skill.manualOnly ? `**manual only** — run \`/${skill.name}\`` : `keywords: ${keywordsList}`} |
 
 ## Detailed description
 
 ${rewriteUnsyncedRepoLinks(rewriteReferenceLinks(skill.content, skill.name))}
 
-## Automatic triggering
+${skill.manualOnly ? `## Manual invocation only
+
+This skill carries \`disable-model-invocation: true\`, so Claude cannot load it —
+not when keywords match, and not from inside the same-named command either.
+Start it yourself with \`/${skill.name}\`.` : `## Automatic triggering
 
 This skill is automatically activated when:
 - The matching keywords are detected in the conversation
@@ -217,7 +224,7 @@ This skill is automatically activated when:
 
 ### Triggering examples
 
-${skill.keywords.slice(0, 3).map((k) => `- _"I want to ${k}..."_`).join('\n')}
+${skill.keywords.slice(0, 3).map((k) => `- _"I want to ${k}..."_`).join('\n')}`}
 
 ## Context ${skill.context}
 
@@ -263,6 +270,8 @@ function generateSkillsIndex(skills: SkillInfo[]): string {
   });
 
   const forkSkills = skills.filter((s) => s.context === 'fork');
+
+  const manualOnlySkills = skills.filter((s) => s.manualOnly);
   const sharedSkills = skills.filter((s) => s.context === 'shared');
 
   const generateTable = (skillList: SkillInfo[]) =>
@@ -281,7 +290,7 @@ import SkillCard from '@site/src/components/SkillCard';
 
 # Skills Catalog
 
-> **${skills.length} skills** auto-triggered by keywords
+> **${skills.length} skills** — ${skills.length - manualOnlySkills.length} auto-triggered by keywords, ${manualOnlySkills.length} manual only
 
 <Stats items={[
   { number: ${forkSkills.length}, label: 'Fork Skills' },
