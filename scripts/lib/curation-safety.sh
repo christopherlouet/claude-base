@@ -25,25 +25,28 @@
 # Fail-safe (EF-012): anything that cannot be confirmed safe is FLAGGED, never
 # silently passed. Reasons: content-unfetchable (no doc), exec-surface-unfetchable
 # (tree unlistable), exec-file-unfetchable (a listed exec file unreadable),
-# exec-surface-truncated (more exec files than the cap; the rest went unscanned).
+# exec-surface-truncated (GitHub itself truncated the tree, so files we never
+# saw the names of went unscanned), exec-surface-over-cap (the tree listed more
+# exec files than the cap, so the tail went unscanned).
 #
 # Subpath scoping: when a skill lives in a subpath of a monorepo (registry
 # vendorId / preset id like phaserjs/phaser/skills or coreyhaines31/.../cro),
 # pass the '+'-joined subpath(s) as the 3rd arg — the doc fetch AND the exec-
 # surface scan then cover ONLY those subpaths, never the whole repo. Without
-# this, a big unrelated tree elsewhere false-trips exec-surface-truncated. In
+# this, a big unrelated tree elsewhere false-trips exec-surface-over-cap. In
 # subpath mode a missing <subpath>/SKILL.md is NOT a flag (the doc is often
 # nested); the scoped exec-surface scan is the load-bearing signal.
 #
 # Fail-safe (EF-012): anything that cannot be confirmed safe is FLAGGED, never
 # silently passed. Reasons: content-unfetchable (no doc — root mode only),
 # exec-surface-unfetchable (tree unlistable), exec-file-unfetchable (a listed
-# exec file unreadable), exec-surface-truncated (more exec files than the cap).
+# exec file unreadable), exec-surface-truncated (GitHub truncated the tree),
+# exec-surface-over-cap (more exec files than the cap).
 #
 # API:  curation_safety_screen <owner/repo> <ref> [<subpaths>]
 #   stdout: one JSON object {repo, ref, verdict:"pass"|"flag", reasons[]}
 #   exit:   0 always (a verdict is always produced; failures become a flag).
-#   env:    CURATION_SAFETY_MAX_FILES — exec-surface file cap (default 25).
+#   env:    CURATION_SAFETY_MAX_FILES — exec-surface file cap (default 250).
 # =============================================================================
 
 _SAFETY_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -140,13 +143,22 @@ _curation_scan_text() {
 # scripts (*.sh), Claude settings hook blocks (settings*.json) and MCP server
 # configs (.mcp.json / mcp.json) — the files that can actually run code in a
 # user's session, which the SKILL.md/README.md doc cannot reveal. Capped at
-# CURATION_SAFETY_MAX_FILES (default 25) to bound API calls on large repos.
+# CURATION_SAFETY_MAX_FILES (default 250) to bound API calls on large repos.
+#
+# The cap is a COST bound, not a safety judgement, so it must clear the real
+# surfaces we watch: the biggest carry 36-158 exec files, and the old cap of 25
+# flagged all four at every pin — demoting their nightly re-pin to propose-only
+# for good (the freshness cliff). Whatever the cap, exceeding it stays a flag:
+# the tail really did go unscanned.
 # Exit: 0 = listed OK (paths on stdout, possibly none);
 #       1 = the tree could not be listed/parsed (caller fails safe);
-#       3 = listed but capped/truncated (caller flags + scans the partial list).
+#       3 = GitHub truncated the tree itself — the path LIST is incomplete;
+#       4 = fully listed but over the cap (caller flags + scans the kept slice).
+# 3 and 4 are distinct unknowns: 3 hides files we never even named, 4 hides
+# files we named and chose not to fetch. Both flag; only 3 is unbounded.
 _curation_list_exec_surface() {
     local repo="$1" ref="$2" subpaths="${3:-}" body
-    local cap="${CURATION_SAFETY_MAX_FILES:-25}"
+    local cap="${CURATION_SAFETY_MAX_FILES:-250}"
     body=$(curation_gh_api "repos/$repo/git/trees/$ref?recursive=1" 2>/dev/null) || return 1
     # A response without a .tree array (e.g. an error object) is unusable.
     printf '%s' "$body" | jq -e '.tree | type == "array"' >/dev/null 2>&1 || return 1
@@ -162,7 +174,7 @@ _curation_list_exec_surface() {
         | .path')
     # Subpath scoping (#384 fix): when the skill lives in subpath(s), keep ONLY
     # files under them — BEFORE the cap — so an unrelated big monorepo elsewhere
-    # never false-trips exec-surface-truncated. Literal prefix match (no regex).
+    # never false-trips exec-surface-over-cap. Literal prefix match (no regex).
     if [ -n "$subpaths" ]; then
         local sp sps=() scoped=""
         IFS='+' read -ra sps <<< "$subpaths" || true
@@ -175,7 +187,8 @@ _curation_list_exec_surface() {
     count=$(printf '%s' "$all" | grep -c . || true)
     if [ "$truncated" = "true" ] || [ "$count" -gt "$cap" ]; then
         printf '%s\n' "$all" | grep . | head -n "$cap" || true
-        return 3
+        [ "$truncated" = "true" ] && return 3
+        return 4
     fi
     printf '%s' "$all" | grep . || true
     return 0
@@ -251,6 +264,7 @@ curation_safety_screen() {
         reasons+=("exec-surface-unfetchable")
     else
         [ "$rc" -eq 3 ] && reasons+=("exec-surface-truncated")
+        [ "$rc" -eq 4 ] && reasons+=("exec-surface-over-cap")
         local path ftext
         while IFS= read -r path; do
             [ -n "$path" ] || continue
