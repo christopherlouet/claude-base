@@ -410,10 +410,16 @@ watch_one() {
     # return the verdict already on file. Repo health (archived, license, stars)
     # is re-scored nightly regardless of drift.
     #
-    # Tag pins are governed by release/tag-family semantics instead.
-    if [ "$drift" = "true" ] && [[ "$pinned" =~ ^[0-9a-f]{40}$ ]]; then
-        if [ -n "$scope" ] \
-            && [ "$(_drift_subpath_touched "$repo" "$pinned" "$current" "$scope")" = "no" ]; then
+    # Tag pins ask the SAME question. They were excluded while the check was new,
+    # on the reading that a release is a publication event rather than a content
+    # one — but a release that changes nothing under the consumed subpath changes
+    # nothing for the consumer either, and the exclusion is where the volume sat:
+    # of the three tag-pinned subpath repos, one carries six records and took 164
+    # commits since June for 5 touches on anything consumed. Every release
+    # re-pinned all six, and one open re-pin PR blocks every other re-pin.
+    # Both routes accept a tag ref, so this is the same call on the same path.
+    if [ "$drift" = "true" ] && [ -n "$scope" ]; then
+        if [ "$(_drift_subpath_touched "$repo" "$pinned" "$current" "$scope")" = "no" ]; then
             drift="false"
         fi
     fi
