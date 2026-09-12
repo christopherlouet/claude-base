@@ -259,23 +259,85 @@ _repo_has_root_record() {
       | grep -qxF "$want"
 }
 
+# _subtree_sha <repo> <ref> <subpath> — the git tree SHA of <subpath> at <ref>,
+# i.e. a fingerprint of everything the skill actually consumes. Echoes 40 hex
+# chars, or NOTHING when it cannot be resolved.
+#
+# "Nothing" is load-bearing and the emptiness check is not enough on its own:
+# `gh api` prints a JSON error BODY on a bad ref, so a caller testing only for
+# an empty string would compare two error bodies, find them equal, and suppress
+# a real drift. Only a 40-hex string is accepted as an answer; every other shape
+# — error body, missing entry, a blob where a tree was expected, a truncated
+# listing — resolves to nothing and leaves the caller at "unknown".
+_subtree_sha() {
+    local repo="$1" ref="$2" sub="$3" parent child out
+    parent=${sub%/*}; child=${sub##*/}
+    if [ "$parent" = "$sub" ]; then
+        # top-level subpath: read it out of the root tree, refusing a truncated
+        # listing (the trees API caps too, one level down from `compare`).
+        out=$(curation_gh_api "repos/$repo/git/trees/$ref" 2>/dev/null) || return 0
+        out=$(printf '%s' "$out" | jq -r --arg c "$child" '
+            if (.truncated // false) then empty
+            else (.tree // [])[]? | select(.path == $c and .type == "tree") | .sha end' 2>/dev/null)
+    else
+        out=$(curation_gh_api "repos/$repo/contents/$parent?ref=$ref" 2>/dev/null) || return 0
+        out=$(printf '%s' "$out" | jq -r --arg c "$child" '
+            if type == "array" then .[]? | select(.name == $c and .type == "dir") | .sha
+            else empty end' 2>/dev/null)
+    fi
+    case "$out" in
+        *[!0-9a-f]* | '') return 0 ;;
+    esac
+    [ "${#out}" -eq 40 ] || return 0
+    printf '%s' "$out"
+}
+
+# _drift_subpath_fingerprint <repo> <oldRef> <newRef> <'+'-joined subpaths> —
+# did any consumed subpath's TREE change between the two refs? Echoes
+# yes|no|unknown. Two calls per subpath and no file-count cap, so it answers
+# exactly where the compare file list cannot. Any subpath that fails to resolve
+# at either ref makes the whole answer "unknown" — never a partial verdict.
+_drift_subpath_fingerprint() {
+    local repo="$1" old="$2" new="$3" subs="$4" sp o n
+    local IFS='+'
+    for sp in $subs; do
+        [ -n "$sp" ] || continue
+        o=$(_subtree_sha "$repo" "$old" "$sp"); [ -n "$o" ] || { printf 'unknown'; return; }
+        n=$(_subtree_sha "$repo" "$new" "$sp"); [ -n "$n" ] || { printf 'unknown'; return; }
+        [ "$o" = "$n" ] || { printf 'yes'; return; }
+    done
+    printf 'no'
+}
+
 # _drift_subpath_touched <repo> <oldRef> <newRef> <'+'-joined subpaths> — did
-# the old→new range touch any of the subpaths? Echoes yes|no|unknown. ONE
-# compare call; every unconfirmable outcome is "unknown" (treated as touched):
-# unfetchable compare, and a possibly-truncated file list (the compare API caps
-# files at 300 — an all-outside verdict on a truncated list would be a false
-# suppression). A rename is a touch on BOTH its old and new path.
+# the old→new range touch any of the subpaths? Echoes yes|no|unknown.
+#
+# Two routes, cheapest first. ONE compare call answers most repos outright. It
+# cannot answer when the range is unfetchable, or when `.files` comes back at
+# the API's 300-file cap — a truncated list showing nothing in scope would be a
+# FALSE suppression. Measured on anthropics/claude-code: exactly 300 files
+# returned, zero of them under the consumed subpath, and the byte-identical
+# subtree was re-pinned anyway (PR #562, 4 of its 9 entries).
+#
+# So where the file list says "unknown", the subtree FINGERPRINT is asked
+# instead — it has no such cap. Every outcome that neither route confirms stays
+# "unknown", which the caller treats as touched. A rename is a touch on BOTH its
+# old and new path.
 _drift_subpath_touched() {
-    local repo="$1" old="$2" new="$3" subs="$4" body
-    body=$(curation_gh_api "repos/$repo/compare/$old...$new" 2>/dev/null) || { printf 'unknown'; return; }
-    printf '%s' "$body" | jq -r --arg subs "$subs" '
-        def under($p): . == $p or startswith($p + "/");
-        ($subs | split("+")) as $S
-        | (.files // []) as $F
-        | if ($F | length) >= 300 then "unknown"
-          elif ([$F[] | .filename, (.previous_filename // empty)]
-                | any(. as $f | $S | any(. as $s | $f | under($s)))) then "yes"
-          else "no" end' 2>/dev/null || printf 'unknown'
+    local repo="$1" old="$2" new="$3" subs="$4" body verdict
+    body=$(curation_gh_api "repos/$repo/compare/$old...$new" 2>/dev/null) \
+        && verdict=$(printf '%s' "$body" | jq -r --arg subs "$subs" '
+            def under($p): . == $p or startswith($p + "/");
+            ($subs | split("+")) as $S
+            | (.files // []) as $F
+            | if ($F | length) >= 300 then "unknown"
+              elif ([$F[] | .filename, (.previous_filename // empty)]
+                    | any(. as $f | $S | any(. as $s | $f | under($s)))) then "yes"
+              else "no" end' 2>/dev/null)
+    case "${verdict:-unknown}" in
+        yes|no) printf '%s' "$verdict" ;;
+        *) _drift_subpath_fingerprint "$repo" "$old" "$new" "$subs" ;;
+    esac
 }
 
 # watch_one <repoRoot> <track> <pinnedRef> — emit one finding JSON object.
