@@ -729,6 +729,83 @@ subpath_tag_target() {
 }
 
 # =============================================================================
+# per-subpath ATTRIBUTION. One repo can back several skills, each at its own
+# subpath. The drift range is already fetched to decide whether the repo drifted
+# at all, so it can also say WHICH subpath moved — and the digest then stops
+# naming skills whose directory is byte-identical. Measured on the two-record
+# repo: 18 commits since June, 12 touching one subpath, 0 touching the other,
+# and both skills named on every single re-pin.
+#
+# Narrowing is only ever done on an answer we actually got: any range neither
+# route resolves keeps the full repo-wide attribution.
+# =============================================================================
+
+# registry_two <vendorIdA> <skillA> <vendorIdB> <skillB> — two records on ONE
+# repo, each at its own subpath, both pinned OLD_SHA: the anthropics/skills shape.
+registry_two() {
+    jq -cn --arg a "$1" --arg sa "$2" --arg b "$3" --arg sb "$4" --arg p "$OLD_SHA" '
+      def rec($v; $s):
+        {foundationSkill:$s, vendorId:$v, vendorUrl:("https://github.com/"+$v),
+         pinnedRef:$p, trustTrack:"authority", trustVerdict:"pass", provenance:"Acme",
+         adviceNeutrality:"pass", lastVerified:"2026-01-01", status:"candidate",
+         sourceAudit:"t", flags:[]};
+      {version:"1.0.0", records:[rec($a;$sa), rec($b;$sb)]}' > "$TEST_DIR/registry.json"
+    gh_fixture "repos/acme/mono" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/mono/commits/HEAD" "{\"sha\":\"$NEW_SHA\"}"
+}
+
+@test "watch: a drift touching ONE subpath names only that subpath's skill" {
+    registry_two "acme/mono/plugins/x" dev-x "acme/mono/plugins/y" dev-y
+    gh_fixture "repos/acme/mono/compare/$OLD_SHA...$NEW_SHA" \
+        '{"files":[{"filename":"plugins/x/SKILL.md"},{"filename":"README.md"}]}'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].forSkills')" == "dev-x" ]]
+}
+
+@test "watch: a drift touching BOTH subpaths still names both skills" {
+    registry_two "acme/mono/plugins/x" dev-x "acme/mono/plugins/y" dev-y
+    gh_fixture "repos/acme/mono/compare/$OLD_SHA...$NEW_SHA" \
+        '{"files":[{"filename":"plugins/x/SKILL.md"},{"filename":"plugins/y/SKILL.md"}]}'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].forSkills')" == "dev-x,dev-y" ]]
+}
+
+@test "watch: an unresolvable range keeps the repo-wide attribution" {
+    # Truncated compare, no fingerprint fixtures: nothing is known about what
+    # moved, so the drift stays AND both skills stay named.
+    registry_two "acme/mono/plugins/x" dev-x "acme/mono/plugins/y" dev-y
+    trunc_compare
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].forSkills')" == "dev-x,dev-y" ]]
+}
+
+@test "watch: the fingerprint route also narrows the attribution" {
+    registry_two "acme/mono/plugins/x" dev-x "acme/mono/plugins/y" dev-y
+    trunc_compare
+    # Both subpaths must resolve, or the route answers "unknown" for the whole
+    # repo: x moves A->B, y stays A.
+    gh_fixture "repos/acme/mono/contents/plugins?ref=$OLD_SHA" \
+        "$(jq -cn --arg a "$TREE_A" '[{name:"x",type:"dir",sha:$a},
+                                      {name:"y",type:"dir",sha:$a}]')"
+    gh_fixture "repos/acme/mono/contents/plugins?ref=$NEW_SHA" \
+        "$(jq -cn --arg a "$TREE_A" --arg b "$TREE_B" '[{name:"x",type:"dir",sha:$b},
+                                                        {name:"y",type:"dir",sha:$a}]')"
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].forSkills')" == "dev-x" ]]
+}
+
+@test "watch: a record spanning several subpaths is named when ANY of them moves" {
+    registry_two "acme/mono/plugins/x+plugins/z" dev-x "acme/mono/plugins/y" dev-y
+    gh_fixture "repos/acme/mono/compare/$OLD_SHA...$NEW_SHA" \
+        '{"files":[{"filename":"plugins/z/SKILL.md"}]}'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].forSkills')" == "dev-x" ]]
+}
+
+# =============================================================================
 # tag-FAMILY pins (monorepo publishing several packages: `pkg@1.0.0`,
 # `@acme/react@0.2.1`, ...) — drift must compare within the pin's own family,
 # never against the repo-global latest release (phantom drift every run).
