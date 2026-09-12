@@ -382,17 +382,236 @@ subpath_unlicensed_root() {
     [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
 }
 
-@test "watch: an unfetchable compare keeps the drift (fail-safe, never silently suppressed)" {
+# The two arms below are about the compare route giving up. Since the tree
+# fingerprint became its fallback, giving up is no longer the end of the story:
+# each states that when NEITHER route resolves, the drift is kept. Registering a
+# subtree fixture here would legitimately flip them — see the fingerprint block
+# further down, which asserts the opposite outcome from the very same input.
+
+@test "watch: neither route resolving keeps the drift — unfetchable compare, no fingerprint" {
     subpath_target "acme/mono/plugins/x"
-    # no compare fixture → gh 404
+    # no compare fixture → gh 404; no contents/… fixture → fingerprint unresolvable
     run_watch
     [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
 }
 
-@test "watch: a possibly-truncated compare (300 files) keeps the drift (fail-safe)" {
+@test "watch: neither route resolving keeps the drift — truncated compare, no fingerprint" {
     subpath_target "acme/mono/plugins/x"
     gh_fixture "repos/acme/mono/compare/$OLD_SHA...$NEW_SHA" \
         "$(jq -cn '{files: [range(300) | {filename: "other/f\(.).md"}]}')"
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+}
+
+# =============================================================================
+# subpath drift by TREE FINGERPRINT — the compare API caps `.files` at 300, so
+# on a busy monorepo the scoped check above returns "unknown" and the drift is
+# kept: measured on anthropics/claude-code, where a range with exactly 300
+# returned files and ZERO files under plugins/frontend-design re-pinned a
+# byte-identical subtree (PR #562, 4 of 9 entries). The subtree's tree SHA has
+# no such cap, so it answers where the file list cannot. Compare stays the first
+# and cheapest question; fingerprints are consulted only when it says "unknown".
+# =============================================================================
+
+# trunc_compare — a 300-file compare (the cap) whose files are all OUT of scope:
+# decisive-looking, but truncated, so the file list alone must stay "unknown".
+trunc_compare() {
+    gh_fixture "repos/acme/mono/compare/$OLD_SHA...$NEW_SHA" \
+        "$(jq -cn '{files: [range(300) | {filename: "other/f\(.).md"}]}')"
+}
+
+# subtree_fx <ref> <parent> <child> <sha> — the parent dir listing that carries
+# <child>'s tree SHA at <ref>, exactly as `contents/<parent>?ref=<ref>` returns.
+subtree_fx() {
+    gh_fixture "repos/acme/mono/contents/$2?ref=$1" \
+        "$(jq -cn --arg n "$3" --arg s "$4" '[{name:$n, type:"dir", sha:$s},
+                                              {name:"README.md", type:"file", sha:"ffff"}]')"
+}
+
+TREE_A="1111111111111111111111111111111111111111"
+TREE_B="2222222222222222222222222222222222222222"
+
+@test "watch: a truncated compare is RESOLVED by the subtree fingerprint — identical subtree is NOT drift" {
+    subpath_target "acme/mono/plugins/x"
+    trunc_compare
+    subtree_fx "$OLD_SHA" plugins x "$TREE_A"
+    subtree_fx "$NEW_SHA" plugins x "$TREE_A"
+    run_watch
+    [[ "$status" -eq 0 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findingCount')" -eq 0 ]]
+}
+
+@test "watch: a fingerprint-suppressed drift still refreshes lastVerified" {
+    # The guarantee the suppression rests on. Suppressing the drift must not
+    # also stop the clock: the repo WAS reached and scored this run, so the
+    # record stays demonstrably verified even though its pin does not move.
+    # Without this, a subpath whose tree never changes would look abandoned.
+    subpath_target "acme/mono/plugins/x"
+    trunc_compare
+    subtree_fx "$OLD_SHA" plugins x "$TREE_A"
+    subtree_fx "$NEW_SHA" plugins x "$TREE_A"
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findingCount')" -eq 0 ]]
+    [[ "$(jq -r '.records[0].lastVerified' "$TEST_DIR/registry.json")" == "2026-06-13" ]]
+}
+
+@test "watch: a truncated compare with a CHANGED subtree fingerprint IS drift" {
+    subpath_target "acme/mono/plugins/x"
+    trunc_compare
+    subtree_fx "$OLD_SHA" plugins x "$TREE_A"
+    subtree_fx "$NEW_SHA" plugins x "$TREE_B"
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].proposedAction')" == "re-pin" ]]
+}
+
+@test "watch: an UNFETCHABLE compare is also resolved by the fingerprint (identical → no drift)" {
+    subpath_target "acme/mono/plugins/x"
+    # no compare fixture at all → the file-list route cannot answer
+    subtree_fx "$OLD_SHA" plugins x "$TREE_A"
+    subtree_fx "$NEW_SHA" plugins x "$TREE_A"
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findingCount')" -eq 0 ]]
+}
+
+@test "watch: an API ERROR BODY is never read as a fingerprint (only 40-hex resolves)" {
+    # The trap this guard was written against: `gh api` prints a JSON error body
+    # on a bad ref, so an emptiness check passes it through and two error bodies
+    # compare EQUAL — a silent false suppression. Only 40 hex chars may resolve.
+    subpath_target "acme/mono/plugins/x"
+    trunc_compare
+    gh_fixture "repos/acme/mono/contents/plugins?ref=$OLD_SHA" \
+        '{"message":"No commit found for the ref","status":"404"}'
+    gh_fixture "repos/acme/mono/contents/plugins?ref=$NEW_SHA" \
+        '{"message":"No commit found for the ref","status":"404"}'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+}
+
+@test "watch: a dir listing that is an OBJECT, not an array, never resolves a fingerprint" {
+    # The contents endpoint returns an ARRAY for a directory. A JSON OBJECT whose
+    # values happen to look like entries would otherwise be walked and yield a
+    # well-formed sha — identical at both refs, so a silent false suppression.
+    # This arm is what makes the array-shape check load-bearing rather than
+    # decorative: without it, this test goes green with NO drift.
+    subpath_target "acme/mono/plugins/x"
+    trunc_compare
+    for ref in "$OLD_SHA" "$NEW_SHA"; do
+        gh_fixture "repos/acme/mono/contents/plugins?ref=$ref" \
+            "$(jq -cn --arg s "$TREE_A" '{entry:{name:"x", type:"dir", sha:$s}}')"
+    done
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+}
+
+@test "watch: a MALFORMED sha in the tree listing never resolves a fingerprint" {
+    # Reaches the 40-hex validation itself. The `type == "array"` check above
+    # already turns an error BODY into "unresolved", so without this arm the hex
+    # guard would never be exercised by any test — proven by mutation: removing
+    # the validation left the error-body test green.
+    subpath_target "acme/mono/skills"
+    trunc_compare
+    for ref in "$OLD_SHA" "$NEW_SHA"; do
+        gh_fixture "repos/acme/mono/git/trees/$ref" \
+            '{"truncated":false,"tree":[{"path":"skills","type":"tree","sha":"not-a-sha"}]}'
+    done
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+}
+
+@test "watch: a SHORT sha in the tree listing never resolves a fingerprint" {
+    # Same guard, the other half: 8 valid hex chars are still not a tree SHA.
+    # Two identical short shas would otherwise compare EQUAL and suppress.
+    subpath_target "acme/mono/skills"
+    trunc_compare
+    for ref in "$OLD_SHA" "$NEW_SHA"; do
+        gh_fixture "repos/acme/mono/git/trees/$ref" \
+            '{"truncated":false,"tree":[{"path":"skills","type":"tree","sha":"deadbeef"}]}'
+    done
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+}
+
+@test "watch: a fingerprint that resolves at only ONE ref stays fail-safe drift" {
+    subpath_target "acme/mono/plugins/x"
+    trunc_compare
+    subtree_fx "$OLD_SHA" plugins x "$TREE_A"
+    # nothing registered for NEW_SHA → unresolved → never suppress
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+}
+
+@test "watch: a fingerprint unresolvable at the OLD ref stays fail-safe drift" {
+    # The mirror of the ONE-ref arm above. Mutation showed the two refs need
+    # separate arms: a test that only starves the NEW ref leaves the OLD ref's
+    # own fail-safe untested, and it can be deleted with every test still green.
+    subpath_target "acme/mono/plugins/x"
+    trunc_compare
+    # nothing registered for OLD_SHA; only the new ref resolves
+    subtree_fx "$NEW_SHA" plugins x "$TREE_A"
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+}
+
+@test "watch: a BLOB where the root tree should hold a tree never resolves a fingerprint" {
+    # `git/trees` lists blobs and trees alike. A file named like the subpath
+    # carries a perfectly valid 40-hex blob SHA — identical at both refs, so
+    # without the type check it would compare equal and suppress the drift.
+    subpath_target "acme/mono/skills"
+    trunc_compare
+    for ref in "$OLD_SHA" "$NEW_SHA"; do
+        gh_fixture "repos/acme/mono/git/trees/$ref" \
+            "$(jq -cn --arg s "$TREE_A" '{truncated:false, tree:[{path:"skills", type:"blob", sha:$s}]}')"
+    done
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+}
+
+@test "watch: a multi-subpath record needs EVERY subtree identical to be suppressed" {
+    subpath_target "acme/mono/cro+analytics"
+    trunc_compare
+    gh_fixture "repos/acme/mono/git/trees/$OLD_SHA" \
+        "$(jq -cn --arg a "$TREE_A" --arg b "$TREE_A" '{truncated:false, tree:[
+             {path:"cro", type:"tree", sha:$a}, {path:"analytics", type:"tree", sha:$b}]}')"
+    gh_fixture "repos/acme/mono/git/trees/$NEW_SHA" \
+        "$(jq -cn --arg a "$TREE_A" --arg b "$TREE_B" '{truncated:false, tree:[
+             {path:"cro", type:"tree", sha:$a}, {path:"analytics", type:"tree", sha:$b}]}')"
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+}
+
+@test "watch: a multi-subpath record with ALL subtrees identical is NOT drift" {
+    subpath_target "acme/mono/cro+analytics"
+    trunc_compare
+    for ref in "$OLD_SHA" "$NEW_SHA"; do
+        gh_fixture "repos/acme/mono/git/trees/$ref" \
+            "$(jq -cn --arg a "$TREE_A" --arg b "$TREE_B" '{truncated:false, tree:[
+                 {path:"cro", type:"tree", sha:$a}, {path:"analytics", type:"tree", sha:$b}]}')"
+    done
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findingCount')" -eq 0 ]]
+}
+
+@test "watch: a TRUNCATED root tree listing never resolves a fingerprint (fail-safe)" {
+    # The same cap, one level down: the trees API sets `truncated` and the guard
+    # must refuse it rather than conclude from a partial listing.
+    subpath_target "acme/mono/skills"
+    trunc_compare
+    for ref in "$OLD_SHA" "$NEW_SHA"; do
+        gh_fixture "repos/acme/mono/git/trees/$ref" \
+            "$(jq -cn --arg a "$TREE_A" '{truncated:true, tree:[{path:"skills", type:"tree", sha:$a}]}')"
+    done
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+}
+
+@test "watch: a subpath entry that is a FILE, not a tree, never resolves a fingerprint" {
+    subpath_target "acme/mono/plugins/x"
+    trunc_compare
+    for ref in "$OLD_SHA" "$NEW_SHA"; do
+        gh_fixture "repos/acme/mono/contents/plugins?ref=$ref" \
+            "$(jq -cn --arg s "$TREE_A" '[{name:"x", type:"file", sha:$s}]')"
+    done
     run_watch
     [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
 }
