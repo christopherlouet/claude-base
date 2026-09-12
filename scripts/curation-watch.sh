@@ -298,9 +298,14 @@ _subtree_sha() {
 # exactly where the compare file list cannot. Any subpath that fails to resolve
 # at either ref makes the whole answer "unknown" — never a partial verdict.
 _drift_subpath_fingerprint() {
-    local repo="$1" old="$2" new="$3" subs="$4" sp o n
-    local IFS='+'
-    for sp in $subs; do
+    local repo="$1" old="$2" new="$3" subs="$4" sp o n sps=()
+    # Same splitting idiom as curation-safety.sh: an unquoted `for sp in $subs`
+    # under IFS='+' would additionally be subject to pathname expansion, so a
+    # subpath holding a glob character would be rewritten by whatever happens to
+    # match in the CWD, and the reset IFS would still be in effect for the calls
+    # made inside the loop.
+    IFS='+' read -ra sps <<< "$subs"
+    for sp in "${sps[@]}"; do
         [ -n "$sp" ] || continue
         o=$(_subtree_sha "$repo" "$old" "$sp"); [ -n "$o" ] || { printf 'unknown'; return; }
         n=$(_subtree_sha "$repo" "$new" "$sp"); [ -n "$n" ] || { printf 'unknown'; return; }
@@ -388,14 +393,24 @@ watch_one() {
     # anthropics/claude-code/plugins/frontend-design) re-drifts on EVERY repo
     # commit and re-proposed a content-no-op re-pin nightly — which, since the
     # #458 open-PR lock, would also block every other re-pin. When ALL records
-    # watching the repo are subpath-scoped, one compare call checks whether the
-    # pinned...current range touches any of those subpaths; untouched → not
-    # drift (lastVerified still refreshes). Fail-safe: root record present,
-    # unfetchable compare, or a possibly-truncated file list all keep the
-    # drift. The pin then only advances when the subpath REALLY changes — or
-    # when the accumulated repo range exceeds the compare cap (300 files),
-    # whose fail-open surfaces a baseline-advancing re-pin at bounded
-    # intervals. Tag pins are governed by release/tag-family semantics instead.
+    # watching the repo are subpath-scoped, the pinned...current range is asked
+    # whether it touched any of those subpaths; untouched → not drift.
+    #
+    # Two routes answer that, cheapest first (see _drift_subpath_touched): the
+    # compare file list, then — only where it cannot conclude — the subpath's
+    # tree fingerprint. A root record present still keeps the drift, and so does
+    # any range neither route resolves.
+    #
+    # What that means for a subpath whose tree never changes: its pinnedRef
+    # stops advancing for good. That is the intent, not an oversight. Two things
+    # make it safe. lastVerified still refreshes every run, because the repo was
+    # reached and scored even though no finding was emitted — so the record
+    # never looks abandoned. And the pin-time safety screen is itself scoped to
+    # the subpath, so re-screening a byte-identical subtree could only ever
+    # return the verdict already on file. Repo health (archived, license, stars)
+    # is re-scored nightly regardless of drift.
+    #
+    # Tag pins are governed by release/tag-family semantics instead.
     if [ "$drift" = "true" ] && [[ "$pinned" =~ ^[0-9a-f]{40}$ ]]; then
         if [ -n "$scope" ] \
             && [ "$(_drift_subpath_touched "$repo" "$pinned" "$current" "$scope")" = "no" ]; then

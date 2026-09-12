@@ -382,14 +382,20 @@ subpath_unlicensed_root() {
     [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
 }
 
-@test "watch: an unfetchable compare keeps the drift (fail-safe, never silently suppressed)" {
+# The two arms below are about the compare route giving up. Since the tree
+# fingerprint became its fallback, giving up is no longer the end of the story:
+# each states that when NEITHER route resolves, the drift is kept. Registering a
+# subtree fixture here would legitimately flip them — see the fingerprint block
+# further down, which asserts the opposite outcome from the very same input.
+
+@test "watch: neither route resolving keeps the drift — unfetchable compare, no fingerprint" {
     subpath_target "acme/mono/plugins/x"
-    # no compare fixture → gh 404
+    # no compare fixture → gh 404; no contents/… fixture → fingerprint unresolvable
     run_watch
     [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
 }
 
-@test "watch: a possibly-truncated compare (300 files) keeps the drift (fail-safe)" {
+@test "watch: neither route resolving keeps the drift — truncated compare, no fingerprint" {
     subpath_target "acme/mono/plugins/x"
     gh_fixture "repos/acme/mono/compare/$OLD_SHA...$NEW_SHA" \
         "$(jq -cn '{files: [range(300) | {filename: "other/f\(.).md"}]}')"
@@ -433,6 +439,20 @@ TREE_B="2222222222222222222222222222222222222222"
     run_watch
     [[ "$status" -eq 0 ]]
     [[ "$(printf '%s' "$output" | jq -r '.findingCount')" -eq 0 ]]
+}
+
+@test "watch: a fingerprint-suppressed drift still refreshes lastVerified" {
+    # The guarantee the suppression rests on. Suppressing the drift must not
+    # also stop the clock: the repo WAS reached and scored this run, so the
+    # record stays demonstrably verified even though its pin does not move.
+    # Without this, a subpath whose tree never changes would look abandoned.
+    subpath_target "acme/mono/plugins/x"
+    trunc_compare
+    subtree_fx "$OLD_SHA" plugins x "$TREE_A"
+    subtree_fx "$NEW_SHA" plugins x "$TREE_A"
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findingCount')" -eq 0 ]]
+    [[ "$(jq -r '.records[0].lastVerified' "$TEST_DIR/registry.json")" == "2026-06-13" ]]
 }
 
 @test "watch: a truncated compare with a CHANGED subtree fingerprint IS drift" {
