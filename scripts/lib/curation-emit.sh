@@ -222,6 +222,26 @@ _skills_for_repo() {
         | grep . | sort -u | paste -sd',' - || true
 }
 
+# _skills_for_subpaths <owner/repo> <registry> <'+'-joined subpaths> — like
+# _skills_for_repo, narrowed to the records whose OWN subpath(s) fall in the
+# given set. One record may itself carry several ('+'-joined vendorId, a skill
+# assembled from three directories); it is named as soon as ONE of them is in
+# the set. An empty set narrows to nothing, so a caller that could not tell what
+# moved must pass the full scope rather than nothing.
+_skills_for_subpaths() {
+    local want="$1" registry="$2" subs="$3"
+    [ -f "$registry" ] || return 0
+    [ -n "$subs" ] || return 0
+    jq -r --arg want "$want" --arg subs "$subs" '
+        ($subs | split("+")) as $S
+        | .records[]
+        | select((.vendorId | split("/")[0:2] | join("/")) == $want)
+        | select((.vendorId | split("/")[2:] | join("/") | split("+"))
+                 | any(. as $o | $S | index($o)))
+        | .foundationSkill // empty' "$registry" 2>/dev/null \
+        | grep . | sort -u | paste -sd',' - || true
+}
+
 # curation_repin_lock — echo the #458 open-PR lock as ONE JSON object
 # {count,number,createdAt,url,ageDays}, or NOTHING when no curation/re-pin-* PR
 # is open or the lookup could not be trusted. Read-only (a single `gh pr list`),

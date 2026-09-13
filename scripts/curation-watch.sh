@@ -180,17 +180,16 @@ watch_awaiting_licenses() {
 # from the registry records and every preset recommendation, deduped by
 # (repoRoot,pinnedRef). gh is NOT called here.
 #
-# Attribution is REPO-LEVEL by design. When one repo backs several subpath
-# records (e.g. anthropics/skills → mcp-builder for dev-mcp AND claude-api for
-# dev-ai-integration), a drift finding lists ALL of that repo's foundation
-# skills in forSkills even if only one subpath's files changed. Pinning is
-# per-repo-ref (both records share the ref), so a re-pin advances both baselines
-# correctly regardless — the only imprecision is cosmetic (the digest can't say
-# WHICH subpath changed). Narrowing forSkills to the changed subpath would need a
-# per-drift `gh compare pinned...current` file-list call on the nightly path;
-# that gh/rate-limit cost is not justified for the current single multi-subpath
-# repo, so attribution stays repo-level intentionally (not a bug). Revisit if
-# multi-subpath repos proliferate.
+# Attribution STARTS repo-level here and is narrowed later, in watch_one. This
+# function has no gh call and no idea what moved, so it names every foundation
+# skill the repo backs; a drift whose range is known then keeps only the skills
+# whose own subpath was touched. Pinning stays per-repo-ref (the records share
+# the ref), so a re-pin advances every baseline regardless.
+#
+# The narrowing was deferred when this was written, on the cost of a per-drift
+# `gh compare` call and a single multi-subpath repo. Both premises expired: two
+# repos now back eight subpath records, and the subpath drift check makes that
+# exact call on the nightly path anyway.
 collect_targets() {
     {
         jq -c '.records[] | {repoRoot:.vendorId, track:.trustTrack, pinnedRef:.pinnedRef}' "$REGISTRY"
@@ -293,12 +292,17 @@ _subtree_sha() {
 }
 
 # _drift_subpath_fingerprint <repo> <oldRef> <newRef> <'+'-joined subpaths> —
-# did any consumed subpath's TREE change between the two refs? Echoes
-# yes|no|unknown. Two calls per subpath and no file-count cap, so it answers
-# exactly where the compare file list cannot. Any subpath that fails to resolve
-# at either ref makes the whole answer "unknown" — never a partial verdict.
+# WHICH consumed subpaths' TREES changed between the two refs? Echoes the
+# '+'-joined subset, empty when none changed. Two calls per subpath and no
+# file-count cap, so it answers exactly where the compare file list cannot.
+#
+# Every subpath is probed, where the yes/no form could stop at the first
+# difference: naming the changed skill is the point, and this route only runs
+# when the compare could not conclude. Any subpath that fails to resolve at
+# either ref yields the FULL set — never a partial answer, and the caller then
+# keeps both the drift and the repo-wide attribution.
 _drift_subpath_fingerprint() {
-    local repo="$1" old="$2" new="$3" subs="$4" sp o n sps=()
+    local repo="$1" old="$2" new="$3" subs="$4" sp o n acc="" sps=()
     # Same splitting idiom as curation-safety.sh: an unquoted `for sp in $subs`
     # under IFS='+' would additionally be subject to pathname expansion, so a
     # subpath holding a glob character would be rewritten by whatever happens to
@@ -307,15 +311,21 @@ _drift_subpath_fingerprint() {
     IFS='+' read -ra sps <<< "$subs"
     for sp in "${sps[@]}"; do
         [ -n "$sp" ] || continue
-        o=$(_subtree_sha "$repo" "$old" "$sp"); [ -n "$o" ] || { printf 'unknown'; return; }
-        n=$(_subtree_sha "$repo" "$new" "$sp"); [ -n "$n" ] || { printf 'unknown'; return; }
-        [ "$o" = "$n" ] || { printf 'yes'; return; }
+        o=$(_subtree_sha "$repo" "$old" "$sp"); [ -n "$o" ] || { printf '%s' "$subs"; return; }
+        n=$(_subtree_sha "$repo" "$new" "$sp"); [ -n "$n" ] || { printf '%s' "$subs"; return; }
+        [ "$o" = "$n" ] || acc+="$sp+"
     done
-    printf 'no'
+    printf '%s' "${acc%+}"
 }
 
-# _drift_subpath_touched <repo> <oldRef> <newRef> <'+'-joined subpaths> — did
-# the old→new range touch any of the subpaths? Echoes yes|no|unknown.
+# _drift_touched_subpaths <repo> <oldRef> <newRef> <'+'-joined subpaths> — WHICH
+# of the subpaths did the old→new range touch? Echoes the '+'-joined subset,
+# empty when the range touched none of them.
+#
+# Two answers come out of one question. Empty means the range changed nothing
+# anyone consumes, so it is not a drift. A subset narrower than the full scope
+# means the drift is real but belongs to SOME of the repo's skills, which is what
+# the digest names.
 #
 # Two routes, cheapest first. ONE compare call answers most repos outright. It
 # cannot answer when the range is unfetchable, or when `.files` comes back at
@@ -325,10 +335,11 @@ _drift_subpath_fingerprint() {
 # subtree was re-pinned anyway (PR #562, 4 of its 9 entries).
 #
 # So where the file list says "unknown", the subtree FINGERPRINT is asked
-# instead — it has no such cap. Every outcome that neither route confirms stays
-# "unknown", which the caller treats as touched. A rename is a touch on BOTH its
-# old and new path.
-_drift_subpath_touched() {
+# instead — it has no such cap. Anything neither route confirms yields the FULL
+# set, which keeps the drift AND the repo-wide attribution: never a narrowing
+# built on an answer we did not get. A rename is a touch on BOTH its old and new
+# path.
+_drift_touched_subpaths() {
     local repo="$1" old="$2" new="$3" subs="$4" body verdict
     body=$(curation_gh_api "repos/$repo/compare/$old...$new" 2>/dev/null) \
         && verdict=$(printf '%s' "$body" | jq -r --arg subs "$subs" '
@@ -336,11 +347,12 @@ _drift_subpath_touched() {
             ($subs | split("+")) as $S
             | (.files // []) as $F
             | if ($F | length) >= 300 then "unknown"
-              elif ([$F[] | .filename, (.previous_filename // empty)]
-                    | any(. as $f | $S | any(. as $s | $f | under($s)))) then "yes"
-              else "no" end' 2>/dev/null)
+              else ([$F[] | .filename, (.previous_filename // empty)]) as $names
+                   | "ok:" + ([$S[] | select(. as $s | $names | any(under($s)))]
+                              | join("+"))
+              end' 2>/dev/null)
     case "${verdict:-unknown}" in
-        yes|no) printf '%s' "$verdict" ;;
+        ok:*) printf '%s' "${verdict#ok:}" ;;
         *) _drift_subpath_fingerprint "$repo" "$old" "$new" "$subs" ;;
     esac
 }
@@ -418,9 +430,21 @@ watch_one() {
     # commits since June for 5 touches on anything consumed. Every release
     # re-pinned all six, and one open re-pin PR blocks every other re-pin.
     # Both routes accept a tag ref, so this is the same call on the same path.
+    #
+    # The same call also answers WHICH subpath moved, so the finding can stop
+    # naming skills that did not change. Attribution was repo-level by design
+    # and the reason recorded at collect_targets was the cost of exactly this
+    # call; it is now made anyway. Measured on the two-record repo: 18 commits
+    # since June, 12 touching one subpath, 0 touching the other, and both skills
+    # named every time.
     if [ "$drift" = "true" ] && [ -n "$scope" ]; then
-        if [ "$(_drift_subpath_touched "$repo" "$pinned" "$current" "$scope")" = "no" ]; then
+        local touched narrowed
+        touched=$(_drift_touched_subpaths "$repo" "$pinned" "$current" "$scope")
+        if [ -z "$touched" ]; then
             drift="false"
+        elif [ "$touched" != "$scope" ]; then
+            narrowed=$(_skills_for_subpaths "$repo" "$REGISTRY" "$touched")
+            [ -n "$narrowed" ] && for_skills="$narrowed"
         fi
     fi
 
