@@ -3,16 +3,6 @@
   "exemptions": [
     {
       "repo": "AgriciDaniel/claude-seo",
-      "path": "README.md",
-      "category": "remote-exec",
-      "lineSha256": "acd997e09667d9a4301a9d7867b9ca7cd7f1152ffae70543cf3c339acb2a7b76",
-      "line": "curl -fsSL https://raw.githubusercontent.com/AgriciDaniel/claude-seo/main/uninstall.sh | bash",
-      "reviewedRef": "v2.3.1",
-      "reviewedOn": "2026-09-13",
-      "rationale": "Human-facing uninstall instruction in the README (no repo-root SKILL.md, so the screen reads the README as the doc); pipes the vendor own uninstaller, it is not skill instructions and nothing in the skill runs it."
-    },
-    {
-      "repo": "AgriciDaniel/claude-seo",
       "path": "extensions/ahrefs/install.sh",
       "category": "remote-exec",
       "lineSha256": "c31ba3fcce69ea833c7f458316f7c9c278356521828c65b01b401aab3ad45cb0",

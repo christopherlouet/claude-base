@@ -176,18 +176,36 @@ _repin_pr_body() {
         printf '\n**Findings lifted by a reviewed exemption** (%s) — re-read each line at the new ref:\n\n' \
             '.claude/curation/safety-exemptions.json'
         printf '| Subject | Path:line | Category | Line |\n|---|---|---|---|\n'
-        # The line goes into a table cell: trim its indent, cap its length (a
-        # minified bundle is one huge line), THEN escape the cell separator — a
-        # cut after escaping can keep a lone backslash that eats the row's `|`.
-        printf '%s' "$1" | jq -r '.[] | .subject as $s | (.safety.exempted // [])[]
-            | (.line | sub("^\\s+"; "") | .[0:160] | gsub("\\|"; "\\|")) as $l
-            | "| \($s) | \(.path)\(if .lineNumber then ":\(.lineNumber)" else "" end) | \(.category) | \($l) |"'
-        printf '%s' "$1" | jq -r '.[] | ((.safety.exemptedTotal // 0) - ((.safety.exempted // []) | length)) as $hidden
-            | select($hidden > 0)
-            | "\n_\(.subject): \(.safety.exemptedTotal) lifted line(s), \($hidden) not shown — run scripts/lib/curation-safety.sh \(.subject) \(.currentRef) with a higher CURATION_SAFETY_DETAIL_MAX to list them all._"'
-        printf '%s' "$1" | jq -r '.[]
-            | select(((.safety.reasons // []) | index("exempted")) != null and (.safety.exemptedTotal // 0) == 0)
-            | "\n_\(.subject): lines were lifted but their detail is unavailable — re-run scripts/lib/curation-safety.sh \(.subject) \(.currentRef) to list them before merging._"'
+        # Every cell is vendor-controlled text: collapse line breaks and escape the
+        # cell separator in all of them. The line is trimmed and cut to 160
+        # characters BEFORE escaping (a cut after escaping can keep half of an
+        # escaped `\|`: a lone backslash, which ate the row's `|` before the cut
+        # marker existed and still shows in front of it), and a cut line ends
+        # with `…` so it never reads as the whole line. A command rebuilt from a JSON config has
+        # no line number: it is labelled instead.
+        printf '%s' "$1" | jq -r '
+            def esc: tostring | gsub("[\r\n]+"; " ") | gsub("\\|"; "\\|");
+            .[] | .subject as $s | (.safety.exempted // [])[]
+            | (.line | sub("^\\s+"; "") | sub("\\s+$"; "")) as $raw
+            | (($raw | length) > 160 or (.lineTruncated // false)) as $cut
+            | "| \($s | esc) | \(.path | esc)\(if .lineNumber then ":\(.lineNumber)" elif .joinedCommand then " (joined command)" else "" end) | \(.category | esc) | \($raw | .[0:160] | esc)\(if $cut then "…" else "" end) |"'
+        # Notes, per subject, when the table above is not the whole story. The
+        # re-run command carries the subpaths the screen was scoped to, or it
+        # would screen a different surface.
+        printf '%s' "$1" | jq -r '
+            def rerun: "scripts/lib/curation-safety.sh \(.subject) \(.currentRef)\(if (.safety.screenedSubpaths // "") != "" then " \(.safety.screenedSubpaths)" else "" end)";
+            .[]
+            | (((.safety.reasons // []) | index("exempted")) != null) as $lifted
+            | (.safety.exemptedTotal // 0) as $total
+            | ($total - ((.safety.exempted // []) | length)) as $hidden
+            | (if $hidden > 0 then
+                   "\n_\(.subject): \($total) lifted line(s), \($hidden) not shown — run \(rerun) with a higher CURATION_SAFETY_DETAIL_MAX to list them all._"
+               else empty end),
+              (if $lifted and $total == 0 then
+                   "\n_\(.subject): lines were lifted but their detail is unavailable — re-run \(rerun) to list them before merging._"
+               elif $lifted and (.safety.detailComplete == false) then
+                   "\n_\(.subject): some lifted lines could not be listed — re-run \(rerun) to list them before merging._"
+               else empty end)'
     fi
     printf '\n_Draft — a maintainer must review (re-confirm the safety screen) before merge._\n'
 }
@@ -375,8 +393,9 @@ emit_repin_pr() {
             # Keep what the PR body must disclose: a pass may hold only through
             # reviewed exemptions, and the merging maintainer has to see them.
             safe=$( { printf '%s\n' "$safe"
-                      printf '%s' "$screen" | jq -c --argjson f "$f" \
-                          '$f + {safety: {verdict, reasons, exempted: (.exempted // []), exemptedTotal: (.exemptedTotal // 0)}}'
+                      printf '%s' "$screen" | jq -c --argjson f "$f" --arg sp "$subp" \
+                          '$f + {safety: {verdict, reasons, exempted: (.exempted // []), exemptedTotal: (.exemptedTotal // 0),
+                                              detailComplete: (.detailComplete // false), screenedSubpaths: $sp}}'
                     } | jq -cs '.[0] + [.[1]]')
         else
             # Keep the verdict, not the finding detail: nothing downstream renders
