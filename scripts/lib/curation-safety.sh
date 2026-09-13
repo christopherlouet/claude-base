@@ -15,12 +15,15 @@
 # REAL executable surface, where a benign-looking doc could otherwise hide
 # hostile code: script files (*.sh/.bash/.zsh/.py/.js/.mjs/.cjs/.rb/.pl/.php),
 # anything with the git executable bit (mode 100755, e.g. an extensionless
-# `bin/install`), Claude settings hook command blocks (settings*.json) and MCP
-# server configs (.mcp.json / mcp.json). The same high-signal danger patterns
-# apply to every file. (Limitations, all fail toward human review: a command
-# split across a JSON args[] array, a download executed in a separate statement,
-# and a hook command referencing a script outside the scanned surface are not
-# caught — see _curation_scan_text. A flag only ever routes to review.)
+# `bin/install`), Claude settings hook command blocks (settings*.json), MCP
+# server configs (.mcp.json / mcp.json) and the plugin format's own declarations
+# (hooks/hooks.json, .claude-plugin/plugin.json, marketplace.json). The same
+# high-signal danger patterns apply to every file; a JSON file is also scanned
+# one line per declared command, "command" joined with its "args". (Limitations,
+# all fail toward human review: a download executed in a separate statement, a
+# hook command referencing a script outside the scanned surface, and a plugin
+# manifest pointing its hooks at a custom-named file are not caught — see
+# _curation_scan_text. A flag only ever routes to review.)
 #
 # Fail-safe (EF-012): anything that cannot be confirmed safe is FLAGGED, never
 # silently passed. Reasons: content-unfetchable (no doc), exec-surface-unfetchable
@@ -123,7 +126,7 @@ _curation_scan_text() {
     local text; text=$(cat)
     grep -Eiq "(curl|wget).*\|[[:space:]]*(sudo[[:space:]]+)?($_INTERP)\b" <<<"$text" \
         && printf 'remote-exec\n'
-    grep -Eiq "($_INTERP)[[:space:]]+(-[a-z]+[[:space:]]+)*(-c[[:space:]]+)?[\"']?[\$<]\(?(curl|wget)" <<<"$text" \
+    grep -Eiq "($_INTERP)[[:space:]]+(-[a-z]+[[:space:]]+)*(-c[[:space:]]+)?[\"']?[[:space:]]*[\$<]\(?(curl|wget)" <<<"$text" \
         && printf 'remote-exec\n'
     grep -Eiq 'eval[^=]*\$\([^)]*(curl|wget)' <<<"$text" \
         && printf 'remote-exec\n'
@@ -138,10 +141,25 @@ _curation_scan_text() {
     return 0
 }
 
+# _curation_json_commands — read a JSON config on stdin, echo each command it
+# declares as the ONE line it becomes when run: "command" joined with its "args".
+# Hook and MCP entries split the sink — interpreter in "command", payload in
+# "args" — and pretty-printing puts them on different lines, where the line-based
+# scan never sees them together. Line breaks inside a piece are flattened too:
+# jq -r decodes an escaped "\n", which would cut the joined line apart again.
+# Emits nothing for JSON jq rejects: the caller still scans the raw text, so a
+# malformed file is never treated as clean.
+_curation_json_commands() {
+    jq -r '.. | objects | select(has("command"))
+        | [.command] + (if (.args | type) == "array" then .args else [] end)
+        | map(tostring | gsub("[\r\n]+"; " ")) | join(" ")' 2>/dev/null || true
+}
+
 # _curation_list_exec_surface <repo> <ref> — echo the candidate's executable-
-# surface paths (one per line) from the recursive git tree at <ref>: shell
-# scripts (*.sh), Claude settings hook blocks (settings*.json) and MCP server
-# configs (.mcp.json / mcp.json) — the files that can actually run code in a
+# surface paths (one per line) from the recursive git tree at <ref>: scripts,
+# exec-bit files, Claude settings hook blocks (settings*.json), MCP server
+# configs (.mcp.json / mcp.json) and plugin declarations (hooks.json,
+# plugin.json, marketplace.json) — the files that can actually run code in a
 # user's session, which the SKILL.md/README.md doc cannot reveal. Capped at
 # CURATION_SAFETY_MAX_FILES (default 250) to bound API calls on large repos.
 #
@@ -169,7 +187,8 @@ _curation_list_exec_surface() {
         | select(
             (.path | test("\\.(sh|bash|zsh|py|js|mjs|cjs|rb|pl|php)$"))
             or (.mode == "100755")
-            or (.path | split("/")[-1] | (test("^settings.*\\.json$") or test("^\\.?mcp\\.json$")))
+            or (.path | split("/")[-1] | (test("^settings.*\\.json$") or test("^\\.?mcp\\.json$")
+                or test("^(hooks|plugin|marketplace)\\.json$")))
           )
         | .path')
     # Subpath scoping (#384 fix): when the skill lives in subpath(s), keep ONLY
@@ -255,7 +274,7 @@ curation_safety_screen() {
         [ "$rrc" -eq 2 ] && reasons+=("subpath-unresolved")
     fi
 
-    # 2. Scan the REAL executable surface (*.sh, settings*.json hooks, .mcp.json).
+    # 2. Scan the REAL executable surface (scripts, settings/plugin hooks, MCP).
     # A benign doc must not let a hostile hook/script/MCP command through.
     local surface rc
     surface=$(_curation_list_exec_surface "$repo" "$ref" "$subpaths"); rc=$?
@@ -269,6 +288,9 @@ curation_safety_screen() {
         while IFS= read -r path; do
             [ -n "$path" ] || continue
             if ftext=$(_curation_fetch_one "$repo" "$ref" "$path"); then
+                case "$path" in
+                    *.json) ftext+=$'\n'$(printf '%s' "$ftext" | _curation_json_commands) ;;
+                esac
                 while IFS= read -r r; do [ -n "$r" ] && reasons+=("$r"); done \
                     < <(printf '%s' "$ftext" | _curation_scan_text)
             else
