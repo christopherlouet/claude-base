@@ -167,6 +167,23 @@ _repin_pr_body() {
     printf 'The safety screen re-opens on every drift; any drift whose new content failed the screen was **demoted to propose-only** and is NOT in this PR.\n\n'
     printf '| Subject | Old pin | New ref |\n|---|---|---|\n'
     printf '%s' "$1" | jq -r '.[] | "| \(.subject) | \(.pinnedRef) | \(.currentRef) |"'
+    # A pass that holds only because reviewed exemptions lifted findings must not
+    # read like clean content: list the lifted lines for the merging maintainer,
+    # and say how many the screen's detail cap left out.
+    if printf '%s' "$1" | jq -e 'any(.[]; (.safety.exempted // []) | length > 0)' >/dev/null 2>&1; then
+        printf '\n**Findings lifted by a reviewed exemption** (%s) — re-read each line at the new ref:\n\n' \
+            '.claude/curation/safety-exemptions.json'
+        printf '| Subject | Path | Category | Line |\n|---|---|---|---|\n'
+        # The line goes into a table cell: trim its indent, cap its length (a
+        # minified bundle is one huge line), THEN escape the cell separator — a
+        # cut after escaping can keep a lone backslash that eats the row's `|`.
+        printf '%s' "$1" | jq -r '.[] | .subject as $s | (.safety.exempted // [])[]
+            | (.line | sub("^\\s+"; "") | .[0:160] | gsub("\\|"; "\\|")) as $l
+            | "| \($s) | \(.path) | \(.category) | \($l) |"'
+        printf '%s' "$1" | jq -r '.[] | ((.safety.exemptedTotal // 0) - ((.safety.exempted // []) | length)) as $hidden
+            | select($hidden > 0)
+            | "\n_\(.subject): \(.safety.exemptedTotal) lifted line(s), \($hidden) not shown — run scripts/lib/curation-safety.sh \(.subject) \(.currentRef) with a higher CURATION_SAFETY_DETAIL_MAX to list them all._"'
+    fi
     printf '\n_Draft — a maintainer must review (re-confirm the safety screen) before merge._\n'
 }
 
@@ -342,11 +359,27 @@ emit_repin_pr() {
         # monorepo must not be judged by the whole repo's exec surface (#384).
         local subp; subp=$(_subpaths_for_repo "$subj" "$registry" "$presets_dir")
         screen=$(curation_safety_screen "$subj" "$cur" "$subp")
+        # A screen that printed no readable verdict is a flag, never a pass — and
+        # must not poison the accumulators below with invalid JSON.
+        printf '%s' "$screen" | jq -e '.verdict | strings' >/dev/null 2>&1 \
+            || screen='{"verdict":"flag","reasons":["screen-output-invalid"]}'
         sv=$(printf '%s' "$screen" | jq -r '.verdict')
+        # Accumulate through stdin, not argv: these arrays grow with every drift
+        # and a command-line argument is capped at 128 KiB.
         if [ "$sv" = "pass" ]; then
-            safe=$(jq -cn --argjson a "$safe" --argjson f "$f" '$a + [$f]')
+            # Keep what the PR body must disclose: a pass may hold only through
+            # reviewed exemptions, and the merging maintainer has to see them.
+            safe=$( { printf '%s\n' "$safe"
+                      printf '%s' "$screen" | jq -c --argjson f "$f" \
+                          '$f + {safety: {verdict, reasons, exempted: (.exempted // []), exemptedTotal: (.exemptedTotal // 0)}}'
+                    } | jq -cs '.[0] + [.[1]]')
         else
-            demoted=$(jq -cn --argjson a "$demoted" --argjson f "$f" --argjson s "$screen" '$a + [$f + {safety:$s}]')
+            # Keep the verdict, not the finding detail: nothing downstream renders
+            # it, and it is what would outgrow the accumulator.
+            demoted=$( { printf '%s\n' "$demoted"
+                         printf '%s' "$screen" | jq -c --argjson f "$f" \
+                             '$f + {safety: {repo, ref, verdict, reasons, findingsTotal: (.findingsTotal // 0)}}'
+                       } | jq -cs '.[0] + [.[1]]')
         fi
     done < <(printf '%s' "$repins" | jq -c '.[]')
 
@@ -426,7 +459,7 @@ emit_repin_pr() {
     rm -f "$body_file"
     _restore_branch
 
-    jq -cn --argjson s "$safe" --argjson d "$demoted" --arg b "$branch" \
-        '{drafted:($s | map(.subject)), demoted:$d, branch:$b}'
+    printf '%s' "$safe" | jq -c --argjson d "$demoted" --arg b "$branch" \
+        '{drafted: map(.subject), demoted:$d, branch:$b}'
     return 0
 }
