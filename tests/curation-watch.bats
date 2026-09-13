@@ -669,6 +669,66 @@ TREE_B="2222222222222222222222222222222222222222"
 }
 
 # =============================================================================
+# subpath-scoped drift on TAG pins. The lift above was sha-only, so a repo that
+# publishes releases never got it: every release re-pinned every record on the
+# repo, whatever the release touched. Measured on the six-record repo watched
+# here — 164 commits since June, 5 of them touching a consumed subpath — that is
+# one PR per release for roughly one chance in thirty of a real change, and an
+# open re-pin PR blocks every other re-pin while it waits.
+#
+# Same semantics as the sha lift, deliberately: one compare, fingerprint where
+# it cannot conclude, and anything unresolved stays drift.
+# =============================================================================
+
+OLD_TAG="v1.0.0"
+NEW_TAG="v2.0.0"
+
+# subpath_tag_target <vendorId> — one-record registry pinned OLD_TAG, healthy
+# repo meta, and a newer release so the repo resolves as moved to NEW_TAG.
+subpath_tag_target() {
+    registry_one "$1" "$OLD_TAG" authority
+    gh_fixture "repos/acme/mono" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/mono/releases/latest" "{\"tag_name\":\"$NEW_TAG\"}"
+}
+
+@test "watch: a tag-pin subpath skill is NOT drift when the release never touches its subpath" {
+    subpath_tag_target "acme/mono/plugins/x"
+    gh_fixture "repos/acme/mono/compare/$OLD_TAG...$NEW_TAG" \
+        '{"files":[{"filename":"docs/other.md"},{"filename":"plugins/other/SKILL.md"}]}'
+    run_watch
+    [[ "$status" -eq 0 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findingCount')" -eq 0 ]]
+}
+
+@test "watch: a tag-pin subpath skill IS drift when the release touches its subpath" {
+    subpath_tag_target "acme/mono/plugins/x"
+    gh_fixture "repos/acme/mono/compare/$OLD_TAG...$NEW_TAG" \
+        '{"files":[{"filename":"docs/other.md"},{"filename":"plugins/x/SKILL.md"}]}'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "$NEW_TAG" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].proposedAction')" == "re-pin" ]]
+}
+
+@test "watch: a tag-pin ROOT record still drifts on a release that touches nothing consumed" {
+    # No subpath means the whole repo IS the skill, so there is no narrower
+    # question to ask and the release must stay a drift.
+    subpath_tag_target "acme/mono"
+    gh_fixture "repos/acme/mono/compare/$OLD_TAG...$NEW_TAG" \
+        '{"files":[{"filename":"docs/other.md"}]}'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+}
+
+@test "watch: an unresolvable tag range stays fail-safe drift" {
+    # Neither route concludes: no compare fixture, and no tree/contents fixture
+    # for the fingerprint either. Unknown must never suppress.
+    subpath_tag_target "acme/mono/plugins/x"
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+}
+
+# =============================================================================
 # tag-FAMILY pins (monorepo publishing several packages: `pkg@1.0.0`,
 # `@acme/react@0.2.1`, ...) — drift must compare within the pin's own family,
 # never against the repo-global latest release (phantom drift every run).
