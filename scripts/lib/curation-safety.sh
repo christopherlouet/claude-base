@@ -48,22 +48,25 @@
 #
 # Reviewed exemptions: a maintainer who has read a flagged line and judged it
 # harmless (an installer that ECHOES a curl|bash instruction, a comment) records
-# it in .claude/curation/safety-exemptions.json. An entry lifts exactly one
-# finding: same repo, same path, same category, same line bytes (sha256). Keyed
-# by line, not by file blob, because a vendor's installer changes at every
-# release while its flagged lines rarely do. Fail-safe reasons are not findings
-# and can never be lifted. Known limit: an unchanged line whose CONTEXT changes
-# (an echo moved into a heredoc fed to a shell) keeps its exemption.
+# it in .claude/curation/safety-exemptions.json. An entry lifts those exact line
+# bytes, in that file of that repo, under that category — the recorded line must
+# be one line and hash to its recorded sha256, or the entry is ignored. Keyed by
+# line, not by file blob, because a vendor's installer changes at every release
+# while its flagged lines rarely do. Fail-safe reasons are not findings and can
+# never be lifted. Known limit: an identical COPY of a reviewed line is lifted
+# with it, even if its context differs (an echo moved into a heredoc fed to a
+# shell) — the detail counts and locates every copy so the reader sees it.
 #
-# The verdict never depends on the finding detail: categories are decided by the
-# pattern scan alone, and a category is lifted only when its detail exists and is
-# entirely exempt. Whatever breaks the detail (a huge line, an odd byte, no temp
+# The verdict never depends on the finding detail: a category is lifted only
+# when the text, with its exempted lines removed, no longer matches any of its
+# patterns. Whatever breaks the detail (a huge line, an odd byte, no temp
 # directory) loses the detail, never the flag.
 #
 # API:  curation_safety_screen <owner/repo> <ref> [<subpaths>]
 #   stdout: one JSON object {repo, ref, verdict:"pass"|"flag", reasons[],
 #           findings[], findingsTotal, exempted[], exemptedTotal}; a finding is
-#           {path, category, lineSha256, line[, lineTruncated]}. reasons is "clean" on a pass
+#           {path, category, lineNumber, lineSha256, line[, lineTruncated]},
+#           in file order, one per occurrence. reasons is "clean" on a pass
 #           with nothing lifted, "exempted" on a pass that holds only because
 #           exemptions lifted every finding.
 #   exit:   0 always (a verdict is always produced; failures become a flag).
@@ -176,96 +179,147 @@ _curation_sha256() {
     fi
 }
 
-# _curation_scan_findings <path> — read <path>'s text on stdin, echo one compact
-# JSON finding per (pattern, matching line): {path, category, lineSha256, line}.
-# The sha256 covers the line verbatim (leading whitespace included) — it is the
-# key a reviewed exemption matches. Lines never travel as a command-line
+# _curation_category_of <pattern-index> — the pattern's category. A pattern
+# added without one is still a danger, never an empty string a dedup would drop.
+_curation_category_of() { printf '%s' "${_SAFETY_CATEGORIES[$1]:-uncategorized-pattern}"; }
+
+# _curation_scan_findings <path> <pattern-index...> — read <path>'s text on
+# stdin, echo one compact JSON finding per (pattern, matching line):
+# {path, category, lineNumber, lineSha256, line}. The sha256 covers the line
+# verbatim (leading whitespace included). Lines never travel as a command-line
 # argument (a minified line can exceed the 128 KiB per-argument limit): they go
 # to jq on stdin. `grep -a` because a single invalid byte otherwise makes GNU
-# grep call the text binary and print nothing. May repeat a (category, line)
-# pair when two patterns of one category hit the same line; the caller dedups.
-# This is DETAIL only: the verdict never depends on it (see _curation_screen_scan).
+# grep call the text binary and print nothing. May repeat a line when two
+# patterns of one category hit it; the caller dedups by (category, lineNumber).
+# DETAIL only: nothing the verdict decides reads it (see _curation_screen_scan).
 _curation_scan_findings() {
-    local path="$1" text i line
+    local path="$1" text i line n
+    shift
     text=$(cat)
-    for ((i = 0; i < ${#_SAFETY_PATTERNS[@]}; i++)); do
-        { LC_ALL=C grep -aEi -e "${_SAFETY_PATTERNS[$i]}" <<<"$text" || true; } \
+    for i in "$@"; do
+        { LC_ALL=C grep -anEi -e "${_SAFETY_PATTERNS[$i]}" <<<"$text" || true; } \
             | while IFS= read -r line; do
-                printf '%s\t%s\n' "$(_curation_sha256 "$line")" "$line"
+                n=${line%%:*}
+                line=${line#*:}
+                printf '%s\t%s\t%s\n' "$n" "$(_curation_sha256 "$line")" "$line"
             done \
-            | jq -Rc --arg p "$path" --arg c "${_SAFETY_CATEGORIES[$i]}" \
-                'index("\t") as $t | {path:$p, category:$c, lineSha256:.[0:$t], line:.[$t + 1:]}'
+            | jq -Rc --arg p "$path" --arg c "$(_curation_category_of "$i")" '
+                index("\t") as $a | .[$a + 1:] as $r | ($r | index("\t")) as $b
+                | {path:$p, category:$c, lineNumber:(.[0:$a] | tonumber),
+                   lineSha256:$r[0:$b], line:$r[$b + 1:]}'
     done
 }
 
 # _curation_load_exemptions <owner/repo> — echo the JSON array of reviewed
-# exemptions recorded for <owner/repo> in CURATION_SAFETY_EXEMPTIONS. A missing
-# file is simply no exemption. A file jq cannot read is ALSO no exemption — the
-# flags stand — but it is reported, since it means a review is being ignored.
+# exemptions recorded for <owner/repo> in CURATION_SAFETY_EXEMPTIONS that can be
+# trusted to mean what they say: a single, non-empty line that hashes to its own
+# recorded sha256 (the reviewer reads `line`, the screen removes `line`, the
+# detail matches `lineSha256` — all three must be the same bytes). A missing file
+# is simply no exemption; a malformed file, or an entry failing those checks, is
+# no exemption either — the flags stand — and is reported, since a review is
+# being ignored.
 _curation_load_exemptions() {
-    local repo="$1" f="${CURATION_SAFETY_EXEMPTIONS:-}" out
+    local repo="$1" f="${CURATION_SAFETY_EXEMPTIONS:-}" all entry line sha got n_all n_ok out
     if [ -z "$f" ] || [ ! -f "$f" ]; then
         printf '[]'
         return 0
     fi
-    if ! out=$(jq -c --arg r "$repo" '[.exemptions[]? | select(.repo == $r)]' "$f" 2>/dev/null); then
+    if ! all=$(jq -c --arg r "$repo" '[.exemptions[]? | select(.repo == $r)]' "$f" 2>/dev/null); then
         curation_warn "safety exemptions file is malformed ($f); no finding is lifted"
         printf '[]'
         return 0
     fi
+    out=$(printf '%s' "$all" | jq -c '.[]
+            | select((.path | type) == "string" and (.category | type) == "string"
+                     and (.lineSha256 | type) == "string"
+                     and (.line | type) == "string" and (.line | length) > 0
+                     and (.line | test("\n") | not))' 2>/dev/null \
+        | while IFS= read -r entry; do
+            line=$(printf '%s' "$entry" | jq -r '.line')
+            sha=$(printf '%s' "$entry" | jq -r '.lineSha256')
+            got=$(_curation_sha256 "$line")
+            [ "${#got}" -eq 64 ] && [ "$got" = "$sha" ] && printf '%s\n' "$entry"
+        done | jq -cs '.' 2>/dev/null) || out='[]'
+    [ -n "$out" ] || out='[]'
+    n_all=$(printf '%s' "$all" | jq 'length' 2>/dev/null || echo 0)
+    n_ok=$(printf '%s' "$out" | jq 'length' 2>/dev/null || echo 0)
+    [ "$n_all" = "$n_ok" ] \
+        || curation_warn "$((n_all - n_ok)) safety exemption(s) for $repo ignored: not one line hashing to its lineSha256"
     printf '%s' "$out"
 }
 
+# _curation_category_lifted <path> <category> — read <path>'s text on stdin;
+# succeed only when that text, with every line exempted for (path, category)
+# removed, no longer matches ANY pattern of the category. This is the same byte-
+# exact scan that flagged it, run on what is left — it does not read the finding
+# detail at all, so no failure to extract or record detail can lift a flag. Any
+# failure here (no scratch, unreadable exemptions, grep error) returns "not lifted".
+# An identical copy of an exempted line is removed with it: exemption means "these
+# bytes were reviewed", and the detail counts every copy so the reader sees them.
+_curation_category_lifted() {
+    local path="$1" category="$2" text lines residual rc i
+    text=$(cat)
+    [ -n "$scratch" ] && [ -f "$scratch/ex.json" ] || return 1
+    lines="$scratch/exempt-lines"
+    jq -r --arg p "$path" --arg c "$category" \
+        '.[] | select(.path == $p and .category == $c) | .line' "$scratch/ex.json" > "$lines" 2>/dev/null \
+        || return 1
+    [ -s "$lines" ] || return 1
+    residual=$(LC_ALL=C grep -avxF -f "$lines" <<<"$text")
+    rc=$?
+    [ "$rc" -le 1 ] || return 1
+    for ((i = 0; i < ${#_SAFETY_PATTERNS[@]}; i++)); do
+        [ "$(_curation_category_of "$i")" = "$category" ] || continue
+        LC_ALL=C grep -aEiq -e "${_SAFETY_PATTERNS[$i]}" <<<"$residual" && return 1
+    done
+    return 0
+}
+
 # _curation_screen_scan <path> — scan <path>'s text (stdin) for the running
-# screen. Reads the caller's `scratch` directory (ex.json = this repo's
-# exemptions; findings.jsonl / exempted.jsonl accumulate the detail) and appends
-# to the caller's `reasons`.
+# screen. Appends to the caller's `reasons`, sets the caller's `lifted_any` when
+# a reviewed exemption lifted a category, and records the finding detail in the
+# caller's `scratch` directory (findings.jsonl / exempted.jsonl).
 #
-# Two layers, and only the first decides: (1) which categories the text matches,
-# by `grep -aq` exactly as before exemptions existed; (2) the per-line findings,
-# partitioned against the exemptions. A matched category is dropped from
-# `reasons` ONLY when layer 2 produced at least one finding for it and every one
-# of them is exempt. If layer 2 fails in any way — a jq error, a missing scratch
-# directory, a line it could not key — the category simply stays flagged.
-# A finding is lifted only by an exemption matching path, category and the
-# line's sha256 (repo is filtered on load); an empty key never matches.
+# Deciding and reporting are separate. DECIDE: which categories the text matches
+# (`grep -aq`, byte semantics), then for each, whether it is lifted by
+# _curation_category_lifted. REPORT: the per-line findings, marked exempt when
+# their sha256 is a reviewed one — display only, and best effort.
 _curation_screen_scan() {
-    local path="$1" text i c part hit=()
+    local path="$1" text i c seen=" " cats=() idx=() part
     text=$(cat)
     # LC_ALL=C: byte semantics. In a UTF-8 locale `.` cannot cross an invalid
     # byte, so one stray byte inside `curl … | bash` hid the line from every
     # pattern (measured on the pre-exemptions screen too). The patterns are
     # ASCII, so -i loses nothing.
     for ((i = 0; i < ${#_SAFETY_PATTERNS[@]}; i++)); do
-        LC_ALL=C grep -aEiq -e "${_SAFETY_PATTERNS[$i]}" <<<"$text" && hit+=("${_SAFETY_CATEGORIES[$i]}")
+        LC_ALL=C grep -aEiq -e "${_SAFETY_PATTERNS[$i]}" <<<"$text" || continue
+        idx+=("$i")
+        c=$(_curation_category_of "$i")
+        case "$seen" in *" $c "*) ;; *) seen+="$c "; cats+=("$c") ;; esac
     done
-    [ "${#hit[@]}" -gt 0 ] || return 0
+    [ "${#idx[@]}" -gt 0 ] || return 0
 
-    part=""
-    if [ -n "$scratch" ] && [ -f "$scratch/ex.json" ]; then
-        part=$(_curation_scan_findings "$path" <<<"$text" | jq -cs --slurpfile ex "$scratch/ex.json" '
-            ($ex[0] // []) as $ex
-            | unique_by([.category, .lineSha256])
-            | map(. as $x | . + {exempt: ($x.lineSha256 != "" and any($ex[];
-                  .path == $x.path and .category == $x.category and .lineSha256 == $x.lineSha256))})
-            | . as $all
-            | {kept: map(select(.exempt | not) | del(.exempt)),
-               exempted: map(select(.exempt) | del(.exempt)),
-               lifted: [$all | map(.category) | unique | .[] as $c
-                        | select([$all[] | select(.category == $c) | .exempt] | all) | $c]}' 2>/dev/null) \
-            || part=""
-    fi
-
-    for c in "${hit[@]}"; do
-        if [ -n "$part" ] && printf '%s' "$part" | jq -e --arg c "$c" 'any(.lifted[]; . == $c)' >/dev/null 2>&1; then
-            continue
+    for c in "${cats[@]}"; do
+        if _curation_category_lifted "$path" "$c" <<<"$text"; then
+            lifted_any=1
+        else
+            reasons+=("$c")
         fi
-        reasons+=("$c")
     done
-    if [ -n "$part" ]; then
-        printf '%s' "$part" | jq -c '.kept[]' >> "$scratch/findings.jsonl" 2>/dev/null || true
-        printf '%s' "$part" | jq -c '.exempted[]' >> "$scratch/exempted.jsonl" 2>/dev/null || true
-    fi
+
+    [ -n "$scratch" ] && [ -f "$scratch/ex.json" ] || return 0
+    part=$(_curation_scan_findings "$path" "${idx[@]}" <<<"$text" | jq -cs --slurpfile ex "$scratch/ex.json" '
+        ($ex[0] // []) as $ex
+        | reduce .[] as $x ({seen: {}, out: []};
+              "\($x.category):\($x.lineNumber)" as $k
+              | if .seen[$k] then . else .seen[$k] = true | .out += [$x] end)
+        | .out | sort_by(.lineNumber)
+        | map(. as $x | . + {exempt: ($x.lineSha256 != "" and any($ex[];
+              .path == $x.path and .category == $x.category and .lineSha256 == $x.lineSha256))})
+        | {kept: map(select(.exempt | not) | del(.exempt)),
+           exempted: map(select(.exempt) | del(.exempt))}' 2>/dev/null) || return 0
+    printf '%s' "$part" | jq -c '.kept[]' >> "$scratch/findings.jsonl" 2>/dev/null || true
+    printf '%s' "$part" | jq -c '.exempted[]' >> "$scratch/exempted.jsonl" 2>/dev/null || true
     return 0
 }
 
@@ -371,7 +425,7 @@ _curation_subpaths_resolve() {
 # surface scan are scoped to those subpaths — never the whole monorepo.
 curation_safety_screen() {
     local repo="$1" ref="$2" subpaths="${3:-}"
-    local reasons=() text r doc
+    local reasons=() text r doc lifted_any=0
     # Per-run scratch for the finding detail (files, never argv: a large repo's
     # detail outgrows a command-line argument). Without it the screen still
     # decides — only the detail and the exemptions are lost, so flags stand.
@@ -462,7 +516,7 @@ curation_safety_screen() {
     done
     if [ "${#out[@]}" -gt 0 ]; then
         verdict="flag"
-    elif [ -n "$scratch" ] && [ -s "$scratch/exempted.jsonl" ]; then
+    elif [ "$lifted_any" -eq 1 ]; then
         # Passing only because reviewed exemptions lifted every finding: say so,
         # a reader must never mistake this for content that matched nothing.
         out+=("exempted")

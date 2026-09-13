@@ -169,20 +169,25 @@ _repin_pr_body() {
     printf '%s' "$1" | jq -r '.[] | "| \(.subject) | \(.pinnedRef) | \(.currentRef) |"'
     # A pass that holds only because reviewed exemptions lifted findings must not
     # read like clean content: list the lifted lines for the merging maintainer,
-    # and say how many the screen's detail cap left out.
-    if printf '%s' "$1" | jq -e 'any(.[]; (.safety.exempted // []) | length > 0)' >/dev/null 2>&1; then
+    # and say how many the screen's detail cap left out. Keyed on the screen's
+    # `exempted` reason — the lift itself — never on how much detail was shown.
+    if printf '%s' "$1" | jq -e 'any(.[]; ((.safety.reasons // []) | index("exempted")) != null
+                                        or (.safety.exemptedTotal // 0) > 0)' >/dev/null 2>&1; then
         printf '\n**Findings lifted by a reviewed exemption** (%s) — re-read each line at the new ref:\n\n' \
             '.claude/curation/safety-exemptions.json'
-        printf '| Subject | Path | Category | Line |\n|---|---|---|---|\n'
+        printf '| Subject | Path:line | Category | Line |\n|---|---|---|---|\n'
         # The line goes into a table cell: trim its indent, cap its length (a
         # minified bundle is one huge line), THEN escape the cell separator — a
         # cut after escaping can keep a lone backslash that eats the row's `|`.
         printf '%s' "$1" | jq -r '.[] | .subject as $s | (.safety.exempted // [])[]
             | (.line | sub("^\\s+"; "") | .[0:160] | gsub("\\|"; "\\|")) as $l
-            | "| \($s) | \(.path) | \(.category) | \($l) |"'
+            | "| \($s) | \(.path)\(if .lineNumber then ":\(.lineNumber)" else "" end) | \(.category) | \($l) |"'
         printf '%s' "$1" | jq -r '.[] | ((.safety.exemptedTotal // 0) - ((.safety.exempted // []) | length)) as $hidden
             | select($hidden > 0)
             | "\n_\(.subject): \(.safety.exemptedTotal) lifted line(s), \($hidden) not shown — run scripts/lib/curation-safety.sh \(.subject) \(.currentRef) with a higher CURATION_SAFETY_DETAIL_MAX to list them all._"'
+        printf '%s' "$1" | jq -r '.[]
+            | select(((.safety.reasons // []) | index("exempted")) != null and (.safety.exemptedTotal // 0) == 0)
+            | "\n_\(.subject): lines were lifted but their detail is unavailable — re-run scripts/lib/curation-safety.sh \(.subject) \(.currentRef) to list them before merging._"'
     fi
     printf '\n_Draft — a maintainer must review (re-confirm the safety screen) before merge._\n'
 }
