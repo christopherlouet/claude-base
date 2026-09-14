@@ -342,11 +342,23 @@ emit_repin_pr() {
         # monorepo must not be judged by the whole repo's exec surface (#384).
         local subp; subp=$(_subpaths_for_repo "$subj" "$registry" "$presets_dir")
         screen=$(curation_safety_screen "$subj" "$cur" "$subp")
+        # The screen always prints a verdict, but it can still die, or jq can be
+        # missing: an unreadable output is a flag, and must not turn the demoted
+        # record into null.
+        printf '%s' "$screen" | jq -e '.verdict | strings' >/dev/null 2>&1 \
+            || screen='{"verdict":"flag","reasons":["screen-output-invalid"]}'
         sv=$(printf '%s' "$screen" | jq -r '.verdict')
         if [ "$sv" = "pass" ]; then
             safe=$(jq -cn --argjson a "$safe" --argjson f "$f" '$a + [$f]')
         else
-            demoted=$(jq -cn --argjson a "$demoted" --argjson f "$f" --argjson s "$screen" '$a + [$f + {safety:$s}]')
+            # Keep the verdict, not the finding detail — nothing downstream renders
+            # it — and accumulate through stdin, not argv: the screen now returns
+            # findings, and this array grows with every demoted drift while a
+            # command-line argument is capped at 128 KiB.
+            demoted=$( { printf '%s\n' "$demoted"
+                         printf '%s' "$screen" | jq -c --argjson f "$f" \
+                             '$f + {safety: {repo, ref, verdict, reasons, findingsTotal: (.findingsTotal // 0)}}'
+                       } | jq -cs '.[0] + [.[1]]')
         fi
     done < <(printf '%s' "$repins" | jq -c '.[]')
 
