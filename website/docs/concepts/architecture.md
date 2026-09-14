@@ -498,7 +498,6 @@ honest (the foundation's *curator* role). It never installs — it observes and 
 DATA      .claude/curation/registry.json        canonicalVendor records (pinned ref, two trust tracks)
           .claude/curation/trust-thresholds.json  popularity/recency bars (authority vs community)
           .claude/curation/discovery-sources.json  per-domain GitHub search queries
-          .claude/curation/safety-exemptions.json  reviewed lines the safety screen may lift (path+category+line sha256)
           .claude/presets/*.json                 recommendedVendorSkills[] (pinned, provenance)
 
 SCORING   scripts/lib/trust-score.sh             public signals → verdict   [LLM-FREE]

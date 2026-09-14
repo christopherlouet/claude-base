@@ -47,37 +47,21 @@
 # exec-surface-over-cap (more exec files than the cap), scan-error (a pattern
 # grep failed, so the text could not be confirmed clean).
 #
-# Reviewed exemptions: a maintainer who has read a flagged line and judged it
-# harmless (an installer that ECHOES a curl|bash instruction, a comment) records
-# it in .claude/curation/safety-exemptions.json. An entry lifts those exact line
-# bytes, in that file of that repo, under that category — the recorded line must
-# be one line and hash to its recorded sha256, or the entry is ignored. Keyed by
-# line, not by file blob, because a vendor's installer changes at every release
-# while its flagged lines rarely do. Fail-safe reasons are not findings and can
-# never be lifted. Known limit: an identical COPY of a reviewed line is lifted
-# with it, even if its context differs (an echo moved into a heredoc fed to a
-# shell) — the detail counts and locates every copy so the reader sees it.
-#
-# The verdict never depends on the finding detail: a category is lifted only
-# when the text, with its exempted lines removed, no longer matches any of its
-# patterns. Whatever breaks the detail (a huge line, an odd byte, no temp
-# directory) loses the detail, never the flag.
+# The verdict never depends on the finding detail: categories are decided by
+# the pattern scan alone; the per-line detail is extracted afterwards for the
+# reader. Whatever breaks the detail (a huge line, an odd byte, no temp
+# directory) loses the detail and sets detailComplete false — never the flag.
 #
 # API:  curation_safety_screen <owner/repo> <ref> [<subpaths>]
 #   stdout: one JSON object {repo, ref, verdict:"pass"|"flag", reasons[],
-#           findings[], findingsTotal, exempted[], exemptedTotal, detailComplete};
-#           a finding is
-#           {path, category, lineNumber, lineSha256, line[, lineTruncated]},
-#           in file order, one per occurrence; a command rebuilt from a JSON
-#           config has lineNumber null and joinedCommand true. detailComplete is
-#           false when any matched file's detail could not be fully recorded.
-#           reasons is "clean" on a pass
-#           with nothing lifted, "exempted" on a pass that holds only because
-#           exemptions lifted every finding.
+#           findings[], findingsTotal, detailComplete}; a finding is
+#           {path, category, lineNumber, line[, lineTruncated]}, in file order,
+#           one per occurrence; a command rebuilt from a JSON config has
+#           lineNumber null and joinedCommand true. detailComplete is false when
+#           any matched file's detail could not be fully recorded. reasons is
+#           "clean" on a pass.
 #   exit:   0 always (a verdict is always produced; failures become a flag).
 #   env:    CURATION_SAFETY_MAX_FILES — exec-surface file cap (default 250).
-#           CURATION_SAFETY_EXEMPTIONS — reviewed-exemptions file (default
-#           .claude/curation/safety-exemptions.json; missing = none).
 #           CURATION_SAFETY_DETAIL_MAX / CURATION_SAFETY_LINE_MAX — how many
 #           findings, and how much of each line, the output shows (25 / 240).
 # =============================================================================
@@ -85,7 +69,6 @@
 _SAFETY_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=scripts/lib/curation-common.sh
 source "$_SAFETY_DIR/curation-common.sh"
-CURATION_SAFETY_EXEMPTIONS="${CURATION_SAFETY_EXEMPTIONS:-$_SAFETY_DIR/../../.claude/curation/safety-exemptions.json}"
 
 # _curation_b64decode — thin alias kept for this file's internal callers; the
 # portable decoder now lives once in curation-common.sh (curation_b64decode),
@@ -173,153 +156,82 @@ _SAFETY_PATTERNS=(
     'ignore[[:space:]]+(all|the|any|your)?[[:space:]]*(previous|prior|above)[[:space:]]+(system[[:space:]]+)?instructions?|ignore[[:space:]]+(the|your)?[[:space:]]*system[[:space:]]+prompt|disregard[[:space:]]+(the|your)?[[:space:]]*(system[[:space:]]+)?(prompt|instructions?)'
 )
 
-# _curation_sha256 <text> — hex sha256 of <text> exactly (no trailing newline).
-# Linux ships sha256sum, macOS shasum. Echoes nothing when neither exists: an
-# empty key never matches an exemption, so the finding keeps its flag.
-_curation_sha256() {
-    if command -v sha256sum >/dev/null 2>&1; then
-        printf '%s' "$1" | sha256sum | cut -d' ' -f1
-    elif command -v shasum >/dev/null 2>&1; then
-        printf '%s' "$1" | shasum -a 256 | cut -d' ' -f1
-    fi
-}
-
 # _curation_category_of <pattern-index> — the pattern's category. A pattern
 # added without one is still a danger, never an empty string a dedup would drop.
 _curation_category_of() { printf '%s' "${_SAFETY_CATEGORIES[$1]:-uncategorized-pattern}"; }
 
+# A UTF-8 locale for the second matching arm, resolved once. Pinned rather than
+# inherited: under cron, `env -i` or a minimal container the caller's locale is C,
+# and the Unicode-space arm would silently become a second C scan. Empty when the
+# system has none — the second arm then runs in the caller's locale.
+_SAFETY_UTF8_LOCALE=$(locale -a 2>/dev/null | grep -iE '^(c|en_us)\.utf-?8$' | head -n 1)
+
+# _curation_grep_utf8 <grep-args...> — grep in _SAFETY_UTF8_LOCALE (or the
+# caller's locale when none exists).
+_curation_grep_utf8() {
+    if [ -n "$_SAFETY_UTF8_LOCALE" ]; then
+        LC_ALL="$_SAFETY_UTF8_LOCALE" grep "$@"
+    else
+        grep "$@"
+    fi
+}
+
 # _curation_match <pattern> <text> — does <text> match <pattern>? 0 = match,
 # 1 = no match, 2 = no match but a grep ERRORED (callers treat that as unknown,
 # never as clean). The pattern runs twice, and one match in either is a match:
-#   LC_ALL=C          byte semantics — in a UTF-8 locale `.` cannot cross an
-#                     invalid byte, so one stray byte inside `curl … | bash`
-#                     hid the line from every pattern;
-#   the caller locale [[:space:]] also matches Unicode spaces there, which the
-#                     C locale does not — `ignore<U+2003>all previous
-#                     instructions` must still read as an injection.
+#   LC_ALL=C      byte semantics — in a UTF-8 locale `.` cannot cross an invalid
+#                 byte, so one stray byte inside `curl … | bash` hid the line
+#                 from every pattern;
+#   a UTF-8 locale [[:space:]] also matches Unicode spaces there, which the C
+#                 locale does not — `ignore<U+2003>all previous instructions`
+#                 must still read as an injection.
 # Neither locale alone covers both evasions. `-a`: never treat text as binary.
 _curation_match() {
-    local rc_c rc_l
+    local rc_c rc_u
     LC_ALL=C grep -aEiq -e "$1" <<<"$2"
     rc_c=$?
     [ "$rc_c" -eq 0 ] && return 0
-    grep -aEiq -e "$1" <<<"$2"
-    rc_l=$?
-    [ "$rc_l" -eq 0 ] && return 0
-    { [ "$rc_c" -gt 1 ] || [ "$rc_l" -gt 1 ]; } && return 2
+    _curation_grep_utf8 -aEiq -e "$1" <<<"$2"
+    rc_u=$?
+    [ "$rc_u" -eq 0 ] && return 0
+    { [ "$rc_c" -gt 1 ] || [ "$rc_u" -gt 1 ]; } && return 2
     return 1
 }
 
 # _curation_scan_findings <path> <joined:0|1> <pattern-index...> — read <path>'s
 # text on stdin, echo one compact JSON finding per (pattern, matching line):
-# {path, category, lineNumber, lineSha256, line}, or for a command reconstructed
-# from a JSON config (joined=1) {…, lineNumber:null, joinedCommand:true,
-# joinedIndex} — such a line exists nowhere in the file, so it has no line number.
-# The sha256 covers the line verbatim (leading whitespace included). Lines never
-# travel as a command-line argument (a minified line can exceed the 128 KiB
-# per-argument limit): they go to jq on stdin. Both locales are searched (see
-# _curation_match) and may return a line twice; the caller dedups.
+# {path, category, lineNumber, line}, or for a command reconstructed from a JSON
+# config (joined=1) {…, lineNumber:null, joinedCommand:true, joinedIndex} — such a
+# line exists nowhere in the file, so it has no line number. Lines never travel as
+# a command-line argument (a minified line can exceed the 128 KiB per-argument
+# limit): they go to jq on stdin. Both locales are searched (see _curation_match)
+# and may return a line twice; the caller dedups.
 # DETAIL only: nothing the verdict decides reads it (see _curation_screen_scan).
 _curation_scan_findings() {
-    local path="$1" joined="$2" text i line n
+    local path="$1" joined="$2" text i
     shift 2
     text=$(cat)
     for i in "$@"; do
         { LC_ALL=C grep -anEi -e "${_SAFETY_PATTERNS[$i]}" <<<"$text"
-          grep -anEi -e "${_SAFETY_PATTERNS[$i]}" <<<"$text"; } 2>/dev/null \
-            | while IFS= read -r line; do
-                n=${line%%:*}
-                line=${line#*:}
-                printf '%s\t%s\t%s\n' "$n" "$(_curation_sha256 "$line")" "$line"
-            done \
+          _curation_grep_utf8 -anEi -e "${_SAFETY_PATTERNS[$i]}" <<<"$text"; } 2>/dev/null \
             | jq -Rc --arg p "$path" --arg c "$(_curation_category_of "$i")" --argjson j "$joined" '
-                index("\t") as $a | .[$a + 1:] as $r | ($r | index("\t")) as $b
-                | (.[0:$a] | tonumber) as $n
-                | {path:$p, category:$c, lineSha256:$r[0:$b], line:$r[$b + 1:]}
+                index(":") as $a | (.[0:$a] | tonumber) as $n
+                | {path:$p, category:$c, line:.[$a + 1:]}
                 | if $j == 1 then . + {lineNumber:null, joinedCommand:true, joinedIndex:$n}
                   else . + {lineNumber:$n} end'
     done
 }
 
-# _curation_load_exemptions <owner/repo> — echo the JSON array of reviewed
-# exemptions recorded for <owner/repo> in CURATION_SAFETY_EXEMPTIONS that can be
-# trusted to mean what they say: a single, non-empty line that hashes to its own
-# recorded sha256 (the reviewer reads `line`, the screen removes `line`, the
-# detail matches `lineSha256` — all three must be the same bytes). A missing file
-# is simply no exemption; a malformed file, or an entry failing those checks, is
-# no exemption either — the flags stand — and is reported, since a review is
-# being ignored.
-_curation_load_exemptions() {
-    local repo="$1" f="${CURATION_SAFETY_EXEMPTIONS:-}" all entry line sha got n_all n_ok out
-    if [ -z "$f" ] || [ ! -f "$f" ]; then
-        printf '[]'
-        return 0
-    fi
-    if ! all=$(jq -c --arg r "$repo" '[.exemptions[]? | select(.repo == $r)]' "$f" 2>/dev/null); then
-        curation_warn "safety exemptions file is malformed ($f); no finding is lifted"
-        printf '[]'
-        return 0
-    fi
-    out=$(printf '%s' "$all" | jq -c '.[]
-            | select((.path | type) == "string" and (.category | type) == "string"
-                     and (.lineSha256 | type) == "string"
-                     and (.line | type) == "string" and (.line | length) > 0
-                     and (.line | test("\n") | not))' 2>/dev/null \
-        | while IFS= read -r entry; do
-            line=$(printf '%s' "$entry" | jq -r '.line')
-            sha=$(printf '%s' "$entry" | jq -r '.lineSha256')
-            got=$(_curation_sha256 "$line")
-            [ "${#got}" -eq 64 ] && [ "$got" = "$sha" ] && printf '%s\n' "$entry"
-        done | jq -cs '.' 2>/dev/null) || out='[]'
-    [ -n "$out" ] || out='[]'
-    n_all=$(printf '%s' "$all" | jq 'length' 2>/dev/null || echo 0)
-    n_ok=$(printf '%s' "$out" | jq 'length' 2>/dev/null || echo 0)
-    [ "$n_all" = "$n_ok" ] \
-        || curation_warn "$((n_all - n_ok)) safety exemption(s) for $repo ignored: not one line hashing to its lineSha256"
-    printf '%s' "$out"
-}
-
-# _curation_category_lifted <path> <category> — read <path>'s text on stdin;
-# succeed only when that text, with every line exempted for (path, category)
-# removed, no longer matches ANY pattern of the category. This is the same scan
-# that flagged it (_curation_match), run on what is left — it does not read the
-# finding detail at all, so no failure to extract or record detail can lift a
-# flag. Any failure here (no scratch, unreadable exemptions, a grep error in the
-# removal OR the re-scan) returns "not lifted".
-# An identical copy of an exempted line is removed with it: exemption means "these
-# bytes were reviewed", and the detail counts every copy so the reader sees them.
-_curation_category_lifted() {
-    local path="$1" category="$2" text lines residual rc i
-    text=$(cat)
-    [ -n "$scratch" ] && [ -f "$scratch/ex.json" ] || return 1
-    lines="$scratch/exempt-lines"
-    jq -r --arg p "$path" --arg c "$category" \
-        '.[] | select(.path == $p and .category == $c) | .line' "$scratch/ex.json" > "$lines" 2>/dev/null \
-        || return 1
-    [ -s "$lines" ] || return 1
-    residual=$(LC_ALL=C grep -avxF -f "$lines" <<<"$text")
-    rc=$?
-    [ "$rc" -le 1 ] || return 1
-    for ((i = 0; i < ${#_SAFETY_PATTERNS[@]}; i++)); do
-        [ "$(_curation_category_of "$i")" = "$category" ] || continue
-        _curation_match "${_SAFETY_PATTERNS[$i]}" "$residual"
-        [ "$?" -eq 1 ] || return 1
-    done
-    return 0
-}
-
 # _curation_screen_scan <path> [joined] — scan <path>'s text (stdin) for the
 # running screen; `joined` marks the commands reconstructed from a JSON config.
-# Appends to the caller's `reasons`, sets the caller's `lifted_any` when a
-# reviewed exemption lifted a category and `detail_lost` when the finding detail
-# for a matched category could not be fully recorded, and writes the detail to
-# the caller's `scratch` directory (findings.jsonl / exempted.jsonl).
+# Appends every matched category to the caller's `reasons`, sets the caller's
+# `detail_lost` when the finding detail could not be fully recorded, and writes
+# the detail to the caller's `scratch` directory (findings.jsonl).
 #
 # Deciding and reporting are separate. DECIDE: which categories the text matches
-# (_curation_match; a grep error is `scan-error`, never silence), then for each,
-# whether _curation_category_lifted lifts it. REPORT: the per-line findings,
-# marked exempt when their sha256 is a reviewed one — display only, best effort,
-# and checked: every matched category must come back with at least one line.
+# (_curation_match; a grep error is `scan-error`, never silence). REPORT: the
+# per-line findings — display only, best effort, and checked: every matched
+# category must come back with at least one line.
 _curation_screen_scan() {
     local path="$1" joined=0 text i c rc seen=" " cats=() idx=() part
     [ "${2:-}" = "joined" ] && joined=1
@@ -337,36 +249,24 @@ _curation_screen_scan() {
         case "$seen" in *" $c "*) ;; *) seen+="$c "; cats+=("$c") ;; esac
     done
     [ "${#idx[@]}" -gt 0 ] || return 0
+    reasons+=("${cats[@]}")
 
-    for c in "${cats[@]}"; do
-        if _curation_category_lifted "$path" "$c" <<<"$text"; then
-            lifted_any=1
-        else
-            reasons+=("$c")
-        fi
-    done
-
-    if [ -z "$scratch" ] || [ ! -f "$scratch/ex.json" ]; then
+    if [ -z "$scratch" ]; then
         detail_lost=1
         return 0
     fi
     part=$(_curation_scan_findings "$path" "$joined" "${idx[@]}" <<<"$text" \
-        | jq -cs --slurpfile ex "$scratch/ex.json" --arg cats "${cats[*]}" '
-        ($ex[0] // []) as $ex
-        | reduce .[] as $x ({seen: {}, out: []};
+        | jq -cs --arg cats "${cats[*]}" '
+        reduce .[] as $x ({seen: {}, out: []};
               "\($x.category):\($x.lineNumber // "j\($x.joinedIndex)")" as $k
               | if .seen[$k] then . else .seen[$k] = true | .out += [$x] end)
         | .out | sort_by(.lineNumber // 0, .joinedIndex // 0)
-        | map(. as $x | . + {exempt: ($x.lineSha256 != "" and any($ex[];
-              .path == $x.path and .category == $x.category and .lineSha256 == $x.lineSha256))})
         | . as $all
-        | {kept: map(select(.exempt | not) | del(.exempt)),
-           exempted: map(select(.exempt) | del(.exempt)),
+        | {findings: .,
            complete: ($cats | split(" ") | map(select(length > 0)) | all(. as $c | any($all[]; .category == $c)))}' \
         2>/dev/null) || { detail_lost=1; return 0; }
     [ "$(printf '%s' "$part" | jq -r '.complete' 2>/dev/null)" = "true" ] || detail_lost=1
-    printf '%s' "$part" | jq -c '.kept[]' >> "$scratch/findings.jsonl" 2>/dev/null || detail_lost=1
-    printf '%s' "$part" | jq -c '.exempted[]' >> "$scratch/exempted.jsonl" 2>/dev/null || detail_lost=1
+    printf '%s' "$part" | jq -c '.findings[]' >> "$scratch/findings.jsonl" 2>/dev/null || detail_lost=1
     return 0
 }
 
@@ -472,15 +372,13 @@ _curation_subpaths_resolve() {
 # surface scan are scoped to those subpaths — never the whole monorepo.
 curation_safety_screen() {
     local repo="$1" ref="$2" subpaths="${3:-}"
-    local reasons=() text r doc lifted_any=0 detail_lost=0 scanned=" "
+    local reasons=() text r doc detail_lost=0 scanned=()
     # Per-run scratch for the finding detail (files, never argv: a large repo's
     # detail outgrows a command-line argument). Without it the screen still
-    # decides — only the detail and the exemptions are lost, so flags stand.
+    # decides — only the detail is lost, so flags stand.
     local scratch
-    if scratch=$(mktemp -d 2>/dev/null); then
-        _curation_load_exemptions "$repo" > "$scratch/ex.json"
-    else
-        curation_warn "safety screen has no scratch directory; findings detail and exemptions unavailable"
+    if ! scratch=$(mktemp -d 2>/dev/null); then
+        curation_warn "safety screen has no scratch directory; findings detail unavailable"
         scratch=""
     fi
 
@@ -495,7 +393,7 @@ curation_safety_screen() {
         for doc in SKILL.md README.md; do
             if text=$(_curation_fetch_one "$repo" "$ref" "$doc"); then
                 _curation_screen_scan "$doc" <<<"$text"
-                scanned+="$doc "
+                scanned+=("$doc")
                 got=0
                 break
             fi
@@ -513,7 +411,7 @@ curation_safety_screen() {
             for doc in "$sp/SKILL.md" "$sp/README.md"; do
                 if text=$(_curation_fetch_one "$repo" "$ref" "$doc"); then
                     _curation_screen_scan "$doc" <<<"$text"
-                    scanned+="$doc "
+                    scanned+=("$doc")
                     break
                 fi
             done
@@ -541,11 +439,17 @@ curation_safety_screen() {
     else
         [ "$rc" -eq 3 ] && reasons+=("exec-surface-truncated")
         [ "$rc" -eq 4 ] && reasons+=("exec-surface-over-cap")
-        local path ftext
+        local path ftext done_path already
         while IFS= read -r path; do
             [ -n "$path" ] || continue
-            # A doc that is also exec surface (an executable README) was read above.
-            case "$scanned" in *" $path "*) continue ;; esac
+            # A doc that is also exec surface (an executable README) was read
+            # above. Exact comparison: a substring test on a joined string let a
+            # path containing spaces match two doc names and go unscanned.
+            already=0
+            for done_path in ${scanned[@]+"${scanned[@]}"}; do
+                [ "$done_path" = "$path" ] && { already=1; break; }
+            done
+            [ "$already" -eq 1 ] && continue
             if ftext=$(_curation_fetch_one "$repo" "$ref" "$path"); then
                 _curation_screen_scan "$path" <<<"$ftext"
                 # The commands a JSON config declares, rebuilt one per line, are
@@ -569,10 +473,6 @@ curation_safety_screen() {
     done
     if [ "${#out[@]}" -gt 0 ]; then
         verdict="flag"
-    elif [ "$lifted_any" -eq 1 ]; then
-        # Passing only because reviewed exemptions lifted every finding: say so,
-        # a reader must never mistake this for content that matched nothing.
-        out+=("exempted")
     else
         out+=("clean")
     fi
@@ -583,34 +483,29 @@ curation_safety_screen() {
 
 # Detail caps: the verdict JSON rides downstream as a command-line argument, so
 # its detail is bounded — the first CURATION_SAFETY_DETAIL_MAX findings, each
-# line shown to CURATION_SAFETY_LINE_MAX characters. The *Total counts and every
-# lineSha256 (computed on the whole line) are never truncated. A cut line carries
-# lineTruncated:true — an exemption for it needs the whole line, read from the file.
+# line shown to CURATION_SAFETY_LINE_MAX characters; findingsTotal is never
+# truncated, and a cut line carries lineTruncated:true.
 CURATION_SAFETY_DETAIL_MAX="${CURATION_SAFETY_DETAIL_MAX:-25}"
 CURATION_SAFETY_LINE_MAX="${CURATION_SAFETY_LINE_MAX:-240}"
 
 # _curation_safety_emit <repo> <ref> <verdict> <scratch-dir|""> <detail-lost:0|1> <reason...>
 _curation_safety_emit() {
     local repo="$1" ref="$2" verdict="$3" scratch="$4" lost="$5"; shift 5
-    local fl=/dev/null el=/dev/null
-    if [ -n "$scratch" ]; then
-        [ -f "$scratch/findings.jsonl" ] && fl="$scratch/findings.jsonl"
-        [ -f "$scratch/exempted.jsonl" ] && el="$scratch/exempted.jsonl"
-    fi
+    local fl=/dev/null
+    [ -n "$scratch" ] && [ -f "$scratch/findings.jsonl" ] && fl="$scratch/findings.jsonl"
     jq -cn --arg repo "$repo" --arg ref "$ref" --arg verdict "$verdict" \
-        --slurpfile f "$fl" --slurpfile e "$el" \
+        --slurpfile f "$fl" \
         --argjson n "$CURATION_SAFETY_DETAIL_MAX" --argjson w "$CURATION_SAFETY_LINE_MAX" \
         --argjson lost "$lost" \
         'def shown: .[0:$n] | map(if (.line | length) > $w
                                   then .line |= .[0:$w] | .lineTruncated = true else . end);
          {repo:$repo, ref:$ref, verdict:$verdict, reasons:$ARGS.positional,
           findings:($f | shown), findingsTotal:($f | length),
-          exempted:($e | shown), exemptedTotal:($e | length),
           detailComplete:($lost == 0)}' \
         --args "$@" 2>/dev/null \
     || jq -cn --arg repo "$repo" --arg ref "$ref" \
         '{repo:$repo, ref:$ref, verdict:"flag", reasons:["screen-emit-failed"],
-          findings:[], findingsTotal:0, exempted:[], exemptedTotal:0, detailComplete:false}'
+          findings:[], findingsTotal:0, detailComplete:false}'
 }
 
 # CLI: curation-safety.sh <owner/repo> <ref> [<subpaths>]
