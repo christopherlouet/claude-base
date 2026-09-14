@@ -542,9 +542,9 @@ _curation_safety_emit() {
                   ([$x.path, $x.category, ($x.lineNumber // "j\($x.joinedIndex)")] | tojson) as $k
                   | if .seen[$k] then . else .seen[$k] = true | .out += [$x] end)
             | .out
-            | reduce (.[] | select(.joinedCommand != true and .lineTruncated != true)
+            | (reduce (.[] | select(.joinedCommand != true and .lineTruncated != true)
                       | . as $r | .line | declared[] | [$r.path, $r.category, .] | tojson) as $k
-                  ({}; .[$k] += 1) as $covered
+                  ({}; .[$k] += 1)) as $covered
             | reduce .[] as $x ({left: $covered, out: []};
                   ([$x.path, $x.category, $x.line] | tojson) as $k
                   | if $x.joinedCommand == true and (.left[$k] // 0) > 0
