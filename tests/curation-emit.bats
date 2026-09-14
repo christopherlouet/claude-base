@@ -247,3 +247,19 @@ mkt_registry() {
     [ "$status" -eq 0 ]
     [ "$(summary | jq -r '.lock.ageDays')" = "0" ]
 }
+
+# The safety screen always prints a verdict, but it can still die, or jq can be
+# missing: a demoted drift must keep its subject and ref, never become null.
+@test "emit_repin_pr: an unparseable safety screen output demotes the drift and keeps its record" {
+    echo '{"version":"1.0.0","records":[]}' > "$TEST_DIR/registry.json"
+    mkdir -p "$TEST_DIR/presets"
+    local out
+    for out in "" "not json"; do
+        run env PATH="$TEST_DIR/fakebin:$PATH" CURATION_NOW=2026-07-13 FAKE_REPIN_ROWS='[]' bash -c \
+            "source '$EMIT'; curation_safety_screen() { printf '%s' '$out'; }; emit_repin_pr '$REPIN_FINDINGS' '$TEST_DIR/registry.json' '$TEST_DIR/presets' true 2026-07-13"
+        [ "$status" -eq 0 ]
+        [[ "$(summary | jq -r '.drafted | length')" == "0" ]]
+        [[ "$(summary | jq -r '.demoted[0].subject')" == "acme/x" ]]
+        [[ "$(summary | jq -r '.demoted[0].safety.reasons | join(",")')" == "screen-output-invalid" ]]
+    done
+}

@@ -1634,9 +1634,13 @@ run_watch_wl() {
 @test "watch: a safety screen whose rendering fails demotes the drift and keeps the run intact" {
     setup_emit_fakes
     drifting_target
-    # An unreadable detail cap is the cheapest way to make the screen's own
-    # rendering fail; the screen must still answer, and never with a pass.
-    CURATION_SAFETY_DETAIL_MAX=bogus run_watch --emit-pr --draft
+    # A jq that fails only the screen's final rendering (the one --slurpfile call
+    # in the curation scripts): the screen must still answer, and never a pass.
+    local real; real=$(command -v jq)
+    printf '#!/bin/sh\nfor a in "$@"; do [ "$a" = "--slurpfile" ] && exit 5; done\nexec "%s" "$@"\n' "$real" \
+        > "$TEST_DIR/fakebin/jq"
+    chmod +x "$TEST_DIR/fakebin/jq"
+    run_watch --emit-pr --draft
     [[ "$status" -eq 0 ]]
     [[ "$output" != *"invalid JSON"* ]]
     [[ "$(grep -c 'pr create' "$TEST_DIR/gh.log")" -eq 0 ]]

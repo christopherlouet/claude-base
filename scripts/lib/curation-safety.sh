@@ -30,7 +30,8 @@
 # (tree unlistable), exec-file-unfetchable (a listed exec file unreadable),
 # exec-surface-truncated (GitHub itself truncated the tree, so files we never
 # saw the names of went unscanned), exec-surface-over-cap (the tree listed more
-# exec files than the cap, so the tail went unscanned).
+# exec files than the cap, so the tail went unscanned), scan-error (a pattern
+# grep failed), screen-emit-failed (the verdict itself could not be rendered).
 #
 # Subpath scoping: when a skill lives in a subpath of a monorepo (registry
 # vendorId / preset id like phaserjs/phaser/skills or coreyhaines31/.../cro),
@@ -57,7 +58,8 @@
 #           findings[], findingsTotal, detailComplete}; a finding is
 #           {path, category, lineNumber, line[, lineTruncated]}, in file order,
 #           one per occurrence; a command rebuilt from a JSON config has
-#           lineNumber null and joinedCommand true. detailComplete is false when
+#           lineNumber null, joinedCommand true and joinedIndex (its rank among
+#           the rebuilt commands). detailComplete is false when
 #           any matched file's detail could not be fully recorded. reasons is
 #           "clean" on a pass.
 #   exit:   0 always (a verdict is always produced; failures become a flag).
@@ -162,9 +164,15 @@ _curation_category_of() { printf '%s' "${_SAFETY_CATEGORIES[$1]:-uncategorized-p
 
 # A UTF-8 locale for the second matching arm, resolved once. Pinned rather than
 # inherited: under cron, `env -i` or a minimal container the caller's locale is C,
-# and the Unicode-space arm would silently become a second C scan. Empty when the
-# system has none — the second arm then runs in the caller's locale.
-_SAFETY_UTF8_LOCALE=$(locale -a 2>/dev/null | grep -iE '^(c|en_us)\.utf-?8$' | head -n 1)
+# and the Unicode-space arm would silently become a second C scan. Any installed
+# UTF-8 locale serves (C.UTF-8 or en_US preferred): a host may only have fr_FR.
+# Empty when the system has none — the second arm then runs in the caller's
+# locale, and the screen says so once (_SAFETY_LOCALE_WARNED).
+_SAFETY_UTF8_LOCALES=$(locale -a 2>/dev/null | grep -iE '\.utf-?8$')
+_SAFETY_UTF8_LOCALE=$(printf '%s\n' "$_SAFETY_UTF8_LOCALES" | grep -iE '^c\.' | head -n 1)
+[ -n "$_SAFETY_UTF8_LOCALE" ] || _SAFETY_UTF8_LOCALE=$(printf '%s\n' "$_SAFETY_UTF8_LOCALES" | grep -iE '^en_us\.' | head -n 1)
+[ -n "$_SAFETY_UTF8_LOCALE" ] || _SAFETY_UTF8_LOCALE=$(printf '%s\n' "$_SAFETY_UTF8_LOCALES" | grep . | head -n 1)
+_SAFETY_LOCALE_WARNED=0
 
 # _curation_grep_utf8 <grep-args...> — grep in _SAFETY_UTF8_LOCALE (or the
 # caller's locale when none exists).
@@ -198,25 +206,45 @@ _curation_match() {
     return 1
 }
 
+# _curation_cap <variable-name> <default> — echo the variable's value when it is a
+# non-negative integer; otherwise warn and echo <default>. A bogus cap used to
+# break the rendering and a negative one silently hid the last finding.
+_curation_cap() {
+    local name="$1" default="$2" value
+    value="${!name:-$default}"
+    case "$value" in
+        '' | *[!0-9]*)
+            curation_warn "$name='$value' is not a non-negative integer; using $default"
+            value="$default"
+            ;;
+    esac
+    printf '%s' "$value"
+}
+
 # _curation_scan_findings <path> <joined:0|1> <pattern-index...> — read <path>'s
 # text on stdin, echo one compact JSON finding per (pattern, matching line):
 # {path, category, lineNumber, line}, or for a command reconstructed from a JSON
 # config (joined=1) {…, lineNumber:null, joinedCommand:true, joinedIndex} — such a
 # line exists nowhere in the file, so it has no line number. Lines never travel as
 # a command-line argument (a minified line can exceed the 128 KiB per-argument
-# limit): they go to jq on stdin. Both locales are searched (see _curation_match)
-# and may return a line twice; the caller dedups.
+# limit): they go to jq on stdin, and are cut to the display cap right here, so a
+# 1 MB minified line never rides through every later jq pass (lineTruncated marks
+# the cut). Both locales are searched (see _curation_match) and may return a line
+# twice; the rendering dedups. `pattern` is the pattern index, for completeness.
 # DETAIL only: nothing the verdict decides reads it (see _curation_screen_scan).
 _curation_scan_findings() {
-    local path="$1" joined="$2" text i
+    local path="$1" joined="$2" text i w
     shift 2
+    w="${cap_w:-$(_curation_cap CURATION_SAFETY_LINE_MAX 240)}"
     text=$(cat)
     for i in "$@"; do
         { LC_ALL=C grep -anEi -e "${_SAFETY_PATTERNS[$i]}" <<<"$text"
           _curation_grep_utf8 -anEi -e "${_SAFETY_PATTERNS[$i]}" <<<"$text"; } 2>/dev/null \
-            | jq -Rc --arg p "$path" --arg c "$(_curation_category_of "$i")" --argjson j "$joined" '
-                index(":") as $a | (.[0:$a] | tonumber) as $n
-                | {path:$p, category:$c, line:.[$a + 1:]}
+            | jq -Rc --arg p "$path" --arg c "$(_curation_category_of "$i")" \
+                --argjson j "$joined" --argjson i "$i" --argjson w "$w" '
+                index(":") as $a | (.[0:$a] | tonumber) as $n | .[$a + 1:] as $l
+                | {path:$p, category:$c, pattern:$i, line:$l[0:$w]}
+                | if ($l | length) > $w then . + {lineTruncated:true} else . end
                 | if $j == 1 then . + {lineNumber:null, joinedCommand:true, joinedIndex:$n}
                   else . + {lineNumber:$n} end'
     done
@@ -231,7 +259,9 @@ _curation_scan_findings() {
 # Deciding and reporting are separate. DECIDE: which categories the text matches
 # (_curation_match; a grep error is `scan-error`, never silence). REPORT: the
 # per-line findings — display only, best effort, and checked: every matched
-# category must come back with at least one line.
+# PATTERN must come back with at least one line (one line per category was not
+# enough: a failed extraction for one pattern hid behind another of the same
+# category).
 _curation_screen_scan() {
     local path="$1" joined=0 text i c rc seen=" " cats=() idx=() part
     [ "${2:-}" = "joined" ] && joined=1
@@ -256,14 +286,12 @@ _curation_screen_scan() {
         return 0
     fi
     part=$(_curation_scan_findings "$path" "$joined" "${idx[@]}" <<<"$text" \
-        | jq -cs --arg cats "${cats[*]}" '
-        reduce .[] as $x ({seen: {}, out: []};
-              "\($x.category):\($x.lineNumber // "j\($x.joinedIndex)")" as $k
-              | if .seen[$k] then . else .seen[$k] = true | .out += [$x] end)
-        | .out | sort_by(.lineNumber // 0, .joinedIndex // 0)
-        | . as $all
-        | {findings: .,
-           complete: ($cats | split(" ") | map(select(length > 0)) | all(. as $c | any($all[]; .category == $c)))}' \
+        | jq -cs --arg idx "${idx[*]}" '
+        . as $raw
+        | ($idx | split(" ") | map(select(length > 0) | tonumber)
+           | all(. as $p | any($raw[]; .pattern == $p))) as $complete
+        | map(del(.pattern)) | sort_by(.lineNumber // 0, .joinedIndex // 0)
+        | {findings: ., complete: $complete}' \
         2>/dev/null) || { detail_lost=1; return 0; }
     [ "$(printf '%s' "$part" | jq -r '.complete' 2>/dev/null)" = "true" ] || detail_lost=1
     printf '%s' "$part" | jq -c '.findings[]' >> "$scratch/findings.jsonl" 2>/dev/null || detail_lost=1
@@ -372,7 +400,14 @@ _curation_subpaths_resolve() {
 # surface scan are scoped to those subpaths — never the whole monorepo.
 curation_safety_screen() {
     local repo="$1" ref="$2" subpaths="${3:-}"
-    local reasons=() text r doc detail_lost=0 scanned=()
+    local reasons=() text r doc detail_lost=0
+    local cap_n cap_w
+    cap_n=$(_curation_cap CURATION_SAFETY_DETAIL_MAX 25)
+    cap_w=$(_curation_cap CURATION_SAFETY_LINE_MAX 240)
+    if [ -z "$_SAFETY_UTF8_LOCALE" ] && [ "$_SAFETY_LOCALE_WARNED" -eq 0 ]; then
+        curation_warn "no UTF-8 locale installed: Unicode-space evasions (e.g. U+2003) are not detected"
+        _SAFETY_LOCALE_WARNED=1
+    fi
     # Per-run scratch for the finding detail (files, never argv: a large repo's
     # detail outgrows a command-line argument). Without it the screen still
     # decides — only the detail is lost, so flags stand.
@@ -393,7 +428,6 @@ curation_safety_screen() {
         for doc in SKILL.md README.md; do
             if text=$(_curation_fetch_one "$repo" "$ref" "$doc"); then
                 _curation_screen_scan "$doc" <<<"$text"
-                scanned+=("$doc")
                 got=0
                 break
             fi
@@ -411,7 +445,6 @@ curation_safety_screen() {
             for doc in "$sp/SKILL.md" "$sp/README.md"; do
                 if text=$(_curation_fetch_one "$repo" "$ref" "$doc"); then
                     _curation_screen_scan "$doc" <<<"$text"
-                    scanned+=("$doc")
                     break
                 fi
             done
@@ -439,17 +472,12 @@ curation_safety_screen() {
     else
         [ "$rc" -eq 3 ] && reasons+=("exec-surface-truncated")
         [ "$rc" -eq 4 ] && reasons+=("exec-surface-over-cap")
-        local path ftext done_path already
+        local path ftext
         while IFS= read -r path; do
             [ -n "$path" ] || continue
-            # A doc that is also exec surface (an executable README) was read
-            # above. Exact comparison: a substring test on a joined string let a
-            # path containing spaces match two doc names and go unscanned.
-            already=0
-            for done_path in ${scanned[@]+"${scanned[@]}"}; do
-                [ "$done_path" = "$path" ] && { already=1; break; }
-            done
-            [ "$already" -eq 1 ] && continue
+            # A doc that is also exec surface (an executable README) is scanned
+            # again here; the rendering dedups its findings. Skipping it instead
+            # once let a crafted file name go unscanned.
             if ftext=$(_curation_fetch_one "$repo" "$ref" "$path"); then
                 _curation_screen_scan "$path" <<<"$ftext"
                 # The commands a JSON config declares, rebuilt one per line, are
@@ -483,29 +511,46 @@ curation_safety_screen() {
 
 # Detail caps: the verdict JSON rides downstream as a command-line argument, so
 # its detail is bounded — the first CURATION_SAFETY_DETAIL_MAX findings, each
-# line shown to CURATION_SAFETY_LINE_MAX characters; findingsTotal is never
-# truncated, and a cut line carries lineTruncated:true.
+# line already cut to CURATION_SAFETY_LINE_MAX characters at extraction (both
+# validated by _curation_cap); findingsTotal is never truncated, and a cut line
+# carries lineTruncated:true. Rendering also dedups what two scans of one text report: a
+# doc that is also exec surface, and a one-line JSON command found both in the raw
+# file text and as a rebuilt command.
 CURATION_SAFETY_DETAIL_MAX="${CURATION_SAFETY_DETAIL_MAX:-25}"
 CURATION_SAFETY_LINE_MAX="${CURATION_SAFETY_LINE_MAX:-240}"
 
 # _curation_safety_emit <repo> <ref> <verdict> <scratch-dir|""> <detail-lost:0|1> <reason...>
 _curation_safety_emit() {
     local repo="$1" ref="$2" verdict="$3" scratch="$4" lost="$5"; shift 5
-    local fl=/dev/null
+    local fl=/dev/null n
+    n="${cap_n:-$(_curation_cap CURATION_SAFETY_DETAIL_MAX 25)}"
     [ -n "$scratch" ] && [ -f "$scratch/findings.jsonl" ] && fl="$scratch/findings.jsonl"
     jq -cn --arg repo "$repo" --arg ref "$ref" --arg verdict "$verdict" \
         --slurpfile f "$fl" \
-        --argjson n "$CURATION_SAFETY_DETAIL_MAX" --argjson w "$CURATION_SAFETY_LINE_MAX" \
+        --argjson n "$n" \
         --argjson lost "$lost" \
-        'def shown: .[0:$n] | map(if (.line | length) > $w
-                                  then .line |= .[0:$w] | .lineTruncated = true else . end);
-         {repo:$repo, ref:$ref, verdict:$verdict, reasons:$ARGS.positional,
-          findings:($f | shown), findingsTotal:($f | length),
-          detailComplete:($lost == 0)}' \
-        --args "$@" 2>/dev/null \
-    || jq -cn --arg repo "$repo" --arg ref "$ref" \
-        '{repo:$repo, ref:$ref, verdict:"flag", reasons:["screen-emit-failed"],
-          findings:[], findingsTotal:0, detailComplete:false}'
+        'def dedup: (map(select(.joinedCommand != true))) as $raw
+            | map(. as $x | select(($x.joinedCommand != true)
+                  or (any($raw[]; .path == $x.path and .category == $x.category
+                          and (.line | contains($x.line))) | not)))
+            | reduce .[] as $x ({seen: {}, out: []};
+                  ([$x.path, $x.category, ($x.lineNumber // "j\($x.joinedIndex)")] | tojson) as $k
+                  | if .seen[$k] then . else .seen[$k] = true | .out += [$x] end)
+            | .out;
+         def shown: .[0:$n];
+         ($f | dedup) as $all
+         | {repo:$repo, ref:$ref, verdict:$verdict, reasons:$ARGS.positional,
+            findings:($all | shown), findingsTotal:($all | length),
+            detailComplete:($lost == 0)}' \
+        --args "$@" 2>/dev/null && return 0
+    # The verdict could not be rendered. Say so, and flag — keeping every reason
+    # already found (a hostile repo must not lose its `remote-exec`).
+    curation_warn "safety screen could not render its verdict for $repo@$ref; flagging it"
+    jq -cn --arg repo "$repo" --arg ref "$ref" \
+        '{repo:$repo, ref:$ref, verdict:"flag",
+          reasons:([$ARGS.positional[] | select(. != "clean")] + ["screen-emit-failed"]),
+          findings:[], findingsTotal:0, detailComplete:false}' \
+        --args "$@"
 }
 
 # CLI: curation-safety.sh <owner/repo> <ref> [<subpaths>]
