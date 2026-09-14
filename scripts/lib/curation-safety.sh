@@ -305,11 +305,13 @@ _curation_screen_scan() {
 # scan never sees them together. Line breaks inside a piece are flattened too:
 # jq -r decodes an escaped "\n", which would cut the joined line apart again.
 # Emits nothing for JSON jq rejects: the caller still scans the raw text, so a
-# malformed file is never treated as clean.
+# malformed file is never treated as clean. The jq definition is shared with the
+# rendering, which must rebuild commands exactly the same way.
+_CURATION_JQ_COMMANDS='def commands: .. | objects | select(has("command"))
+    | [.command] + (if (.args | type) == "array" then .args else [] end)
+    | map(tostring | gsub("[\r\n]+"; " ")) | join(" ");'
 _curation_json_commands() {
-    jq -r '.. | objects | select(has("command"))
-        | [.command] + (if (.args | type) == "array" then .args else [] end)
-        | map(tostring | gsub("[\r\n]+"; " ")) | join(" ")' 2>/dev/null || true
+    jq -r "$_CURATION_JQ_COMMANDS commands" 2>/dev/null || true
 }
 
 # _curation_list_exec_surface <repo> <ref> — echo the candidate's executable-
@@ -515,7 +517,10 @@ curation_safety_screen() {
 # validated by _curation_cap); findingsTotal is never truncated, and a cut line
 # carries lineTruncated:true. Rendering also dedups what two scans of one text report: a
 # doc that is also exec surface, and a one-line JSON command found both in the raw
-# file text and as a rebuilt command.
+# file text and as a rebuilt command. A rebuilt command is dropped only against a
+# raw line that DECLARES it (parsed, the line yields that command), one per
+# declaration: a line merely quoting the text — a planted note — never hides it.
+# A cut line is never parsed: its prefix could declare a shorter command.
 CURATION_SAFETY_DETAIL_MAX="${CURATION_SAFETY_DETAIL_MAX:-25}"
 CURATION_SAFETY_LINE_MAX="${CURATION_SAFETY_LINE_MAX:-240}"
 
@@ -529,13 +534,21 @@ _curation_safety_emit() {
         --slurpfile f "$fl" \
         --argjson n "$n" \
         --argjson lost "$lost" \
-        'def dedup: (map(select(.joinedCommand != true))) as $raw
-            | map(. as $x | select(($x.joinedCommand != true)
-                  or (any($raw[]; .path == $x.path and .category == $x.category
-                          and (.line | contains($x.line))) | not)))
-            | reduce .[] as $x ({seen: {}, out: []};
+        "$_CURATION_JQ_COMMANDS"'
+         def declared: sub("[[:space:],]+$"; "") as $l
+            | [(try ($l | fromjson) catch null), (try ("{" + $l + "}" | fromjson) catch null)]
+            | map(select(. != null) | [commands]) | first // [];
+         def dedup: reduce .[] as $x ({seen: {}, out: []};
                   ([$x.path, $x.category, ($x.lineNumber // "j\($x.joinedIndex)")] | tojson) as $k
                   | if .seen[$k] then . else .seen[$k] = true | .out += [$x] end)
+            | .out
+            | reduce (.[] | select(.joinedCommand != true and .lineTruncated != true)
+                      | . as $r | .line | declared[] | [$r.path, $r.category, .] | tojson) as $k
+                  ({}; .[$k] += 1) as $covered
+            | reduce .[] as $x ({left: $covered, out: []};
+                  ([$x.path, $x.category, $x.line] | tojson) as $k
+                  | if $x.joinedCommand == true and (.left[$k] // 0) > 0
+                    then .left[$k] -= 1 else .out += [$x] end)
             | .out;
          def shown: .[0:$n];
          ($f | dedup) as $all
