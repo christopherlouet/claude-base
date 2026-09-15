@@ -1226,6 +1226,95 @@ _init_legal_only_project() {
     [[ "$output" != *"Security drift detected"* ]]
 }
 
+# --- Unmodified copies of an older foundation version (pristine-hashes table) --
+# A hook left untouched since an older version differs from today's copy
+# exactly like a customised one. Without a way to tell them apart, update
+# skipped both, and even `--hook-scripts` / `--all` left every security library
+# of a v5.3.0 install on its v5.3.0 rules while stamping the new version. See
+# tests/pristine-hashes.bats.
+
+# plant_old_copy <rel-path> <content> — write an "older foundation version" of a
+# managed script into the project and record it in a fixture hash table.
+plant_old_copy() {
+    printf '%s' "$2" > "$TEST_DIR/proj/$1"
+    local sha
+    sha=$( { sha256sum "$TEST_DIR/proj/$1" 2>/dev/null || shasum -a 256 "$TEST_DIR/proj/$1"; } | cut -d' ' -f1)
+    printf '%s %s\n' "$sha" "$1" >> "$TEST_DIR/pristine.txt"
+}
+
+@test "update.sh --hook-scripts refreshes an unmodified older copy without --force" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    plant_old_copy scripts/hooks/_policy-secrets.sh $'#!/usr/bin/env bash\n# an older foundation release\n'
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y --hook-scripts "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    cmp -s "$BASE_DIR/scripts/hooks/_policy-secrets.sh" "$TEST_DIR/proj/scripts/hooks/_policy-secrets.sh"
+    [[ "$output" != *"_policy-secrets.sh skipped"* ]]
+    [[ "$output" != *"Security drift detected"* ]]
+}
+
+@test "update.sh --hook-scripts still skips a customised copy (hash not in the table)" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    plant_old_copy scripts/hooks/_policy-secrets.sh $'#!/usr/bin/env bash\n# an older foundation release\n'
+    printf '# my local rule\n' >> "$TEST_DIR/proj/scripts/hooks/_policy-secrets.sh"
+    local before; before=$(cat "$TEST_DIR/proj/scripts/hooks/_policy-secrets.sh")
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y --hook-scripts "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ "$(cat "$TEST_DIR/proj/scripts/hooks/_policy-secrets.sh")" = "$before" ]
+    [[ "$output" == *"_policy-secrets.sh skipped"* ]]
+}
+
+@test "update.sh --hook-scripts refreshes an unmodified older substance-check.sh without --force" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    mkdir -p "$TEST_DIR/proj/scripts"
+    plant_old_copy scripts/substance-check.sh $'#!/usr/bin/env bash\n# older detector\n'
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y --hook-scripts "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    cmp -s "$BASE_DIR/scripts/substance-check.sh" "$TEST_DIR/proj/scripts/substance-check.sh"
+}
+
+@test "update.sh drift advisory: an unmodified stale library needs only --hook-scripts" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    plant_old_copy scripts/hooks/_policy-secrets.sh $'#!/usr/bin/env bash\n# an older foundation release\n'
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [[ "$output" == *"policy-stale: _policy-secrets.sh"* ]]
+    local line; line=$(printf '%s\n' "$output" | grep 'policy-stale: _policy-secrets.sh')
+    [[ "$line" == *"update --hook-scripts"* ]]
+    [[ "$line" != *"--force"* ]]
+}
+
+@test "update.sh drift advisory: a customised stale library says to review before --force" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    printf '#!/usr/bin/env bash\n# my own fork\n' > "$TEST_DIR/proj/scripts/hooks/_policy-secrets.sh"
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    local line; line=$(printf '%s\n' "$output" | grep 'policy-stale: _policy-secrets.sh')
+    [[ "$line" == *"--force"* ]]
+    [[ "$line" == *"customi"* ]]
+}
+
+@test "update.sh --hook-scripts refreshes the REAL v5.3.0 security libraries with the committed table" {
+    # The measured case, on real release content rather than a fixture.
+    git -C "$BASE_DIR" rev-parse -q --verify 'v5.3.0^{commit}' >/dev/null 2>&1 \
+        || skip "tag v5.3.0 not available in this clone"
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    local lib
+    for lib in _policy-dangerous-commands.sh _policy-secrets.sh _policy-write-targets.sh; do
+        git -C "$BASE_DIR" show "v5.3.0:scripts/hooks/$lib" > "$TEST_DIR/proj/scripts/hooks/$lib"
+        ! cmp -s "$BASE_DIR/scripts/hooks/$lib" "$TEST_DIR/proj/scripts/hooks/$lib"
+    done
+
+    run "$UPDATE_SCRIPT" -y --hook-scripts "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    for lib in _policy-dangerous-commands.sh _policy-secrets.sh _policy-write-targets.sh; do
+        cmp -s "$BASE_DIR/scripts/hooks/$lib" "$TEST_DIR/proj/scripts/hooks/$lib" \
+            || { echo "$lib still stale" >&2; return 1; }
+    done
+}
+
 # =============================================================================
 # C2 audit — install-tier coherence (minimal vs full) + substance-check shipping
 #

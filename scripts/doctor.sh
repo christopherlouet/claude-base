@@ -445,7 +445,7 @@ check_security_drift() {
         local line
         while IFS= read -r line; do
             [ -z "$line" ] && continue
-            check_warn "$line" "Re-sync with: claude-base update --settings --hook-scripts --force"
+            check_warn "$line" "Re-sync with: claude-base update --settings --hook-scripts (add --force only for a file reported as customised: it discards local edits)"
         done <<< "$findings"
     fi
 }
