@@ -30,6 +30,7 @@ Classification values:
 | `pre-deploy-build.sh` | shell-env | trigger from core; body = run the prod build |
 | `main-branch-guard.sh` | shell-env | git-state guard (branch creation); no pattern tables |
 | `config-protection.sh` | shell+core | policy already lives in `_sensitive-paths.sh` |
+| `log-event.sh` | assistant-only | lifecycle event log (harness event names and payload fields); writes a private per-user log |
 | `prompt-context.sh` | assistant-only | context injection via the harness envelope; candidate for a later slice |
 | `post-edit-typecheck-and-lint.sh` | assistant-only | output-rewriter envelope (CLI 2.1.121+) |
 | `bash-output-filter.sh` | assistant-only | output-rewriter envelope |
