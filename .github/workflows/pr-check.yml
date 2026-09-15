@@ -53,9 +53,14 @@ jobs:
         uses: wagoid/commitlint-github-action@v6
         continue-on-error: true
 
+      # The title reaches the shell through env: substituted into `run:` it is
+      # pasted in as source, so a crafted title executed (pinned by
+      # tests/ci-downstream.bats).
       - name: Check for WIP
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          if [[ "${{ github.event.pull_request.title }}" == *"WIP"* ]]; then
+          if [[ "$PR_TITLE" == *"WIP"* ]]; then
             echo "::warning::This PR is marked as WIP"
             exit 1
           fi
