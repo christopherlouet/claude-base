@@ -42,15 +42,18 @@ foundation_refs() {
 run_injections() {
     awk '
         function ind(s) { match(s, /^ */); return RLENGTH }
+        function tainted(s) { return s ~ /\$\{\{.*github(\.event|\.head_ref|\[)/ }
         {
             if (inrun && $0 !~ /^[[:space:]]*$/ && ind($0) <= runind) inrun = 0
-            if (inrun && $0 ~ /\$\{\{[^}]*github\.(event|head_ref)/) print FILENAME ":" FNR
+            if (inrun && tainted($0)) print FILENAME ":" FNR
             if ($0 ~ /^[[:space:]]*(- )?run:/) {
+                # Block scalars and plain scalars alike continue on the more
+                # indented lines that follow, so both open a run body.
                 runind = ind($0)
+                inrun = 1
                 rest = $0
                 sub(/^[[:space:]]*(- )?run:[[:space:]]*/, "", rest)
-                if (rest ~ /^[|>]/) inrun = 1
-                else if (rest ~ /\$\{\{[^}]*github\.(event|head_ref)/) print FILENAME ":" FNR
+                if (tainted(rest)) print FILENAME ":" FNR
             }
         }
     ' "$@"
@@ -96,6 +99,22 @@ jobs:
 YML
     run run_injections "$TEST_DIR/bad.yml"
     [ "$(printf '%s\n' "$output" | grep -c 'bad.yml')" -eq 2 ]
+}
+
+@test "injection scanner: flags the forms a first version missed" {
+    # Found in review (actionlint flagged all of them): a `}` inside the
+    # expression, bracket access, and a plain scalar continued on the next line.
+    cat > "$TEST_DIR/bad2.yml" <<'YML'
+jobs:
+  x:
+    steps:
+      - run: echo "${{ format('{0}', github.event.pull_request.title) }}"
+      - run: echo "${{ github['head_ref'] }}"
+      - run: echo start
+          "${{ github.event.pull_request.body }}"
+YML
+    run run_injections "$TEST_DIR/bad2.yml"
+    [ "$(printf '%s\n' "$output" | grep -c 'bad2.yml')" -eq 3 ]
 }
 
 @test "injection scanner: an event expression passed through env is not flagged" {
@@ -215,6 +234,29 @@ YML
     [ -f "$PROJ/.github/workflows/pr-check.yml" ]
     rm "$PROJ/.github/workflows/custom.yml"
     assert_only_templates_installed
+}
+
+@test "install --ci-existing merge: a project security.yml without a secret scan is REPORTED" {
+    # Found in review: "Security audit" missing + a security.yml the project
+    # already has (CodeQL only) added nothing and said nothing.
+    mkdir -p "$PROJ/.github/workflows"
+    printf 'name: Security\non: [push]\njobs:\n  c:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: github/codeql-action/analyze@v3\n' \
+        > "$PROJ/.github/workflows/security.yml"
+    run bash "$NEW_PROJECT_SCRIPT" -y --ci-existing merge "$PROJ"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"security.yml"* ]]
+    [[ "$output" == *"secret"* ]]
+}
+
+@test "templates: ci.yml installs corepack before enabling it (Node 25+ ships none)" {
+    local enable install
+    enable=$(grep -n 'corepack enable' "$TEMPLATES/ci.yml" | head -1 | cut -d: -f1)
+    install=$(grep -n 'npm install -g --force corepack' "$TEMPLATES/ci.yml" | head -1 | cut -d: -f1)
+    [ -n "$enable" ] && [ -n "$install" ] && [ "$install" -lt "$enable" ]
+}
+
+@test "templates: ci.yml does not fail a Go module that has no package yet" {
+    grep -q 'go list ./...' "$TEMPLATES/ci.yml"
 }
 
 @test "install --ci-existing merge: a missing release automation is REPORTED, not silently skipped" {

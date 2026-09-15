@@ -5,12 +5,12 @@
 # license key on organization-owned repositories, so it would fail there on
 # the first push. A `.gitleaks.toml` at the repository root, if you add one,
 # is picked up automatically. Edit this file freely: the installer never
-# overwrites a security.yml that already exists.
+# overwrites a security.yml that already exists (only `--ci-existing replace` does).
 name: Security
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
 
 concurrency:

@@ -2,7 +2,7 @@
 #
 # Reads only the pull request's title, so it needs no checkout and works the
 # same whatever the project's stack. Edit it freely: the installer never
-# overwrites a pr-check.yml that already exists.
+# overwrites a pr-check.yml that already exists (only `--ci-existing replace` does).
 name: PR Check
 
 on:

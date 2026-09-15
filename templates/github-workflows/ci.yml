@@ -3,18 +3,19 @@
 # Stack-neutral on purpose: it looks at what the repository actually has and
 # runs only that. A stack it cannot find is skipped with a notice, never
 # failed, and a script the project does not define is never invented. Edit it
-# freely: the installer never overwrites a ci.yml that already exists.
+# freely: the installer never overwrites a ci.yml that already exists
+# (only `--ci-existing replace` does, on request).
 #
 #   Node    package.json      install, then the lint / typecheck / test / build
 #                             scripts that exist (npm, pnpm or yarn by lockfile)
 #   Python  pyproject.toml    install (pip, uv or poetry by lockfile), then ruff
 #           requirements.txt  and pytest when they are installed
-#   Go      go.mod            go vet, go test
+#   Go      go.mod            go vet, go test (a module with no package yet: notice)
 name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   pull_request:
 
 concurrency:
@@ -65,11 +66,30 @@ jobs:
 
       - name: Install dependencies
         run: |
+          if [ -f pnpm-lock.yaml ] || [ -f yarn.lock ]; then
+            if grep -q '"packageManager"' package.json; then
+              # The project pins its package manager and corepack honours the
+              # pin. Node 25+ no longer bundles corepack: install it first
+              # (--force: runner images may already ship pnpm/yarn shims).
+              npm install -g --force corepack
+              corepack enable
+            elif [ -f pnpm-lock.yaml ]; then
+              # No pin: use the pnpm major that wrote the lockfile. The latest
+              # pnpm rejects older formats (pnpm 8 writes lockfileVersion 6.0).
+              case "$(grep -m 1 '^lockfileVersion' pnpm-lock.yaml | tr -dc '0-9.' | cut -d. -f1)" in
+                5) npm install -g --force pnpm@7 ;;
+                6) npm install -g --force pnpm@8 ;;
+                *) npm install -g --force pnpm@latest ;;
+              esac
+            else
+              # Runner images ship yarn classic, which also defers to a Berry
+              # release checked in through .yarnrc.yml.
+              command -v yarn >/dev/null 2>&1 || npm install -g yarn
+            fi
+          fi
           if [ -f pnpm-lock.yaml ]; then
-            corepack enable
             pnpm install --frozen-lockfile
           elif [ -f yarn.lock ]; then
-            corepack enable
             yarn install
           elif [ -f package-lock.json ]; then
             npm ci
@@ -181,8 +201,13 @@ jobs:
         with:
           go-version-file: go.mod
 
-      - name: Vet
-        run: go vet ./...
-
-      - name: Test
-        run: go test ./...
+      - name: Vet and test
+        run: |
+          # Right after `go mod init` there is no package yet, and go vet /
+          # go test exit 1 on "no packages": that is no suite, not a red one.
+          if [ -z "$(go list ./... 2>/dev/null)" ]; then
+            echo "::notice::go.mod declares no package yet - nothing to vet or test."
+            exit 0
+          fi
+          go vet ./...
+          go test ./...

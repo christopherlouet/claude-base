@@ -262,8 +262,9 @@ runs only that, so a fresh project's first push is green:
   gitleaks Action, which needs a license key on organization-owned repositories.
 
 There is no release workflow: how a project releases is its own decision. A workflow file the project
-already has is never overwritten; `--ci-existing merge` adds only the missing ones and says when
-release automation is missing.
+already has is never overwritten, except by `--ci-existing replace`, which deletes the project's
+workflows before installing these three. `--ci-existing merge` adds only the missing ones and says
+when release automation or a secret scan is missing.
 
 ### Pre-commit Hooks
 

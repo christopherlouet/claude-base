@@ -552,6 +552,10 @@ merge_cicd_workflows() {
                 if [[ ! -f "$dir/.github/workflows/security.yml" ]]; then
                     copy_file "$src/security.yml" "$dir/.github/workflows/"
                     success "security.yml added (Gitleaks secret scan)"
+                else
+                    # The project's own security.yml is kept, and it runs no
+                    # scanner the analysis recognises: say so, never skip silently.
+                    warning "No secret scan added: the project already has a security.yml; add Gitleaks to it (see templates/github-workflows/security.yml)"
                 fi
                 ;;
             "PR validation")
