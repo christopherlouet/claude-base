@@ -662,3 +662,32 @@ assert_allow() {
     run_policy 'echo ~'
     assert_allow
 }
+
+# Found in review: `rm` was not anchored as a word, so any word ending in "rm"
+# followed later by a bare `~` read as a home deletion.
+@test "policy-dc: ALLOWS a word merely ending in rm before a bare ~" {
+    run_policy 'terraform fmt ~'
+    assert_allow
+    run_policy 'echo platform ~'
+    assert_allow
+}
+
+@test "policy-dc: still denies \\rm and /bin/rm on the home" {
+    run_policy '\rm -rf ~'
+    assert_deny
+    run_policy '/bin/rm -rf $HOME'
+    assert_deny
+}
+
+# Found in review: the home token touching a separator escaped, while the
+# literal rule above refuses `(rm -rf /home/alice)`.
+@test "policy-dc: denies a home token directly followed by a separator" {
+    run_policy 'rm -rf ~;'
+    assert_deny
+    run_policy 'rm -rf $HOME&&echo done'
+    assert_deny
+    run_policy '(rm -rf ~)'
+    assert_deny
+    run_policy 'rm -rf ${HOME}|tee log'
+    assert_deny
+}

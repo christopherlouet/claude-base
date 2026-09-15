@@ -215,9 +215,12 @@ validate_command() {
   # Same two-level shape: the whole home (bare, trailing slash, `/*` glob) is
   # refused, anything inside it stays ordinary work. Measured before widening on
   # 611 real agent rm commands: every one aimed at `~` was a subpath, and none
-  # changed verdict. The token must START the argument, so `notes.txt~`,
-  # `./~draft` and `$HOME_BUILD_DIR` are not a home.
-  if echo "$CMD_NQ" | grep -qE 'rm\s+([^;|&]*\s)?(~[a-z0-9_.-]*|\$home|\$\{home(:[?-][^}]*)?\})/?\*?(\s|$)'; then
+  # changed verdict. The token must START the argument, so `notes.txt~` and
+  # `./~draft` are not a home; it must END at whitespace, a separator or the end,
+  # so `$HOME_BUILD_DIR` is not one either, while `rm -rf ~;` and `(rm -rf ~)`
+  # are. `rm` must be a word of its own (`\rm` and `/bin/rm` still are), or
+  # `terraform fmt ~` would read as a home deletion.
+  if echo "$CMD_NQ" | grep -qE '(^|[^a-z0-9_.-])rm\s+([^;|&]*\s)?(~[a-z0-9_.-]*|\$home|\$\{home(:[?-][^}]*)?\})/?\*?(\s|[;&|)]|$)'; then
     printf '%s\n' "BLOCKED: Deletion of a home directory."
     return 1
   fi
