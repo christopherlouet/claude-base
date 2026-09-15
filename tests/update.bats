@@ -1253,6 +1253,62 @@ plant_old_copy() {
     [[ "$output" != *"Security drift detected"* ]]
 }
 
+@test "update.sh --hook-scripts names each unmodified copy it replaces (not only in --verbose)" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    plant_old_copy scripts/hooks/_policy-secrets.sh $'#!/usr/bin/env bash\n# an older foundation release\n'
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y --hook-scripts "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"_policy-secrets.sh"*"unmodified"* ]]
+}
+
+@test "update.sh --hook-scripts --dry-run leaves an unmodified older copy untouched" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    plant_old_copy scripts/hooks/_policy-secrets.sh $'#!/usr/bin/env bash\n# an older foundation release\n'
+    local before; before=$(cat "$TEST_DIR/proj/scripts/hooks/_policy-secrets.sh")
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -n -y --hook-scripts "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ "$(cat "$TEST_DIR/proj/scripts/hooks/_policy-secrets.sh")" = "$before" ]
+}
+
+@test "update.sh --hook-scripts does not write through a symlinked unmodified copy" {
+    # Found in review: cp followed the link and rewrote a file outside the
+    # project, where main skipped it as a conflict.
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    plant_old_copy scripts/hooks/_policy-secrets.sh $'#!/usr/bin/env bash\n# an older foundation release\n'
+    mv "$TEST_DIR/proj/scripts/hooks/_policy-secrets.sh" "$TEST_DIR/shared-policy.sh"
+    ln -s "$TEST_DIR/shared-policy.sh" "$TEST_DIR/proj/scripts/hooks/_policy-secrets.sh"
+    local before; before=$(cat "$TEST_DIR/shared-policy.sh")
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y --hook-scripts "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ "$(cat "$TEST_DIR/shared-policy.sh")" = "$before" ]
+}
+
+@test "update.sh --hook-scripts from an OLDER foundation does not replace without --force" {
+    # A table lists every earlier version: run from an older checkout, a newer
+    # install holding content that matches an earlier release would be
+    # "downgraded" silently. The recorded version is newer here.
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    plant_old_copy scripts/hooks/_policy-secrets.sh $'#!/usr/bin/env bash\n# an older foundation release\n'
+    local manifest="$TEST_DIR/proj/.claude/foundation.json"
+    jq '.version = "99.0.0"' "$manifest" > "$manifest.tmp" && mv "$manifest.tmp" "$manifest"
+    local before; before=$(cat "$TEST_DIR/proj/scripts/hooks/_policy-secrets.sh")
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y --hook-scripts "$TEST_DIR/proj"
+    [ "$(cat "$TEST_DIR/proj/scripts/hooks/_policy-secrets.sh")" = "$before" ]
+}
+
+@test "update.sh drift advisory: a missing wired hook script needs no --force" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    rm "$TEST_DIR/proj/scripts/hooks/command-validator.sh"
+    run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    local line; line=$(printf '%s\n' "$output" | grep -m1 'hook-missing-script')
+    [ -n "$line" ]
+    [[ "$line" != *"--force"* ]]
+}
+
 @test "update.sh --hook-scripts still skips a customised copy (hash not in the table)" {
     "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
     plant_old_copy scripts/hooks/_policy-secrets.sh $'#!/usr/bin/env bash\n# an older foundation release\n'
@@ -1304,7 +1360,8 @@ plant_old_copy() {
     local lib
     for lib in _policy-dangerous-commands.sh _policy-secrets.sh _policy-write-targets.sh; do
         git -C "$BASE_DIR" show "v5.3.0:scripts/hooks/$lib" > "$TEST_DIR/proj/scripts/hooks/$lib"
-        ! cmp -s "$BASE_DIR/scripts/hooks/$lib" "$TEST_DIR/proj/scripts/hooks/$lib"
+        # Setup check: the planted copy really differs (`! cmp` would not fail a test).
+        if cmp -s "$BASE_DIR/scripts/hooks/$lib" "$TEST_DIR/proj/scripts/hooks/$lib"; then return 1; fi
     done
 
     run "$UPDATE_SCRIPT" -y --hook-scripts "$TEST_DIR/proj"

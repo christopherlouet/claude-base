@@ -63,10 +63,11 @@ is_managed() {
 
 # "<blob> <path>" for every version of a managed path: the post-image of each
 # change in history (renames split into delete + add, so a moved file keeps its
-# versions under both paths), then the index.
+# versions under both paths; -m and --full-history so content that only a merge
+# commit introduced, like a resolved conflict, is seen), then the index.
 blob_paths() {
     if git -C "$ROOT" rev-parse -q --verify HEAD >/dev/null 2>&1; then
-        git -C "$ROOT" log --format= --raw --no-abbrev --no-renames HEAD -- scripts/hooks scripts/substance-check.sh \
+        git -C "$ROOT" log -m --full-history --format= --raw --no-abbrev --no-renames HEAD -- scripts/hooks scripts/substance-check.sh \
             | awk -F'\t' '{ split($1, m, " "); if (m[4] !~ /^0+$/) print m[4] " " $2 }'
     fi
     git -C "$ROOT" ls-files -s -- scripts/hooks scripts/substance-check.sh \

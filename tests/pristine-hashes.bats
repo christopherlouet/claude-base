@@ -94,9 +94,28 @@ TABLE_REL="scripts/lib/pristine-hashes.txt"
 
     run_gen
     [ "$status" -eq 0 ]
-    ! grep -q 'README.md' "$REPO/$TABLE_REL"
-    ! grep -q 'scripts/other.sh' "$REPO/$TABLE_REL"
+    # `! grep` does not fail a bats test unless it is the last command.
+    if grep -q 'README.md' "$REPO/$TABLE_REL"; then return 1; fi
+    if grep -q 'scripts/other.sh' "$REPO/$TABLE_REL"; then return 1; fi
     grep -q 'scripts/hooks/guard.sh' "$REPO/$TABLE_REL"
+}
+
+@test "gen: records content that only a merge commit introduced" {
+    # A conflict resolved in a merge has no post-image in `git log --raw`
+    # without -m: the next full rewrite of the table dropped it.
+    printf 'base\n' > "$REPO/scripts/hooks/guard.sh"; commit_all base
+    git -C "$REPO" checkout -q -b side
+    printf 'side\n' > "$REPO/scripts/hooks/guard.sh"; commit_all side
+    git -C "$REPO" checkout -q -
+    printf 'main\n' > "$REPO/scripts/hooks/guard.sh"; commit_all main
+    git -C "$REPO" merge -q side >/dev/null 2>&1 || true
+    printf 'resolved\n' > "$REPO/scripts/hooks/guard.sh"; commit_all merge
+    # A later version replaces it, so neither HEAD nor the index holds it.
+    printf 'later\n' > "$REPO/scripts/hooks/guard.sh"; commit_all later
+
+    run_gen
+    [ "$status" -eq 0 ]
+    grep -qx "$(sha_of $'resolved\n') scripts/hooks/guard.sh" "$REPO/$TABLE_REL"
 }
 
 @test "gen: includes a staged version not committed yet (pre-commit use)" {
