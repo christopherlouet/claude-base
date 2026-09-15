@@ -43,11 +43,11 @@ tests-first, an audit report, a clean PR) are things a native session never make
 | Gate | What it prevents | How enforced | Native? |
 |------|------------------|--------------|---------|
 | **Main-branch protection** | committing straight to `main` | PreToolUse (auto-branch) | No |
-| **Secret scan** | a hardcoded key/token reaching the repo | PreToolUse `secret-scan.sh` (built-in, zero-dep) | No |
+| **Secret scan** | a hardcoded key/token reaching the repo (writes only: reading `.env` or another secrets file is deliberately not blocked, and its content reaches the transcript) | PreToolUse `secret-scan.sh` (built-in, zero-dep) | No |
 | **Command validator** | fork bombs, `curl \| sh`, `--no-verify` gate-bypass, … | PreToolUse `command-validator.sh` | No |
 | **Destructive-op confirm** | `DROP`/`TRUNCATE`/`rm -rf` data loss via a command | PreToolUse destructive guard | No |
 | **Destructive-migration** | destructive DDL written into a migration *file* | PreToolUse `destructive-migration.sh` | No |
-| **Config-protection** | weakening a linter/tsconfig to silence a check | PreToolUse `config-protection.sh` | No |
+| **Config-protection** | weakening a linter/formatter config (ESLint, Prettier, Biome, Ruff, markdownlint — not tsconfig or pyproject) to silence a check | PreToolUse `config-protection.sh` | No |
 | **Bash-write guard** | dodging the guards above by writing via Bash (`>`/`tee`/`sed -i`) to a lint config, a secrets file, or a tracked file on `main` | PreToolUse `bash-write-guard.sh` | No |
 | **Pre-deploy build** | deploying when the prod build is broken | PreToolUse deploy guard | No |
 
@@ -104,7 +104,7 @@ somewhere else.
 | **Pre-push CI parity** | a push that fails CI on something runnable locally | `.husky/pre-push` → `preflight.sh` | No |
 | **Format + type/lint feedback** | unformatted code; type/lint errors slipping by | PostToolUse (auto-format + tsc/eslint re-injected) | No |
 | **Coverage check** | a test edit that drops coverage unnoticed | PostToolUse | No |
-| **Substance gate** | hollow tests, stubs, and focused `.only` tests that make a green suite prove nothing | PostToolUse `substance-check.sh` | No |
+| **Substance gate** | hollow tests, stubs, and focused `.only` tests that make a green suite prove nothing | PostToolUse `substance-check.sh` — **advisory**: flags the finding to the agent, never blocks | No |
 
 ## 4. Anti-gaming gates — *stop defeating the gate instead of satisfying it*
 
@@ -113,7 +113,7 @@ somewhere else.
 | **Counts self-heal** | derived counters drifting into a CI failure | pre-commit `sync-counts.sh` | No |
 | **`--no-verify` block** | skipping the whole pre-commit/pre-push stack | command-validator CATEGORY 9 | No |
 | **Config-protection** | "passing" the linter by disabling its rule | (see §2) | No |
-| **Substance gate** | "passing" tests with assertion-free / `.only` tests | (see §3) | No |
+| **Substance gate** | "passing" tests with assertion-free / `.only` tests — flagged, not blocked | (see §3) | No |
 
 ## 5. Audit gates — *on demand, expert-grade*
 
