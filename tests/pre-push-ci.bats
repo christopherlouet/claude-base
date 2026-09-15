@@ -153,3 +153,29 @@ mk_empty_project() { mkdir -p "$TEST_DIR/empty"; }
     run bash -c "cd '$TEST_DIR/empty' && bash '$HOOK' < '$TEST_DIR/input.json' 2>&1"
     [ "$status" -eq 0 ]
 }
+
+# --- npm's placeholder test script -------------------------------------------
+# `npm init -y` writes a test script that ALWAYS exits 1: running it refused
+# every push of a freshly initialised project.
+
+NPM_PLACEHOLDER='echo "Error: no test specified" && exit 1'
+
+mk_placeholder_project() {
+    mkdir -p "$TEST_DIR/proj"
+    jq -n --arg t "$1" '{name:"fixture", version:"1.0.0", scripts:{test:$t}}' \
+        > "$TEST_DIR/proj/package.json"
+}
+
+@test "pre-push-ci: npm's placeholder test script → push allowed, gate says why" {
+    mk_placeholder_project "$NPM_PLACEHOLDER"
+    run_in "$TEST_DIR/proj" "git push origin main"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"BLOCKED"* ]]
+    [[ "$output" == *"placeholder"* ]]
+}
+
+@test "pre-push-ci: a failing script that merely CONTAINS the placeholder still blocks" {
+    mk_placeholder_project "$NPM_PLACEHOLDER && echo more"
+    run_in "$TEST_DIR/proj" "git push origin main"
+    [ "$status" -eq 2 ]
+}

@@ -48,6 +48,13 @@ fi
 # Run the stack's test suite; block on failure (checked via PIPESTATUS so the
 # `| tail` does not mask the real exit status).
 if [ -f package.json ] && grep -q '"test"' package.json; then
+  # `npm init -y` writes a test script that ALWAYS exits 1. It is not a red
+  # suite, it is no suite: running it refused every commit of a fresh project.
+  # Exact match only — any other script is a real suite and still gates.
+  if [ "$(jq -r '.scripts.test // empty' package.json 2>/dev/null)" = 'echo "Error: no test specified" && exit 1' ]; then
+    echo "[pre-commit-tests] package.json test script is npm's placeholder - no suite to run. Replace it with a real test command to enable this gate."
+    exit 0
+  fi
   echo "Running tests before commit..."
   npm test 2>&1 | tail -20
   [ "${PIPESTATUS[0]}" -ne 0 ] && { echo "BLOCKED: Tests failed. Fix before committing."; exit 2; }

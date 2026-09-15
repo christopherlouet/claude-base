@@ -57,7 +57,12 @@ if [ -f package.json ]; then
     npx tsc --noEmit 2>&1 | tail -5
     [ "${PIPESTATUS[0]}" -ne 0 ] && { echo "FAILED: TypeScript"; FAILED=1; }
   fi
-  if grep -q '"test"' package.json; then
+  # `npm init -y` writes a test script that ALWAYS exits 1 — no suite, not a
+  # red one: running it refused every push of a fresh project. Exact match
+  # only; lint and type-check above still run.
+  if [ "$(jq -r '.scripts.test // empty' package.json 2>/dev/null)" = 'echo "Error: no test specified" && exit 1' ]; then
+    echo "[3/3] Tests skipped: package.json test script is npm's placeholder. Replace it with a real test command."
+  elif grep -q '"test"' package.json; then
     echo "[3/3] Tests..."
     npm test --silent 2>&1 | tail -10
     [ "${PIPESTATUS[0]}" -ne 0 ] && { echo "FAILED: Tests"; FAILED=1; }

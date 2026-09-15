@@ -92,3 +92,43 @@ EOF
     run_hook_in "$TEST_DIR" 'git commit -m "docs: update readme"'
     [ "$status" -eq 0 ]
 }
+
+# --- npm's placeholder test script -------------------------------------------
+# `npm init -y` writes a test script that ALWAYS exits 1. Running it blocked
+# every commit of a freshly initialised project, before it had a single test.
+
+# mk_npm_project_json <dir> <test-script> — like mk_npm_project, but the script
+# is JSON-encoded by jq, so it may carry the placeholder's embedded quotes.
+mk_npm_project_json() {
+    mkdir -p "$1"
+    jq -n --arg t "$2" '{name:"fixture", version:"1.0.0", scripts:{test:$t}}' > "$1/package.json"
+}
+
+NPM_PLACEHOLDER='echo "Error: no test specified" && exit 1'
+
+@test "pre-commit-tests: npm's placeholder test script → commit allowed, gate says why" {
+    mk_npm_project_json "$TEST_DIR/proj" "$NPM_PLACEHOLDER"
+    run_hook_in "$TEST_DIR/proj" 'git commit -m "chore: init"'
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"BLOCKED"* ]]
+    [[ "$output" == *"placeholder"* ]]
+}
+
+@test "pre-commit-tests: the placeholder written by the real 'npm init -y' is recognised" {
+    command -v npm >/dev/null 2>&1 || skip "npm not available"
+    mkdir -p "$TEST_DIR/proj"
+    (cd "$TEST_DIR/proj" && npm init -y >/dev/null 2>&1)
+    run_hook_in "$TEST_DIR/proj" 'git commit -m "chore: init"'
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"placeholder"* ]]
+}
+
+@test "pre-commit-tests: a failing script that merely CONTAINS the placeholder still blocks" {
+    # Exact match only: a real script that happens to start the same way is a
+    # real suite, and a red real suite must block.
+    command -v npm >/dev/null 2>&1 || skip "npm not available"
+    mk_npm_project_json "$TEST_DIR/proj" "$NPM_PLACEHOLDER && echo more"
+    run_hook_in "$TEST_DIR/proj" 'git commit -m "wip"'
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"BLOCKED"* ]]
+}
