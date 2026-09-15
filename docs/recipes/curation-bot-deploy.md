@@ -97,6 +97,16 @@ cd "$REPO"
     --digest-dir "$DIGEST" \
     --emit-issue \
     --emit-pr
+
+# Freshness signal for monitoring (see "Health alert" below): the time of this
+# SUCCESSFUL run, for the node_exporter textfile collector. Under `set -e` this
+# line is never reached when the watch failed. The collector directory is
+# root-owned, so the file is pre-created once for the bot user; a missing or
+# unwritable file is skipped rather than failing the run.
+METRIC=/var/lib/prometheus/node-exporter/curation_bot.prom
+if [ -w "$METRIC" ]; then
+    printf '# HELP curation_bot_last_success_timestamp_seconds Unix time of the last successful curation-bot run.\n# TYPE curation_bot_last_success_timestamp_seconds gauge\ncuration_bot_last_success_timestamp_seconds %s\n' "$(date +%s)" > "$METRIC"
+fi
 ```
 
 Notes:
@@ -183,6 +193,42 @@ jq '.findingCount' /var/lib/curation-bot/digest/digest.json
 - To rehearse without any side effects, run with `--dry-run` (no state write, no issue, no PR).
 
 ---
+
+## Health alert
+
+"Nightly" is a promise nobody checks unless something watches the result. A
+failure email from the bot itself cannot tell you it stopped running at all, so
+watch its **last success from another machine**:
+
+1. **Once, as root** on the bot box, pre-create the metric file for the bot user
+   (the textfile directory stays root-owned; the path is the Debian/Ubuntu
+   `prometheus-node-exporter` default):
+
+   ```bash
+   sudo install -o curation-bot -g curation-bot -m 0644 /dev/null \
+       /var/lib/prometheus/node-exporter/curation_bot.prom
+   ```
+
+   With `ProtectSystem=strict` in the unit, also add that file to `ReadWritePaths`.
+2. The wrapper above rewrites it after every successful run.
+3. In your Prometheus, alert when the success is older than one missed night **or
+   the series is absent**. A freshness rule alone returns nothing when the series
+   is missing, which is exactly the case of a bot that never wrote:
+
+   ```yaml
+   - alert: CurationBotStale
+     expr: (time() - max(curation_bot_last_success_timestamp_seconds) > 129600) or absent(curation_bot_last_success_timestamp_seconds)
+     for: 1h
+     labels:
+       severity: warning
+   ```
+
+   Test it with `promtool test rules` on series sampled like a real scrape (1m).
+   Sampled every 15m, a series is marked stale between points and `absent()`
+   fires in the gaps, so a "stale" case passes without the threshold doing anything.
+
+Token expiry is a separate failure (the run fails, the metric ages): a daily
+`claude -p` ping that alerts on 401 catches it a day sooner.
 
 ## Monthly discovery (the one LLM job — keep it separate)
 
