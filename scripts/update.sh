@@ -188,7 +188,9 @@ ${BOLD}OPTIONS${NC}
     --rules             Also update the rules/ directory
     --styles            Also update the output-styles/ directory
     --templates         Also update the templates/ directory
-    --hook-scripts      Also update the scripts in scripts/hooks/ (referenced by settings.json)
+    --hook-scripts      Also update the scripts in scripts/hooks/ (referenced by settings.json).
+                        Without it, update still replaces the ones that are unmodified
+                        copies of an older release; a customised one needs this + --force
     --all               Update everything (commands, settings, skills, agents, rules, styles, templates, hook-scripts).
                         Does NOT delete anything: add --clean explicitly for a wipe-and-replace (--all --clean)
     --graduate-full     Deliberately convert a minimal install (tier "minimal" in
@@ -1403,7 +1405,22 @@ update_directory() {
                 continue
             fi
 
-            # File differs
+            # File differs. An unmodified copy of an OLDER foundation release is
+            # not a customisation: its hash is in the pristine-hashes table, so it
+            # is replaced without --force. Without this, --hook-scripts left every
+            # changed security library of an older install behind (measured
+            # 2026-09-15, v5.3.0 -> v5.5.0). Pinned by tests/update.bats.
+            if [[ "$name" == "hook_scripts" ]] && _replaceable_without_force "$HOOK_SCRIPTS_SUBDIR/$rel_path" "$dest_file"; then
+                if $DRY_RUN; then
+                    echo -e "${DIM}[DRY-RUN]${NC} Update (unmodified older copy): $rel_path"
+                else
+                    cp "$src_file" "$dest_file"
+                    info "  $rel_path updated (unmodified copy of an older release)"
+                fi
+                ((dir_updated++)) || true
+                continue
+            fi
+
             if $FORCE_UPDATE; then
                 if $DRY_RUN; then
                     echo -e "${DIM}[DRY-RUN]${NC} Update: $rel_path"
@@ -1510,6 +1527,88 @@ update_directory() {
     SKIPPED=$((SKIPPED + dir_skipped))
 }
 
+# _replaceable_without_force <rel-path> <dest>
+# True when <dest> may be replaced without --force: an unmodified copy of an
+# older release (pristine-hashes table), and neither of the two cases where that
+# is not enough, both found in review:
+#   - <dest> is a symlink: cp would write through it, outside the project
+#   - this foundation is OLDER than the version the project records: the table
+#     lists every earlier version, so a newer install could be downgraded
+_replaceable_without_force() {
+    local rel="$1" dest="$2"
+    [[ -L "$dest" ]] && return 1
+    if [[ -z "${PRISTINE_DOWNGRADE_CHECKED:-}" ]]; then
+        PRISTINE_DOWNGRADE_CHECKED=1
+        PRISTINE_REFRESH_ALLOWED=true
+        local recorded
+        recorded=$(jq -r '.version // empty' "$TARGET_DIR/.claude/foundation.json" 2>/dev/null || true)
+        if [[ -n "$recorded" ]] && ! version_gte "$VERSION" "$recorded"; then
+            PRISTINE_REFRESH_ALLOWED=false
+            warning "This foundation ($VERSION) is older than the project's recorded version ($recorded): changed scripts are not replaced without --force"
+        fi
+    fi
+    $PRISTINE_REFRESH_ALLOWED || return 1
+    is_known_foundation_copy "$rel" "$dest"
+}
+
+# refresh_unmodified_hook_scripts
+# What a run WITHOUT --hook-scripts does to the hooks (maintainer decision
+# 2026-09-15): a security fix must reach an install on a plain `update`, not
+# only on the opt-in flag. It replaces only the scripts the project already has
+# that are unmodified copies of an older release (_replaceable_without_force:
+# pristine-hashes table, no symlink, no downgrade), plus substance-check.sh. It
+# never adds a hook — an unwired one would do nothing, a wired one missing is
+# reported by the drift check — and never touches settings.json.
+#
+# A refreshed hook may source a library the old install never had (a policy
+# split): command-validator would then fail CLOSED and refuse every command. So
+# the `_*.sh` libraries the refreshed SOURCE versions name are added when
+# missing, transitively (libraries source libraries). Read from the source, not
+# the copy on disk, so a dry run reports them too.
+refresh_unmodified_hook_scripts() {
+    local src_dir="$BASE_DIR/$HOOK_SCRIPTS_SUBDIR"
+    local dest_dir="$TARGET_DIR/$HOOK_SCRIPTS_SUBDIR"
+    [[ -d "$dest_dir" ]] || return 0
+
+    local dest rel src needed=""
+    for dest in "$dest_dir"/*.sh "$TARGET_DIR/scripts/substance-check.sh"; do
+        [[ -f "$dest" ]] || continue
+        rel="${dest#"$TARGET_DIR"/}"
+        src="$BASE_DIR/$rel"
+        [[ -f "$src" ]] || continue
+        if cmp -s "$src" "$dest"; then continue; fi
+        _replaceable_without_force "$rel" "$dest" || continue
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} Update (unmodified older copy): $rel"
+        else
+            cp "$src" "$dest"
+            chmod +x "$dest" 2>/dev/null || true
+            info "  $rel updated (unmodified copy of an older release)"
+        fi
+        ((UPDATED++)) || true
+        needed="$needed $( { grep -oE '_[A-Za-z0-9-]+\.sh' "$src" 2>/dev/null || true; } | sort -u | tr '\n' ' ')"
+    done
+
+    local lib pass=0 added
+    while [[ -n "${needed// /}" && $pass -lt 5 ]]; do
+        pass=$((pass + 1))
+        added=""
+        for lib in $needed; do
+            [[ -f "$src_dir/$lib" && ! -e "$dest_dir/$lib" ]] || continue
+            if $DRY_RUN; then
+                echo -e "${DIM}[DRY-RUN]${NC} Add (sourced by a refreshed hook): $HOOK_SCRIPTS_SUBDIR/$lib"
+            else
+                cp "$src_dir/$lib" "$dest_dir/$lib"
+                chmod +x "$dest_dir/$lib" 2>/dev/null || true
+                info "  $HOOK_SCRIPTS_SUBDIR/$lib added (sourced by a refreshed hook)"
+            fi
+            ((ADDED++)) || true
+            added="$added $( { grep -oE '_[A-Za-z0-9-]+\.sh' "$src_dir/$lib" 2>/dev/null || true; } | sort -u | tr '\n' ' ')"
+        done
+        needed="$added"
+    done
+}
+
 # C2 audit — support scripts outside scripts/hooks/. The hook
 # scripts/hooks/substance-check.sh requires the detector at
 # $TARGET_DIR/scripts/substance-check.sh and silently no-ops when it is
@@ -1533,7 +1632,8 @@ update_support_scripts() {
             debug "scripts/substance-check.sh: identical"
             return
         fi
-        if ! $FORCE_UPDATE; then
+        # Same rule as the hook scripts: an unmodified older copy is replaced.
+        if ! $FORCE_UPDATE && ! _replaceable_without_force "scripts/substance-check.sh" "$dest"; then
             if $DRY_RUN; then
                 DRY_RUN_CONFLICTS+=("scripts/substance-check.sh")
             else
@@ -2250,6 +2350,8 @@ main() {
                     ;;
                 claude_md) upgrade_claude_md ;;
             esac
+        elif [[ "$entry_type" == "dir" && "$arg1" == "hook_scripts" ]]; then
+            refresh_unmodified_hook_scripts
         fi
     done
 
@@ -2332,9 +2434,10 @@ main() {
         if ! _drift="$(detect_security_drift "$TARGET_DIR")"; then
             section "Security drift detected"
             printf '%s\n' "$_drift"
-            # --force is required: a diverged hook script is skipped as a conflict
-            # otherwise (settings.json is replaced by --settings on its own).
-            warning "settings.json / hook scripts are behind the foundation despite the version bump. Re-sync with: claude-base update --settings --hook-scripts --force"
+            # An unmodified older hook copy is replaced by --hook-scripts alone
+            # (pristine-hashes table); --force is only for a customised one, and
+            # discards the customisation (settings.json is replaced by --settings).
+            warning "settings.json / hook scripts are behind the foundation despite the version bump. Re-sync with: claude-base update --settings --hook-scripts (add --force only for a file reported as customised: it discards local edits)"
         fi
     fi
 }

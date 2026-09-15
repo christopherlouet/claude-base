@@ -1102,6 +1102,27 @@ hook_uses_legacy_contract() {
     hook_command_uses_legacy_contract "$code"
 }
 
+# is_known_foundation_copy <rel-path> <file>
+# Returns 0 when <file>'s sha256 is listed for <rel-path> in the pristine-hashes
+# table: it is an UNMODIFIED copy of some foundation release, so update may
+# replace it without --force. Anything else — edited, unknown path, no table,
+# no hash tool — returns 1, which keeps update's conservative skip. The table is
+# generated from the full history by scripts/gen-pristine-hashes.sh, because an
+# install is a depth-1 clone. Override the table with PRISTINE_HASHES_FILE.
+is_known_foundation_copy() {
+    local rel="$1" file="$2" table sha
+    table="${PRISTINE_HASHES_FILE:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/pristine-hashes.txt}"
+    [ -f "$table" ] && [ -f "$file" ] || return 1
+    if command -v sha256sum >/dev/null 2>&1; then
+        sha=$(sha256sum "$file" | cut -d' ' -f1)
+    elif command -v shasum >/dev/null 2>&1; then
+        sha=$(shasum -a 256 "$file" | cut -d' ' -f1)
+    else
+        return 1
+    fi
+    [ -n "$sha" ] && grep -qxF "$sha $rel" "$table"
+}
+
 # Scans a downstream project for security configuration that has drifted behind
 # the foundation, printing one finding per line to stdout. Detects:
 #   - hook scripts still on the legacy TOOL_* env contract (silent no-op)
@@ -1120,7 +1141,7 @@ detect_security_drift() {
         for f in "$hooks_dir"/*.sh; do
             [ -e "$f" ] || continue
             if hook_uses_legacy_contract "$f"; then
-                printf 'hook-contract: %s reads tool input from a TOOL_* env var (pre-stdin contract) — it will silently no-op; re-sync with `update --hook-scripts --force`\n' "$(basename "$f")"
+                printf 'hook-contract: %s reads tool input from a TOOL_* env var (pre-stdin contract) — it will silently no-op; re-sync with `update --hook-scripts` (add --force only if it is reported as customised: it discards local edits)\n' "$(basename "$f")"
                 count=$((count + 1))
             fi
         done
@@ -1159,7 +1180,7 @@ detect_security_drift() {
                 # Every scripts/hooks/NAME.sh the command names must exist on disk.
                 for ref in $(printf '%s' "$cmd" | grep -oE 'scripts/hooks/[A-Za-z0-9_-]+\.sh' | sort -u); do
                     if [ ! -f "$target/$ref" ]; then
-                        printf 'hook-missing-script: the %s hook runs %s, which is not on disk — it exits 127 on every invocation; re-sync with `update --hook-scripts --force`\n' "$ev" "$(basename "$ref")"
+                        printf 'hook-missing-script: the %s hook runs %s, which is not on disk — it exits 127 on every invocation; re-sync with `update --hook-scripts`\n' "$ev" "$(basename "$ref")"
                         count=$((count + 1))
                     fi
                 done
@@ -1194,7 +1215,13 @@ detect_security_drift() {
             pname="$(basename "$policy")"
             [ -f "$target/scripts/hooks/$pname" ] || continue
             if ! cmp -s "$policy" "$target/scripts/hooks/$pname"; then
-                printf 'policy-stale: %s differs from the foundation — a rule added upstream is missing here, so what it refuses is not what you think; re-sync with `update --hook-scripts --force`\n' "$pname"
+                # An unmodified older copy is replaced by --hook-scripts alone;
+                # only an edited one needs --force, which discards the edit.
+                if is_known_foundation_copy "scripts/hooks/$pname" "$target/scripts/hooks/$pname"; then
+                    printf 'policy-stale: %s is an unmodified copy of an older foundation release — a rule added upstream is missing here, so what it refuses is not what you think; re-sync with `update --hook-scripts`\n' "$pname"
+                else
+                    printf 'policy-stale: %s differs from the foundation and matches no release (customised?) — a rule added upstream may be missing; review the diff, then re-sync with `update --hook-scripts --force`, which discards local edits\n' "$pname"
+                fi
                 count=$((count + 1))
             fi
         done
@@ -1219,4 +1246,4 @@ export -f on_error enable_error_handler
 export -f cache_init cache_valid cache_read cache_write
 export -f clean_claude_dirs backup_claude_dirs rewrite_claude_md_paths ensure_claude_md_imports
 export -f claude_md_template_for_type seed_gitignore_from_foundation
-export -f hook_uses_legacy_contract detect_security_drift
+export -f hook_uses_legacy_contract detect_security_drift is_known_foundation_copy

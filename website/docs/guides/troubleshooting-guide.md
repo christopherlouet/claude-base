@@ -218,16 +218,21 @@ claude-base doctor ./my-project   # section "6. Security drift"
 ```
 
 `update` also prints a "Security drift detected" advisory at the end of a run
-that left these surfaces behind. To re-sync (overwrites diverged hook scripts
-and replaces `settings.json` — back up local hook customizations first):
+that left these surfaces behind. To re-sync (replaces `settings.json` and every
+hook script you never edited):
 
 ```bash
-claude-base update --settings --hook-scripts --force ./my-project
+claude-base update --settings --hook-scripts ./my-project
 ```
 
-`--force` is required because a diverged hook is otherwise skipped as a possible
-local customization. An interactive `update --hook-scripts` (without `-y`) lets
-you resolve each conflict individually instead.
+A hook script that is an unmodified copy of an older release is recognised by
+its hash (`scripts/lib/pristine-hashes.txt` lists every version the foundation
+shipped) and replaced without `--force` — by a plain `update` too, which also adds
+any library the refreshed script sources; `--hook-scripts` additionally adds new
+hook scripts. One that matches no release is treated
+as a local customisation: it is skipped, and the advisory says so. Review it,
+then add `--force`, which discards the edit, or run `update --hook-scripts`
+without `-y` to resolve each one individually.
 
 ---
 
