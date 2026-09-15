@@ -114,6 +114,7 @@ The exact retry bound and the failure-classification heuristics are tuned upstre
 | **Base integrity check** (`base-integrity-check.sh`) | PostToolUse (Edit/Write/NotebookEdit) | Advisory, foundation-repo only: when the edited file lives in `.claude/skills`/`agents`/`commands`/`rules/` or is `.claude/settings.json`, runs `validate-counts.sh` in warning mode as a reminder to sync counters / catalog / SessionStart message. Never blocks. Disable: `SKIP_BASE_INTEGRITY=1` |
 | **Setup init** | Setup (init) | Installs dependencies on first run |
 | **Setup maintenance** | Setup (maintenance) | Periodic audit and updates |
+| **Lifecycle logs** (`log-event.sh`) | Notification, SubagentStop, TeammateIdle, TaskCompleted, SessionEnd, PreCompact, PostCompact, InstructionsLoaded, Elicitation, ElicitationResult, PermissionDenied, UserPromptSubmit, PostToolUseFailure | One line per event in `~/.local/state/claude-base/<log>.log` (`$XDG_STATE_HOME` honoured, `CLAUDE_BASE_LOG_DIR` overrides), directory 700 and files 600. Records a tag, a UTC timestamp and named scalar fields only (`tool_name`, `notification_type`, `reason`, `trigger`) — never the payload's text, so a refused command or a transcript path cannot land in a log. Replaces fourteen inline hooks that wrote to world-readable `/tmp` |
 | **Notification permission** | Notification (permission_prompt) | Logs permission requests |
 | **Notification idle** | Notification (idle_prompt) | Logs when Claude is waiting for the user |
 | **SubagentStop** | SubagentStop | Logs the end of sub-agents |

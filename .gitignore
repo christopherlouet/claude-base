@@ -28,9 +28,8 @@ npm-debug.log*
 # Test coverage
 coverage/
 
-# Claude Code — config locale uniquement
-# .claude/ et CLAUDE.md sont VOLONTAIREMENT versionnes (partages en equipe).
-# Voir CONTRIBUTING.md : "Versionner .claude/ et CLAUDE.md dans git".
+# Claude Code — local config only
+# .claude/ and CLAUDE.md are committed ON PURPOSE (shared with the team).
 CLAUDE.local.md
 .claude/settings.local.json
 # What an update WRITES and no checkout should carry. The worktree rule
@@ -72,7 +71,7 @@ website/docs/rules/
 # of the repo so Dependabot doesn't scan it (npm install resolves at build time).
 website/package-lock.json
 
-# Installers locaux
+# Local installers
 *.deb
 
 # Curation engine runtime state (written by the nightly watch; per-machine, not

@@ -165,6 +165,7 @@ ORIG_LINES=$(printf '%s\n' "$CLEAN" | wc -l | tr -d ' ')
 NEW_LINES=$(printf '%s\n' "$TRIMMED" | wc -l | tr -d ' ')
 SHORT_CMD=$(printf '%s' "$CMD" | head -c 50)
 {
+    ( umask 077; mkdir -p "$(dirname "$HOOK_REWRITER_METRIC_LOG")" )
     printf '%s tool=Bash cmd=%s orig=%s filtered=%s\n' \
         "$(date -u +%FT%TZ)" "$SHORT_CMD" "$ORIG_LINES" "$NEW_LINES" \
         >> "$HOOK_REWRITER_METRIC_LOG"
