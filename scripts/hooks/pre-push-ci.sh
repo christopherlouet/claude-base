@@ -42,7 +42,20 @@ is_git_push_command "$CMD" || exit 0
 echo "=== Pre-push CI check ==="
 FAILED=0
 
-if [ -f package.json ]; then
+# `npm init -y` writes a test script that ALWAYS exits 1 — no npm suite, not a
+# red one: running it refused every push of a fresh project. It means "no NPM
+# suite" only: a package.json holding nothing else (husky in a Python or Go
+# repo) does not claim the project, so the Python / Go checks still run. Exact
+# match, and only when no pretest/posttest makes `npm test` a real suite.
+NPM_PLACEHOLDER=0
+if [ -f package.json ] && [ "$(jq -r 'if (.scripts.pretest // .scripts.posttest) then "" else (.scripts.test // "") end' package.json 2>/dev/null)" = 'echo "Error: no test specified" && exit 1' ]; then
+  NPM_PLACEHOLDER=1
+  echo "[npm] tests skipped: package.json test script is npm's placeholder. Replace it with a real test command."
+fi
+
+if [ -f package.json ] && { grep -q '"lint"' package.json || grep -q '"typecheck"' package.json \
+     || { [ -f tsconfig.json ] && [ -f node_modules/.bin/tsc ]; } \
+     || { [ "$NPM_PLACEHOLDER" = 0 ] && grep -q '"test"' package.json; }; }; then
   if grep -q '"lint"' package.json; then
     echo "[1/3] Lint..."
     npm run lint --silent 2>&1 | tail -5
@@ -57,7 +70,7 @@ if [ -f package.json ]; then
     npx tsc --noEmit 2>&1 | tail -5
     [ "${PIPESTATUS[0]}" -ne 0 ] && { echo "FAILED: TypeScript"; FAILED=1; }
   fi
-  if grep -q '"test"' package.json; then
+  if [ "$NPM_PLACEHOLDER" = 0 ] && grep -q '"test"' package.json; then
     echo "[3/3] Tests..."
     npm test --silent 2>&1 | tail -10
     [ "${PIPESTATUS[0]}" -ne 0 ] && { echo "FAILED: Tests"; FAILED=1; }

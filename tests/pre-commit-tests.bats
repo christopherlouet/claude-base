@@ -92,3 +92,83 @@ EOF
     run_hook_in "$TEST_DIR" 'git commit -m "docs: update readme"'
     [ "$status" -eq 0 ]
 }
+
+# --- npm's placeholder test script -------------------------------------------
+# `npm init -y` writes a test script that ALWAYS exits 1. Running it blocked
+# every commit of a freshly initialised project, before it had a single test.
+
+# mk_npm_project_json <dir> <test-script> — like mk_npm_project, but the script
+# is JSON-encoded by jq, so it may carry the placeholder's embedded quotes.
+mk_npm_project_json() {
+    mkdir -p "$1"
+    jq -n --arg t "$2" '{name:"fixture", version:"1.0.0", scripts:{test:$t}}' > "$1/package.json"
+}
+
+NPM_PLACEHOLDER='echo "Error: no test specified" && exit 1'
+
+@test "pre-commit-tests: npm's placeholder test script → commit allowed, gate says why" {
+    mk_npm_project_json "$TEST_DIR/proj" "$NPM_PLACEHOLDER"
+    run_hook_in "$TEST_DIR/proj" 'git commit -m "chore: init"'
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"BLOCKED"* ]]
+    [[ "$output" == *"placeholder"* ]]
+}
+
+@test "pre-commit-tests: the placeholder written by the real 'npm init -y' is recognised" {
+    command -v npm >/dev/null 2>&1 || skip "npm not available"
+    mkdir -p "$TEST_DIR/proj"
+    (cd "$TEST_DIR/proj" && npm init -y >/dev/null 2>&1)
+    run_hook_in "$TEST_DIR/proj" 'git commit -m "chore: init"'
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"placeholder"* ]]
+}
+
+@test "pre-commit-tests: a failing script that merely CONTAINS the placeholder still blocks" {
+    # Exact match only: a real script that happens to start the same way is a
+    # real suite, and a red real suite must block.
+    command -v npm >/dev/null 2>&1 || skip "npm not available"
+    mk_npm_project_json "$TEST_DIR/proj" "$NPM_PLACEHOLDER && echo more"
+    run_hook_in "$TEST_DIR/proj" 'git commit -m "wip"'
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"BLOCKED"* ]]
+}
+
+# The placeholder means "no npm suite", NOT "no suite": a Python or Go project
+# often carries a package.json only for husky/commitlint. Skipping out of the
+# hook there let its red pytest / go test through (found in review).
+
+# fake_red_tool <name> — put a <name> that always fails first on PATH.
+fake_red_tool() {
+    mkdir -p "$TEST_DIR/bin"
+    printf '#!/bin/sh\necho "FAKE %s RED"\nexit 1\n' "$1" > "$TEST_DIR/bin/$1"
+    chmod +x "$TEST_DIR/bin/$1"
+    export PATH="$TEST_DIR/bin:$PATH"
+}
+
+@test "pre-commit-tests: placeholder package.json in a Python project still runs the red pytest" {
+    mk_npm_project_json "$TEST_DIR/proj" "$NPM_PLACEHOLDER"
+    touch "$TEST_DIR/proj/pyproject.toml"
+    fake_red_tool pytest
+    run_hook_in "$TEST_DIR/proj" 'git commit -m "wip"'
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"FAKE pytest RED"* ]]
+}
+
+@test "pre-commit-tests: placeholder package.json in a Go project still runs the red go test" {
+    mk_npm_project_json "$TEST_DIR/proj" "$NPM_PLACEHOLDER"
+    printf 'module x\n' > "$TEST_DIR/proj/go.mod"
+    fake_red_tool go
+    run_hook_in "$TEST_DIR/proj" 'git commit -m "wip"'
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"FAKE go RED"* ]]
+}
+
+@test "pre-commit-tests: a placeholder test with a real pretest is a real suite" {
+    # `npm test` runs pretest/posttest too; only a bare placeholder is no suite.
+    command -v npm >/dev/null 2>&1 || skip "npm not available"
+    mkdir -p "$TEST_DIR/proj"
+    jq -n --arg t "$NPM_PLACEHOLDER" '{name:"fixture", version:"1.0.0", scripts:{pretest:"exit 3", test:$t}}' \
+        > "$TEST_DIR/proj/package.json"
+    run_hook_in "$TEST_DIR/proj" 'git commit -m "wip"'
+    [ "$status" -eq 2 ]
+}

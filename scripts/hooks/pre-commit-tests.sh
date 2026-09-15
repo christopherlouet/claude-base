@@ -47,7 +47,19 @@ fi
 
 # Run the stack's test suite; block on failure (checked via PIPESTATUS so the
 # `| tail` does not mask the real exit status).
-if [ -f package.json ] && grep -q '"test"' package.json; then
+#
+# `npm init -y` writes a test script that ALWAYS exits 1. It is no npm suite,
+# not a red one: running it refused every commit of a fresh project. It means
+# "no NPM suite" only — a Python or Go project often carries a package.json
+# just for husky, so the pytest / go test checks below still run. Exact match,
+# and only when no pretest/posttest makes `npm test` a real suite anyway.
+NPM_PLACEHOLDER=0
+if [ -f package.json ] && [ "$(jq -r 'if (.scripts.pretest // .scripts.posttest) then "" else (.scripts.test // "") end' package.json 2>/dev/null)" = 'echo "Error: no test specified" && exit 1' ]; then
+  NPM_PLACEHOLDER=1
+  echo "[pre-commit-tests] npm test skipped: package.json test script is npm's placeholder. Replace it with a real test command to enable this gate."
+fi
+
+if [ "$NPM_PLACEHOLDER" = 0 ] && [ -f package.json ] && grep -q '"test"' package.json; then
   echo "Running tests before commit..."
   npm test 2>&1 | tail -20
   [ "${PIPESTATUS[0]}" -ne 0 ] && { echo "BLOCKED: Tests failed. Fix before committing."; exit 2; }
