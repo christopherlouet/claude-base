@@ -203,10 +203,21 @@ validate_command() {
   # capitalised `/Users` in the pattern can never match. (The test for the macOS
   # form is what caught it; the Linux cases passed and hid it.)
   #
-  # `~` and `$HOME` are deliberately out of scope: same harm, different lexical
-  # form, and their false-positive profile (`rm -rf ~/.cache/foo`) needs its own
-  # corpus measurement before any widening.
   if echo "$CMD_NQ" | grep -qE 'rm\s+([^;|&]*\s)?/(home|users)(/[^/[:space:];|&]+)?/?\*?(\s|$)'; then
+    printf '%s\n' "BLOCKED: Deletion of a home directory."
+    return 1
+  fi
+  # The same home through `~`, `~name` and `$HOME` / `${HOME}` / `${HOME:?}`.
+  # The shell expands them only AFTER this guard has read the command, so the
+  # literal rule above never saw one: the 2026-09-14 audit found `rm -rf $HOME`,
+  # `rm -fr $HOME` and `rm -rf ~/` all allowed.
+  #
+  # Same two-level shape: the whole home (bare, trailing slash, `/*` glob) is
+  # refused, anything inside it stays ordinary work. Measured before widening on
+  # 611 real agent rm commands: every one aimed at `~` was a subpath, and none
+  # changed verdict. The token must START the argument, so `notes.txt~`,
+  # `./~draft` and `$HOME_BUILD_DIR` are not a home.
+  if echo "$CMD_NQ" | grep -qE 'rm\s+([^;|&]*\s)?(~[a-z0-9_.-]*|\$home|\$\{home(:[?-][^}]*)?\})/?\*?(\s|$)'; then
     printf '%s\n' "BLOCKED: Deletion of a home directory."
     return 1
   fi

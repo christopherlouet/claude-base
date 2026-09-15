@@ -489,10 +489,8 @@ assert_allow() {
 # macOS — CI runs a macOS column. /root is root's own home, so it is a bare-root
 # case like /usr rather than a container.
 #
-# Deliberately NOT covered here: `~` and `$HOME`. They are the same harm in a
-# different lexical form, with their own false-positive profile
-# (`rm -rf ~/.cache/foo` is ordinary), and widening to shell expansions is a
-# separate question that deserves its own corpus measurement.
+# `~` and `$HOME` — the same harm in the lexical form an agent actually types —
+# have their own section below, measured against real agent commands.
 
 @test "policy-dc: denies deletion of an entire home directory" {
     run_policy "rm -rf /home/someuser"
@@ -551,5 +549,116 @@ assert_allow() {
 
 @test "policy-dc: ALLOWS a path merely containing the word home" {
     run_policy "rm -rf ./homepage/dist"
+    assert_allow
+}
+
+# --- Home directories through `~` and `$HOME` --------------------------------
+#
+# The competitive audit of 2026-09-14 ran an install and found `rm -rf $HOME`,
+# `rm -fr $HOME` and `rm -rf ~/` all allowed, while `rm -rf /home/<user>` was
+# refused: the rule above reads a literal path, and the shell expands `~` and
+# `$HOME` only AFTER the guard has looked. The platform's `Bash(rm -rf ~:*)`
+# deny covers one spelling and one flag order.
+#
+# Same two-level shape as the literal rule: the whole home is refused, anything
+# inside it is ordinary work. Measured before widening against 14,339 real agent
+# Bash commands: every rm aimed at `~` in that corpus was a SUBPATH
+# (`~/.config/app`, `~/certs-backup`), and each must stay allowed.
+#
+# The payloads live in this file, never on a command line: the installed
+# validator would refuse the command that carries them.
+
+@test "policy-dc: denies rm -rf \$HOME" {
+    run_policy 'rm -rf $HOME'
+    assert_deny
+}
+
+@test "policy-dc: denies rm -fr \$HOME (flag order)" {
+    run_policy 'rm -fr $HOME'
+    assert_deny
+}
+
+@test "policy-dc: denies quoted and braced \$HOME forms" {
+    run_policy 'rm -rf "$HOME"'
+    assert_deny
+    run_policy 'rm -rf "${HOME}/"'
+    assert_deny
+    run_policy 'rm -rf "${HOME:?}"/*'
+    assert_deny
+}
+
+@test "policy-dc: denies \$HOME with a trailing slash or glob" {
+    run_policy 'rm -rf $HOME/'
+    assert_deny
+    run_policy 'rm -rf $HOME/*'
+    assert_deny
+}
+
+@test "policy-dc: denies rm -rf ~ and ~/" {
+    run_policy 'rm -rf ~'
+    assert_deny
+    run_policy 'rm -rf ~/'
+    assert_deny
+    run_policy 'rm -rf ~/*'
+    assert_deny
+}
+
+@test "policy-dc: denies another user's home through ~name" {
+    run_policy 'rm -rf ~someuser'
+    assert_deny
+    run_policy 'rm -rf ~someuser/'
+    assert_deny
+}
+
+@test "policy-dc: denies long-flag and separated-flag forms on ~" {
+    run_policy 'rm --recursive --force ~'
+    assert_deny
+    run_policy 'rm -r -f $HOME'
+    assert_deny
+}
+
+@test "policy-dc: denies a home through ~ listed AFTER another path" {
+    run_policy 'rm -rf ./build ~/'
+    assert_deny
+}
+
+@test "policy-dc: denies a home wipe chained after another command" {
+    run_policy 'cd /tmp && rm -rf $HOME'
+    assert_deny
+}
+
+@test "policy-dc: ALLOWS deleting a directory inside ~" {
+    run_policy 'rm -rf ~/.cache/blog-destroy'
+    assert_allow
+    run_policy 'rm -rf ~/certs-backup-20260816'
+    assert_allow
+}
+
+@test "policy-dc: ALLOWS deleting a directory inside \$HOME" {
+    run_policy 'rm -rf "$HOME/project/build"'
+    assert_allow
+    run_policy 'rm -rf ${HOME}/.config/app'
+    assert_allow
+}
+
+@test "policy-dc: ALLOWS a variable whose name merely starts with HOME" {
+    run_policy 'rm -rf $HOME_BUILD_DIR'
+    assert_allow
+    run_policy 'rm -rf "${HOMEBREW_CACHE}"'
+    assert_allow
+}
+
+@test "policy-dc: ALLOWS a file whose name merely starts with ~" {
+    # An editor backup like `notes.txt~` and a relative `./~draft` are not a home.
+    run_policy 'rm -f notes.txt~'
+    assert_allow
+    run_policy 'rm -f ./~draft'
+    assert_allow
+}
+
+@test "policy-dc: ALLOWS a command that only mentions \$HOME without rm" {
+    run_policy 'ls -la $HOME'
+    assert_allow
+    run_policy 'echo ~'
     assert_allow
 }
