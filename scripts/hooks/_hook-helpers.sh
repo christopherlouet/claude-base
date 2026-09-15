@@ -32,7 +32,9 @@
 HOOK_HELPERS_LOADED=1
 
 HOOK_REWRITER_SENTINEL="${HOOK_REWRITER_SENTINEL:-/tmp/claude-rewriter-supported}"
-HOOK_REWRITER_METRIC_LOG="${HOOK_REWRITER_METRIC_LOG:-${XDG_STATE_HOME:-$HOME/.local/state}/claude-base/rewriter.log}"
+# ${HOME:-/nonexistent}: an unset HOME under `set -u` must not abort the hook;
+# the write then simply fails, and it is best effort.
+HOOK_REWRITER_METRIC_LOG="${HOOK_REWRITER_METRIC_LOG:-${XDG_STATE_HOME:-${HOME:-/nonexistent}/.local/state}/claude-base/rewriter.log}"
 HOOK_LEGACY_NOTICE_SENTINEL="${HOOK_LEGACY_NOTICE_SENTINEL:-/tmp/claude-base-legacy-warned}"
 
 # hook_bail_if_disabled <ENV_VAR_NAME>

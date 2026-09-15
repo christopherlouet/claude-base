@@ -49,6 +49,40 @@ mode_of() {
     [ "$(mode_of "$CLAUDE_BASE_LOG_DIR/sessions.log")" = "600" ]
 }
 
+@test "log-event: an existing default directory and log are narrowed to 700 / 600" {
+    # umask only governs what it creates; a pre-existing wider mode stayed.
+    unset CLAUDE_BASE_LOG_DIR
+    local dir="$TEST_DIR/xdg/claude-base"
+    mkdir -p "$dir"; chmod 755 "$dir"
+    touch "$dir/sessions.log"; chmod 644 "$dir/sessions.log"
+    printf '{}' | XDG_STATE_HOME="$TEST_DIR/xdg" bash "$LOGGER" sessions SESSION-END
+    [ "$(mode_of "$dir")" = "700" ]
+    [ "$(mode_of "$dir/sessions.log")" = "600" ]
+}
+
+@test "log-event: a directory the user chose keeps its mode, the log is still 600" {
+    # CLAUDE_BASE_LOG_DIR may be a shared directory; narrowing it is not ours.
+    mkdir -p "$CLAUDE_BASE_LOG_DIR"; chmod 755 "$CLAUDE_BASE_LOG_DIR"
+    touch "$CLAUDE_BASE_LOG_DIR/sessions.log"; chmod 644 "$CLAUDE_BASE_LOG_DIR/sessions.log"
+    printf '{}' | bash "$LOGGER" sessions SESSION-END
+    [ "$(mode_of "$CLAUDE_BASE_LOG_DIR")" = "755" ]
+    [ "$(mode_of "$CLAUDE_BASE_LOG_DIR/sessions.log")" = "600" ]
+}
+
+@test "log-event: a symlinked log is not written through" {
+    mkdir -p "$CLAUDE_BASE_LOG_DIR"
+    : > "$TEST_DIR/elsewhere"
+    ln -s "$TEST_DIR/elsewhere" "$CLAUDE_BASE_LOG_DIR/sessions.log"
+    printf '{}' | bash "$LOGGER" sessions SESSION-END
+    [ ! -s "$TEST_DIR/elsewhere" ]
+}
+
+@test "log-event: an unset HOME is silent and exits 0" {
+    run bash -c "printf '{}' | env -u HOME -u XDG_STATE_HOME -u CLAUDE_BASE_LOG_DIR bash '$LOGGER' sessions SESSION-END"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
 @test "log-event: records a named scalar field from the payload" {
     skip_if_no_jq
     printf '{"tool_name":"Bash"}' | bash "$LOGGER" failures TOOL-FAIL tool_name
@@ -127,6 +161,6 @@ mode_of() {
 
 @test "settings.json: hook messages are English (no French left)" {
     skip_if_no_jq
-    run bash -c "jq -r '.. | strings' '$SETTINGS' | grep -niE '\\b(demandee|termine|fin de session|du contexte|personnalises|detectes|verifiez|depot)\\b'"
+    run bash -c "jq -r '.. | strings' '$SETTINGS' | grep -niE '[éèêàâçîôû]|\\b(demandee|termine|fin de session|du contexte|personnalises|detectes|verifiez|depot)\\b'"
     [ -z "$output" ] || { printf '%s\n' "$output" >&2; return 1; }
 }

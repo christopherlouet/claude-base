@@ -104,22 +104,8 @@ The exact retry bound and the failure-classification heuristics are tuned upstre
 | **Base integrity check** (`base-integrity-check.sh`) | PostToolUse (Edit/Write/NotebookEdit) | Advisory, foundation-repo only: when the edited file lives in `.claude/skills`/`agents`/`commands`/`rules/` or is `.claude/settings.json`, runs `validate-counts.sh` in warning mode as a reminder to sync counters / catalog / SessionStart message. Never blocks. Disable: `SKIP_BASE_INTEGRITY=1` |
 | **Setup init** | Setup (init) | Installs dependencies on first run |
 | **Setup maintenance** | Setup (maintenance) | Periodic audit and updates |
-| **Lifecycle logs** (`log-event.sh`) | Notification, SubagentStop, TeammateIdle, TaskCompleted, SessionEnd, PreCompact, PostCompact, InstructionsLoaded, Elicitation, ElicitationResult, PermissionDenied, UserPromptSubmit, PostToolUseFailure | One line per event in `~/.local/state/claude-base/<log>.log` (`$XDG_STATE_HOME` honoured, `CLAUDE_BASE_LOG_DIR` overrides), directory 700 and files 600. Records a tag, a UTC timestamp and named scalar fields only (`tool_name`, `notification_type`, `reason`, `trigger`) — never the payload's text, so a refused command or a transcript path cannot land in a log. Replaces fourteen inline hooks that wrote to world-readable `/tmp` |
-| **Notification permission** | Notification (permission_prompt) | Logs permission requests |
-| **Notification idle** | Notification (idle_prompt) | Logs when Claude is waiting for the user |
-| **SubagentStop** | SubagentStop | Logs the end of sub-agents |
-| **SessionEnd** | SessionEnd | Logs end of session |
-| **PreCompact** | PreCompact | Logs before context compaction |
-| **PostCompact** | PostCompact | Logs after context compaction (async) |
-| **TeammateIdle** | TeammateIdle | Logs when a teammate becomes idle (async) |
-| **TaskCompleted** | TaskCompleted | Logs when a task is completed (async) |
-| **InstructionsLoaded** | InstructionsLoaded | Logs instruction loading (async) |
-| **Elicitation** | Elicitation | Logs MCP Elicitation requests (async) |
-| **ElicitationResult** | ElicitationResult | Logs MCP Elicitation responses (async) |
-| **PermissionDenied** | PermissionDenied | Logs permissions denied by auto mode (async, CLI 2.1.111+) |
-| **UserPromptSubmit** | UserPromptSubmit | Logs user prompt submissions (async) |
+| **Lifecycle logs** (`log-event.sh`) | Notification, SubagentStop, TeammateIdle, TaskCompleted, SessionEnd, PreCompact, PostCompact, InstructionsLoaded, Elicitation, ElicitationResult, PermissionDenied, UserPromptSubmit, PostToolUseFailure | One line per event in `~/.local/state/claude-base/<log>.log` (`$XDG_STATE_HOME` honoured, `CLAUDE_BASE_LOG_DIR` overrides), directory 700 and files 600. Records a tag, a UTC timestamp and named scalar fields only (`tool_name`, `notification_type`, `agent_type`, `reason`, `trigger`, `mcp_server_name`) — never the payload's text, so a refused command or a transcript path cannot land in a log. Replaces fourteen inline hooks that wrote to world-readable `/tmp` |
 | **Prompt context injection** | UserPromptSubmit | Injects branch, modified files, LOC diff and `/assistant-auto` hint if no slash command (disable: `SKIP_PROMPT_CONTEXT=1`). Also injects a once-per-session **vendor-precedence** hint when a graduated vendor skill is installed (prefer it over the foundation pointer, vendor-precedence T3; pure-shell helper `_vendor-precedence-hint.sh`, disable: `SKIP_VENDOR_PRECEDENCE=1`) |
-| **PostToolUseFailure** | PostToolUseFailure | Logs tool failures for debugging (async) |
 | **Check .env** | SessionStart | Checks that .env is in .gitignore |
 | **Third-party hooks warning** | SessionStart | Warns if custom hooks are detected |
 | **CLI version probe** | SessionStart | Probes Claude Code version for the output rewriter (requires 2.1.121+). Writes `/tmp/claude-rewriter-supported` (`1` or `0`) consumed by post-edit and bash-output rewriter hooks |
@@ -196,20 +182,24 @@ Migration path: existing projects must run `claude-base update -f --all <project
 | `BASH_OUTPUT_FILTER_VERBOSE=1` | Keep both filtered and original views in the rewritten output |
 | `BASH_OUTPUT_FILTER_THRESHOLD=<N>` | Override the noise threshold (default 30 lines) below which Bash outputs pass through unchanged |
 | `HOOK_REWRITER_SENTINEL=<path>` | Override the capability sentinel path (default `/tmp/claude-rewriter-supported`). Used by tests to isolate parallel runs under `$BATS_TEST_TMPDIR` |
-| `HOOK_REWRITER_METRIC_LOG=<path>` | Override the bash filter metric log path (default `/tmp/claude-rewriter.log`). Same testing rationale |
+| `HOOK_REWRITER_METRIC_LOG=<path>` | Override the bash filter metric log path (default `~/.local/state/claude-base/rewriter.log`, created 600: it holds the start of each command). Same testing rationale |
 | `HOOK_LEGACY_NOTICE_SENTINEL=<path>` | Override the legacy notice sentinel base path (default `/tmp/claude-base-legacy-warned`, suffixed with `.PPID`). Same testing rationale |
 
 ## Log Files
 
-Logging hooks write to `/tmp/` (append mode, cleared on restart):
+The lifecycle logging hooks (`log-event.sh`) and the output rewriter append to
+`~/.local/state/claude-base/` (`$XDG_STATE_HOME/claude-base/` when set; override with
+`CLAUDE_BASE_LOG_DIR`). The directory is 700 and each file 600. A line holds a UTC
+timestamp, a tag and named scalar fields, never the payload's text. Earlier versions
+wrote `/tmp/claude-*.log`, readable by every account on the machine: delete those.
 
 | File | Content |
 |---------|---------|
-| `/tmp/claude-sessions.log` | Startup, end of session, compaction, tasks |
-| `/tmp/claude-agents.log` | Sub-agent and teammate activity |
-| `/tmp/claude-notifications.log` | Permissions and user waits |
-| `/tmp/claude-mcp.log` | MCP Elicitation events |
-| `/tmp/claude-permissions.log` | Permissions denied by the auto mode classifier |
-| `/tmp/claude-prompts.log` | User prompt submissions (timestamps) |
-| `/tmp/claude-failures.log` | Tool failures with tool name |
-| `/tmp/claude-rewriter.log` | Output rewriter activity (tool name, original / filtered line counts) |
+| `sessions.log` | Instructions loaded, compaction (`trigger`), end of session (`reason`), tasks completed |
+| `agents.log` | Sub-agent stops (`agent_type`) and idle teammates |
+| `notifications.log` | Permission prompts and user waits (`notification_type`) |
+| `mcp.log` | MCP Elicitation requests and results (`mcp_server_name`) |
+| `permissions.log` | Permissions denied by the auto mode classifier (`tool_name`) |
+| `prompts.log` | User prompt submissions (timestamps only) |
+| `failures.log` | Tool failures (`tool_name`) |
+| `rewriter.log` | Output rewriter activity (start of the command, original / filtered line counts) |

@@ -49,9 +49,26 @@ if [ "$#" -gt 0 ] && command -v jq >/dev/null 2>&1; then
     done
 fi
 
-DIR="${CLAUDE_BASE_LOG_DIR:-${XDG_STATE_HOME:-$HOME/.local/state}/claude-base}"
+# The default directory is ours, so it is narrowed to 700 even if something
+# created it wider. A CLAUDE_BASE_LOG_DIR the user chose may be shared: its mode
+# is left alone, only the log file is narrowed. No HOME and no override: skip.
+OWN_DIR=0
+if [ -n "${CLAUDE_BASE_LOG_DIR:-}" ]; then
+    DIR="$CLAUDE_BASE_LOG_DIR"
+elif [ -n "${XDG_STATE_HOME:-}" ]; then
+    DIR="$XDG_STATE_HOME/claude-base"; OWN_DIR=1
+elif [ -n "${HOME:-}" ]; then
+    DIR="$HOME/.local/state/claude-base"; OWN_DIR=1
+else
+    exit 0
+fi
+LOG="$DIR/$LOG_NAME.log"
 (
     umask 077
-    mkdir -p "$DIR" && printf '%s\n' "$LINE" >> "$DIR/$LOG_NAME.log"
+    mkdir -p "$DIR" || exit 0
+    [ "$OWN_DIR" = 1 ] && chmod 700 "$DIR"
+    # A symlink planted at the log path would redirect the append elsewhere.
+    [ -L "$LOG" ] && exit 0
+    printf '%s\n' "$LINE" >> "$LOG" && chmod 600 "$LOG"
 ) 2>/dev/null || true
 exit 0

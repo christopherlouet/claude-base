@@ -164,11 +164,14 @@ hook_emit_envelope "PostToolUse" "updatedToolOutput" "$TRIMMED"
 ORIG_LINES=$(printf '%s\n' "$CLEAN" | wc -l | tr -d ' ')
 NEW_LINES=$(printf '%s\n' "$TRIMMED" | wc -l | tr -d ' ')
 SHORT_CMD=$(printf '%s' "$CMD" | head -c 50)
-{
-    ( umask 077; mkdir -p "$(dirname "$HOOK_REWRITER_METRIC_LOG")" )
+# It holds the start of each command, so it is created private: the append runs
+# under the same umask as the mkdir (a 700 directory alone left a 664 file).
+(
+    umask 077
+    mkdir -p "$(dirname "$HOOK_REWRITER_METRIC_LOG")" || exit 0
     printf '%s tool=Bash cmd=%s orig=%s filtered=%s\n' \
         "$(date -u +%FT%TZ)" "$SHORT_CMD" "$ORIG_LINES" "$NEW_LINES" \
-        >> "$HOOK_REWRITER_METRIC_LOG"
-} 2>/dev/null || true
+        >> "$HOOK_REWRITER_METRIC_LOG" && chmod 600 "$HOOK_REWRITER_METRIC_LOG"
+) 2>/dev/null || true
 
 exit 0

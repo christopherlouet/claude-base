@@ -488,6 +488,33 @@ assert_bash_fixture() {
     grep -qE "tool=Bash.*orig=[0-9]+.*filtered=[0-9]+" "$METRIC_LOG"
 }
 
+@test "Phase 2: the default metric log is private (it holds the start of each command)" {
+    # Found in review: the directory was created 700 but the append ran under
+    # the caller's umask, leaving a 664 file holding `cmd=npm install --token=…`.
+    enable_rewriter
+    unset HOOK_REWRITER_METRIC_LOG
+    local in_file="$FIXTURES/bash/npm-install-clean.in.txt"
+    local stdin_json
+    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: $out, exit_code: 0}}')
+    printf '%s' "$stdin_json" | (umask 002; XDG_STATE_HOME="$TEST_DIR/xdg" BASH_OUTPUT_FILTER_THRESHOLD=5 "$BASH_FILTER" >/dev/null)
+    local log="$TEST_DIR/xdg/claude-base/rewriter.log"
+    [ -f "$log" ]
+    [ "$(stat -c '%a' "$log" 2>/dev/null || stat -f '%Lp' "$log")" = "600" ]
+}
+
+@test "Phase 2: an unset HOME does not break the filter" {
+    # The private default reads $HOME; under `set -u` an unset HOME aborted the
+    # hook with an unbound-variable error (a regression against /tmp).
+    enable_rewriter
+    unset HOOK_REWRITER_METRIC_LOG
+    local in_file="$FIXTURES/bash/npm-install-clean.in.txt"
+    local stdin_json
+    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: $out, exit_code: 0}}')
+    run bash -c "printf '%s' \"\$1\" | env -u HOME -u XDG_STATE_HOME '$BASH_FILTER'" _ "$stdin_json"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"unbound"* ]] && [[ "$output" != *"liaison"* ]]
+}
+
 @test "Phase 2: filter completes in less than 200ms on typical fixture" {
     enable_rewriter
     local in_file="$FIXTURES/bash/npm-audit-vulns.in.txt"
