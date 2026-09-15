@@ -1,0 +1,43 @@
+# Pull request checks, installed by `claude-base init --ci`.
+#
+# Reads only the pull request's title, so it needs no checkout and works the
+# same whatever the project's stack. Edit it freely: the installer never
+# overwrites a pr-check.yml that already exists.
+name: PR Check
+
+on:
+  pull_request:
+    # `edited` re-runs the checks when only the title changes; without it a
+    # green check would stand after the title is edited to an invalid one.
+    types: [opened, edited, synchronize, reopened]
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  pull-requests: read
+
+jobs:
+  title:
+    name: PR title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Conventional Commits title
+        uses: amannn/action-semantic-pull-request@v6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # The title reaches the shell through env, never substituted into the
+      # script: an expression in `run:` is pasted in as source, so a crafted
+      # title would execute.
+      - name: Not a work in progress
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          case "$PR_TITLE" in
+            *WIP*)
+              echo "::error::The pull request is marked WIP - remove WIP from the title when it is ready."
+              exit 1
+              ;;
+          esac

@@ -91,11 +91,11 @@ teardown() {
 
     run bash "$NEW_PROJECT_SCRIPT" -y --ci "$PROJ"
     [ "$status" -eq 0 ]
-    # security.yml is the foundation's and the project has no such file.
+    # security.yml is a downstream template and the project has no such file.
     [ -f "$PROJ/.github/workflows/security.yml" ]
 }
 
-@test "install: on a project with no CI at all, the foundation's ci.yml lands" {
+@test "install: on a project with no CI at all, the downstream ci.yml lands" {
     run bash "$NEW_PROJECT_SCRIPT" -y --ci "$PROJ"
     [ "$status" -eq 0 ]
     [ -f "$PROJ/.github/workflows/ci.yml" ]
