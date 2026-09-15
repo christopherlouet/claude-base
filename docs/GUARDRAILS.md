@@ -47,7 +47,7 @@ tests-first, an audit report, a clean PR) are things a native session never make
 | **Command validator** | fork bombs, `curl \| sh`, `--no-verify` gate-bypass, … | PreToolUse `command-validator.sh` | No |
 | **Destructive-op confirm** | `DROP`/`TRUNCATE`/`rm -rf` data loss via a command | PreToolUse destructive guard | No |
 | **Destructive-migration** | destructive DDL written into a migration *file* | PreToolUse `destructive-migration.sh` | No |
-| **Config-protection** | weakening a linter/tsconfig to silence a check | PreToolUse `config-protection.sh` | No |
+| **Config-protection** | weakening a linter/formatter config (ESLint, Prettier, Biome, Ruff, markdownlint — not tsconfig or pyproject) to silence a check | PreToolUse `config-protection.sh` | No |
 | **Bash-write guard** | dodging the guards above by writing via Bash (`>`/`tee`/`sed -i`) to a lint config, a secrets file, or a tracked file on `main` | PreToolUse `bash-write-guard.sh` | No |
 | **Pre-deploy build** | deploying when the prod build is broken | PreToolUse deploy guard | No |
 

@@ -1,13 +1,13 @@
 # claude-base
 
-> **Make Claude Code follow a real engineering workflow** — Explore → Specify → Plan → TDD → Audit → Commit — with guardrails that test-first, audit to a quality score, and block secrets + destructive commands automatically.
+> **Make Claude Code follow a real engineering workflow** — Explore → Specify → Plan → TDD → Audit → Commit — with guardrails that test-first, audit to a quality score, and block high-confidence secrets + destructive commands automatically.
 
 Most Claude Code setups add more agents. claude-base adds **discipline and safety**: per-file rules, hooks, and an anti-drift CI gate. One install, auto-detects your stack — and it **learns from your mistakes across every project** so you stop repeating them.
 
 **What it takes off your plate, every session:**
 - **re-explaining your standards** — a human-gated lessons store carries them across *all* your projects, so a mistake fixed once doesn't come back;
 - **the agent "passing" its own checks** with a hollow test, a stub, or a quietly-weakened linter — the anti-gaming layer refuses the weakened linter config and flags the hollow test or stub back to the agent the moment it is written;
-- **finding it in review** — a hardcoded secret, a commit over failing tests, or a `--no-verify` bypass is stopped at the hook, before it lands.
+- **finding it in review** — a known provider key written into a file, a `git commit` over a failing npm / pytest / go suite, or the `--no-verify` flag is stopped at the hook, before it lands.
 
 [![CI](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/ci.yml)
 [![Security](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml/badge.svg)](https://github.com/christopherlouet/claude-base/actions/workflows/security.yml)
@@ -56,8 +56,8 @@ claude-base is the opinionated **discipline layer for Claude Code**.
 
 **The workflow itself is now table-stakes** — a spec → plan → implement flow ships in most serious Claude Code setups. What claude-base adds is enforcement: much of the discipline is **checked at the hook**, not left to the prompt:
 
-- **Anti-gaming layer** — weakening an existing linter or formatter config is *refused* at the hook, and `git --no-verify` too. A hollow test, a focused `.only` test or a stub is *flagged* back to the agent the moment it is written: advisory, not a block, because a static signal can misfire on legitimate work. Others now ship parts of this; see the [September 2026 re-audit note](docs/POSITIONING.md#capability-comparison).
-- **Enforced by default, not opt-in** — a commit over failing tests, a hardcoded secret, or `git --no-verify` is *blocked* at the hook level, not just discouraged in a prompt.
+- **Anti-gaming layer** — editing an existing ESLint, Prettier, Biome, Ruff (`ruff.toml`) or markdownlint config is *refused* at the hook (tsconfig and pyproject are not covered), and so is the `--no-verify` / `-n` flag. A hollow test, a focused `.only` test or a stub is *flagged* back to the agent the moment it is written: advisory, not a block, because a static signal can misfire on legitimate work. Others now ship parts of this; see the [September 2026 re-audit note](docs/POSITIONING.md#capability-comparison).
+- **Enforced by default, not opt-in** — a `git commit` over a failing npm / pytest / go suite, a high-confidence provider key (AWS, GitHub, Stripe, Slack, Google, private-key block) written through an edit, or the `--no-verify` flag is *blocked* at the hook level, not just discouraged in a prompt. Wrapped forms (`bash -c`, `HUSKY=0`, a secret written through a Bash redirect) are not caught: these are guardrails against accidents, not a sandbox.
 - **Learns across all your projects** — a human-gated, sanitized **lessons referential**: after a hard-won fix or a correction, claude-base proposes a one-line lesson and, on your approval, stores it in your own `~/.claude/rules/lessons.md` — loaded into *every* project. Unlike auto-learners, *you* approve each lesson, and it's never committed to a repo. [How it works →](docs/recipes/personal-lessons-referential.md)
 - **Curated vendor skills, kept fresh** — instead of guessing among 6,700+ community skills, you get a vetted shortlist of *which* ones to trust. A billing-safe engine re-checks them for rot/abandonment and surfaces new candidates — *observe-never-install*: nothing lands in your project without you.
 
@@ -87,7 +87,7 @@ your-project/
 └── .github/               # (optional) CI workflows + pre-commit hooks
 ```
 
-Everything is plain markdown + JSON, with no daemon and no telemetry. Hooks reach the network only through your own package manager, at moments you trigger: `claude --init` installs dependencies, and the Setup hooks run `npm audit` / `npm outdated`, and the pre-commit test gate runs `npm install` when Husky is configured but not installed. Reversible via `claude-base uninstall`.
+Everything is plain markdown + JSON, with no daemon and no telemetry. Some hooks do reach the network: `claude --init` installs dependencies and `claude --maintenance` runs `npm audit` / `npm outdated`; editing a manifest (`package.json`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `pubspec.yaml`) re-syncs dependencies; the pre-commit test gate may run `npm install` to repair Husky; and the prompt-context hook asks GitHub for PRs awaiting your review through `gh` when it is installed (`SKIP_PR_CHECK=1` turns that off). Reversible via `claude-base uninstall`.
 
 ## What's included
 
@@ -381,8 +381,8 @@ Concrete signals rather than a self-assessment score :
 - **Gitleaks**: a pre-configured ruleset at `.gitleaks.toml` (AWS/GitHub/GitLab/Stripe/Slack tokens, JWTs, private keys, database URLs) runs on every PR via `security.yml` and in the pre-commit hook when enabled. Local scan: `gitleaks detect --source . --config .gitleaks.toml`, or `--staged` for the pre-commit shape
 - **Private names**: a pre-commit gate stops an end user's private project names from reaching this public repo, in staged paths *or* staged content. The protected list is deliberately kept **outside** the repository (`~/.claude/private-names`, or `CLAUDE_BASE_PRIVATE_NAMES`), so it is never itself published — and no list means a silent no-op, so a fresh clone is never blocked. Scans only what a commit **adds**; bypass once with `SKIP_PRIVATE_NAMES=1`. See [`docs/GUARDRAILS.md`](docs/GUARDRAILS.md)
 - **ShellCheck**: bash linting on all `scripts/` (CI workflow `security.yml`, severity warning)
-- **Deny list**: dangerous commands blocked (`rm -rf /`, `sudo`, `git push --force`)
-- **Protection hooks**: keeps edits off main/master by moving them to a new `feature/auto-*` branch (the edit is refused only if that branch cannot be created)
+- **Deny list**: `rm -rf /` and `sudo` are refused by the command validator; `git push --force` / `-f` is refused only by the permission deny list, in its literal leading form (`git push --force…`, `git push origin --force…`) — a flag placed later is not caught
+- **Protection hooks**: keeps Edit/Write edits off main/master by moving them to a new `feature/auto-*` branch (refused if that branch cannot be created); a Bash write to a tracked file on main is refused
 - **GitHub Secret Scanning**: enabled on the public repo
 - **GitHub Code Scanning** (CodeQL): JavaScript/TypeScript security analysis (Default Setup — repo-wide)
 - **Downstream drift detection**: `claude-base doctor` (and an advisory after `claude-base update`) flags an installed project whose `settings.json` / hook scripts have fallen behind the foundation — e.g. security hooks on a stale input contract that would silently no-op — and points you at the resync command

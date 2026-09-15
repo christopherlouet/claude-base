@@ -14,14 +14,15 @@ Two adjacent ecosystems share part of the surface area.
 The structured **workflow** (explore → specify → plan → TDD → audit) is now
 table-stakes — most serious Claude Code setups ship some form of it. So it is
 **not** what differentiates claude-base from similar projects. The differentiators
-are *mechanical enforcement*, the *anti-gaming* layer, and *curation*. The matrix
-below is from a 2026-06-28 capability audit of public repos/docs.
+were *mechanical enforcement*, the *anti-gaming* layer, and *curation* as of June;
+the September re-audit note below the matrix says what still holds. The matrix
+and the bullets under it are from a 2026-06-28 capability audit of public repos/docs.
 
 | Capability | spec-kit | SuperClaude | claude-code-templates | shinpr boilerplate | moai-adk | oh-my-claudecode | trailofbits | **claude-base** |
 |---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
 | Multi-phase workflow | ✓ | ✓ | ~ | ✓ | ✓ | ✓ | ~ | ✓ |
 | **Quality enforcement** (blocks commit-on-failing-tests / secret-in-content / `--no-verify`), by default | ✗ | ✗ | ~ opt-in | ~ lint only | ~ OS-safety | ~ workflow-only | ~ OS-safety | **✓** |
-| **Anti-gaming gates** (block linter-weakening / gate-bypass; flag hollow-`.only`-stub tests) | ✗ | ✗ | ✗ | ✗ | ~? | ✗ | ✗ (documented, not shipped) | **✓** (tests flagged, not blocked) |
+| **Anti-gaming gates** (block linter-weakening / gate-bypass; flag hollow-`.only`-stub tests) | ✗ | ✗ | ✗ | ✗ | ~? | ✗ (June) · ~ (Sept: Stop-time `.only`/stub block) | ✗ (documented, not shipped) | **✓** (tests flagged, not blocked) |
 | Path-scoped rules auto-injected per file | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ | ✓ |
 | Curation engine for community skills | ~ catalog | ✗ | ~ security-only | ✗ | ✗ | ✗ | ~ external marketplace | **✓** |
 | Cross-project lessons / memory | ✗ | ~ session | ✗ | ✗ | ~ per-project | ✓ | ✗ | ✓ |
@@ -34,14 +35,16 @@ below is from a 2026-06-28 capability audit of public repos/docs.
   then shipped it (Trail of Bits *documents* an anti-rationalization hook but does
   not ship it). claude-base *blocks* linter-config weakening and `--no-verify`; it
   only *flags* hollow tests and stubs.
-- **Default, integrated quality enforcement** — several ship *pieces* (OS-safety
-  blocks, opt-in component hooks, a workflow-continuation block), but none block
-  the failing-tests / secret-in-content / `--no-verify` set by default and
-  integrated.
+- **Default, integrated quality enforcement** (June) — several shipped *pieces*
+  (OS-safety blocks, opt-in component hooks, a workflow-continuation block), but
+  none blocked the failing-tests / secret-in-content / `--no-verify` set by
+  default and integrated. In September, everything-claude-code blocks
+  `--no-verify` by default.
 - **Curation** is near-unique (one ships security-only PR scanning; one points to a
   separately, human-reviewed marketplace).
 - The closest overlap is **oh-my-claudecode** (workflow, path-rules, cross-project
-  learning, CI) — but it lacks anti-gaming, curation, and the quality-gate set.
+  learning, CI) — in June it lacked anti-gaming, curation, and the quality-gate
+  set; by September it blocks `.only` tests and stubs at Stop time.
 - **Cross-project lessons** are shared only with oh-my-claudecode — but theirs
   *auto*-extracts skills to user scope, whereas claude-base's is a **human-gated,
   sanitized lessons referential** (you approve each one-line lesson; it lands in
