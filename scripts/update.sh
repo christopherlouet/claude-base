@@ -1403,7 +1403,22 @@ update_directory() {
                 continue
             fi
 
-            # File differs
+            # File differs. An unmodified copy of an OLDER foundation release is
+            # not a customisation: its hash is in the pristine-hashes table, so it
+            # is replaced without --force. Without this, --hook-scripts left every
+            # changed security library of an older install behind (measured
+            # 2026-09-15, v5.3.0 -> v5.5.0). Pinned by tests/update.bats.
+            if [[ "$name" == "hook_scripts" ]] && is_known_foundation_copy "$HOOK_SCRIPTS_SUBDIR/$rel_path" "$dest_file"; then
+                if $DRY_RUN; then
+                    echo -e "${DIM}[DRY-RUN]${NC} Update (unmodified older copy): $rel_path"
+                else
+                    cp "$src_file" "$dest_file"
+                fi
+                debug "  $rel_path updated (unmodified older copy)"
+                ((dir_updated++)) || true
+                continue
+            fi
+
             if $FORCE_UPDATE; then
                 if $DRY_RUN; then
                     echo -e "${DIM}[DRY-RUN]${NC} Update: $rel_path"
@@ -1533,7 +1548,8 @@ update_support_scripts() {
             debug "scripts/substance-check.sh: identical"
             return
         fi
-        if ! $FORCE_UPDATE; then
+        # Same rule as the hook scripts: an unmodified older copy is replaced.
+        if ! $FORCE_UPDATE && ! is_known_foundation_copy "scripts/substance-check.sh" "$dest"; then
             if $DRY_RUN; then
                 DRY_RUN_CONFLICTS+=("scripts/substance-check.sh")
             else
@@ -2332,9 +2348,10 @@ main() {
         if ! _drift="$(detect_security_drift "$TARGET_DIR")"; then
             section "Security drift detected"
             printf '%s\n' "$_drift"
-            # --force is required: a diverged hook script is skipped as a conflict
-            # otherwise (settings.json is replaced by --settings on its own).
-            warning "settings.json / hook scripts are behind the foundation despite the version bump. Re-sync with: claude-base update --settings --hook-scripts --force"
+            # An unmodified older hook copy is replaced by --hook-scripts alone
+            # (pristine-hashes table); --force is only for a customised one, and
+            # discards the customisation (settings.json is replaced by --settings).
+            warning "settings.json / hook scripts are behind the foundation despite the version bump. Re-sync with: claude-base update --settings --hook-scripts (add --force only for a file reported as customised: it discards local edits)"
         fi
     fi
 }

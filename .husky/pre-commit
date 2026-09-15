@@ -24,6 +24,27 @@ if [ "${SKIP_COUNTS_SYNC:-0}" != "1" ]; then
   fi
 fi
 
+# Pristine hashes: `update` replaces a hook script without --force only when its
+# hash is a version the foundation shipped. A commit touching a managed script
+# regenerates and stages that table, so the version it replaces is never
+# missing (tests/pristine-hashes.bats checks the same in CI). A shallow clone
+# cannot derive it: say so and let CI catch it, rather than refuse the commit.
+# Disable with SKIP_PRISTINE_HASHES=1.
+if [ "${SKIP_PRISTINE_HASHES:-0}" != "1" ]; then
+  if git diff --cached --name-only \
+       | grep -qE '^scripts/hooks/[^/]+\.sh$|^scripts/substance-check\.sh$'; then
+    rc=0
+    bash scripts/gen-pristine-hashes.sh || rc=$?
+    if [ "$rc" -eq 0 ]; then
+      git add scripts/lib/pristine-hashes.txt || exit 1
+    elif [ "$rc" -eq 2 ]; then
+      echo "[pre-commit] pristine-hashes table not regenerated (shallow clone) - CI will check it."
+    else
+      exit 1
+    fi
+  fi
+fi
+
 # Run lint-staged for staged files only (requires package.json with lint-staged)
 if command -v npx >/dev/null 2>&1 && [ -f "package.json" ]; then
   npx lint-staged
