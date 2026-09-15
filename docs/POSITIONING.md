@@ -21,7 +21,7 @@ below is from a 2026-06-28 capability audit of public repos/docs.
 |---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
 | Multi-phase workflow | ✓ | ✓ | ~ | ✓ | ✓ | ✓ | ~ | ✓ |
 | **Quality enforcement** (blocks commit-on-failing-tests / secret-in-content / `--no-verify`), by default | ✗ | ✗ | ~ opt-in | ~ lint only | ~ OS-safety | ~ workflow-only | ~ OS-safety | **✓** |
-| **Anti-gaming gates** (block linter-weakening / hollow-`.only`-stub tests / gate-bypass) | ✗ | ✗ | ✗ | ✗ | ~? | ✗ | ✗ (documented, not shipped) | **✓** |
+| **Anti-gaming gates** (block linter-weakening / gate-bypass; flag hollow-`.only`-stub tests) | ✗ | ✗ | ✗ | ✗ | ~? | ✗ | ✗ (documented, not shipped) | **✓** (tests flagged, not blocked) |
 | Path-scoped rules auto-injected per file | ✗ | ✗ | ✗ | ✗ | ✗ | ✓ | ✗ | ✓ |
 | Curation engine for community skills | ~ catalog | ✗ | ~ security-only | ✗ | ✗ | ✗ | ~ external marketplace | **✓** |
 | Cross-project lessons / memory | ✗ | ~ session | ✗ | ✗ | ~ per-project | ✓ | ✗ | ✓ |
@@ -30,8 +30,10 @@ below is from a 2026-06-28 capability audit of public repos/docs.
 ✓ present · ~ partial/opt-in/adjacent · ✗ no evidence found
 
 **Read of the matrix.**
-- **Anti-gaming is the clearest differentiator** — no audited project ships it
-  (Trail of Bits *documents* an anti-rationalization hook but does not ship it).
+- **Anti-gaming was the clearest differentiator in June** — no project audited
+  then shipped it (Trail of Bits *documents* an anti-rationalization hook but does
+  not ship it). claude-base *blocks* linter-config weakening and `--no-verify`; it
+  only *flags* hollow tests and stubs.
 - **Default, integrated quality enforcement** — several ship *pieces* (OS-safety
   blocks, opt-in component hooks, a workflow-continuation block), but none block
   the failing-tests / secret-in-content / `--no-verify` set by default and
@@ -50,7 +52,15 @@ These deterministic gates are demonstrable: the executable
 [`eval/value-proof/gate-demo`](../eval/value-proof/gate-demo/) matrix shows each one
 catching a planted violation while sparing a clean control.
 
-> **Method caveat.** The audit relied on each project's README/source (not
+> **September 2026 re-audit (read the source, not the READMEs).** The June
+> uniqueness no longer holds as stated. everything-claude-code blocks `--no-verify`
+> and lint-config edits by default; oh-my-claudecode blocks, at Stop time, added
+> `.skip`/`.only` tests and stubs; claude-code-harness ships a deny table with
+> warn-only tampering detection; tdd-guard enforces test-first with an LLM judge.
+> What remains specific to claude-base is the breadth of the default-on set and
+> the deterministic local curation screen, not any single gate.
+
+> **Method caveat.** The June audit relied on each project's README/source (not
 > clone-and-run), so a ✗ means "no evidence found in the public config/docs", not
 > a proof of absence. Capabilities of fast-moving projects drift; corrections
 > welcome.

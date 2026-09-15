@@ -104,7 +104,7 @@ somewhere else.
 | **Pre-push CI parity** | a push that fails CI on something runnable locally | `.husky/pre-push` → `preflight.sh` | No |
 | **Format + type/lint feedback** | unformatted code; type/lint errors slipping by | PostToolUse (auto-format + tsc/eslint re-injected) | No |
 | **Coverage check** | a test edit that drops coverage unnoticed | PostToolUse | No |
-| **Substance gate** | hollow tests, stubs, and focused `.only` tests that make a green suite prove nothing | PostToolUse `substance-check.sh` | No |
+| **Substance gate** | hollow tests, stubs, and focused `.only` tests that make a green suite prove nothing | PostToolUse `substance-check.sh` — **advisory**: flags the finding to the agent, never blocks | No |
 
 ## 4. Anti-gaming gates — *stop defeating the gate instead of satisfying it*
 
@@ -113,7 +113,7 @@ somewhere else.
 | **Counts self-heal** | derived counters drifting into a CI failure | pre-commit `sync-counts.sh` | No |
 | **`--no-verify` block** | skipping the whole pre-commit/pre-push stack | command-validator CATEGORY 9 | No |
 | **Config-protection** | "passing" the linter by disabling its rule | (see §2) | No |
-| **Substance gate** | "passing" tests with assertion-free / `.only` tests | (see §3) | No |
+| **Substance gate** | "passing" tests with assertion-free / `.only` tests — flagged, not blocked | (see §3) | No |
 
 ## 5. Audit gates — *on demand, expert-grade*
 
