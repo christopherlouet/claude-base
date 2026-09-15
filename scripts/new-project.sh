@@ -441,7 +441,7 @@ analyze_existing_cicd() {
             fi
 
             # Check security audit
-            if grep -lE "npm audit|snyk|safety|gosec|cargo audit|trivy" "${workflow_files[@]}" &>/dev/null; then
+            if grep -lE "npm audit|snyk|safety|gosec|cargo audit|trivy|gitleaks" "${workflow_files[@]}" &>/dev/null; then
                 present+=("Security audit")
             else
                 missing+=("Security audit")
@@ -536,28 +536,38 @@ merge_cicd_workflows() {
     # Create the workflows folder if necessary
     make_dir "$dir/.github/workflows"
 
-    # Mapping of missing features to files
-    for missing in "${CICD_MISSING[@]}"; do
+    # Mapping of missing features to downstream templates (see
+    # install_cicd_files for why never the foundation's own workflows).
+    local src="$BASE_DIR/templates/github-workflows"
+    for missing in ${CICD_MISSING[@]+"${CICD_MISSING[@]}"}; do
         case "$missing" in
-            "Security audit"|"Dependency cache"|"Coverage upload"|"Automated tests"|"Linting")
-                # These features are in ci.yml
+            "Dependency cache"|"Coverage upload"|"Automated tests"|"Linting")
                 if [[ "$added_ci" == false ]] && [[ ! -f "$dir/.github/workflows/ci.yml" ]]; then
-                    copy_file "$BASE_DIR/.github/workflows/ci.yml" "$dir/.github/workflows/"
-                    success "ci.yml added (lint, test, build, security)"
+                    copy_file "$src/ci.yml" "$dir/.github/workflows/"
+                    success "ci.yml added (lint, test, build for the detected stack)"
                     added_ci=true
+                fi
+                ;;
+            "Security audit")
+                if [[ ! -f "$dir/.github/workflows/security.yml" ]]; then
+                    copy_file "$src/security.yml" "$dir/.github/workflows/"
+                    success "security.yml added (Gitleaks secret scan)"
+                else
+                    # The project's own security.yml is kept, and it runs no
+                    # scanner the analysis recognises: say so, never skip silently.
+                    warning "No secret scan added: the project already has a security.yml; add Gitleaks to it (see templates/github-workflows/security.yml)"
                 fi
                 ;;
             "PR validation")
                 if [[ ! -f "$dir/.github/workflows/pr-check.yml" ]]; then
-                    copy_file "$BASE_DIR/.github/workflows/pr-check.yml" "$dir/.github/workflows/"
-                    success "pr-check.yml added (PR validation, labels)"
+                    copy_file "$src/pr-check.yml" "$dir/.github/workflows/"
+                    success "pr-check.yml added (PR title validation)"
                 fi
                 ;;
             "Automated release")
-                if [[ ! -f "$dir/.github/workflows/release.yml" ]]; then
-                    copy_file "$BASE_DIR/.github/workflows/release.yml" "$dir/.github/workflows/"
-                    success "release.yml added (changelog, GitHub Release)"
-                fi
+                # No template on purpose: how a project releases is its own
+                # decision. Said out loud, so a skip never reads as "added".
+                warning "No release workflow added: release automation depends on the project, set it up yourself"
                 ;;
         esac
     done
@@ -1082,13 +1092,18 @@ install_cicd_files() {
     info "Installing GitHub Actions..."
     make_dir "$target_dir/.github/workflows"
 
+    # The source is templates/github-workflows/, NOT the foundation's own
+    # .github/workflows/: those lint ./scripts, run bats, validate.sh, the counts
+    # gate and a Docusaurus deploy — none of which a user's project has, so its
+    # first push went red. Pinned by tests/ci-downstream.bats.
+    #
     # Copied one by one rather than `cp -r …/*`: the blunt form replaced a real
     # project's own ci.yml — 510 lines, silently — on 2026-09-02. Per-file is
     # also strictly better than the all-or-nothing detection guard it replaces:
     # the workflows the project lacks still land. Pinned by
     # tests/install-preserves-project-files.bats.
     local wf
-    for wf in "$BASE_DIR/.github/workflows/"*; do
+    for wf in "$BASE_DIR/templates/github-workflows/"*; do
         [[ -f "$wf" ]] || continue
         copy_unless_present "$wf" "$target_dir/.github/workflows/$(basename "$wf")"
     done
@@ -1985,7 +2000,7 @@ create_project() {
         make_dir "$TARGET_DIR/.github/workflows"
         if ! $DRY_RUN; then
             rm -f "$TARGET_DIR/.github/workflows/"*.yml "$TARGET_DIR/.github/workflows/"*.yaml 2>/dev/null || true
-            cp -r "$BASE_DIR/.github/workflows/"* "$TARGET_DIR/.github/workflows/"
+            cp "$BASE_DIR/templates/github-workflows/"*.yml "$TARGET_DIR/.github/workflows/"
         else
             echo -e "${DIM}[DRY-RUN]${NC} Replacing workflows in $TARGET_DIR/.github/workflows/"
         fi
