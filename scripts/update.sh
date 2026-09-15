@@ -188,7 +188,9 @@ ${BOLD}OPTIONS${NC}
     --rules             Also update the rules/ directory
     --styles            Also update the output-styles/ directory
     --templates         Also update the templates/ directory
-    --hook-scripts      Also update the scripts in scripts/hooks/ (referenced by settings.json)
+    --hook-scripts      Also update the scripts in scripts/hooks/ (referenced by settings.json).
+                        Without it, update still replaces the ones that are unmodified
+                        copies of an older release; a customised one needs this + --force
     --all               Update everything (commands, settings, skills, agents, rules, styles, templates, hook-scripts).
                         Does NOT delete anything: add --clean explicitly for a wipe-and-replace (--all --clean)
     --graduate-full     Deliberately convert a minimal install (tier "minimal" in
@@ -1549,6 +1551,64 @@ _replaceable_without_force() {
     is_known_foundation_copy "$rel" "$dest"
 }
 
+# refresh_unmodified_hook_scripts
+# What a run WITHOUT --hook-scripts does to the hooks (maintainer decision
+# 2026-09-15): a security fix must reach an install on a plain `update`, not
+# only on the opt-in flag. It replaces only the scripts the project already has
+# that are unmodified copies of an older release (_replaceable_without_force:
+# pristine-hashes table, no symlink, no downgrade), plus substance-check.sh. It
+# never adds a hook — an unwired one would do nothing, a wired one missing is
+# reported by the drift check — and never touches settings.json.
+#
+# A refreshed hook may source a library the old install never had (a policy
+# split): command-validator would then fail CLOSED and refuse every command. So
+# the `_*.sh` libraries the refreshed SOURCE versions name are added when
+# missing, transitively (libraries source libraries). Read from the source, not
+# the copy on disk, so a dry run reports them too.
+refresh_unmodified_hook_scripts() {
+    local src_dir="$BASE_DIR/$HOOK_SCRIPTS_SUBDIR"
+    local dest_dir="$TARGET_DIR/$HOOK_SCRIPTS_SUBDIR"
+    [[ -d "$dest_dir" ]] || return 0
+
+    local dest rel src needed=""
+    for dest in "$dest_dir"/*.sh "$TARGET_DIR/scripts/substance-check.sh"; do
+        [[ -f "$dest" ]] || continue
+        rel="${dest#"$TARGET_DIR"/}"
+        src="$BASE_DIR/$rel"
+        [[ -f "$src" ]] || continue
+        if cmp -s "$src" "$dest"; then continue; fi
+        _replaceable_without_force "$rel" "$dest" || continue
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} Update (unmodified older copy): $rel"
+        else
+            cp "$src" "$dest"
+            chmod +x "$dest" 2>/dev/null || true
+            info "  $rel updated (unmodified copy of an older release)"
+        fi
+        ((UPDATED++)) || true
+        needed="$needed $( { grep -oE '_[A-Za-z0-9-]+\.sh' "$src" 2>/dev/null || true; } | sort -u | tr '\n' ' ')"
+    done
+
+    local lib pass=0 added
+    while [[ -n "${needed// /}" && $pass -lt 5 ]]; do
+        pass=$((pass + 1))
+        added=""
+        for lib in $needed; do
+            [[ -f "$src_dir/$lib" && ! -e "$dest_dir/$lib" ]] || continue
+            if $DRY_RUN; then
+                echo -e "${DIM}[DRY-RUN]${NC} Add (sourced by a refreshed hook): $HOOK_SCRIPTS_SUBDIR/$lib"
+            else
+                cp "$src_dir/$lib" "$dest_dir/$lib"
+                chmod +x "$dest_dir/$lib" 2>/dev/null || true
+                info "  $HOOK_SCRIPTS_SUBDIR/$lib added (sourced by a refreshed hook)"
+            fi
+            ((ADDED++)) || true
+            added="$added $( { grep -oE '_[A-Za-z0-9-]+\.sh' "$src_dir/$lib" 2>/dev/null || true; } | sort -u | tr '\n' ' ')"
+        done
+        needed="$added"
+    done
+}
+
 # C2 audit — support scripts outside scripts/hooks/. The hook
 # scripts/hooks/substance-check.sh requires the detector at
 # $TARGET_DIR/scripts/substance-check.sh and silently no-ops when it is
@@ -2290,6 +2350,8 @@ main() {
                     ;;
                 claude_md) upgrade_claude_md ;;
             esac
+        elif [[ "$entry_type" == "dir" && "$arg1" == "hook_scripts" ]]; then
+            refresh_unmodified_hook_scripts
         fi
     done
 
