@@ -43,7 +43,7 @@ tests-first, an audit report, a clean PR) are things a native session never make
 | Gate | What it prevents | How enforced | Native? |
 |------|------------------|--------------|---------|
 | **Main-branch protection** | committing straight to `main` | PreToolUse (auto-branch) | No |
-| **Secret scan** | a hardcoded key/token reaching the repo | PreToolUse `secret-scan.sh` (built-in, zero-dep) | No |
+| **Secret scan** | a hardcoded key/token reaching the repo (writes only: reading `.env` or another secrets file is deliberately not blocked, and its content reaches the transcript) | PreToolUse `secret-scan.sh` (built-in, zero-dep) | No |
 | **Command validator** | fork bombs, `curl \| sh`, `--no-verify` gate-bypass, … | PreToolUse `command-validator.sh` | No |
 | **Destructive-op confirm** | `DROP`/`TRUNCATE`/`rm -rf` data loss via a command | PreToolUse destructive guard | No |
 | **Destructive-migration** | destructive DDL written into a migration *file* | PreToolUse `destructive-migration.sh` | No |

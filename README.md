@@ -384,6 +384,7 @@ Concrete signals rather than a self-assessment score :
 - **Deny list**: `rm -rf /` and `sudo` are refused by the command validator; `git push --force` / `-f` is refused only by the permission deny list, in its literal leading form (`git push --force…`, `git push origin --force…`) — a flag placed later is not caught
 - **Protection hooks**: keeps Edit/Write edits off main/master by moving them to a new `feature/auto-*` branch (refused if that branch cannot be created); a Bash write to a tracked file on main is refused
 - **GitHub Secret Scanning**: enabled on the public repo
+- **Not protected: reading secrets.** Nothing stops the agent from reading `.env` or another secrets file (`cat .env`, the Read tool); what it reads reaches the session transcript. The guards cover secrets being *written* into files, and a secrets file being overwritten through Bash
 - **GitHub Code Scanning** (CodeQL): JavaScript/TypeScript security analysis (Default Setup — repo-wide)
 - **Downstream drift detection**: `claude-base doctor` (and an advisory after `claude-base update`) flags an installed project whose `settings.json` / hook scripts have fallen behind the foundation — e.g. security hooks on a stale input contract that would silently no-op — and points you at the resync command
 - **Verified install**: `install.sh --ref <tag>` pins to a released tag and each release publishes `SHA256SUMS`, so the installer can be verified before execution (see [Installation](#installation))
