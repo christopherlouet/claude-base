@@ -1331,11 +1331,13 @@ plant_old_copy() {
     cmp -s "$BASE_DIR/scripts/substance-check.sh" "$TEST_DIR/proj/scripts/substance-check.sh"
 }
 
-@test "update.sh drift advisory: an unmodified stale library needs only --hook-scripts" {
+@test "doctor drift finding: an unmodified stale library needs only --hook-scripts" {
+    # Read-only report: a plain `update` now refreshes this copy itself, so the
+    # advisory that still has to name the case is doctor's.
     "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
     plant_old_copy scripts/hooks/_policy-secrets.sh $'#!/usr/bin/env bash\n# an older foundation release\n'
 
-    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run bash "$BATS_TEST_DIRNAME/../scripts/doctor.sh" "$TEST_DIR/proj"
     [[ "$output" == *"policy-stale: _policy-secrets.sh"* ]]
     local line; line=$(printf '%s\n' "$output" | grep 'policy-stale: _policy-secrets.sh')
     [[ "$line" == *"update --hook-scripts"* ]]
@@ -1350,6 +1352,95 @@ plant_old_copy() {
     local line; line=$(printf '%s\n' "$output" | grep 'policy-stale: _policy-secrets.sh')
     [[ "$line" == *"--force"* ]]
     [[ "$line" == *"customi"* ]]
+}
+
+# --- Default run (no --hook-scripts): unmodified copies are refreshed too ------
+# Maintainer decision 2026-09-15: a security fix must reach an install on a plain
+# `update`. Only unmodified copies of an older release are replaced (same guards);
+# a customised script is left alone, a new hook is never added, settings.json
+# stays opt-in.
+
+@test "update.sh (no flag) refreshes an unmodified older hook copy and names it" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    plant_old_copy scripts/hooks/_policy-secrets.sh $'#!/usr/bin/env bash\n# an older foundation release\n'
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    cmp -s "$BASE_DIR/scripts/hooks/_policy-secrets.sh" "$TEST_DIR/proj/scripts/hooks/_policy-secrets.sh"
+    [[ "$output" == *"_policy-secrets.sh"*"unmodified"* ]]
+    [[ "$output" != *"policy-stale: _policy-secrets.sh"* ]]
+}
+
+@test "update.sh (no flag) refreshes an unmodified older substance-check.sh" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    mkdir -p "$TEST_DIR/proj/scripts"
+    plant_old_copy scripts/substance-check.sh $'#!/usr/bin/env bash\n# older detector\n'
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    cmp -s "$BASE_DIR/scripts/substance-check.sh" "$TEST_DIR/proj/scripts/substance-check.sh"
+}
+
+@test "update.sh (no flag) leaves a customised hook alone and still reports it" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    printf '#!/usr/bin/env bash\n# my own fork\n' > "$TEST_DIR/proj/scripts/hooks/_policy-secrets.sh"
+    local before; before=$(cat "$TEST_DIR/proj/scripts/hooks/_policy-secrets.sh")
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$(cat "$TEST_DIR/proj/scripts/hooks/_policy-secrets.sh")" = "$before" ]
+    [[ "$output" == *"policy-stale: _policy-secrets.sh"* ]]
+}
+
+@test "update.sh (no flag) adds the library a refreshed hook sources when it is missing" {
+    # A refreshed hook written after a library split would otherwise source a
+    # file the old install never had: command-validator fails CLOSED and blocks
+    # every command.
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    plant_old_copy scripts/hooks/command-validator.sh $'#!/usr/bin/env bash\n# pre-split validator\n'
+    rm "$TEST_DIR/proj/scripts/hooks/_policy-dangerous-commands.sh"
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    cmp -s "$BASE_DIR/scripts/hooks/command-validator.sh" "$TEST_DIR/proj/scripts/hooks/command-validator.sh"
+    [ -f "$TEST_DIR/proj/scripts/hooks/_policy-dangerous-commands.sh" ]
+}
+
+@test "update.sh (no flag) never adds a hook script the project does not have" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    plant_old_copy scripts/hooks/_policy-secrets.sh $'#!/usr/bin/env bash\n# an older foundation release\n'
+    rm "$TEST_DIR/proj/scripts/hooks/destructive-ops.sh"
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ ! -e "$TEST_DIR/proj/scripts/hooks/destructive-ops.sh" ]
+}
+
+@test "update.sh (no flag) --dry-run reports an unmodified copy without writing" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    plant_old_copy scripts/hooks/_policy-secrets.sh $'#!/usr/bin/env bash\n# an older foundation release\n'
+    local before; before=$(cat "$TEST_DIR/proj/scripts/hooks/_policy-secrets.sh")
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -n -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ "$(cat "$TEST_DIR/proj/scripts/hooks/_policy-secrets.sh")" = "$before" ]
+    [[ "$output" == *"_policy-secrets.sh"* ]]
+}
+
+@test "update.sh (no flag) refreshes the REAL v5.3.0 security libraries" {
+    git -C "$BASE_DIR" rev-parse -q --verify 'v5.3.0^{commit}' >/dev/null 2>&1 \
+        || skip "tag v5.3.0 not available in this clone"
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    local lib
+    for lib in _policy-dangerous-commands.sh _policy-secrets.sh _policy-write-targets.sh; do
+        git -C "$BASE_DIR" show "v5.3.0:scripts/hooks/$lib" > "$TEST_DIR/proj/scripts/hooks/$lib"
+        if cmp -s "$BASE_DIR/scripts/hooks/$lib" "$TEST_DIR/proj/scripts/hooks/$lib"; then return 1; fi
+    done
+
+    run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    for lib in _policy-dangerous-commands.sh _policy-secrets.sh _policy-write-targets.sh; do
+        cmp -s "$BASE_DIR/scripts/hooks/$lib" "$TEST_DIR/proj/scripts/hooks/$lib" \
+            || { echo "$lib still stale" >&2; return 1; }
+    done
 }
 
 @test "update.sh --hook-scripts refreshes the REAL v5.3.0 security libraries with the committed table" {
