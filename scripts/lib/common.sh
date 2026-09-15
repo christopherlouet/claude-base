@@ -1141,7 +1141,7 @@ detect_security_drift() {
         for f in "$hooks_dir"/*.sh; do
             [ -e "$f" ] || continue
             if hook_uses_legacy_contract "$f"; then
-                printf 'hook-contract: %s reads tool input from a TOOL_* env var (pre-stdin contract) — it will silently no-op; re-sync with `update --hook-scripts --force`\n' "$(basename "$f")"
+                printf 'hook-contract: %s reads tool input from a TOOL_* env var (pre-stdin contract) — it will silently no-op; re-sync with `update --hook-scripts` (add --force only if it is reported as customised: it discards local edits)\n' "$(basename "$f")"
                 count=$((count + 1))
             fi
         done
@@ -1180,7 +1180,7 @@ detect_security_drift() {
                 # Every scripts/hooks/NAME.sh the command names must exist on disk.
                 for ref in $(printf '%s' "$cmd" | grep -oE 'scripts/hooks/[A-Za-z0-9_-]+\.sh' | sort -u); do
                     if [ ! -f "$target/$ref" ]; then
-                        printf 'hook-missing-script: the %s hook runs %s, which is not on disk — it exits 127 on every invocation; re-sync with `update --hook-scripts --force`\n' "$ev" "$(basename "$ref")"
+                        printf 'hook-missing-script: the %s hook runs %s, which is not on disk — it exits 127 on every invocation; re-sync with `update --hook-scripts`\n' "$ev" "$(basename "$ref")"
                         count=$((count + 1))
                     fi
                 done
