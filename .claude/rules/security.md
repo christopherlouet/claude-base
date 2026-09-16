@@ -60,9 +60,9 @@ paths:
 
 ## Security-config propagation (downstream drift)
 
-- A version bump is NOT a security bump: `update` advances the recorded version but leaves `settings.json` / `scripts/hooks/` opt-in, so a downstream project can run stale, inert security hooks while reading as up-to-date.
+- A version bump is not automatically a security bump: `update` refreshes the hook scripts that are unmodified copies of an older release, but a customised hook and `settings.json` stay behind unless re-synced, so a downstream project can still run stale, inert security hooks while reading as up-to-date.
 - The worst case is a **hook contract drift**: hooks reading the old `$TOOL_*` env vars (pre-stdin) silently no-op — a screen like `command-validator.sh` becomes a dead pass-through. A bare `mcp__*` wildcard in `permissions.allow` is also flagged (over-broad: it grants every MCP tool; scope to `mcp__server__tool`).
-- Run `claude-base doctor` (section "Security drift") to detect it; re-sync with `update --settings --hook-scripts --force` (overwrites diverged hooks). The `update` advisory flags this automatically after a drifted run.
+- Run `claude-base doctor` (section "Security drift") to detect it; re-sync with `update --settings --hook-scripts`: an unmodified copy of an older release is replaced, a customised one is skipped and reported, and only `--force` (which discards the edit) overwrites it. The `update` advisory flags this automatically after a drifted run.
 
 ## Authentication
 
