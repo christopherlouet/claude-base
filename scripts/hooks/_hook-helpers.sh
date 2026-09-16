@@ -20,7 +20,9 @@
 # Path overrides (used by tests for per-process isolation under
 # $BATS_TEST_TMPDIR — production defaults are the documented /tmp paths):
 #   HOOK_REWRITER_SENTINEL       — capability sentinel (default /tmp/claude-rewriter-supported)
-#   HOOK_REWRITER_METRIC_LOG     — bash-output-filter metric log (default /tmp/claude-rewriter.log)
+#   HOOK_REWRITER_METRIC_LOG     — bash-output-filter metric log (default
+#                                  ${XDG_STATE_HOME:-~/.local/state}/claude-base/rewriter.log: it holds
+#                                  the first 50 bytes of each command, so not world-readable /tmp)
 #   HOOK_LEGACY_NOTICE_SENTINEL  — legacy notice sentinel base, suffixed with .PPID by post-edit
 #                                  (default /tmp/claude-base-legacy-warned)
 # =============================================================================
@@ -30,7 +32,9 @@
 HOOK_HELPERS_LOADED=1
 
 HOOK_REWRITER_SENTINEL="${HOOK_REWRITER_SENTINEL:-/tmp/claude-rewriter-supported}"
-HOOK_REWRITER_METRIC_LOG="${HOOK_REWRITER_METRIC_LOG:-/tmp/claude-rewriter.log}"
+# ${HOME:-/nonexistent}: an unset HOME under `set -u` must not abort the hook;
+# the write then simply fails, and it is best effort.
+HOOK_REWRITER_METRIC_LOG="${HOOK_REWRITER_METRIC_LOG:-${XDG_STATE_HOME:-${HOME:-/nonexistent}/.local/state}/claude-base/rewriter.log}"
 HOOK_LEGACY_NOTICE_SENTINEL="${HOOK_LEGACY_NOTICE_SENTINEL:-/tmp/claude-base-legacy-warned}"
 
 # hook_bail_if_disabled <ENV_VAR_NAME>

@@ -75,6 +75,7 @@ KNOWN_PATH_PREFIXES=(
     "~/.claude.json"              # Claude Code user state file
     "~/.local/share/claude-base"  # canonical foundation install per install.sh:33
     "~/.local/bin"                # dispatcher symlink target per install.sh:37 (DEFAULT_BIN)
+    "~/.local/state/claude-base/" # private lifecycle logs per scripts/hooks/log-event.sh (XDG_STATE_HOME default)
     "~/dev/vendor-skills/"        # user-suggested vendor clone location
     "~/dev/"                      # broader user-dev convention
 )

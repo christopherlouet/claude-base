@@ -19,7 +19,7 @@
 |---------|---------------|----------|
 | "Context window full" or automatic compaction | Too many files read, long session, verbose logs included | `/compact` to summarize, avoid reading `/tmp/` or `node_modules/` |
 | Very slow session, high token count | Repeated reading of large files, uncompacted context | `/compact` between phases, use `effort low` for exploration |
-| Silent hook that does not trigger | Non-executable script, wrong path, timeout exceeded | Check the logs in `/tmp/claude-sessions.log`, test the script manually |
+| Silent hook that does not trigger | Non-executable script, wrong path, timeout exceeded | Check the logs in `~/.local/state/claude-base/sessions.log`, test the script manually |
 | MCP server missing or disconnected | Server not listed in `.mcp.json`, pending approval, or missing dependency/env var | A server is active only if present in `.mcp.json` (no `enabled` flag — copy it from `.mcp.json.example`); approve project servers (`claude mcp reset-project-choices`), restart with `/mcp` |
 | Agent or skill that does not trigger | Wrong namespace, description too vague, missing file | Check the exact name with `/help`, read the description in the `.md` file |
 | Permission refusal loop | Command in the `deny` list of `settings.json`, strict auto mode | `/fewer-permission-prompts` to optimize allowlists, or `SKIP_COMMAND_VALIDATOR=1` |
@@ -53,7 +53,7 @@ To avoid in order to reduce pressure on the context: reading entire directories 
 cat .mcp.json
 
 # Read MCP events
-cat /tmp/claude-mcp.log
+cat ~/.local/state/claude-base/mcp.log
 ```
 
 To enable a server, copy its block from `.mcp.json.example` into `.mcp.json` (presence = active) and provide the referenced env vars.
@@ -91,7 +91,7 @@ Claude Code automatically detects and repairs Husky if necessary. In case of per
 
 ```bash
 ls -la .husky/
-cat /tmp/claude-sessions.log | tail -20
+cat ~/.local/state/claude-base/sessions.log | tail -20
 ```
 
 ### Main branch protection
@@ -167,8 +167,9 @@ The `Command validator` hook analyzes 9 risk categories. Some valid commands may
 **Identify why the command is blocked:**
 
 ```bash
-# Read the session logs to see the blocking reason
-cat /tmp/claude-sessions.log | grep -i "block\|validator" | tail -10
+# The blocking reason is printed with the refusal itself (a line starting with
+# BLOCKED:). Refusals from the auto-mode classifier are logged by tool name:
+tail -10 ~/.local/state/claude-base/permissions.log
 ```
 
 **Bypass for a specific command:**
@@ -236,7 +237,7 @@ MY COMMIT IS BLOCKED
 │       │   └── Yes → Create a branch OR ALLOW_MAIN_EDIT=1
 │       ├── "secret detected" message?
 │       │   └── Yes → Remove the secret OR add exception .gitleaks.toml
-│       └── Other → cat /tmp/claude-sessions.log | tail -30
+│       └── Other → cat ~/.local/state/claude-base/sessions.log | tail -30
 
 
 CLAUDE NO LONGER RESPONDS / VERY SLOW
@@ -262,7 +263,7 @@ THE AGENT / COMMAND DOES NOTHING
 ├── Model insufficient for the task?
 │   └── Opus for complex tasks, Sonnet for audits
 └── Sub-agent that does not start?
-    └── cat /tmp/claude-agents.log | tail -20
+    └── cat ~/.local/state/claude-base/agents.log | tail -20
 
 
 THE HOOK DOES NOT TRIGGER
@@ -272,7 +273,7 @@ THE HOOK DOES NOT TRIGGER
 ├── Test the script manually
 │   └── echo '{}' | bash scripts/hooks/my-script.sh
 ├── Check the logs
-│   └── cat /tmp/claude-sessions.log | tail -30
+│   └── cat ~/.local/state/claude-base/sessions.log | tail -30
 └── Timeout too short?
     └── Check the "timeout" property in settings.json
 ```
@@ -288,10 +289,10 @@ THE HOOK DOES NOT TRIGGER
 | `/rewind` | Returns to the last stable state before a modification | Refactoring that broke everything |
 | `/help` | Lists all available commands and agents | Agent not found, uncertain name |
 | `claude --version` | Displays the installed version | Compatibility issue, missing feature |
-| `cat /tmp/claude-sessions.log` | Session logs (startup, compaction, hooks) | Silent hook, startup problem |
-| `cat /tmp/claude-agents.log` | Sub-agent logs | Agent that does not start or terminates prematurely |
-| `cat /tmp/claude-notifications.log` | Permission and waiting logs | Permission refused, Claude waiting for the user |
-| `cat /tmp/claude-mcp.log` | MCP Elicitation logs | MCP server disconnected, elicitation failed |
+| `cat ~/.local/state/claude-base/sessions.log` | Session logs (startup, compaction, hooks) | Silent hook, startup problem |
+| `cat ~/.local/state/claude-base/agents.log` | Sub-agent logs | Agent that does not start or terminates prematurely |
+| `cat ~/.local/state/claude-base/notifications.log` | Permission and waiting logs | Permission refused, Claude waiting for the user |
+| `cat ~/.local/state/claude-base/mcp.log` | MCP Elicitation logs | MCP server disconnected, elicitation failed |
 
 ### Check the version and installation
 
@@ -300,7 +301,7 @@ THE HOOK DOES NOT TRIGGER
 claude --version
 
 # Check that hooks are properly loaded at startup
-cat /tmp/claude-sessions.log | head -20
+cat ~/.local/state/claude-base/sessions.log | head -20
 
 # Check the permissions of hook scripts
 ls -la scripts/hooks/
@@ -313,10 +314,10 @@ echo '{"tool_input":{"command":"echo hi"}}' | bash scripts/hooks/command-validat
 
 ```bash
 # Follow session logs live during a Claude session
-tail -f /tmp/claude-sessions.log
+tail -f ~/.local/state/claude-base/sessions.log
 
 # Follow agent logs live
-tail -f /tmp/claude-agents.log
+tail -f ~/.local/state/claude-base/agents.log
 ```
 
 ---
@@ -501,7 +502,7 @@ Files and directories never to read in their entirety:
 |----------|-------------|
 | `node_modules/` | Read only `package.json` |
 | `dist/`, `build/`, `.next/` | Generated files, useless to read |
-| `/tmp/claude-*.log` (entire) | `tail -20 /tmp/claude-sessions.log` |
+| `~/.local/state/claude-base/*.log` (entire) | `tail -20 ~/.local/state/claude-base/sessions.log` |
 | `yarn.lock`, `package-lock.json` | Read only `package.json` |
 | `.git/` | Use git commands |
 

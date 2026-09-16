@@ -85,7 +85,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'if [ -f .claude/settings.local.json ]; then echo \"[INFO] Hooks personnalises detectes dans .claude/settings.local.json - verifiez leur contenu si ce depot n est pas de confiance.\"; fi'",
+            "command": "bash -c 'if [ -f .claude/settings.local.json ]; then echo \"[INFO] Custom hooks found in .claude/settings.local.json - review them if this repository is not trusted.\"; fi'",
             "timeout": 3000
           }
         ]
@@ -458,7 +458,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'echo \"[NOTIFICATION] Permission demandee: $(head -c 200)\" >> /tmp/claude-notifications.log 2>/dev/null || true'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/log-event.sh\" notifications PERMISSION-PROMPT notification_type",
             "timeout": 5000,
             "async": true
           }
@@ -470,7 +470,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'echo \"[IDLE] Claude is waiting for user response\" >> /tmp/claude-notifications.log 2>/dev/null || true'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/log-event.sh\" notifications IDLE-PROMPT notification_type",
             "timeout": 5000,
             "async": true
           }
@@ -483,7 +483,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'echo \"[SUBAGENT] Agent termine\" >> /tmp/claude-agents.log 2>/dev/null || true'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/log-event.sh\" agents SUBAGENT-STOP agent_type",
             "timeout": 5000,
             "async": true
           }
@@ -496,7 +496,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'echo \"[TEAM] Teammate idle $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-agents.log 2>/dev/null || true'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/log-event.sh\" agents TEAMMATE-IDLE",
             "timeout": 5000,
             "async": true
           }
@@ -509,7 +509,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'echo \"[TASK] Task completed $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-sessions.log 2>/dev/null || true'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/log-event.sh\" sessions TASK-COMPLETED",
             "timeout": 5000,
             "async": true
           }
@@ -522,7 +522,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'echo \"[SESSION] Fin de session $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-sessions.log 2>/dev/null || true'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/log-event.sh\" sessions SESSION-END reason",
             "timeout": 5000,
             "async": true
           }
@@ -535,7 +535,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'echo \"[COMPACT] Compaction du contexte $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-sessions.log 2>/dev/null || true'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/log-event.sh\" sessions PRE-COMPACT trigger",
             "timeout": 5000,
             "async": true
           }
@@ -548,7 +548,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'echo \"[COMPACT] Post-compaction $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-sessions.log 2>/dev/null || true'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/log-event.sh\" sessions POST-COMPACT trigger",
             "timeout": 5000,
             "async": true
           }
@@ -561,7 +561,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'echo \"[INIT] Instructions loaded $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-sessions.log 2>/dev/null || true'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/log-event.sh\" sessions INSTRUCTIONS-LOADED",
             "timeout": 5000,
             "async": true
           }
@@ -574,7 +574,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'echo \"[MCP] Elicitation request $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-mcp.log 2>/dev/null || true'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/log-event.sh\" mcp ELICITATION mcp_server_name",
             "timeout": 5000,
             "async": true
           }
@@ -587,7 +587,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'echo \"[MCP] Elicitation result $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-mcp.log 2>/dev/null || true'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/log-event.sh\" mcp ELICITATION-RESULT mcp_server_name",
             "timeout": 5000,
             "async": true
           }
@@ -600,7 +600,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'echo \"[PERM-DENIED] $(date +%Y-%m-%dT%H:%M:%S) $(head -c 200)\" >> /tmp/claude-permissions.log 2>/dev/null || true'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/log-event.sh\" permissions PERMISSION-DENIED tool_name",
             "timeout": 5000,
             "async": true
           }
@@ -613,7 +613,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'echo \"[PROMPT] $(date +%Y-%m-%dT%H:%M:%S)\" >> /tmp/claude-prompts.log 2>/dev/null || true'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/log-event.sh\" prompts PROMPT",
             "timeout": 5000,
             "async": true
           }
@@ -636,7 +636,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'TOOL_NAME=$(cat 2>/dev/null | jq -r \".tool_name // empty\" 2>/dev/null || true); echo \"[TOOL-FAIL] $(date +%Y-%m-%dT%H:%M:%S) tool=$TOOL_NAME\" >> /tmp/claude-failures.log 2>/dev/null || true'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/log-event.sh\" failures TOOL-FAIL tool_name",
             "timeout": 5000,
             "async": true
           }
