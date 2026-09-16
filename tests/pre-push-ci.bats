@@ -153,3 +153,71 @@ mk_empty_project() { mkdir -p "$TEST_DIR/empty"; }
     run bash -c "cd '$TEST_DIR/empty' && bash '$HOOK' < '$TEST_DIR/input.json' 2>&1"
     [ "$status" -eq 0 ]
 }
+
+# --- npm's placeholder test script -------------------------------------------
+# `npm init -y` writes a test script that ALWAYS exits 1: running it refused
+# every push of a freshly initialised project.
+
+NPM_PLACEHOLDER='echo "Error: no test specified" && exit 1'
+
+mk_placeholder_project() {
+    mkdir -p "$TEST_DIR/proj"
+    jq -n --arg t "$1" '{name:"fixture", version:"1.0.0", scripts:{test:$t}}' \
+        > "$TEST_DIR/proj/package.json"
+}
+
+@test "pre-push-ci: npm's placeholder test script → push allowed, gate says why" {
+    mk_placeholder_project "$NPM_PLACEHOLDER"
+    run_in "$TEST_DIR/proj" "git push origin main"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"BLOCKED"* ]]
+    [[ "$output" == *"placeholder"* ]]
+}
+
+@test "pre-push-ci: a failing script that merely CONTAINS the placeholder still blocks" {
+    mk_placeholder_project "$NPM_PLACEHOLDER && echo more"
+    run_in "$TEST_DIR/proj" "git push origin main"
+    [ "$status" -eq 2 ]
+}
+
+fake_red_tool() {
+    mkdir -p "$TEST_DIR/bin"
+    printf '#!/bin/sh\necho "FAKE %s RED"\nexit 1\n' "$1" > "$TEST_DIR/bin/$1"
+    chmod +x "$TEST_DIR/bin/$1"
+    export PATH="$TEST_DIR/bin:$PATH"
+}
+
+@test "pre-push-ci: a red lint still blocks when the placeholder test is skipped" {
+    mkdir -p "$TEST_DIR/proj"
+    jq -n --arg t "$NPM_PLACEHOLDER" '{name:"fixture", version:"1.0.0", scripts:{lint:"exit 1", test:$t}}' \
+        > "$TEST_DIR/proj/package.json"
+    run_in "$TEST_DIR/proj" "git push origin main"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"FAILED: Lint"* ]]
+}
+
+@test "pre-push-ci: placeholder package.json in a Python project still runs the red pytest" {
+    mk_placeholder_project "$NPM_PLACEHOLDER"
+    touch "$TEST_DIR/proj/pyproject.toml"
+    fake_red_tool pytest
+    run_in "$TEST_DIR/proj" "git push origin main"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"FAKE pytest RED"* ]]
+}
+
+@test "pre-push-ci: placeholder package.json in a Go project still runs the red go checks" {
+    mk_placeholder_project "$NPM_PLACEHOLDER"
+    printf 'module x\n' > "$TEST_DIR/proj/go.mod"
+    fake_red_tool go
+    run_in "$TEST_DIR/proj" "git push origin main"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"FAKE go RED"* ]]
+}
+
+@test "pre-push-ci: a placeholder test with a real posttest is a real suite" {
+    mkdir -p "$TEST_DIR/proj"
+    jq -n --arg t "$NPM_PLACEHOLDER" '{name:"fixture", version:"1.0.0", scripts:{test:$t, posttest:"exit 3"}}' \
+        > "$TEST_DIR/proj/package.json"
+    run_in "$TEST_DIR/proj" "git push origin main"
+    [ "$status" -eq 2 ]
+}
