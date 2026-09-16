@@ -252,7 +252,29 @@ If you want auto-propagation without committing `.claude/` wholesale, a partial-
 - **release.yml**: Automated releases with changelog
 - **dependabot-auto-merge.yml**: Auto-merges dependabot PRs that pass CI
 
-Full file-by-file at `.github/workflows/`.
+Full file-by-file at `.github/workflows/`. These six are the foundation's **own** CI and are never
+copied into your project.
+
+### What `--ci` installs in your project
+
+`claude-base init --ci` (also `--all`, and the presets whose `defaults.ci` is on) installs three
+stack-neutral workflows from `templates/github-workflows/`. Each looks at what the repository has and
+runs only that, so a fresh project's first push is green:
+
+- **ci.yml**: detects Node (`package.json`), Python (`pyproject.toml` / `requirements.txt`) and Go
+  (`go.mod`). Node runs the `lint`, `typecheck`, `test` and `build` scripts that exist, with npm,
+  pnpm or yarn chosen by lockfile; npm's `npm init -y` placeholder test is skipped with a notice.
+  Python installs with pip, uv or poetry by lockfile, then runs ruff and pytest when installed
+  (no tests collected is a notice, not a failure). Go runs `go vet` and `go test`. No stack found
+  is a notice.
+- **pr-check.yml**: Conventional Commits PR title, and no `WIP` in the title.
+- **security.yml**: Gitleaks over the whole history, from its pinned container image rather than the
+  gitleaks Action, which needs a license key on organization-owned repositories.
+
+There is no release workflow: how a project releases is its own decision. A workflow file the project
+already has is never overwritten, except by `--ci-existing replace`, which deletes the project's
+workflows before installing these three. `--ci-existing merge` adds only the missing ones and says
+when release automation or a secret scan is missing.
 
 ### Pre-commit Hooks
 

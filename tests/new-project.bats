@@ -291,14 +291,14 @@ help_project_types() {
     [ "$status" -eq 0 ]
 }
 
-@test "new-project.sh --ci-existing replace removes existing workflows and installs the foundation ones" {
+@test "new-project.sh --ci-existing replace removes existing workflows and installs the downstream templates" {
     mkdir -p "$TEST_DIR/.github/workflows"
     echo "name: Custom" > "$TEST_DIR/.github/workflows/custom.yml"
 
     run "$NEW_PROJECT_SCRIPT" -y --ci-existing replace "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # The custom workflow is gone, replaced by the foundation templates
+    # The custom workflow is gone, replaced by the downstream templates
     [ ! -f "$TEST_DIR/.github/workflows/custom.yml" ]
     [ -f "$TEST_DIR/.github/workflows/ci.yml" ]
 }
@@ -319,7 +319,7 @@ EOF
     run "$NEW_PROJECT_SCRIPT" -y --ci-existing merge "$TEST_DIR"
     [ "$status" -eq 0 ]
 
-    # The custom workflow survives AND foundation workflows were added
+    # The custom workflow survives AND downstream templates were added
     [ -f "$TEST_DIR/.github/workflows/custom.yml" ]
     [ -f "$TEST_DIR/.github/workflows/ci.yml" ]
 }
