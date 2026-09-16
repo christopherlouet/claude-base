@@ -72,20 +72,20 @@
       "url": "https://github.com/pulumi/agent-skills",
       "rationale": "Pulumi authoring + migration workflows (Terraform→Pulumi)",
       "condition": "if using Pulumi instead of Terraform",
-      "pinnedRef": "e57d1d117b585a3b5bf6bc612ff327acfa89bd29",
+      "pinnedRef": "9b794aec9c4169f137285c2763c06064d247dd47",
       "trustTrack": "authority",
       "provenance": "Pulumi",
-      "lastVerified": "2026-09-11"
+      "lastVerified": "2026-09-16"
     },
     {
       "id": "grafana/skills",
       "url": "https://github.com/grafana/skills",
       "rationale": "Grafana, LGTM stack for monitoring and observability",
       "condition": "if using Grafana / Prometheus stack",
-      "pinnedRef": "7155edc7040b23186bd25dd23a7a1b95375ff6c3",
+      "pinnedRef": "05196628fa1a6a557fad1a5623156170693607eb",
       "trustTrack": "authority",
       "provenance": "Grafana Labs",
-      "lastVerified": "2026-07-11"
+      "lastVerified": "2026-09-16"
     },
     {
       "id": "homeassistant-ai/skills (skills/home-assistant-best-practices)",

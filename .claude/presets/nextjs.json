@@ -40,10 +40,10 @@
       "url": "https://github.com/vercel-labs/agent-skills",
       "rationale": "Canonical react-best-practices and Next.js patterns from Vercel Engineering",
       "condition": "always",
-      "pinnedRef": "f8a72b9603728bb92a217a879b7e62e43ad76c81",
+      "pinnedRef": "063bee94c3f4df8453406c830b0a7df0f2860278",
       "trustTrack": "authority",
       "provenance": "Vercel",
-      "lastVerified": "2026-06-13"
+      "lastVerified": "2026-09-16"
     },
     {
       "id": "frontend-design@claude-plugins-official",
