@@ -26,12 +26,16 @@
 # _SAFETY_PATTERNS. A flag only ever routes to review.)
 #
 # Fail-safe (EF-012): anything that cannot be confirmed safe is FLAGGED, never
-# silently passed. Reasons: content-unfetchable (no doc), exec-surface-unfetchable
-# (tree unlistable), exec-file-unfetchable (a listed exec file unreadable),
-# exec-surface-truncated (GitHub itself truncated the tree, so files we never
-# saw the names of went unscanned), exec-surface-over-cap (the tree listed more
-# exec files than the cap, so the tail went unscanned), scan-error (a pattern
-# grep failed), screen-emit-failed (the verdict itself could not be rendered).
+# silently passed. Reasons: content-unfetchable (no doc), doc-unreadable (the doc
+# IS there and its body could not be read — no falling back to a neighbouring
+# file, which would report a skill clean on a doc that was never its own),
+# exec-surface-unfetchable (tree unlistable), exec-file-unfetchable (a listed
+# exec file unreadable), exec-surface-truncated (GitHub itself truncated the
+# tree, so files we never saw the names of went unscanned), exec-surface-over-cap
+# (the tree listed more exec files than the cap, so the tail went unscanned),
+# scan-error (a pattern grep failed), scan-blind (the pattern scan reported "no
+# match" on a text bash itself can see characters in — the instrument, not the
+# text, was empty), screen-emit-failed (the verdict itself could not be rendered).
 #
 # Subpath scoping: when a skill lives in a subpath of a monorepo (registry
 # vendorId / preset id like phaserjs/phaser/skills or coreyhaines31/.../cro),
@@ -43,10 +47,20 @@
 #
 # Fail-safe (EF-012): anything that cannot be confirmed safe is FLAGGED, never
 # silently passed. Reasons: content-unfetchable (no doc — root mode only),
+# doc-unreadable (the doc is present and unreadable — both modes),
 # exec-surface-unfetchable (tree unlistable), exec-file-unfetchable (a listed
 # exec file unreadable), exec-surface-truncated (GitHub truncated the tree),
 # exec-surface-over-cap (more exec files than the cap), scan-error (a pattern
-# grep failed, so the text could not be confirmed clean).
+# grep failed, so the text could not be confirmed clean), scan-blind (the scan
+# answered "no match" about a text that demonstrably holds characters).
+#
+# Nothing on the verdict path travels through a here-string: bash serves one
+# from a temp file in /tmp above the pipe buffer, and at EVERY size on the bash
+# 3.2 that macOS still ships. A redirection that cannot create that file returns
+# 1 without running the command — the exact answer grep gives for "clean" — so a
+# full /tmp would have reported every candidate safe. Pipes and process
+# substitutions replace them (process substitution where the loop or the array
+# must stay in the current shell; `reasons` IS the verdict).
 #
 # The verdict never depends on the finding detail: categories are decided by
 # the pattern scan alone; the per-line detail is extracted afterwards for the
@@ -82,13 +96,21 @@ _curation_b64decode() { curation_b64decode; }
 # the file is absent, unfetchable, or undecodable. A present-but-undecodable /
 # empty-after-decode body is treated as NOT fetched — never as clean text — so
 # corrupt base64 or a wrong-decoder pick fails SAFE instead of false-passing.
+#
+# The two non-zero answers are NOT the same fact, and the caller acts on the
+# difference: 1 = the API has no such file (absent), 2 = the file IS there and
+# its body could not be read. GitHub serves an EMPTY body for a blob over 1 MB,
+# so 2 is the ordinary answer for a big file — and reading it as "absent" would
+# let a doc fall back to a neighbour that was never the subject.
 _curation_fetch_one() {
     local repo="$1" ref="$2" file="$3" body content decoded
     body=$(curation_gh_api "repos/$repo/contents/$file?ref=$ref" 2>/dev/null) || return 1
+    # The API answered, so the path EXISTS; from here every failure is "present
+    # but unreadable".
     content=$(printf '%s' "$body" | jq -r '.content // empty' 2>/dev/null)
-    [ -n "$content" ] || return 1
-    decoded=$(printf '%s' "$content" | _curation_b64decode) || return 1
-    [ -n "$decoded" ] || return 1
+    [ -n "$content" ] || return 2
+    decoded=$(printf '%s' "$content" | _curation_b64decode) || return 2
+    [ -n "$decoded" ] || return 2
     printf '%s' "$decoded"
 }
 
@@ -106,7 +128,7 @@ _curation_fetch_content() {
         return 1
     fi
     local sp out="" got=1 d sps=()
-    IFS='+' read -ra sps <<< "$subpaths" || true
+    IFS='+' read -ra sps < <(printf '%s' "$subpaths") || true
     for sp in "${sps[@]}"; do
         [ -n "$sp" ] || continue
         for file in SKILL.md README.md; do
@@ -194,12 +216,19 @@ _curation_grep_utf8() {
 #                 locale does not — `ignore<U+2003>all previous instructions`
 #                 must still read as an injection.
 # Neither locale alone covers both evasions. `-a`: never treat text as binary.
+#
+# The text travels through a PIPE, never a here-string: above the pipe buffer
+# (measured: between 65000 and 70000 bytes) bash serves a here-string from a
+# temp file in /tmp, and on bash 3.2 — still the system bash on macOS — it does
+# so at every size. A redirection that cannot create that file returns 1 WITHOUT
+# running the command, which is byte-for-byte the "ran, found nothing" answer,
+# so a full /tmp would report every candidate clean. A pipe needs no filesystem.
 _curation_match() {
     local rc_c rc_u
-    LC_ALL=C grep -aEiq -e "$1" <<<"$2"
+    printf '%s\n' "$2" | LC_ALL=C grep -aEiq -e "$1"
     rc_c=$?
     [ "$rc_c" -eq 0 ] && return 0
-    _curation_grep_utf8 -aEiq -e "$1" <<<"$2"
+    printf '%s\n' "$2" | _curation_grep_utf8 -aEiq -e "$1"
     rc_u=$?
     [ "$rc_u" -eq 0 ] && return 0
     { [ "$rc_c" -gt 1 ] || [ "$rc_u" -gt 1 ]; } && return 2
@@ -238,8 +267,8 @@ _curation_scan_findings() {
     w="${cap_w:-$(_curation_cap CURATION_SAFETY_LINE_MAX 240)}"
     text=$(cat)
     for i in "$@"; do
-        { LC_ALL=C grep -anEi -e "${_SAFETY_PATTERNS[$i]}" <<<"$text"
-          _curation_grep_utf8 -anEi -e "${_SAFETY_PATTERNS[$i]}" <<<"$text"; } 2>/dev/null \
+        { printf '%s\n' "$text" | LC_ALL=C grep -anEi -e "${_SAFETY_PATTERNS[$i]}"
+          printf '%s\n' "$text" | _curation_grep_utf8 -anEi -e "${_SAFETY_PATTERNS[$i]}"; } 2>/dev/null \
             | jq -Rc --arg p "$path" --arg c "$(_curation_category_of "$i")" \
                 --argjson j "$joined" --argjson i "$i" --argjson w "$w" '
                 index(":") as $a | (.[0:$a] | tonumber) as $n | .[$a + 1:] as $l
@@ -266,6 +295,24 @@ _curation_screen_scan() {
     local path="$1" joined=0 text i c rc seen=" " cats=() idx=() part
     [ "${2:-}" = "joined" ] && joined=1
     text=$(cat)
+
+    # Differential control: "no match" (1) is also what the scan reports when it
+    # NEVER SAW the text — a failed redirection, a grep that cannot run, a
+    # mangled locale. That silence is indistinguishable from a clean file, and
+    # it decides the verdict, so it must not be taken on trust. Bash's own
+    # matcher is an independent instrument: no process, no redirection, no
+    # filesystem. When IT finds a non-space character that the scan's instrument
+    # cannot find, the instrument is blind — flag, never "clean".
+    if [[ "$text" =~ [^[:space:]] ]]; then
+        _curation_match '[^[:space:]]' "$text"
+        rc=$?
+        if [ "$rc" -ne 0 ]; then
+            # 2 is already the instrument SAYING it failed; 1 is the silent one.
+            if [ "$rc" -eq 2 ]; then reasons+=("scan-error"); else reasons+=("scan-blind"); fi
+            return 0
+        fi
+    fi
+
     for ((i = 0; i < ${#_SAFETY_PATTERNS[@]}; i++)); do
         _curation_match "${_SAFETY_PATTERNS[$i]}" "$text"
         rc=$?
@@ -285,7 +332,7 @@ _curation_screen_scan() {
         detail_lost=1
         return 0
     fi
-    part=$(_curation_scan_findings "$path" "$joined" "${idx[@]}" <<<"$text" \
+    part=$(printf '%s\n' "$text" | _curation_scan_findings "$path" "$joined" "${idx[@]}" \
         | jq -cs --arg idx "${idx[*]}" '
         . as $raw
         | ($idx | split(" ") | map(select(length > 0) | tonumber)
@@ -355,7 +402,7 @@ _curation_list_exec_surface() {
     # never false-trips exec-surface-over-cap. Literal prefix match (no regex).
     if [ -n "$subpaths" ]; then
         local sp sps=() scoped=""
-        IFS='+' read -ra sps <<< "$subpaths" || true
+        IFS='+' read -ra sps < <(printf '%s' "$subpaths") || true
         for sp in "${sps[@]}"; do
             [ -n "$sp" ] || continue
             scoped+=$(printf '%s\n' "$all" | awk -v p="$sp/" 'index($0,p)==1')$'\n'
@@ -386,7 +433,7 @@ _curation_subpaths_resolve() {
     body=$(curation_gh_api "repos/$repo/git/trees/$ref?recursive=1" 2>/dev/null) || return 1
     printf '%s' "$body" | jq -e '.tree | type == "array"' >/dev/null 2>&1 || return 1
     paths=$(printf '%s' "$body" | jq -r '.tree[]? | .path')
-    IFS='+' read -ra sps <<< "$subpaths" || true
+    IFS='+' read -ra sps < <(printf '%s' "$subpaths") || true
     for sp in "${sps[@]}"; do
         [ -n "$sp" ] || continue
         printf '%s\n' "$paths" | awk -v p="$sp/" 'index($0,p)==1{found=1} END{exit !found}' \
@@ -425,11 +472,24 @@ curation_safety_screen() {
     # often lives nested under the subpath (e.g. skills/<name>/SKILL.md), so a
     # missing <subpath>/SKILL.md is NOT a failure — the scoped exec-surface scan
     # below is the load-bearing signal; the doc is scanned best-effort if present.
+    #
+    # A doc that is THERE but unreadable (rc 2) never falls back: the fallback
+    # exists for a repo that simply has no SKILL.md, and using it here would
+    # scan a neighbouring file and report the skill clean while its own doc went
+    # unread — and the doc big enough to be undeliverable is exactly the one
+    # worth hiding something in.
+    local frc
     if [ -z "$subpaths" ]; then
         local got=1
         for doc in SKILL.md README.md; do
-            if text=$(_curation_fetch_one "$repo" "$ref" "$doc"); then
-                _curation_screen_scan "$doc" <<<"$text"
+            text=$(_curation_fetch_one "$repo" "$ref" "$doc"); frc=$?
+            if [ "$frc" -eq 2 ]; then
+                _curation_safety_emit "$repo" "$ref" "flag" "" 0 "doc-unreadable"
+                [ -n "$scratch" ] && rm -rf "$scratch"
+                return 0
+            fi
+            if [ "$frc" -eq 0 ]; then
+                _curation_screen_scan "$doc" < <(printf '%s\n' "$text")
                 got=0
                 break
             fi
@@ -441,12 +501,17 @@ curation_safety_screen() {
         fi
     else
         local sp sps=()
-        IFS='+' read -ra sps <<< "$subpaths" || true
+        IFS='+' read -ra sps < <(printf '%s' "$subpaths") || true
         for sp in "${sps[@]}"; do
             [ -n "$sp" ] || continue
             for doc in "$sp/SKILL.md" "$sp/README.md"; do
-                if text=$(_curation_fetch_one "$repo" "$ref" "$doc"); then
-                    _curation_screen_scan "$doc" <<<"$text"
+                text=$(_curation_fetch_one "$repo" "$ref" "$doc"); frc=$?
+                if [ "$frc" -eq 2 ]; then
+                    reasons+=("doc-unreadable")
+                    break
+                fi
+                if [ "$frc" -eq 0 ]; then
+                    _curation_screen_scan "$doc" < <(printf '%s\n' "$text")
                     break
                 fi
             done
@@ -481,7 +546,7 @@ curation_safety_screen() {
             # again here; the rendering dedups its findings. Skipping it instead
             # once let a crafted file name go unscanned.
             if ftext=$(_curation_fetch_one "$repo" "$ref" "$path"); then
-                _curation_screen_scan "$path" <<<"$ftext"
+                _curation_screen_scan "$path" < <(printf '%s\n' "$ftext")
                 # The commands a JSON config declares, rebuilt one per line, are
                 # scanned apart: they exist nowhere in the file, so no line number.
                 case "$path" in
@@ -491,7 +556,9 @@ curation_safety_screen() {
                 # A listed exec file we cannot read → fail safe.
                 reasons+=("exec-file-unfetchable")
             fi
-        done <<< "$surface"
+            # Process substitution, not a here-string (no temp file) and not a
+            # pipe (the loop must stay in THIS shell — `reasons` is the verdict).
+        done < <(printf '%s\n' "$surface")
     fi
 
     # 3. Dedup reason categories (order-preserving) and decide the verdict.
