@@ -98,10 +98,18 @@ _curation_b64decode() { curation_b64decode; }
 # corrupt base64 or a wrong-decoder pick fails SAFE instead of false-passing.
 #
 # The two non-zero answers are NOT the same fact, and the caller acts on the
-# difference: 1 = the API has no such file (absent), 2 = the file IS there and
-# its body could not be read. GitHub serves an EMPTY body for a blob over 1 MB,
-# so 2 is the ordinary answer for a big file — and reading it as "absent" would
-# let a doc fall back to a neighbour that was never the subject.
+# difference: 2 = the API ANSWERED, so the file is there, and its body could not
+# be read. GitHub serves an EMPTY body for a blob over 1 MB, so 2 is the ordinary
+# answer for a big file — and reading it as "absent" would let a doc fall back to
+# a neighbour that was never the subject.
+#
+# 1 is weaker than it looks and must not be read as "absent": curation_gh_api
+# answers non-zero for a 404, a rate limit, a 5xx, a dead network and an expired
+# token alike, so 1 means "could not ask, or nothing to ask about". The screen
+# survives that only because the SAME outage takes the tree call down with it
+# (exec-surface-unfetchable, a flag). Telling a real 404 from a transport failure
+# needs a status the CLI does not give us here; until it does, nothing may treat
+# 1 as proof that a file does not exist.
 _curation_fetch_one() {
     local repo="$1" ref="$2" file="$3" body content decoded
     body=$(curation_gh_api "repos/$repo/contents/$file?ref=$ref" 2>/dev/null) || return 1
@@ -410,6 +418,17 @@ _curation_list_exec_surface() {
         all=$(printf '%s' "$scoped" | grep . | sort -u || true)
     fi
     count=$(printf '%s' "$all" | grep -c . || true)
+    # The count comes from the same instrument that filters the list, and "0" is
+    # a legitimate answer (plenty of skills ship no exec file). A NON-NUMBER is
+    # not: it means grep did not run, and the empty list that comes with it would
+    # otherwise be reported as a surface listed and found empty — a clean pass
+    # over files nobody looked at. Fail safe: unlistable, like a dead tree call.
+    case "$count" in
+        '' | *[!0-9]*)
+            curation_warn "exec-surface listing could not be counted ('$count'); treating the surface as unlistable"
+            return 1
+            ;;
+    esac
     if [ "$truncated" = "true" ] || [ "$count" -gt "$cap" ]; then
         printf '%s\n' "$all" | grep . | head -n "$cap" || true
         [ "$truncated" = "true" ] && return 3
@@ -477,16 +496,20 @@ curation_safety_screen() {
     # exists for a repo that simply has no SKILL.md, and using it here would
     # scan a neighbouring file and report the skill clean while its own doc went
     # unread — and the doc big enough to be undeliverable is exactly the one
-    # worth hiding something in.
+    # worth hiding something in. It records the reason and the screen CARRIES ON
+    # to the exec surface: the flag is not the job, showing the reviewer what is
+    # in the repo is, and returning here would hand them a verdict that claims
+    # detailComplete over a run that scanned nothing.
     local frc
     if [ -z "$subpaths" ]; then
         local got=1
         for doc in SKILL.md README.md; do
             text=$(_curation_fetch_one "$repo" "$ref" "$doc"); frc=$?
             if [ "$frc" -eq 2 ]; then
-                _curation_safety_emit "$repo" "$ref" "flag" "" 0 "doc-unreadable"
-                [ -n "$scratch" ] && rm -rf "$scratch"
-                return 0
+                # A doc WAS located, so this is not content-unfetchable.
+                reasons+=("doc-unreadable")
+                got=0
+                break
             fi
             if [ "$frc" -eq 0 ]; then
                 _curation_screen_scan "$doc" < <(printf '%s\n' "$text")
