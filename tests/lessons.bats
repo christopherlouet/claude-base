@@ -160,6 +160,39 @@ EOF
 }
 
 # =============================================================================
+# prune-check — budget resolution: argument > LESSONS_BUDGET > default
+# =============================================================================
+
+@test "prune-check: the default budget is 4000 when neither argument nor LESSONS_BUDGET is set" {
+    run env -u LESSONS_BUDGET "$LESSONS" prune-check "$TEST_DIR/absent-lessons.md"
+    [ "$status" -eq 0 ]
+    [ "$output" = "OK 0/4000" ]
+}
+
+@test "prune-check: LESSONS_BUDGET sets the budget when no argument is given" {
+    local store="$TEST_DIR/lessons.md"
+    printf -- '- A lesson long enough to exceed a tiny budget.\n' > "$store"
+    LESSONS_BUDGET=20 run "$LESSONS" prune-check "$store"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"OVER"*"/20"* ]]
+}
+
+@test "prune-check: an explicit budget argument wins over LESSONS_BUDGET" {
+    local store="$TEST_DIR/lessons.md"
+    printf -- '- A lesson long enough to exceed a tiny budget.\n' > "$store"
+    LESSONS_BUDGET=20 run "$LESSONS" prune-check "$store" 100000
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"OK"*"/100000"* ]]
+}
+
+@test "prune-check: a non-numeric budget is rejected, never silently compared" {
+    LESSONS_BUDGET=abc run "$LESSONS" prune-check "$TEST_DIR/absent-lessons.md"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"budget"* ]]
+    [[ "$output" != *"OK"* ]]
+}
+
+# =============================================================================
 # prune-check — Phase 3: topic grouping (US-8) + recurrence signal (US-9)
 # =============================================================================
 

@@ -18,15 +18,17 @@
 #                                   Section-aware: "## " topic headings are never
 #                                   treated as lessons, and "foo" / "foo (seen N
 #                                   times)" dedupe to the same lesson. STORE
-#                                   defaults to ~/.claude/rules/lessons.md, BUDGET
-#                                   to 2000.
+#                                   defaults to ~/.claude/rules/lessons.md. BUDGET
+#                                   is the argument, else $LESSONS_BUDGET (set it
+#                                   once in settings.json "env"), else 4000 — a
+#                                   starting point, not a measured optimum.
 # =============================================================================
 
 set -euo pipefail
 
 DEFAULT_MEMORY_ROOT="${HOME}/.claude"
 DEFAULT_STORE="${HOME}/.claude/rules/lessons.md"
-DEFAULT_BUDGET=2000
+DEFAULT_BUDGET=4000
 
 # Extract a top-level frontmatter scalar (e.g. name:, description:), unquoted.
 _fm() {
@@ -57,7 +59,13 @@ cmd_bootstrap_scan() {
 
 cmd_prune_check() {
     local store="${1:-$DEFAULT_STORE}"
-    local budget="${2:-$DEFAULT_BUDGET}"
+    local budget="${2:-${LESSONS_BUDGET:-$DEFAULT_BUDGET}}"
+
+    case "$budget" in
+        ''|*[!0-9]*)
+            printf 'Invalid budget: %s (expected a whole number of bytes)\n' "$budget" >&2
+            return 2 ;;
+    esac
 
     local size=0
     [ -f "$store" ] && size=$(wc -c < "$store" | tr -d '[:space:]')

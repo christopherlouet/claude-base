@@ -56,7 +56,8 @@ Seed the store from lessons you already accumulated, so you don't start from scr
 
 ### `--prune` (stay within budget)
 
-1. Run `claude-base lessons prune-check` (prints `OK`/`OVER size/budget`, `DUP:`
+1. Run `claude-base lessons prune-check` — its budget is the user's
+   `LESSONS_BUDGET` if set, else 4000 (prints `OK`/`OVER size/budget`, `DUP:`
    lines for duplicates — section-aware, so `## Topic` headings and a lesson's
    `(seen N times)` twin are handled — and `RECUR N:` for the most-repeated
    lessons).
