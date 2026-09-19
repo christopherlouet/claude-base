@@ -61,8 +61,10 @@ cmd_prune_check() {
     local store="${1:-$DEFAULT_STORE}"
     local budget="${2:-${LESSONS_BUDGET:-$DEFAULT_BUDGET}}"
 
+    # Digits only, and at most 18 of them: a longer value overflows `[ -gt ]`,
+    # whose error then reads as "not over" and prints OK.
     case "$budget" in
-        ''|*[!0-9]*)
+        ''|*[!0-9]*|???????????????????*)
             printf 'Invalid budget: %s (expected a whole number of bytes)\n' "$budget" >&2
             return 2 ;;
     esac

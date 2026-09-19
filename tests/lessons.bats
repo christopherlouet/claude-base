@@ -192,6 +192,13 @@ EOF
     [[ "$output" != *"OK"* ]]
 }
 
+@test "prune-check: a budget too large for shell arithmetic is rejected, not read as OK" {
+    LESSONS_BUDGET=99999999999999999999 run "$LESSONS" prune-check "$TEST_DIR/absent-lessons.md"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"budget"* ]]
+    [[ "$output" != *"OK"* ]]
+}
+
 # =============================================================================
 # prune-check — Phase 3: topic grouping (US-8) + recurrence signal (US-9)
 # =============================================================================

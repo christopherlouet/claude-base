@@ -28,14 +28,16 @@ and fires less often.
 
 **The bound is a trigger, not a capacity.** Reaching it means "prune now", so pick a value your
 store can sit under between pruning passes. A bound that is over budget every day gets ignored, and
-then it protects nothing. Set yours once and every `prune-check` (and `/lessons --prune`) uses it:
+then it protects nothing. Set yours once in `~/.claude/settings.json`:
 
 ```json
 { "env": { "LESSONS_BUDGET": "6800" } }
 ```
 
-in `~/.claude/settings.json`. An explicit argument still wins:
-`claude-base lessons prune-check ~/.claude/rules/lessons.md 6800`. The check counts bytes, which
+That `env` block reaches only the processes Claude Code starts, so `/lessons --prune` and any
+`prune-check` Claude runs use it, but your own terminal does not. For a manual run, also
+`export LESSONS_BUDGET=6800` in your shell profile, or pass the budget as an argument (which always
+wins): `claude-base lessons prune-check ~/.claude/rules/lessons.md 6800`. The check counts bytes, which
 matches characters for mostly-ASCII text.
 
 > **Where the numbers come from.** The first bound, ~2,000, was borrowed from Hermes (~2,200) and
