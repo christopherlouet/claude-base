@@ -253,7 +253,9 @@ watch its **last success from another machine**:
 
 Limits: a quiet night sends nothing, so an expired token is caught on the next
 night that has something to deliver, not before. The monthly discovery issue is
-not covered by this series. Claude token expiry is a separate failure (the run
+not covered by this series. A refused `gh pr create` leaves its
+`curation/re-pin-<date>` branch pushed with no PR, one per failing night:
+delete them once the alert is resolved. Claude token expiry is a separate failure (the run
 fails, the success metric ages): a daily `claude -p` ping that alerts on 401
 catches it a day sooner.
 

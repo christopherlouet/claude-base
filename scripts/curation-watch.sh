@@ -678,11 +678,17 @@ if [ "$DRY_RUN" = false ]; then
         n_drafted=$(printf '%s' "$repin_summary" | jq -r '.drafted | length' 2>/dev/null || echo 0)
         [ "${n_drafted:-0}" -gt 0 ] && echo "[OK] re-pin draft PR: $n_drafted skill(s)" >&2
         # Skips that mean "there was a PR to open and it did not happen" are a
-        # failed delivery; the lock, or nothing left to re-pin, is none. An
-        # unreadable summary is failed: the outcome is unknown, not quiet.
+        # failed delivery, and so is a drift demoted only because the screen
+        # could not read or scan its new ref (an outage, not a verdict). The
+        # lock, or a drift the screen genuinely flagged, is none. `no-changes`
+        # is failed too: a drift matching no record is never re-pinned, night
+        # after night. An unreadable summary is failed: unknown, not quiet.
         DELIVERY_PR=$(printf '%s' "$repin_summary" | jq -r '
+            def unscreened: [.safety.reasons[]?] as $r | ($r | length) > 0
+                and all($r[]; IN("content-unfetchable","doc-unreadable","scan-error","scan-blind","screen-output-invalid"));
             if (.drafted | length) > 0 then "ok"
-            elif (.skipped // "") | IN("no-git","no-repo","dirty-tree","branch","no-commit","push","pr-create") then "failed"
+            elif (.skipped // "") | IN("no-git","no-repo","dirty-tree","branch","no-commit","push","pr-create","no-changes") then "failed"
+            elif any(.demoted[]?; unscreened) then "failed"
             else "none" end' 2>/dev/null) || DELIVERY_PR=failed
         [ -n "$DELIVERY_PR" ] || DELIVERY_PR=failed
         REPIN_LOCK=$(printf '%s' "$repin_summary" | jq -c '.lock // empty' 2>/dev/null) || REPIN_LOCK=""
