@@ -51,8 +51,7 @@ A `matcher` with a hyphenated identifier (e.g. an agent `code-reviewer`, a tool 
 | Property | Description |
 |-----------|-------------|
 | `async` | `true` to run in the background without blocking (CLI 2.1.70+) |
-| `onFailure` | `"block"` to block, `"ignore"` to continue |
-| `timeout` | Timeout in **seconds** (not milliseconds: measured, `timeout: 3` lets a 1 s hook finish and `timeout: 2` cuts a 4 s one). A `PreToolUse` guard that times out **does not block**: measured, the command runs anyway. Give blocking guards a wide budget (the foundation uses 30 s, 1800 s for test/CI gates); `tests/settings-guards.bats` enforces both |
+| `timeout` | Timeout in **seconds** (not milliseconds: measured, `timeout: 3` lets a 1 s hook finish and `timeout: 2` cuts a 4 s one). A `PreToolUse` guard that times out **does not block**: measured, the command runs anyway, and no setting changes that (an `onFailure` field is not part of Claude Code: measured, `onFailure: "block"` changes nothing). Give blocking guards a wide budget (the foundation uses 30 s, 1800 s for test/CI gates); `tests/settings-guards.bats` enforces both. Not enforced on `async: true` command hooks |
 | `if` | Activation condition using permission rules syntax (CLI 2.1.90+) |
 | `additionalContext` | Additional context string injected into the PreToolUse hook (CLI 2.1.110+) |
 

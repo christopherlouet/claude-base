@@ -284,12 +284,12 @@ MCP tools can declare `_meta["anthropic/maxResultSizeChars"]` (up to 500K) to ov
   "type": "http",
   "url": "https://your-webhook-url.example.com/hook",
   "headers": { "Authorization": "Bearer ${WEBHOOK_TOKEN}" },
-  "timeout": 5000,
+  "timeout": 5,
   "async": true
 }
 ```
 
-Recommendations: always `async: true` and `onFailure: "ignore"` to avoid blocking the session if the remote service is unavailable.
+Recommendation: `async: true`, so an unavailable remote service never delays the session (a hook failure never blocks it anyway; there is no `onFailure` setting).
 
 ## Model-switch hooks (CLI 2.1.251+)
 

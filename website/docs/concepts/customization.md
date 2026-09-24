@@ -232,8 +232,7 @@ Hooks are configured directly in the `settings.json` file:
         "hooks": [
           {
             "type": "command",
-            "command": "bash -c 'branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); if [ \"$branch\" = \"main\" ] || [ \"$branch\" = \"master\" ]; then echo \"Modification blocked on $branch\" >&2; exit 2; fi'",
-            "onFailure": "block"
+            "command": "bash -c 'branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); if [ \"$branch\" = \"main\" ] || [ \"$branch\" = \"master\" ]; then echo \"Modification blocked on $branch\" >&2; exit 2; fi'"
           }
         ]
       }
@@ -301,11 +300,10 @@ FILE=$(jq -r '.tool_input.file_path // empty')
 
 ### Behavior on failure
 
-| onFailure | Effect |
-|-----------|--------|
-| `block` | Blocks the action (PreToolUse only) |
-| `continue` | Continues despite the error |
-| (absent) | Continues by default |
+Only the hook's own exit code blocks: `exit 2` on a PreToolUse hook refuses the action. A hook that
+crashes, exits otherwise, or outlives its `timeout` (in **seconds**) does **not** block — the action
+proceeds (measured 2026-09-25). There is no `onFailure` setting; keep guards fast and give them a wide
+`timeout`.
 
 ---
 

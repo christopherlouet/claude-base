@@ -133,8 +133,7 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/main-branch-guard.sh\"",
-            "timeout": 30,
-            "onFailure": "block"
+            "timeout": 30
           }
         ]
       },
@@ -145,8 +144,7 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/secret-scan.sh\"",
-            "timeout": 30,
-            "onFailure": "block"
+            "timeout": 30
           }
         ]
       },
@@ -157,8 +155,7 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/pre-commit-tests.sh\"",
-            "timeout": 1800,
-            "onFailure": "block"
+            "timeout": 1800
           }
         ]
       },
@@ -169,8 +166,7 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/pre-push-ci.sh\"",
-            "timeout": 1800,
-            "onFailure": "block"
+            "timeout": 1800
           }
         ]
       },
@@ -181,8 +177,7 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/destructive-ops.sh\"",
-            "timeout": 30,
-            "onFailure": "block"
+            "timeout": 30
           }
         ]
       },
@@ -193,8 +188,7 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/pre-deploy-build.sh\"",
-            "timeout": 1800,
-            "onFailure": "block"
+            "timeout": 1800
           }
         ]
       },
@@ -205,8 +199,7 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/command-validator.sh\"",
-            "timeout": 30,
-            "onFailure": "block"
+            "timeout": 30
           }
         ]
       },
@@ -217,8 +210,7 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/bash-write-guard.sh\"",
-            "timeout": 30,
-            "onFailure": "block"
+            "timeout": 30
           }
         ]
       },
@@ -229,8 +221,7 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/config-protection.sh\"",
-            "timeout": 30,
-            "onFailure": "block"
+            "timeout": 30
           }
         ]
       },
@@ -241,8 +232,7 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/destructive-migration.sh\"",
-            "timeout": 30,
-            "onFailure": "block"
+            "timeout": 30
           }
         ]
       }
@@ -255,8 +245,7 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/base-integrity-check.sh\"",
-            "timeout": 10,
-            "onFailure": "ignore"
+            "timeout": 10
           }
         ]
       },
@@ -267,8 +256,7 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/substance-check.sh\"",
-            "timeout": 10,
-            "onFailure": "ignore"
+            "timeout": 10
           }
         ]
       },
@@ -279,8 +267,7 @@
           {
             "type": "command",
             "command": "bash -c 'command -v jq >/dev/null 2>&1 || exit 0; TOOL_FILE=$(cat | jq -r \".tool_input.file_path // empty\" 2>/dev/null); if echo \"$TOOL_FILE\" | grep -qE \"\\.(ts|tsx|js|jsx|mjs|cjs)$\"; then if [ -f node_modules/.bin/prettier ]; then npx prettier --write \"$TOOL_FILE\" 2>/dev/null || true; elif command -v prettier >/dev/null 2>&1; then prettier --write \"$TOOL_FILE\" 2>/dev/null || true; fi; fi'",
-            "timeout": 10,
-            "onFailure": "ignore"
+            "timeout": 10
           }
         ]
       },
@@ -291,8 +278,7 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/post-edit-typecheck-and-lint.sh\"",
-            "timeout": 30,
-            "onFailure": "ignore"
+            "timeout": 30
           }
         ]
       },
@@ -303,8 +289,7 @@
           {
             "type": "command",
             "command": "bash -c 'command -v jq >/dev/null 2>&1 || exit 0; TOOL_FILE=$(cat | jq -r \".tool_input.file_path // empty\" 2>/dev/null); if echo \"$TOOL_FILE\" | grep -qE \"\\.py$\"; then if command -v ruff >/dev/null 2>&1; then ruff format \"$TOOL_FILE\" 2>/dev/null || true; ruff check --fix \"$TOOL_FILE\" 2>/dev/null || true; elif command -v black >/dev/null 2>&1; then black \"$TOOL_FILE\" 2>/dev/null || true; fi; fi'",
-            "timeout": 10,
-            "onFailure": "ignore"
+            "timeout": 10
           }
         ]
       },
@@ -315,8 +300,7 @@
           {
             "type": "command",
             "command": "bash -c 'command -v jq >/dev/null 2>&1 || exit 0; TOOL_FILE=$(cat | jq -r \".tool_input.file_path // empty\" 2>/dev/null); if echo \"$TOOL_FILE\" | grep -qE \"\\.lua$\"; then if command -v stylua >/dev/null 2>&1; then stylua \"$TOOL_FILE\" 2>/dev/null || true; fi; fi'",
-            "timeout": 10,
-            "onFailure": "ignore"
+            "timeout": 10
           }
         ]
       },
@@ -327,8 +311,7 @@
           {
             "type": "command",
             "command": "bash -c 'command -v jq >/dev/null 2>&1 || exit 0; TOOL_FILE=$(cat | jq -r \".tool_input.file_path // empty\" 2>/dev/null); if echo \"$TOOL_FILE\" | grep -qE \"\\.go$\"; then if command -v gofmt >/dev/null 2>&1; then gofmt -w \"$TOOL_FILE\" 2>/dev/null || true; fi; fi'",
-            "timeout": 10,
-            "onFailure": "ignore"
+            "timeout": 10
           }
         ]
       },
@@ -339,8 +322,7 @@
           {
             "type": "command",
             "command": "bash -c 'command -v jq >/dev/null 2>&1 || exit 0; TOOL_FILE=$(cat | jq -r \".tool_input.file_path // empty\" 2>/dev/null); if echo \"$TOOL_FILE\" | grep -qE \"\\.rs$\"; then if command -v rustfmt >/dev/null 2>&1; then rustfmt \"$TOOL_FILE\" 2>/dev/null || true; fi; fi'",
-            "timeout": 10,
-            "onFailure": "ignore"
+            "timeout": 10
           }
         ]
       },
@@ -351,8 +333,7 @@
           {
             "type": "command",
             "command": "bash -c 'command -v jq >/dev/null 2>&1 || exit 0; TOOL_FILE=$(cat | jq -r \".tool_input.file_path // empty\" 2>/dev/null); if echo \"$TOOL_FILE\" | grep -qE \"\\.dart$\"; then if command -v dart >/dev/null 2>&1; then dart format \"$TOOL_FILE\" 2>/dev/null || true; fi; fi'",
-            "timeout": 10,
-            "onFailure": "ignore"
+            "timeout": 10
           }
         ]
       },
@@ -363,8 +344,7 @@
           {
             "type": "command",
             "command": "bash -c 'command -v jq >/dev/null 2>&1 || exit 0; TOOL_FILE=$(cat | jq -r \".tool_input.file_path // empty\" 2>/dev/null); if echo \"$TOOL_FILE\" | grep -q \"package.json$\"; then if [ -f bun.lockb ]; then bun install --silent 2>&1 | tail -3 || true; elif [ -f pnpm-lock.yaml ]; then pnpm install --silent 2>&1 | tail -3 || true; elif [ -f yarn.lock ]; then yarn install --silent 2>&1 | tail -3 || true; else npm install --silent 2>&1 | tail -3 || true; fi; fi'",
-            "timeout": 60,
-            "onFailure": "ignore"
+            "timeout": 60
           }
         ]
       },
@@ -375,8 +355,7 @@
           {
             "type": "command",
             "command": "bash -c 'command -v jq >/dev/null 2>&1 || exit 0; TOOL_FILE=$(cat | jq -r \".tool_input.file_path // empty\" 2>/dev/null); if echo \"$TOOL_FILE\" | grep -q \"pyproject.toml$\"; then if command -v uv >/dev/null 2>&1 && [ -f uv.lock ]; then uv sync 2>&1 | tail -3 || true; elif command -v pip >/dev/null 2>&1; then pip install -e . 2>&1 | tail -3 || true; fi; fi'",
-            "timeout": 60,
-            "onFailure": "ignore"
+            "timeout": 60
           }
         ]
       },
@@ -387,8 +366,7 @@
           {
             "type": "command",
             "command": "bash -c 'command -v jq >/dev/null 2>&1 || exit 0; TOOL_FILE=$(cat | jq -r \".tool_input.file_path // empty\" 2>/dev/null); if echo \"$TOOL_FILE\" | grep -q \"pubspec.yaml$\"; then if command -v flutter >/dev/null 2>&1; then flutter pub get 2>&1 | tail -3 || true; elif command -v dart >/dev/null 2>&1; then dart pub get 2>&1 | tail -3 || true; fi; fi'",
-            "timeout": 60,
-            "onFailure": "ignore"
+            "timeout": 60
           }
         ]
       },
@@ -399,8 +377,7 @@
           {
             "type": "command",
             "command": "bash -c 'command -v jq >/dev/null 2>&1 || exit 0; TOOL_FILE=$(cat | jq -r \".tool_input.file_path // empty\" 2>/dev/null); if echo \"$TOOL_FILE\" | grep -q \"go.mod$\"; then if command -v go >/dev/null 2>&1; then go mod tidy 2>&1 | tail -3 || true; fi; fi'",
-            "timeout": 60,
-            "onFailure": "ignore"
+            "timeout": 60
           }
         ]
       },
@@ -411,8 +388,7 @@
           {
             "type": "command",
             "command": "bash -c 'command -v jq >/dev/null 2>&1 || exit 0; TOOL_FILE=$(cat | jq -r \".tool_input.file_path // empty\" 2>/dev/null); if echo \"$TOOL_FILE\" | grep -q \"Cargo.toml$\"; then if command -v cargo >/dev/null 2>&1; then cargo check 2>&1 | tail -5 || true; fi; fi'",
-            "timeout": 120,
-            "onFailure": "ignore"
+            "timeout": 120
           }
         ]
       },
@@ -423,8 +399,7 @@
           {
             "type": "command",
             "command": "bash -c 'command -v jq >/dev/null 2>&1 || exit 0; TOOL_FILE=$(cat | jq -r \".tool_input.file_path // empty\" 2>/dev/null); if echo \"$TOOL_FILE\" | grep -qE \"\\.(test|spec)\\.(ts|tsx|js|jsx)$\"; then if [ -f package.json ] && grep -q \"test:coverage\" package.json; then echo \"Verification couverture...\"; npm run test:coverage -- --silent 2>&1 | grep -E \"(All files|Statements|Branches|Functions|Lines)\" | head -5 || true; fi; fi'",
-            "timeout": 60,
-            "onFailure": "ignore"
+            "timeout": 60
           }
         ]
       },
@@ -435,8 +410,7 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/bash-output-filter.sh\"",
-            "timeout": 5,
-            "onFailure": "ignore"
+            "timeout": 5
           }
         ]
       }

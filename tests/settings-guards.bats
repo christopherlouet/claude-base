@@ -203,7 +203,7 @@ _fable_pins() {
 # 33 min, 180000 = 50 h), bounding nothing. And a PreToolUse guard that would
 # have blocked (exit 2) but outlived its timeout let the command RUN. So a
 # budget too tight on a guard is a silent bypass, not a safety margin.
-TIMEOUTS_FILTER='.hooks | to_entries[] | .key as $e | .value[] | .hooks[] | {e:$e, t:(.timeout // 0), c:.command}'
+TIMEOUTS_FILTER='.hooks | to_entries[] | .key as $e | .value[] | .hooks[] | {e:$e, t:(.timeout // 0), c:(.command // "")}'
 
 @test "settings: no hook timeout is millisecond-sized (the unit is seconds)" {
     run jq -r "$TIMEOUTS_FILTER | select(.t > 3600) | \"\(.e) \(.t) \(.c)\"" "$SETTINGS"
@@ -222,4 +222,12 @@ TIMEOUTS_FILTER='.hooks | to_entries[] | .key as $e | .value[] | .hooks[] | {e:$
     [ "$output" = "y" ]
     run jq -r "$TIMEOUTS_FILTER | select(.e == \"PreToolUse\" and (.c | test(\"scripts/hooks/\"))) | select(.t < 30) | .c" "$fixture"
     [ "$output" = "bash scripts/hooks/x.sh" ]
+}
+
+@test "settings: no hook carries onFailure (not a Claude Code field; measured inert)" {
+    # 26 hooks carried "onFailure": "block"/"ignore" and five docs taught it as
+    # what makes a guard block. Measured 2026-09-25: a timed-out guard with
+    # onFailure "block" let the command run exactly like one without it.
+    run jq -r '[.. | objects | select(has("onFailure"))] | length' "$SETTINGS"
+    [ "$output" = "0" ]
 }

@@ -361,8 +361,7 @@ Hooks allow automating actions at specific moments in the lifecycle of a Claude 
 | `type` | `command`, `prompt`, or `http` |
 | `command` | Bash script to execute (type `command`) |
 | `matcher` | Filter on tool name (regex) |
-| `timeout` | Timeout in **seconds** (not milliseconds: measured, `timeout: 3` lets a 1 s hook finish and `timeout: 2` cuts a 4 s one). A `PreToolUse` guard that times out **does not block**: measured, the command runs anyway. Give blocking guards a wide budget (the foundation uses 30 s, 1800 s for test/CI gates); `tests/settings-guards.bats` enforces both |
-| `onFailure` | `"block"` or `"ignore"` |
+| `timeout` | Timeout in **seconds** (not milliseconds: measured, `timeout: 3` lets a 1 s hook finish and `timeout: 2` cuts a 4 s one). A `PreToolUse` guard that times out **does not block**: measured, the command runs anyway, and no setting changes that (an `onFailure` field is not part of Claude Code: measured, `onFailure: "block"` changes nothing). Give blocking guards a wide budget (the foundation uses 30 s, 1800 s for test/CI gates); `tests/settings-guards.bats` enforces both. Not enforced on `async: true` command hooks |
 | `async` | `true` for background execution |
 
 ### When to use async
@@ -388,8 +387,7 @@ In `.claude/settings.json`, `hooks` section:
         {
           "type": "command",
           "command": "bash -c 'command -v sqlfluff >/dev/null 2>&1 || exit 0; FILE=$(jq -r \".tool_input.file_path // empty\"); if [[ \"$FILE\" == *.sql ]]; then sqlfluff fix --dialect ansi \"$FILE\" 2>/dev/null && echo \"[SQL] Formatted: $FILE\"; fi'",
-          "timeout": 10000,
-          "onFailure": "ignore"
+          "timeout": 10
         }
       ]
     }
@@ -408,9 +406,8 @@ In `.claude/settings.json`, `hooks` section:
       "hooks": [
         {
           "type": "command",
-          "command": "bash -c 'FILE=$(jq -r \".tool_input.file_path // empty\"); if [[ \"$FILE\" == *prod* ]] || [[ \"$FILE\" == *production* ]]; then echo \"BLOCKED: Modification of a production file detected. Use ALLOW_PROD_EDIT=1 to force.\"; if [ \"$ALLOW_PROD_EDIT\" != \"1\" ]; then exit 1; fi; fi'",
-          "timeout": 5000,
-          "onFailure": "block"
+          "command": "bash -c 'FILE=$(jq -r \".tool_input.file_path // empty\"); if [[ \"$FILE\" == *prod* ]] || [[ \"$FILE\" == *production* ]]; then echo \"BLOCKED: Modification of a production file detected. Use ALLOW_PROD_EDIT=1 to force.\" >&2; if [ \"$ALLOW_PROD_EDIT\" != \"1\" ]; then exit 2; fi; fi'",
+          "timeout": 30
         }
       ]
     }
@@ -434,9 +431,8 @@ For hooks specific to your machine (not committed):
           {
             "type": "command",
             "command": "bash -c 'notify-send \"Claude Code\" \"File modified\" 2>/dev/null || true'",
-            "timeout": 3000,
-            "async": true,
-            "onFailure": "ignore"
+            "timeout": 3,
+            "async": true
           }
         ]
       }
