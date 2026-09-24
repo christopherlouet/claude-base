@@ -666,11 +666,31 @@ render_markdown() {
 # re-pin PR sees a CLEAN working tree (the lastVerified / state writes below
 # would otherwise dirty it). Both paths are no-ops unless their flag is set and
 # fully fail-safe. Skipped entirely under --dry-run (no outbound mutation).
+#
+# Fail-safe means the run exits 0 even when GitHub refused the write, so the
+# outcome is recorded per channel for digest.json: ok (accepted), failed
+# (attempted and refused, or unable to try), none (nothing to send).
+DELIVERY_ISSUE=none
+DELIVERY_PR=none
 if [ "$DRY_RUN" = false ]; then
     if [ "$EMIT_PR" = true ]; then
         repin_summary=$(emit_repin_pr "$surfaced" "$REGISTRY" "$PRESETS_DIR" "$PR_DRAFT" "$NOW")
         n_drafted=$(printf '%s' "$repin_summary" | jq -r '.drafted | length' 2>/dev/null || echo 0)
         [ "${n_drafted:-0}" -gt 0 ] && echo "[OK] re-pin draft PR: $n_drafted skill(s)" >&2
+        # Skips that mean "there was a PR to open and it did not happen" are a
+        # failed delivery, and so is a drift demoted only because the screen
+        # could not read or scan its new ref (an outage, not a verdict). The
+        # lock, or a drift the screen genuinely flagged, is none. `no-changes`
+        # is failed too: a drift matching no record is never re-pinned, night
+        # after night. An unreadable summary is failed: unknown, not quiet.
+        DELIVERY_PR=$(printf '%s' "$repin_summary" | jq -r '
+            def unscreened: [.safety.reasons[]?] as $r | ($r | length) > 0
+                and all($r[]; IN("content-unfetchable","doc-unreadable","scan-error","scan-blind","screen-output-invalid"));
+            if (.drafted | length) > 0 then "ok"
+            elif (.skipped // "") | IN("no-git","no-repo","dirty-tree","branch","no-commit","push","pr-create","no-changes") then "failed"
+            elif any(.demoted[]?; unscreened) then "failed"
+            else "none" end' 2>/dev/null) || DELIVERY_PR=failed
+        [ -n "$DELIVERY_PR" ] || DELIVERY_PR=failed
         REPIN_LOCK=$(printf '%s' "$repin_summary" | jq -c '.lock // empty' 2>/dev/null) || REPIN_LOCK=""
         # Escalate on stderr as well: the box's journal is the ops channel, and a
         # lock silently starving the auto-heal must be greppable there.
@@ -682,6 +702,7 @@ if [ "$DRY_RUN" = false ]; then
         issue_body=$(mktemp 2>/dev/null)
         render_markdown > "$issue_body"
         emit_issue "Curation digest — $NOW" "$issue_body" "watch-digest"
+        DELIVERY_ISSUE="${CURATION_ISSUE_DELIVERY:-failed}"
         rm -f "$issue_body"
     fi
 elif [ "$EMIT_PR" = true ] \
@@ -712,6 +733,11 @@ if [ -n "$REPIN_LOCK" ]; then
         "$lock_filter" 2>/dev/null) \
         && [ -n "$merged" ] && digest="$merged"
 fi
+
+# Delivery outcome, merged the same guarded way: assigned only when jq succeeds.
+merged=$(printf '%s' "$digest" | jq -c --arg i "$DELIVERY_ISSUE" --arg p "$DELIVERY_PR" \
+    '.delivery = {issue:$i, pr:$p}' 2>/dev/null) \
+    && [ -n "$merged" ] && digest="$merged"
 
 # Idempotent lastVerified update — only records whose repo was ACTUALLY verified
 # this run (verdict != error) are stamped; a gh-errored target keeps its old

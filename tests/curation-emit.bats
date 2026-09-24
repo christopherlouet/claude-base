@@ -31,6 +31,8 @@ case "\$*" in
     rows="\${FAKE_REPIN_ROWS:-}"
     [ -n "\$rows" ] || rows='[{"number":7,"createdAt":"2026-07-11T09:00:00Z","headRefName":"curation/re-pin-2026-07-11","url":"https://github.com/owner/repo/pull/7"}]'
     printf '%s' "\$rows" ;;
+  *"issue create"*|*"issue edit"*|*"pr create"*)
+    [ "\${FAKE_WRITE_FAIL:-}" = "1" ] && exit 1 ;;
 esac
 exit 0
 EOF
@@ -81,6 +83,40 @@ teardown() { teardown_test_dir; }
     PATH="$TEST_DIR/fakebin:$PATH" emit_issue "t" "$TEST_DIR/body.md"
     grep -q "issue create" "$TEST_DIR/gh.log"
     ! grep -q "issue list" "$TEST_DIR/gh.log"
+}
+
+# emit_issue delivery status — the function always returns 0 (EF-012), so the
+# only way a caller learns that GitHub refused the write is CURATION_ISSUE_DELIVERY.
+@test "emit_issue: an accepted edit of the rolling issue sets delivery ok" {
+    source "$EMIT"
+    FAKE_EXISTING=42 PATH="$TEST_DIR/fakebin:$PATH" emit_issue "t" "$TEST_DIR/body.md" "watch-digest"
+    [ "$CURATION_ISSUE_DELIVERY" = "ok" ]
+}
+
+@test "emit_issue: a refused edit sets delivery failed and still returns 0" {
+    source "$EMIT"
+    FAKE_WRITE_FAIL=1 FAKE_EXISTING=42 PATH="$TEST_DIR/fakebin:$PATH" emit_issue "t" "$TEST_DIR/body.md" "watch-digest"
+    [ "$CURATION_ISSUE_DELIVERY" = "failed" ]
+}
+
+@test "emit_issue: a refused create (label and retry) sets delivery failed" {
+    source "$EMIT"
+    FAKE_WRITE_FAIL=1 FAKE_EXISTING="" PATH="$TEST_DIR/fakebin:$PATH" emit_issue "t" "$TEST_DIR/body.md" "watch-digest"
+    [ "$CURATION_ISSUE_DELIVERY" = "failed" ]
+    [ "$(grep -c 'issue create' "$TEST_DIR/gh.log")" -eq 2 ]
+}
+
+@test "emit_issue: a legacy create-only success sets delivery ok" {
+    source "$EMIT"
+    PATH="$TEST_DIR/fakebin:$PATH" emit_issue "t" "$TEST_DIR/body.md"
+    [ "$CURATION_ISSUE_DELIVERY" = "ok" ]
+}
+
+@test "emit_issue: a missing body is a failed delivery, not a quiet one" {
+    source "$EMIT"
+    CURATION_ISSUE_DELIVERY=ok
+    PATH="$TEST_DIR/fakebin:$PATH" emit_issue "t" "$TEST_DIR/nope.md" "watch-digest"
+    [ "$CURATION_ISSUE_DELIVERY" = "failed" ]
 }
 
 # =============================================================================
