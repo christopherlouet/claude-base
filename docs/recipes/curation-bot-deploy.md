@@ -239,17 +239,22 @@ watch its **last success from another machine**:
    fresh, and nothing reaches GitHub (four nights of digests were lost this way
    under a green freshness alert). `digest.json` records each channel as `ok`,
    `failed` or `none` (nothing to send: a quiet night, the open-PR lock); the
-   wrapper publishes the failed count. Alert on it, and on its absence, which
-   means a wrapper that predates the series:
+   wrapper publishes the failed count. Alert on it, and on its absence while
+   the success metric exists, which means a wrapper that predates the series
+   (when the whole file is missing, `CurationBotStale` already speaks):
 
    ```yaml
    - alert: CurationBotUndelivered
-     expr: (max(curation_bot_delivery_failures) > 0) or absent(curation_bot_delivery_failures)
+     expr: (max(curation_bot_delivery_failures) > 0) or (max(curation_bot_last_success_timestamp_seconds) unless max(curation_bot_delivery_failures))
+     for: 1h
      labels:
        severity: warning
    ```
 
-   No `for:` needed: the gauge holds until the next nightly run rewrites it.
+   The gauge holds until the next nightly run rewrites it; `for: 1h` is there
+   for the absence branch, which a single missed scrape would otherwise trip.
+   Right after deploying the wrapper, the series only exists once the bot has
+   run: trigger one run by hand rather than let the absence branch page you.
 
 Limits: a quiet night sends nothing, so an expired token is caught on the next
 night that has something to deliver, not before. The monthly discovery issue is
