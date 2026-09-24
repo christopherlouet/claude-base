@@ -351,7 +351,7 @@ Hooks allow automating actions at specific moments in the lifecycle of a Claude 
 | `type` | `command`, `prompt`, or `http` |
 | `command` | Bash script to execute (type `command`) |
 | `matcher` | Filter on tool name (regex) |
-| `timeout` | Timeout in milliseconds |
+| `timeout` | Timeout in **seconds** (not milliseconds: measured, `timeout: 3` lets a 1 s hook finish and `timeout: 2` cuts a 4 s one). A `PreToolUse` guard that times out **does not block**: measured, the command runs anyway. Give blocking guards a wide budget (the foundation uses 30 s, 1800 s for test/CI gates); `tests/settings-guards.bats` enforces both |
 | `onFailure` | `"block"` or `"ignore"` |
 | `async` | `true` for background execution |
 
