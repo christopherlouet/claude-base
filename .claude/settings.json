@@ -19,6 +19,9 @@
       "Task(*)",
       "Bash"
     ],
+    "ask": [
+      "Agent(model:fable)"
+    ],
     "deny": [
       "Bash(git push --force:*)",
       "Bash(git push -f:*)",

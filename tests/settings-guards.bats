@@ -138,3 +138,58 @@ DENY_FILTER='.permissions.deny[]
     [[ "$output" == *"chmod 777"* ]]
     [[ "$output" == *"eval"* ]]
 }
+
+# -----------------------------------------------------------------------------
+# Fable sub-agents — a deliberate choice, never a silent one (2026-09-24)
+# -----------------------------------------------------------------------------
+# The foundation pins no agent to Fable, by cost (docs/reference/best-practices.md),
+# yet Fable stays a "rare, deliberate" option — so the rule is `ask`, not `deny`:
+# a deny outranks every approval and would forbid the deliberate case too.
+# Claude Code 2.1.178 matches tool parameters with `Tool(param:value)`.
+FABLE_RULE='Agent(model:fable)'
+
+@test "settings: a sub-agent explicitly launched on Fable asks first" {
+    run jq -r --arg r "$FABLE_RULE" '(.permissions.ask // []) | index($r) != null' "$SETTINGS"
+    [ "$output" = "true" ]
+}
+
+@test "settings: the Fable rule is neither denied nor pre-allowed" {
+    # deny would outrank the ask (no deliberate case left); allow would skip it.
+    run jq -r --arg r "$FABLE_RULE" \
+        '[(.permissions.deny // []), (.permissions.allow // [])] | flatten | index($r) == null' "$SETTINGS"
+    [ "$output" = "true" ]
+}
+
+# _fable_pins <file>... — print each file whose FRONTMATTER (between the first
+# two `---` lines, never the body) sets `model:` to a Fable tier: `fable`,
+# `best` (resolves to Fable in Claude apps gateway sessions) or a full
+# `claude-fable-*` id, bare or quoted either way.
+_fable_pins() {
+    awk 'FNR == 1 { fm = 0 }
+         /^---[[:space:]]*$/ { fm++; next }
+         fm == 1 && tolower($0) ~ /^model:[[:space:]]*["\047]?(fable|best|claude-fable)/ { print FILENAME; nextfile }' "$@"
+}
+
+@test "agents/skills: no frontmatter pins Fable (it would bypass the ask rule)" {
+    # The rule sees the Agent tool's `model` parameter only; a frontmatter pin
+    # never reaches it (measured: a `model: fable` agent ran on Fable unasked),
+    # and a forked skill's `model:` is the same kind of pin.
+    run _fable_pins "$BASE_DIR"/.claude/agents/*.md "$BASE_DIR"/.claude/skills/*/SKILL.md
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "agents/skills: the Fable-pin scanner is not vacuous" {
+    local d="$BATS_TEST_TMPDIR"
+    printf -- '---\nname: a\nmodel: fable\n---\n' > "$d/a.md"
+    printf -- "---\nname: b\nmodel: 'claude-fable-5-1'\n---\n" > "$d/b.md"
+    printf -- '---\nname: c\nmodel: "Best"  \n---\n' > "$d/c.md"
+    printf -- '---\nname: d\nmodel: sonnet\n---\nmodel: fable\n' > "$d/d.md"
+    run _fable_pins "$d/a.md" "$d/b.md" "$d/c.md" "$d/d.md"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"a.md"* ]]
+    [[ "$output" == *"b.md"* ]]
+    [[ "$output" == *"c.md"* ]]
+    # A body line is an example, not a pin.
+    [[ "$output" != *"d.md"* ]]
+}
