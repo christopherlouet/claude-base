@@ -81,6 +81,7 @@ scripts/hooks/pre-commit-tests.sh
 scripts/hooks/pre-deploy-build.sh
 scripts/hooks/pre-push-ci.sh
 scripts/hooks/prompt-context.sh
+scripts/hooks/scratchpad-check.sh
 scripts/hooks/secret-scan.sh
 scripts/hooks/setup-deps.sh
 scripts/hooks/substance-check.sh
