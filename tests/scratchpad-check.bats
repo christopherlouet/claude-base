@@ -139,3 +139,37 @@ run_hook() {
     [ "$status" -eq 0 ]
     [ $((end - start)) -le 5 ]
 }
+
+# --- Independent review of #586 ----------------------------------------------
+
+@test "scratchpad-check: a scan that outlives its budget is REPORTED, not silenced" {
+    # A tree too big to measure in time is exactly the one to warn about. A fake
+    # du that hangs stands in for millions of files.
+    command -v timeout >/dev/null 2>&1 || skip "no timeout(1) on this machine"
+    session -home-me-other s1 10
+    mkdir -p "$TEST_DIR/slowbin"
+    printf '#!/bin/sh\nsleep 5\n' > "$TEST_DIR/slowbin/du"
+    chmod +x "$TEST_DIR/slowbin/du"
+    run_hook PATH="$TEST_DIR/slowbin:$PATH" CLAUDE_BASE_SCRATCH_SCAN_SECONDS=1 CLAUDE_BASE_SCRATCH_WARN_MB=1024
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"[SCRATCH]"* ]]
+    [[ "$output" == *"too large to measure"* ]]
+}
+
+@test "scratchpad-check: a threshold with a leading zero is read as decimal" {
+    session -home-me-other s1 9216
+    run_hook CLAUDE_BASE_SCRATCH_WARN_MB=08
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"[SCRATCH]"* ]]
+}
+
+@test "scratchpad-check: a base that is a symlink to the real tree is measured" {
+    local real="$TEST_DIR/real-tree"
+    mkdir -p "$real"
+    mv "$BASE"/* "$real"/
+    rmdir "$BASE"
+    ln -s "$real" "$BASE"
+    session -home-me-other s1 3072
+    run_hook CLAUDE_BASE_SCRATCH_WARN_MB=1
+    [[ "$output" == *"other/s1"* ]]
+}

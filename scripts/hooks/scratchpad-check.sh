@@ -15,6 +15,7 @@
 #
 # Input: the SessionStart payload on stdin; `scratchpad_dir` locates the tree.
 # Env:   CLAUDE_BASE_SCRATCH_WARN_MB  threshold in MiB (default 1024)
+#        CLAUDE_BASE_SCRATCH_SCAN_SECONDS  time budget per scan (default 5; needs timeout(1))
 #        CLAUDE_BASE_SCRATCH_UID      uid treated as "you" (test seam)
 # Always exits 0 — never blocks a session. Silent when there is nothing to say.
 # =============================================================================
@@ -43,37 +44,49 @@ fi
 
 warn_mb="${CLAUDE_BASE_SCRATCH_WARN_MB:-1024}"
 case "$warn_mb" in ''|*[!0-9]*) warn_mb=1024 ;; esac
+warn_mb=$((10#$warn_mb))          # "08" is eight, not an invalid octal
+scan_s="${CLAUDE_BASE_SCRATCH_SCAN_SECONDS:-5}"
+case "$scan_s" in ''|*[!0-9]*) scan_s=5 ;; esac
 
-# du, bounded where `timeout` exists (not on stock macOS).
-_du_k() {
-    if command -v timeout >/dev/null 2>&1; then timeout 5 du -sk "$@" 2>/dev/null
-    else du -sk "$@" 2>/dev/null; fi
+# _bounded <cmd…> — run under a time budget where `timeout` exists (not on
+# stock macOS); exit 124 means the budget ran out.
+_bounded() {
+    if command -v timeout >/dev/null 2>&1; then timeout "$scan_s" "$@"
+    else "$@"; fi
 }
 # _human <KiB> — "4.1 GB" / "312 MB".
 _human() { awk -v k="$1" 'BEGIN { if (k >= 1048576) printf "%.1f GB", k/1048576; else printf "%d MB", k/1024 }'; }
 
-total_k=$(_du_k "$base" | awk '{print $1}')
-case "$total_k" in ''|*[!0-9]*) total_k=0 ;; esac
+# ONE walk: per-session sizes, summed for the total. A trailing slash makes a
+# symlinked base count. du prints each argument as it finishes, so a run cut
+# by the budget still leaves the sessions measured so far.
+sizes=$(_bounded du -sk "$base"/*/* 2>/dev/null)
+scan_rc=$?
+total_k=$(printf '%s\n' "$sizes" | awk '$1 ~ /^[0-9]+$/ { s += $1 } END { print s + 0 }')
 
-if [ "$total_k" -gt $((warn_mb * 1024)) ]; then
+if [ "$scan_rc" -eq 124 ]; then
+    # A tree too big to measure in time is the one to warn about, not to skip.
+    echo "[SCRATCH] Claude Code temp dirs under $base are too large to measure in ${scan_s}s (over $(_human "$total_k") so far). Nothing removes them when a session ends: check with du -sh $base/*/*"
+elif [ "$total_k" -gt $((warn_mb * 1024)) ]; then
     echo "[SCRATCH] Claude Code temp dirs use $(_human "$total_k") under $base (threshold $(_human $((warn_mb * 1024)))). Nothing removes them when a session ends."
     # The three largest session dirs, the current one excluded.
-    _du_k "$base"/*/* | sort -rn | while read -r k dir; do
+    printf '%s\n' "$sizes" | sort -rn | while read -r k dir; do
+        [ -n "$dir" ] || continue
         [ "$dir" = "$cur" ] && continue
         echo "$k $dir"
     done | head -3 | while read -r k dir; do
-        rebuild=$(find "$dir" -maxdepth 5 -type d \( -name node_modules -o -name .venv -o -name .next -o -name .turbo -o -name target \) -prune -print 2>/dev/null \
+        rebuild=$(_bounded find "$dir" -maxdepth 5 -type d \( -name node_modules -o -name .venv -o -name .next -o -name .turbo -o -name target \) -prune -print 2>/dev/null \
             | awk -F/ '{print $NF}' | sort -u | tr '\n' ' ' | sed 's/ $//')
         line="[SCRATCH]   $(_human "$k")  ${dir#"$base"/}"
         [ -n "$rebuild" ] && line="$line  (rebuildable: $rebuild)"
         echo "$line"
     done
-    if command -v findmnt >/dev/null 2>&1 && [ "$(findmnt -no FSTYPE -T "$base" 2>/dev/null)" = "tmpfs" ]; then
+    if command -v findmnt >/dev/null 2>&1 && [ "$(findmnt -no FSTYPE -T "$base/" 2>/dev/null)" = "tmpfs" ]; then
         echo "[SCRATCH] $base is a tmpfs: this is RAM. CLAUDE_CODE_TMPDIR in ~/.claude/settings.json env moves it to disk."
     fi
 fi
 
-foreign=$(find "$base" -xdev ! -user "$me" -print 2>/dev/null | head -1)
+foreign=$(_bounded find "$base/" -xdev ! -user "$me" -print 2>/dev/null | head -1)
 if [ -n "$foreign" ]; then
     echo "[SCRATCH] Files not owned by you under $base (e.g. ${foreign#"$base"/}): a docker run -v without --user \"\$(id -u):\$(id -g)\"? Removing them needs sudo."
 fi

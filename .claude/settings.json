@@ -115,11 +115,12 @@
       },
       {
         "description": "Warn when Claude Code temp dirs (session scratchpads) pile up: nothing removes them when a session ends, and where /tmp is a tmpfs they hold RAM. Reports the total, the largest other sessions and files you do not own; never deletes. Threshold: CLAUDE_BASE_SCRATCH_WARN_MB (default 1024).",
+        "matcher": "startup",
         "hooks": [
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/scratchpad-check.sh\"",
-            "timeout": 8000
+            "timeout": 10
           }
         ]
       }
