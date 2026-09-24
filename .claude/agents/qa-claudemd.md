@@ -11,7 +11,7 @@ hooks:
       hooks:
         - type: command
           command: "echo '[QA-CLAUDEMD] Lecture seule autorisee: git, find, grep'"
-          timeout: 5000
+          timeout: 5
 ---
 
 # Agent QA-CLAUDEMD

@@ -11,7 +11,7 @@ hooks:
       hooks:
         - type: command
           command: "echo '[OPS-HEALTH] Health check en cours...'"
-          timeout: 5000
+          timeout: 5
 ---
 
 # Agent OPS-HEALTH

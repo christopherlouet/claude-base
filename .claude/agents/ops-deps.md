@@ -11,7 +11,7 @@ hooks:
       hooks:
         - type: command
           command: "echo '[OPS-DEPS] Auditing dependencies...'"
-          timeout: 5000
+          timeout: 5
 ---
 
 # Agent OPS-DEPS

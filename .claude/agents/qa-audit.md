@@ -14,7 +14,7 @@ hooks:
       hooks:
         - type: command
           command: "echo '[QA-AUDIT] Commande Bash: lecture seule autorisee'"
-          timeout: 5000
+          timeout: 5
 ---
 
 # Agent QA-AUDIT

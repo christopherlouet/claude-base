@@ -13,7 +13,7 @@ hooks:
       hooks:
         - type: command
           command: "echo '[QA-SECURITY] Commandes autorisees: npm audit, grep secrets'"
-          timeout: 5000
+          timeout: 5
 ---
 
 # Agent QA-SECURITY

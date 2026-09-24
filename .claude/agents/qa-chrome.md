@@ -13,7 +13,7 @@ hooks:
       hooks:
         - type: command
           command: "echo '[QA-CHROME] Action navigateur executee'"
-          timeout: 5000
+          timeout: 5
 ---
 
 # QA-CHROME Agent

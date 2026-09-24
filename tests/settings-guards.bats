@@ -231,3 +231,10 @@ TIMEOUTS_FILTER='.hooks | to_entries[] | .key as $e | .value[] | .hooks[] | {e:$
     run jq -r '[.. | objects | select(has("onFailure"))] | length' "$SETTINGS"
     [ "$output" = "0" ]
 }
+
+@test "agents: no hook timeout in agent frontmatter is millisecond-sized" {
+    # Hooks declared in an agent's frontmatter use the same seconds unit; nine
+    # carried 5000 (83 min) after settings.json had been fixed.
+    run grep -rnE '^[[:space:]]*timeout:[[:space:]]*[0-9]{4,}' "$BASE_DIR"/.claude/agents
+    [ "$status" -eq 1 ] || { echo "ms-sized timeouts: $output" >&2; return 1; }
+}
