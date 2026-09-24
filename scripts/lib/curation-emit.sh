@@ -43,13 +43,15 @@ _curation_gh_repo() {
 }
 
 # _gh_issue_create <body-file> <title> <rflag...> — create with label, retry w/o.
+# Returns 1 when both attempts were refused; emit_issue turns that into the
+# delivery status and keeps its own fail-safe 0.
 _gh_issue_create() {
     local body_file="$1" title="$2"; shift 2
     gh issue create "$@" --title "$title" --body-file "$body_file" --label curation >/dev/null 2>&1 && return 0
     # Retry without the label — a repo may not have the 'curation' label yet.
-    gh issue create "$@" --title "$title" --body-file "$body_file" >/dev/null 2>&1 \
-        || curation_warn "gh issue create failed"
-    return 0
+    gh issue create "$@" --title "$title" --body-file "$body_file" >/dev/null 2>&1 && return 0
+    curation_warn "gh issue create failed"
+    return 1
 }
 
 # emit_issue <title> <body-file> [dedupe-key] — propose-only issue, fail-safe.
@@ -57,8 +59,16 @@ _gh_issue_create() {
 # (<!-- curation-issue:KEY -->) and a daily run UPDATES the one rolling issue
 # instead of opening a duplicate (a fresh open issue per day was the digest-dup
 # bug). Without a key, legacy create-only.
+#
+# Still returns 0 whatever happens (EF-012), but records whether GitHub ACCEPTED
+# the write in CURATION_ISSUE_DELIVERY (ok | failed): a fail-safe exit is not a
+# delivery, and the caller must be able to tell the two apart. Call it in the
+# current shell, not in $(…), or the status is lost with the subshell.
+CURATION_ISSUE_DELIVERY=""
+# shellcheck disable=SC2034  # CURATION_ISSUE_DELIVERY is read by the caller
 emit_issue() {
     local title="$1" body_file="$2" key="${3:-}"
+    CURATION_ISSUE_DELIVERY=failed
     command -v gh >/dev/null 2>&1 || { curation_warn "gh not found; skipping issue"; return 0; }
     [ -f "$body_file" ] || { curation_warn "issue body missing: $body_file"; return 0; }
     local repo; repo=$(_curation_gh_repo) || repo=""
@@ -66,7 +76,8 @@ emit_issue() {
     [ -n "$repo" ] && rflag=(-R "$repo")
 
     if [ -z "$key" ]; then
-        _gh_issue_create "$body_file" "$title" ${rflag[@]+"${rflag[@]}"}
+        _gh_issue_create "$body_file" "$title" ${rflag[@]+"${rflag[@]}"} \
+            && CURATION_ISSUE_DELIVERY=ok
         return 0
     fi
 
@@ -84,10 +95,14 @@ emit_issue() {
     existing=$(gh issue list ${rflag[@]+"${rflag[@]}"} --state open --limit 100 --json number,body \
         --jq "[.[] | select(.body | contains(\"$marker\"))] | .[0].number // empty" 2>/dev/null || true)
     if [ -n "$existing" ]; then
-        gh issue edit "$existing" ${rflag[@]+"${rflag[@]}"} --title "$title" --body-file "$tmpbody" >/dev/null 2>&1 \
-            || curation_warn "gh issue edit failed (#$existing)"
+        if gh issue edit "$existing" ${rflag[@]+"${rflag[@]}"} --title "$title" --body-file "$tmpbody" >/dev/null 2>&1; then
+            CURATION_ISSUE_DELIVERY=ok
+        else
+            curation_warn "gh issue edit failed (#$existing)"
+        fi
     else
-        _gh_issue_create "$tmpbody" "$title" ${rflag[@]+"${rflag[@]}"}
+        _gh_issue_create "$tmpbody" "$title" ${rflag[@]+"${rflag[@]}"} \
+            && CURATION_ISSUE_DELIVERY=ok
     fi
     [ "$tmpbody" != "$body_file" ] && rm -f "$tmpbody"
     return 0
@@ -434,7 +449,16 @@ emit_repin_pr() {
     [ -n "$repo" ] && args+=(-R "$repo")
     args+=(--title "chore(curation): re-pin ${n_safe} vendor skill(s)" --body-file "$body_file")
     [ "$draft" = "true" ] && args+=(--draft)
-    gh "${args[@]}" >/dev/null 2>&1 || curation_warn "gh pr create failed"
+    # A refused create is NOT a drafted PR: reporting the subjects as drafted
+    # printed "[OK] re-pin draft PR" over a PR that never existed. The branch
+    # stays pushed; the next night retries on a fresh branch.
+    if ! gh "${args[@]}" >/dev/null 2>&1; then
+        curation_warn "gh pr create failed; branch $branch pushed but no PR opened"
+        rm -f "$body_file"
+        _restore_branch
+        jq -cn --argjson d "$demoted" --arg b "$branch" '{drafted:[], demoted:$d, branch:$b, skipped:"pr-create"}'
+        return 0
+    fi
     rm -f "$body_file"
     _restore_branch
 

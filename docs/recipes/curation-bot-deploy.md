@@ -98,14 +98,22 @@ cd "$REPO"
     --emit-issue \
     --emit-pr
 
-# Freshness signal for monitoring (see "Health alert" below): the time of this
-# SUCCESSFUL run, for the node_exporter textfile collector. Under `set -e` this
-# line is never reached when the watch failed. The collector directory is
-# root-owned, so the file is pre-created once for the bot user; a missing or
-# unwritable file is skipped rather than failing the run.
+# Signals for monitoring (see "Health alert" below), for the node_exporter
+# textfile collector. Under `set -e` this block is never reached when the watch
+# failed. The collector directory is root-owned, so the file is pre-created once
+# for the bot user; a missing or unwritable file is skipped rather than failing
+# the run.
+#   - last success: the run completed.
+#   - delivery failures: GitHub writes that were attempted and REFUSED this run
+#     (digest issue, re-pin PR). Emission is fail-safe, so a refused write still
+#     ends in a completed run: without this series an expired gh token delivers
+#     nothing under a fresh "last success". An unreadable digest, or one with
+#     no delivery record, counts as 1: an unknown outcome is not a clean one.
 METRIC=/var/lib/prometheus/node-exporter/curation_bot.prom
 if [ -w "$METRIC" ]; then
-    printf '# HELP curation_bot_last_success_timestamp_seconds Unix time of the last successful curation-bot run.\n# TYPE curation_bot_last_success_timestamp_seconds gauge\ncuration_bot_last_success_timestamp_seconds %s\n' "$(date +%s)" > "$METRIC"
+    FAILURES=$(jq 'if has("delivery") then [.delivery[] | select(. == "failed")] | length else 1 end' "$DIGEST/digest.json" 2>/dev/null) || FAILURES=1
+    [ -n "$FAILURES" ] || FAILURES=1
+    printf '# HELP curation_bot_last_success_timestamp_seconds Unix time of the last successful curation-bot run.\n# TYPE curation_bot_last_success_timestamp_seconds gauge\ncuration_bot_last_success_timestamp_seconds %s\n# HELP curation_bot_delivery_failures GitHub writes refused during the last run (digest issue, re-pin PR).\n# TYPE curation_bot_delivery_failures gauge\ncuration_bot_delivery_failures %s\n' "$(date +%s)" "$FAILURES" > "$METRIC"
 fi
 ```
 
@@ -226,9 +234,28 @@ watch its **last success from another machine**:
    Test it with `promtool test rules` on series sampled like a real scrape (1m).
    Sampled every 15m, a series is marked stale between points and `absent()`
    fires in the gaps, so a "stale" case passes without the threshold doing anything.
+4. **A completed run is not a delivered one.** Every GitHub write is fail-safe:
+   with an expired `gh` token the run still completes, the success above stays
+   fresh, and nothing reaches GitHub (four nights of digests were lost this way
+   under a green freshness alert). `digest.json` records each channel as `ok`,
+   `failed` or `none` (nothing to send: a quiet night, the open-PR lock); the
+   wrapper publishes the failed count. Alert on it, and on its absence, which
+   means a wrapper that predates the series:
 
-Token expiry is a separate failure (the run fails, the metric ages): a daily
-`claude -p` ping that alerts on 401 catches it a day sooner.
+   ```yaml
+   - alert: CurationBotUndelivered
+     expr: (max(curation_bot_delivery_failures) > 0) or absent(curation_bot_delivery_failures)
+     labels:
+       severity: warning
+   ```
+
+   No `for:` needed: the gauge holds until the next nightly run rewrites it.
+
+Limits: a quiet night sends nothing, so an expired token is caught on the next
+night that has something to deliver, not before. The monthly discovery issue is
+not covered by this series. Claude token expiry is a separate failure (the run
+fails, the success metric ages): a daily `claude -p` ping that alerts on 401
+catches it a day sooner.
 
 ## Monthly discovery (the one LLM job — keep it separate)
 
