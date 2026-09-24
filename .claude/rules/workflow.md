@@ -106,6 +106,14 @@ Warning signals:
 
 Prefer `/compact` over `/clear`: compaction keeps the essence of the context (decisions, learned conventions) whereas `/clear` erases everything. Use `/recap` after `/compact` to check what was kept.
 
+## Scratchpad and temp files
+
+The session scratchpad outlives the session (nothing removes it) and, where `/tmp` is a tmpfs, it is RAM.
+
+- Install dependencies (`npm install`, venvs, builds) in a worktree on disk, never in the scratchpad.
+- Mounting a user dir into a container: `docker run --user "$(id -u):$(id -g)" -v …`, or it leaves root-owned files only sudo can remove.
+- Delete copies of sensitive data (a production database, a dump) from the scratchpad once the analysis is done.
+
 ## Anti-patterns to Avoid
 
 - Coding without understanding the existing code
