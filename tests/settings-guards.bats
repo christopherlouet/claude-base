@@ -138,3 +138,32 @@ DENY_FILTER='.permissions.deny[]
     [[ "$output" == *"chmod 777"* ]]
     [[ "$output" == *"eval"* ]]
 }
+
+# -----------------------------------------------------------------------------
+# Fable sub-agents — a deliberate choice, never a silent one (2026-09-24)
+# -----------------------------------------------------------------------------
+# The foundation pins no agent to Fable, by cost (docs/reference/best-practices.md),
+# yet Fable stays a "rare, deliberate" option — so the rule is `ask`, not `deny`:
+# a deny outranks every approval and would forbid the deliberate case too.
+# Claude Code 2.1.178 matches tool parameters with `Tool(param:value)`.
+FABLE_RULE='Agent(model:fable)'
+
+@test "settings: a sub-agent explicitly launched on Fable asks first" {
+    run jq -r --arg r "$FABLE_RULE" '(.permissions.ask // []) | index($r) != null' "$SETTINGS"
+    [ "$output" = "true" ]
+}
+
+@test "settings: the Fable rule is neither denied nor pre-allowed" {
+    # deny would outrank the ask (no deliberate case left); allow would skip it.
+    run jq -r --arg r "$FABLE_RULE" \
+        '[(.permissions.deny // []), (.permissions.allow // [])] | flatten | index($r) == null' "$SETTINGS"
+    [ "$output" = "true" ]
+}
+
+@test "agents: no agent frontmatter pins Fable (it would bypass the ask rule)" {
+    # The rule sees the Agent tool's `model` parameter only; a frontmatter pin
+    # never reaches it, so the cost choice is held here instead.
+    run grep -lEi '^model:[[:space:]]*"?(fable|claude-fable)' "$BASE_DIR"/.claude/agents/*.md
+    [ "$status" -eq 1 ]
+    [ -z "$output" ]
+}
