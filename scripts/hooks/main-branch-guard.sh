@@ -94,9 +94,10 @@ if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
   # Scoping is checked HERE, not before the branch test: off main — the common
   # case — the answer is discarded, and a Write envelope carries the file's
   # whole content, so parsing it would cost a multi-megabyte jq pass on every
-  # large edit. This hook runs with timeout 5000 and onFailure "block", so
-  # wasted work is not merely slow: it is a way for a legitimate edit to be
-  # refused. Same semantics, none of the cost.
+  # large edit. And wasted work is not merely slow: a PreToolUse hook that
+  # outlives its timeout does not block (measured 2026-09-25), so every second
+  # spent here is a second nearer to letting the edit through unchecked.
+  # Same semantics, none of the cost.
   target_is_outside_repo && exit 0
 
   NEW_BRANCH="feature/auto-$(date +%Y%m%d-%H%M%S)"

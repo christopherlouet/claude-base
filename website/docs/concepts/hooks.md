@@ -58,8 +58,7 @@ Hooks are configured in `.claude/settings.json`. Each hook runs a **discrete scr
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/main-branch-guard.sh\"",
-            "onFailure": "block"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/main-branch-guard.sh\""
           }
         ]
       }
@@ -70,8 +69,7 @@ Hooks are configured in `.claude/settings.json`. Each hook runs a **discrete scr
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/post-edit-typecheck-and-lint.sh\"",
-            "onFailure": "ignore"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/post-edit-typecheck-and-lint.sh\""
           }
         ]
       }
@@ -96,7 +94,7 @@ Executed **before** the tool is used.
 **Behavior:**
 - Exit code **2** blocks the tool: it is not executed and the hook's stderr is shown to Claude
 - Exit code **0** allows the tool; any other non-zero code surfaces an error but does **not** block
-- Blocking scripts are wired with `"onFailure": "block"` in `.claude/settings.json`
+- A script blocks only by exiting 2; past its `timeout` (seconds) it does not block, so blocking scripts carry a wide one (30 s, 1800 s for test/CI gates) in `.claude/settings.json`
 
 ### PostToolUse
 
@@ -119,8 +117,7 @@ Executed **after** the tool is used.
   "hooks": [
     {
       "type": "command",
-      "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/main-branch-guard.sh\"",
-      "onFailure": "block"
+      "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/main-branch-guard.sh\""
     }
   ]
 }
@@ -159,8 +156,7 @@ Shell command to execute. Available variables:
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/main-branch-guard.sh\"",
-            "onFailure": "block"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/main-branch-guard.sh\""
           }
         ]
       }
@@ -194,8 +190,7 @@ fi
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/auto-format.sh\"",
-            "onFailure": "ignore"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/auto-format.sh\""
           }
         ]
       }
@@ -227,8 +222,7 @@ fi
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/typecheck.sh\"",
-            "onFailure": "ignore"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/typecheck.sh\""
           }
         ]
       }
@@ -260,8 +254,7 @@ fi
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/auto-install.sh\"",
-            "onFailure": "ignore"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/auto-install.sh\""
           }
         ]
       }
@@ -295,8 +288,7 @@ Example of a complete `.claude/settings.json`:
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/main-branch-guard.sh\"",
-            "onFailure": "block"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/main-branch-guard.sh\""
           }
         ]
       }
@@ -307,18 +299,15 @@ Example of a complete `.claude/settings.json`:
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/auto-format.sh\"",
-            "onFailure": "ignore"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/auto-format.sh\""
           },
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/typecheck.sh\"",
-            "onFailure": "ignore"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/typecheck.sh\""
           },
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/auto-install.sh\"",
-            "onFailure": "ignore"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/auto-install.sh\""
           }
         ]
       }
@@ -341,7 +330,7 @@ There is **no single dispatcher script**. Each hook is its own small script unde
 | `config-protection.sh` | PreToolUse (Edit/Write) | Blocks edits to existing linter/formatter configs |
 | `bash-write-guard.sh` | PreToolUse (Bash) | Blocks Bash writes to protected/secrets files |
 
-A PreToolUse script **blocks** the tool by exiting **2** (exit 1 does **not** block); PostToolUse scripts are advisory and wired with `"onFailure": "ignore"`. See [`docs/reference/hooks-reference.md`](/docs/reference/hooks-reference) for the full, authoritative catalogue of scripts, events and environment toggles.
+A PreToolUse script **blocks** the tool by exiting **2** (exit 1 does **not** block); PostToolUse scripts are advisory. A hook that crashes or outlives its `timeout` (in seconds) never blocks: there is no `onFailure` setting (measured 2026-09-25). See [`docs/reference/hooks-reference.md`](/docs/reference/hooks-reference) for the full, authoritative catalogue of scripts, events and environment toggles.
 
 ## Best practices
 

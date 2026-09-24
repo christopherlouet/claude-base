@@ -12,7 +12,7 @@ hooks:
       hooks:
         - type: command
           command: "echo '[DEV-TDD] TDD cycle in progress...'"
-          timeout: 5000
+          timeout: 5
 ---
 
 # Agent DEV-TDD

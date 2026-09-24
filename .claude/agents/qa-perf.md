@@ -11,7 +11,7 @@ hooks:
       hooks:
         - type: command
           command: "echo '[QA-PERF] Profiling en cours...'"
-          timeout: 5000
+          timeout: 5
 ---
 
 # Agent QA-PERF

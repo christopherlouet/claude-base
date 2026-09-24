@@ -12,7 +12,7 @@ hooks:
       hooks:
         - type: command
           command: "echo '[DEV-DEBUG] Investigation en cours...'"
-          timeout: 5000
+          timeout: 5
 ---
 
 # Agent DEV-DEBUG

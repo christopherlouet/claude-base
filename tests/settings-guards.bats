@@ -193,3 +193,48 @@ _fable_pins() {
     # A body line is an example, not a pin.
     [[ "$output" != *"d.md"* ]]
 }
+
+# -----------------------------------------------------------------------------
+# Hook timeouts are SECONDS, and a timed-out PreToolUse guard FAILS OPEN
+# -----------------------------------------------------------------------------
+# Measured 2026-09-25 (Claude Code 2.1.281, fresh headless sessions): a hook
+# `sleep 1` with timeout 3 completed and `sleep 4` with timeout 2 was cut, so the
+# unit is the second; every value here had been written in milliseconds (2000 =
+# 33 min, 180000 = 50 h), bounding nothing. And a PreToolUse guard that would
+# have blocked (exit 2) but outlived its timeout let the command RUN. So a
+# budget too tight on a guard is a silent bypass, not a safety margin.
+TIMEOUTS_FILTER='.hooks | to_entries[] | .key as $e | .value[] | .hooks[] | {e:$e, t:(.timeout // 0), c:(.command // "")}'
+
+@test "settings: no hook timeout is millisecond-sized (the unit is seconds)" {
+    run jq -r "$TIMEOUTS_FILTER | select(.t > 3600) | \"\(.e) \(.t) \(.c)\"" "$SETTINGS"
+    [ -z "$output" ] || { echo "timeouts above 1 h (written in ms?): $output" >&2; return 1; }
+}
+
+@test "settings: every blocking PreToolUse guard has at least 30 s (a timeout fails open)" {
+    run jq -r "$TIMEOUTS_FILTER | select(.e == \"PreToolUse\" and (.c | test(\"scripts/hooks/\"))) | select(.t < 30) | \"\(.t) \(.c)\"" "$SETTINGS"
+    [ -z "$output" ] || { echo "guards that would fail open under load: $output" >&2; return 1; }
+}
+
+@test "settings: the timeout guards are not vacuous — they flag both planted shapes" {
+    local fixture="$BATS_TEST_TMPDIR/s.json"
+    printf '%s' '{"hooks":{"PreToolUse":[{"hooks":[{"command":"bash scripts/hooks/x.sh","timeout":5}]}],"Stop":[{"hooks":[{"command":"y","timeout":5000}]}]}}' > "$fixture"
+    run jq -r "$TIMEOUTS_FILTER | select(.t > 3600) | .c" "$fixture"
+    [ "$output" = "y" ]
+    run jq -r "$TIMEOUTS_FILTER | select(.e == \"PreToolUse\" and (.c | test(\"scripts/hooks/\"))) | select(.t < 30) | .c" "$fixture"
+    [ "$output" = "bash scripts/hooks/x.sh" ]
+}
+
+@test "settings: no hook carries onFailure (not a Claude Code field; measured inert)" {
+    # 26 hooks carried "onFailure": "block"/"ignore" and five docs taught it as
+    # what makes a guard block. Measured 2026-09-25: a timed-out guard with
+    # onFailure "block" let the command run exactly like one without it.
+    run jq -r '[.. | objects | select(has("onFailure"))] | length' "$SETTINGS"
+    [ "$output" = "0" ]
+}
+
+@test "agents: no hook timeout in agent frontmatter is millisecond-sized" {
+    # Hooks declared in an agent's frontmatter use the same seconds unit; nine
+    # carried 5000 (83 min) after settings.json had been fixed.
+    run grep -rnE '^[[:space:]]*timeout:[[:space:]]*[0-9]{4,}' "$BASE_DIR"/.claude/agents
+    [ "$status" -eq 1 ] || { echo "ms-sized timeouts: $output" >&2; return 1; }
+}

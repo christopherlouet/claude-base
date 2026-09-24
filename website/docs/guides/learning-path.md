@@ -1668,8 +1668,7 @@ Hooks allow you to automate actions before or after each Claude Code operation. 
             "type": "command",
             "command": "bash -c 'curl -s -X POST $SLACK_WEBHOOK -d \"{\\\"text\\\":\\\"Commit done in $(basename $PWD)\\\"}\"'",
             "async": true,
-            "onFailure": "ignore",
-            "timeout": 5000
+            "timeout": 5
           }
         ]
       }
@@ -1709,15 +1708,13 @@ The `matcher` filters hooks by tool or by regex pattern:
 "matcher": "Bash(npm run:*)"       // Any npm run command
 ```
 
-#### onFailure: block or ignore
+#### When does a hook block?
 
-| onFailure | Effect | When to use |
-|-----------|-------|------------------|
-| `"block"` | Blocks the action if the hook fails | Security, critical validation |
-| `"ignore"` | Continues even if the hook fails | Logging, notification |
-| (absent) | Continues by default | Non-critical actions |
+Only through its own exit code: `exit 2` on a `PreToolUse` hook refuses the action. A hook that crashes,
+exits otherwise, or outlives its `timeout` (in **seconds**) does **not** block: the action proceeds
+(measured 2026-09-25). There is no `onFailure` setting.
 
-IMPORTANT: security hooks (gitleaks, main protection, pre-commit tests) must use `"onFailure": "block"`. Logging and notification hooks must use `"async": true` and `"onFailure": "ignore"`.
+IMPORTANT: a security hook (gitleaks, main protection, pre-commit tests) blocks only by exiting 2, so it must be fast and carry a wide `timeout` (the foundation uses 30 s, 1800 s for test gates): past its timeout it lets the action through. Logging and notification hooks should use `"async": true`.
 
 #### Asynchronous hooks
 
@@ -1727,8 +1724,7 @@ The `"async": true` property runs the hook in the background without blocking Cl
 {
   "type": "command",
   "command": "bash -c 'echo \"$(date) - Session ended\" >> /tmp/claude-sessions.log'",
-  "async": true,
-  "onFailure": "ignore"
+  "async": true
 }
 ```
 
