@@ -33,7 +33,6 @@
       "Bash(git checkout .:*)",
       "Bash(git restore .:*)",
       "Bash(rm -rf /:*)",
-      "Bash(rm -rf /*:*)",
       "Bash(rm -rf ~:*)",
       "Bash(rm -rf .:*)",
       "Bash(rm -rf ..:*)",
