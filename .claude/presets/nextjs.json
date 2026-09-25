@@ -90,10 +90,10 @@
       "url": "https://github.com/apollographql/skills",
       "rationale": "Apollo Client, Apollo Server 5, Federation 2",
       "condition": "if using Apollo GraphQL",
-      "pinnedRef": "v1.2.9",
+      "pinnedRef": "v1.2.10",
       "trustTrack": "authority",
       "provenance": "Apollo GraphQL",
-      "lastVerified": "2026-08-26"
+      "lastVerified": "2026-09-25"
     }
   ],
   "defaults": {
