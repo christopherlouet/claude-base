@@ -432,7 +432,7 @@ All read-only, isolated contexts
 
 ### Skills
 - `context: fork` recommended
-- `allowed-tools` **grants**, it does not restrict: the listed tools run without a permission prompt during the skill's turn (a `deny` rule still wins). Never list bare `Bash` — it pre-approves every shell command; use a precise pattern such as `Bash(npm test:*)` when a skill truly needs unattended commands (`tests/skills-frontmatter.bats` refuses bare `Bash`)
+- `allowed-tools` **grants**, it does not restrict: the listed tools run without a permission prompt during the skill's turn (`deny` and `ask` rules still win). Never list bare `Bash` — it pre-approves every shell command; use a precise pattern such as `Bash(npm test:*)` when a skill truly needs unattended commands (`tests/skills-frontmatter.bats` refuses bare `Bash`)
 - Clear trigger keywords
 
 ### Agents

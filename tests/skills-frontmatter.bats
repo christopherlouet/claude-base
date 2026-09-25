@@ -171,23 +171,32 @@ _dead_pointers() {
 # _bare_bash_grants <SKILL.md>... — print each file whose frontmatter
 # allowed-tools (block list or inline) grants bare Bash.
 _bare_bash_grants() {
-    awk 'FNR == 1 { fm = 0; inlist = 0 }
+    # POSIX awk only (BSD awk on the macOS column, busybox): no bracket
+    # expressions holding [ or ] — the brackets are deleted before splitting.
+    awk 'function bare(item) {
+             sub(/[[:space:]]*#.*$/, "", item)
+             gsub(/["\047]/, "", item)
+             gsub(/^[[:space:]]+|[[:space:]]+$/, "", item)
+             return item == "Bash" || item == "Bash(*)"
+         }
+         FNR == 1 { fm = 0; inlist = 0 }
          /^---[[:space:]]*$/ { fm++; inlist = 0; next }
          fm != 1 { next }
          /^allowed-tools:/ {
              inlist = 1
              line = $0; sub(/^allowed-tools:[[:space:]]*/, "", line)
-             n = split(line, parts, /[,[:space:]\[\]]+/)
-             for (i = 1; i <= n; i++) if (parts[i] == "Bash") { print FILENAME; nextfile }
+             sub(/[[:space:]]*#.*$/, "", line)
+             gsub(/[][]/, " ", line)
+             n = split(line, parts, /[ ,\t]+/)
+             for (i = 1; i <= n; i++) if (bare(parts[i])) { print FILENAME; nextfile }
              next
          }
-         inlist && /^[[:space:]]+-[[:space:]]*/ {
-             item = $0; sub(/^[[:space:]]+-[[:space:]]*/, "", item); sub(/[[:space:]]+$/, "", item)
-             gsub(/["\047]/, "", item)
-             if (item == "Bash") { print FILENAME; nextfile }
+         inlist && /^[[:space:]]*-/ {
+             item = $0; sub(/^[[:space:]]*-[[:space:]]*/, "", item)
+             if (bare(item)) { print FILENAME; nextfile }
              next
          }
-         inlist && !/^[[:space:]]/ { inlist = 0 }' "$@"
+         inlist { inlist = 0 }' "$@"
 }
 
 @test "skills: no skill grants bare Bash through allowed-tools" {
@@ -200,9 +209,16 @@ _bare_bash_grants() {
     printf -- '---\nname: a\nallowed-tools:\n  - Read\n  - Bash\n---\nbody\n' > "$d/a.md"
     printf -- '---\nname: b\nallowed-tools: Read, Bash\n---\n' > "$d/b.md"
     printf -- '---\nname: c\nallowed-tools:\n  - Bash(npm test:*)\n---\n  - Bash\n' > "$d/c.md"
-    run _bare_bash_grants "$d/a.md" "$d/b.md" "$d/c.md"
+    # Independent review of #589: three shapes slipped through.
+    printf -- '---\nname: e\nallowed-tools:\n  - Read\n  - Bash   # If the skill executes commands\n---\n' > "$d/e.md"
+    printf -- '---\nname: f\nallowed-tools:\n- Bash\n---\n' > "$d/f.md"
+    printf -- '---\nname: g\nallowed-tools: [Read, "Bash(*)"]\n---\n' > "$d/g.md"
+    run _bare_bash_grants "$d/a.md" "$d/b.md" "$d/c.md" "$d/e.md" "$d/f.md" "$d/g.md"
     [[ "$output" == *"a.md"* ]]
     [[ "$output" == *"b.md"* ]]
+    [[ "$output" == *"e.md"* ]]
+    [[ "$output" == *"f.md"* ]]
+    [[ "$output" == *"g.md"* ]]
     # A precise pattern is allowed, and a body line is not frontmatter.
     [[ "$output" != *"c.md"* ]]
 }

@@ -1415,7 +1415,7 @@ The key fields of the frontmatter:
 |-------|-------------|---------|
 | `name` | Unique identifier of the skill | `sql-optimizer` |
 | `description` | Description + automatic trigger keywords | See above |
-| `allowed-tools` | Tools **pre-approved** (no prompt) during the skill's turn: it grants, never restricts; a `deny` still wins. Never bare `Bash` | `Read, Grep, Bash(npm test:*)` |
+| `allowed-tools` | Tools **pre-approved** (no prompt) during the skill's turn: it grants, never restricts; `deny` and `ask` rules still win. Never bare `Bash` | `Read, Grep, Bash(npm test:*)` |
 | `context` | `fork` (isolated, recommended) or `shared` (main context) | `fork` |
 | `model` | Preferred model for this skill | `haiku`, `sonnet`, `opus` |
 | `argument-hint` | Hint shown to the user about expected arguments | `"[description]"` |
