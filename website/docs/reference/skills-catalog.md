@@ -117,7 +117,7 @@ Refer to the upstream Claude Code changelog for the canonical JSON shape and any
 ---
 name: my-skill
 description: Short description of the skill
-allowed-tools: Read, Grep, Glob, Bash
+allowed-tools: Read, Grep, Glob
 context: fork
 disable-model-invocation: true   # Do not trigger automatically
 user-invocable: false             # Background-only skill

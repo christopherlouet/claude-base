@@ -5,7 +5,6 @@ tools: Read, Grep, Glob, Bash
 model: sonnet
 permissionMode: default
 skills:
-  - qa-chrome
   - qa-design
 hooks:
   PostToolUse:

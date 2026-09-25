@@ -5,7 +5,6 @@ allowed-tools:
   - Read
   - Grep
   - Glob
-  - Bash
 context: fork
 background: false
 model: opus

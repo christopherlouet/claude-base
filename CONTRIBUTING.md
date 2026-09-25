@@ -148,7 +148,6 @@ allowed-tools:
   - Glob
   - Edit
   - Write
-  - Bash
 context: fork
 ---
 ```

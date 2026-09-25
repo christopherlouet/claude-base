@@ -4,7 +4,6 @@ description: Clean LLM-ready web scraping via Firecrawl (scrape/crawl/map/extrac
 allowed-tools:
   - Read
   - Write
-  - Bash
   - WebFetch
   - WebSearch
 context: fork

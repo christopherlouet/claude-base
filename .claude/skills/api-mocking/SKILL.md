@@ -7,7 +7,6 @@ allowed-tools:
   - Edit
   - Glob
   - Grep
-  - Bash
 context: fork
 background: false
 user-invocable: false

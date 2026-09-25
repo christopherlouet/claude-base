@@ -5,8 +5,6 @@ tools: Read, Grep, Glob
 model: sonnet
 permissionMode: plan
 disallowedTools: Edit, Write, Bash, NotebookEdit
-skills:
-  - work-explore
 ---
 
 # Agent WORK-EXPLORE

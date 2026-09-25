@@ -157,3 +157,122 @@ _dead_pointers() {
     [[ "$output" != *"other.md"* ]]
     teardown_test_dir
 }
+
+# =============================================================================
+# allowed-tools GRANTS, it does not restrict (measured 2026-09-25)
+# =============================================================================
+# A skill's allowed-tools pre-approves the listed tools for its turn. Measured:
+# with `allowed-tools: Bash`, a command that otherwise needs approval ran
+# unprompted; a deny rule still won. Forty skills listed bare Bash, so a user
+# who removed Bash from their own allow list got it back, silently, for every
+# skill turn — and a copied skill carried a whole shell grant with it. Bare Bash
+# is refused; a precise pattern (Bash(npm test:*)) stays possible.
+
+# _bare_bash_grants <SKILL.md>... — print each file whose frontmatter
+# allowed-tools (block list or inline) grants bare Bash.
+_bare_bash_grants() {
+    # POSIX awk only (BSD awk on the macOS column, busybox): no bracket
+    # expressions holding [ or ] — the brackets are deleted before splitting.
+    awk 'function bare(item) {
+             sub(/[[:space:]]*#.*$/, "", item)
+             gsub(/["\047]/, "", item)
+             gsub(/^[[:space:]]+|[[:space:]]+$/, "", item)
+             return item == "Bash" || item == "Bash(*)"
+         }
+         FNR == 1 { fm = 0; inlist = 0 }
+         /^---[[:space:]]*$/ { fm++; inlist = 0; next }
+         fm != 1 { next }
+         /^allowed-tools:/ {
+             inlist = 1
+             line = $0; sub(/^allowed-tools:[[:space:]]*/, "", line)
+             sub(/[[:space:]]*#.*$/, "", line)
+             gsub(/[][]/, " ", line)
+             n = split(line, parts, /[ ,\t]+/)
+             for (i = 1; i <= n; i++) if (bare(parts[i])) { print FILENAME; nextfile }
+             next
+         }
+         inlist && /^[[:space:]]*-/ {
+             item = $0; sub(/^[[:space:]]*-[[:space:]]*/, "", item)
+             if (bare(item)) { print FILENAME; nextfile }
+             next
+         }
+         inlist { inlist = 0 }' "$@"
+}
+
+@test "skills: no skill grants bare Bash through allowed-tools" {
+    run _bare_bash_grants "$BASE_DIR"/.claude/skills/*/SKILL.md
+    [ -z "$output" ] || { echo "bare Bash grants: $output" >&2; return 1; }
+}
+
+@test "skills: the bare-Bash scanner is not vacuous" {
+    local d="$BATS_TEST_TMPDIR"
+    printf -- '---\nname: a\nallowed-tools:\n  - Read\n  - Bash\n---\nbody\n' > "$d/a.md"
+    printf -- '---\nname: b\nallowed-tools: Read, Bash\n---\n' > "$d/b.md"
+    printf -- '---\nname: c\nallowed-tools:\n  - Bash(npm test:*)\n---\n  - Bash\n' > "$d/c.md"
+    # Independent review of #589: three shapes slipped through.
+    printf -- '---\nname: e\nallowed-tools:\n  - Read\n  - Bash   # If the skill executes commands\n---\n' > "$d/e.md"
+    printf -- '---\nname: f\nallowed-tools:\n- Bash\n---\n' > "$d/f.md"
+    printf -- '---\nname: g\nallowed-tools: [Read, "Bash(*)"]\n---\n' > "$d/g.md"
+    run _bare_bash_grants "$d/a.md" "$d/b.md" "$d/c.md" "$d/e.md" "$d/f.md" "$d/g.md"
+    [[ "$output" == *"a.md"* ]]
+    [[ "$output" == *"b.md"* ]]
+    [[ "$output" == *"e.md"* ]]
+    [[ "$output" == *"f.md"* ]]
+    [[ "$output" == *"g.md"* ]]
+    # A precise pattern is allowed, and a body line is not frontmatter.
+    [[ "$output" != *"c.md"* ]]
+}
+
+# -----------------------------------------------------------------------------
+# Agents: a `skills:` preload of a manual-only skill loads NOTHING (2026-09-25)
+# -----------------------------------------------------------------------------
+# The skills doc: disable-model-invocation "also prevents the skill from being
+# preloaded into subagents". Measured: the qa-chrome agent preloads qa-chrome
+# (manual-only) and qa-design; in its subagent context qa-design's body was
+# present and qa-chrome's absent. Three agents carried such a preload, silently
+# empty since 2026-01-30 — the same dead pointer as above, in frontmatter.
+
+# _agent_preloads <agent.md> — print "agent skill" for each `skills:` entry.
+_agent_preloads() {
+    awk 'FNR == 1 { fm = 0; inlist = 0; a = FILENAME; sub(/.*\//, "", a); sub(/\.md$/, "", a) }
+         /^---[[:space:]]*$/ { fm++; inlist = 0; next }
+         fm != 1 { next }
+         /^skills:/ {
+             inlist = 1; line = $0; sub(/^skills:[[:space:]]*/, "", line)
+             gsub(/[][,"\047]/, " ", line); n = split(line, p, /[ \t]+/)
+             for (i = 1; i <= n; i++) if (p[i] != "") print a, p[i]
+             next
+         }
+         inlist && /^[[:space:]]*$/ { next }
+         inlist && /^[[:space:]]*-/ { s = $0; sub(/^[[:space:]]*-[[:space:]]*/, "", s); sub(/[[:space:]]*#.*$/, "", s); gsub(/["\047[:space:]]/, "", s); print a, s; next }
+         inlist { inlist = 0 }' "$@"
+}
+
+@test "agents: no agent preloads a manual-only or missing skill (it would load nothing)" {
+    # A missing name (typo, deleted skill) is the same silent nothing: the
+    # sub-agents doc says Claude Code skips it with a debug-log warning only.
+    local manual dead=""
+    manual=" $(_manual_only_skills | tr '\n' ' ') "
+    while read -r agent skill; do
+        [ -n "$skill" ] || continue
+        case "$manual" in *" $skill "*) dead="$dead $agent->$skill(manual-only)" ;; esac
+        [ -f "$SKILLS_DIR/$skill/SKILL.md" ] || dead="$dead $agent->$skill(missing)"
+    done < <(_agent_preloads "$CLAUDE_DIR"/agents/*.md)
+    [ -z "$dead" ] || { echo "dead preloads:$dead" >&2; return 1; }
+}
+
+@test "agents: the preload scanner is not vacuous" {
+    run _agent_preloads "$CLAUDE_DIR"/agents/*.md
+    [ -n "$output" ]
+    local d="$BATS_TEST_TMPDIR"
+    printf -- '---\nname: x\nskills:\n  - alpha\n  - "beta"   # note\n\n  - epsilon\n---\nskills:\n  - body\n' > "$d/x.md"
+    printf -- '---\nname: y\nskills: [gamma, delta]\n---\n' > "$d/y.md"
+    run _agent_preloads "$d/x.md" "$d/y.md"
+    [[ "$output" == *"x alpha"* ]]
+    [[ "$output" == *"x beta"* ]]
+    [[ "$output" != *"#"* ]]                 # a trailing comment is not part of the name
+    [[ "$output" == *"x epsilon"* ]]         # a blank line does not end the list
+    [[ "$output" == *"y gamma"* ]]
+    [[ "$output" == *"y delta"* ]]
+    [[ "$output" != *"body"* ]]
+}

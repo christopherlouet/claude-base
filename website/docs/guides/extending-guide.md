@@ -127,7 +127,6 @@ allowed-tools:
   - Read
   - Write
   - Edit
-  - Bash
   - Glob
   - Grep
 context: fork
@@ -160,7 +159,7 @@ Output format.
 |-------|----------|--------|-------------|
 | `name` | No | kebab-case | Skill name (default: folder name) |
 | `description` | Recommended | text | Trigger context |
-| `allowed-tools` | No | list | Tools authorized without confirmation |
+| `allowed-tools` | No | list | Tools **pre-approved** (no permission prompt) during the skill's turn. It grants, never restricts; `deny` and `ask` rules still win. Never bare `Bash`: use `Bash(<cmd>:*)` |
 | `context` | No | `fork` | Execution in an isolated sub-agent |
 | `model` | No | `sonnet`, `opus`, `haiku`, `inherit` | Model to use |
 | `argument-hint` | No | text | Autocompletion in the `/` menu |
@@ -170,7 +169,7 @@ Output format.
 ### Best practices
 
 - Limit SKILL.md to 500 lines maximum. Move detail to `examples/` or `references/`
-- Declare only the necessary tools (least privilege principle)
+- `allowed-tools` pre-approves, it never restricts: list only what must run without a prompt, never bare `Bash` (`deny` and `ask` rules still win)
 - Always use `context: fork` for isolation
 - Write the `description` with the trigger context: Claude uses this field to automatically decide when to load the skill
 - Prefer tables over prose for quick references
@@ -194,7 +193,6 @@ description: Generates a CHANGELOG.md entry from recent commits. Trigger when th
 allowed-tools:
   - Read
   - Edit
-  - Bash
   - Glob
 context: fork
 model: sonnet
