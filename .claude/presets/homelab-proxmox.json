@@ -82,20 +82,20 @@
       "url": "https://github.com/grafana/skills",
       "rationale": "Grafana, LGTM stack for monitoring and observability",
       "condition": "if using Grafana / Prometheus stack",
-      "pinnedRef": "05196628fa1a6a557fad1a5623156170693607eb",
+      "pinnedRef": "1ccacf29049fde66637fe01ab93a83a772da323b",
       "trustTrack": "authority",
       "provenance": "Grafana Labs",
-      "lastVerified": "2026-09-16"
+      "lastVerified": "2026-09-25"
     },
     {
       "id": "homeassistant-ai/skills (skills/home-assistant-best-practices)",
       "url": "https://github.com/homeassistant-ai/skills/tree/main/skills/home-assistant-best-practices",
       "rationale": "Idiomatic Home Assistant configuration: native triggers over templates, entity_id over device_id, automation modes",
       "condition": "if the project holds a Home Assistant configuration",
-      "pinnedRef": "309c07a8b4f7e9663e11d980cd4275d95f11c0e9",
+      "pinnedRef": "bc73bdac9f2be4b7e62bb3fcfe8b826050dcf851",
       "trustTrack": "community",
       "provenance": "homeassistant-ai (community — the official Home Assistant org publishes no skills)",
-      "lastVerified": "2026-09-17"
+      "lastVerified": "2026-09-25"
     }
   ],
   "defaults": {

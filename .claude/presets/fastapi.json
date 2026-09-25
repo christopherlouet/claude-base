@@ -61,10 +61,10 @@
       "url": "https://github.com/grafana/skills",
       "rationale": "Grafana, LGTM stack (Loki/Tempo/Mimir), k6 perf testing",
       "condition": "if using Grafana / observability stack",
-      "pinnedRef": "05196628fa1a6a557fad1a5623156170693607eb",
+      "pinnedRef": "1ccacf29049fde66637fe01ab93a83a772da323b",
       "trustTrack": "authority",
       "provenance": "Grafana Labs",
-      "lastVerified": "2026-09-16"
+      "lastVerified": "2026-09-25"
     },
     {
       "id": "antonbabenko/terraform-skill",
