@@ -243,16 +243,20 @@ _agent_preloads() {
              for (i = 1; i <= n; i++) if (p[i] != "") print a, p[i]
              next
          }
-         inlist && /^[[:space:]]*-/ { s = $0; sub(/^[[:space:]]*-[[:space:]]*/, "", s); gsub(/["\047[:space:]]/, "", s); print a, s; next }
+         inlist && /^[[:space:]]*$/ { next }
+         inlist && /^[[:space:]]*-/ { s = $0; sub(/^[[:space:]]*-[[:space:]]*/, "", s); sub(/[[:space:]]*#.*$/, "", s); gsub(/["\047[:space:]]/, "", s); print a, s; next }
          inlist { inlist = 0 }' "$@"
 }
 
-@test "agents: no agent preloads a manual-only skill (it would load nothing)" {
+@test "agents: no agent preloads a manual-only or missing skill (it would load nothing)" {
+    # A missing name (typo, deleted skill) is the same silent nothing: the
+    # sub-agents doc says Claude Code skips it with a debug-log warning only.
     local manual dead=""
     manual=" $(_manual_only_skills | tr '\n' ' ') "
     while read -r agent skill; do
         [ -n "$skill" ] || continue
-        case "$manual" in *" $skill "*) dead="$dead $agent->$skill" ;; esac
+        case "$manual" in *" $skill "*) dead="$dead $agent->$skill(manual-only)" ;; esac
+        [ -f "$SKILLS_DIR/$skill/SKILL.md" ] || dead="$dead $agent->$skill(missing)"
     done < <(_agent_preloads "$CLAUDE_DIR"/agents/*.md)
     [ -z "$dead" ] || { echo "dead preloads:$dead" >&2; return 1; }
 }
@@ -261,11 +265,13 @@ _agent_preloads() {
     run _agent_preloads "$CLAUDE_DIR"/agents/*.md
     [ -n "$output" ]
     local d="$BATS_TEST_TMPDIR"
-    printf -- '---\nname: x\nskills:\n  - alpha\n  - "beta"\n---\nskills:\n  - body\n' > "$d/x.md"
+    printf -- '---\nname: x\nskills:\n  - alpha\n  - "beta"   # note\n\n  - epsilon\n---\nskills:\n  - body\n' > "$d/x.md"
     printf -- '---\nname: y\nskills: [gamma, delta]\n---\n' > "$d/y.md"
     run _agent_preloads "$d/x.md" "$d/y.md"
     [[ "$output" == *"x alpha"* ]]
     [[ "$output" == *"x beta"* ]]
+    [[ "$output" != *"#"* ]]                 # a trailing comment is not part of the name
+    [[ "$output" == *"x epsilon"* ]]         # a blank line does not end the list
     [[ "$output" == *"y gamma"* ]]
     [[ "$output" == *"y delta"* ]]
     [[ "$output" != *"body"* ]]
