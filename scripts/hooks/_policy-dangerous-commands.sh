@@ -234,8 +234,12 @@ validate_command() {
   # irreversible, so this is refused whatever rm would have done on its own.
   #
   # Narrow on purpose: the slash must END the argument (optionally as a glob), so
-  # a real path like /tmp/build or /var/www/html never reaches this rule.
-  if echo "$CMD_NQ" | grep -qE 'rm\s+([^;|&]*\s)?/\*?(\s|$)'; then
+  # a real path like /tmp/build or /var/www/html never reaches this rule. It ends
+  # at whitespace, a separator or the end, like the home rule above: `rm -rf /*;`
+  # used to slip through, caught only by the native deny Bash(rm -rf /*:*) until
+  # that rule was dropped (2026-09-25). The glob shapes are `/*`, `//*`, `/*/`,
+  # `/.*` and a brace list such as `/{*,.*}`.
+  if echo "$CMD_NQ" | grep -qE 'rm\s+([^;|&]*\s)?/+(\*|\.\*|\{[^}/]*\})?/?(\s|[;&|)]|$)'; then
     printf '%s\n' "BLOCKED: Deletion of the filesystem root."
     return 1
   fi

@@ -691,3 +691,27 @@ assert_allow() {
     run_policy 'rm -rf ${HOME}|tee log'
     assert_deny
 }
+
+# --- Root deletion: separators and glob shapes (independent review of #591) ---
+# The root rule required whitespace or end-of-line after the path, while the
+# home rule beside it already accepted ; & | ). Removing the native deny
+# Bash(rm -rf /*:*) (a literal prefix, so it caught `rm -rf /*;`) made the gap
+# matter. The rule stays narrow: a real path never reaches it.
+
+@test "policy-dc: denies the root glob followed by a separator" {
+    for c in "rm -rf /*;" "rm -rf /*&&true" "rm -rf /*|cat" "(rm -rf /*)" "rm -rf /;"; do
+        run_policy "$c"; assert_deny
+    done
+}
+
+@test "policy-dc: denies the other root glob shapes" {
+    for c in "rm -rf //*" "rm -rf /*/" "rm -rf /.*" "rm -rf /{*,.*}" "rm -rf //"; do
+        run_policy "$c"; assert_deny
+    done
+}
+
+@test "policy-dc: a real absolute path, with or without a separator, stays allowed" {
+    for c in "rm -rf /tmp/build;" "rm -rf /var/www/html/*" "rm -rf /tmp/x && ls" "rm -rf /opt/app/.cache" "rm -f /tmp/a.log|cat"; do
+        run_policy "$c"; assert_allow
+    done
+}

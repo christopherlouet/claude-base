@@ -238,3 +238,15 @@ TIMEOUTS_FILTER='.hooks | to_entries[] | .key as $e | .value[] | .hooks[] | {e:$
     run grep -rnE '^[[:space:]]*timeout:[[:space:]]*[0-9]{4,}' "$BASE_DIR"/.claude/agents
     [ "$status" -eq 1 ] || { echo "ms-sized timeouts: $output" >&2; return 1; }
 }
+
+@test "settings: no deny rule mixes a * wildcard with the trailing :* prefix" {
+    # Claude Code (2.1.260+) warns at every session start about this shape: the
+    # * is then matched as a literal, not a wildcard. `Bash(rm -rf /*:*)` was the
+    # one instance; measured 2026-09-25, a command starting `rm -rf /*` was
+    # refused by Claude Code's built-in "Dangerous rm operation" check and the
+    # rule never produced its own denial, while the command-validator policy
+    # also refuses the glob form (policy-dangerous-commands.bats). Removed, not
+    # rewritten: `Bash(rm -rf /*)` would refuse every rm -rf of an absolute path.
+    run jq -r '.permissions.deny[] | select(test("^Bash\\(.*\\*.*:\\*\\)$"))' "$SETTINGS"
+    [ -z "$output" ] || { echo "mixed-wildcard deny rules: $output" >&2; return 1; }
+}
