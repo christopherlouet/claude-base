@@ -1222,3 +1222,26 @@ $pad"
     [[ "$(printf '%s' "$output" | jq -r '.verdict')" == "flag" ]]
     [[ "$(printf '%s' "$output" | jq -r '.reasons | join(",")')" == *"remote-exec"* ]]
 }
+
+# _curation_match stops at the first match (grep -q) and closes the pipe while
+# printf is still writing a large text: bash's printf then printed "write error:
+# Broken pipe" on stderr for every such scan, seen nightly in the bot's journal
+# (2026-09-25). Harmless to the verdict, noise in the only ops channel.
+@test "safety: _curation_match on a large text matching early prints nothing on stderr" {
+    # SIGPIPE ignored, as systemd does for a service (IgnoreSIGPIPE=yes, the
+    # bot's case): without that the writer dies silently and nothing is printed.
+    # Built inside the shell: 400 KB passed as one argument exceeds the kernel's
+    # per-argument limit. It must still exceed the 64 KB pipe buffer.
+    run bash -c "trap '' PIPE; . '$SAFETY'; big=\"needle at the top
+\$(head -c 400000 /dev/zero | tr '\\0' 'a')\"; _curation_match 'needle' \"\$big\" 2>&1 >/dev/null; echo rc=\$?"
+    # Exactly rc=0: stderr is merged in, and must be EMPTY. Matching the English
+    # "Broken pipe" was blind — bash translates it ("Relais brisé" here).
+    [ "$output" = "rc=0" ] || { echo "stderr leaked: $output" >&2; return 1; }
+}
+
+@test "safety: _curation_match verdicts are unchanged (match, no match)" {
+    run bash -c ". '$SAFETY'; _curation_match 'needle' 'hay needle stack'; echo rc=\$?"
+    [ "$output" = "rc=0" ]
+    run bash -c ". '$SAFETY'; _curation_match 'needle' 'only hay'; echo rc=\$?"
+    [ "$output" = "rc=1" ]
+}
