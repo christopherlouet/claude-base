@@ -1239,6 +1239,16 @@ $pad"
     [ "$output" = "rc=0" ] || { echo "stderr leaked: $output" >&2; return 1; }
 }
 
+@test "safety: _curation_match finds a match even under pipefail (never a fail-open)" {
+    # Independent review of #593: with SIGPIPE ignored (systemd) and a caller
+    # running `set -o pipefail`, printf's EPIPE status became the pipeline's, so
+    # a text that DOES match read as clean (rc=1). The verdict now reads grep's
+    # own status, whatever the caller's shell options.
+    run bash -c "trap '' PIPE; set -o pipefail; . '$SAFETY'; big=\"needle at the top
+\$(head -c 400000 /dev/zero | tr '\\0' 'a')\"; _curation_match 'needle' \"\$big\" 2>/dev/null; echo rc=\$?"
+    [ "$output" = "rc=0" ]
+}
+
 @test "safety: _curation_match verdicts are unchanged (match, no match)" {
     run bash -c ". '$SAFETY'; _curation_match 'needle' 'hay needle stack'; echo rc=\$?"
     [ "$output" = "rc=0" ]

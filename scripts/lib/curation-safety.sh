@@ -231,16 +231,18 @@ _curation_grep_utf8() {
 # so at every size. A redirection that cannot create that file returns 1 WITHOUT
 # running the command, which is byte-for-byte the "ran, found nothing" answer,
 # so a full /tmp would report every candidate clean. A pipe needs no filesystem.
-# grep -q stops at the first match and closes the pipe mid-write: printf's
-# "write error: Broken pipe" is expected there and says nothing about the
-# verdict (grep's status, the pipeline's), so only printf's stderr is silenced.
+# grep -q stops at the first match and closes the pipe mid-write. Under systemd
+# (IgnoreSIGPIPE=yes) printf survives that and prints "write error: Broken pipe"
+# — expected noise, so only printf's stderr is silenced. The verdict is GREP's
+# status (PIPESTATUS[1]), never the pipeline's: under a caller's pipefail,
+# printf's EPIPE status would turn a match into "clean" (measured: rc=1).
 _curation_match() {
     local rc_c rc_u
     printf '%s\n' "$2" 2>/dev/null | LC_ALL=C grep -aEiq -e "$1"
-    rc_c=$?
+    rc_c=${PIPESTATUS[1]}
     [ "$rc_c" -eq 0 ] && return 0
     printf '%s\n' "$2" 2>/dev/null | _curation_grep_utf8 -aEiq -e "$1"
-    rc_u=$?
+    rc_u=${PIPESTATUS[1]}
     [ "$rc_u" -eq 0 ] && return 0
     { [ "$rc_c" -gt 1 ] || [ "$rc_u" -gt 1 ]; } && return 2
     return 1
@@ -433,7 +435,9 @@ _curation_list_exec_surface() {
             ;;
     esac
     if [ "$truncated" = "true" ] || [ "$count" -gt "$cap" ]; then
-        printf '%s\n' "$all" | grep . | head -n "$cap" || true
+        # Display only: head closes the pipe once it has $cap lines; grep's
+        # EPIPE complaint under systemd is noise, as in _curation_match.
+        printf '%s\n' "$all" 2>/dev/null | grep . 2>/dev/null | head -n "$cap" || true
         [ "$truncated" = "true" ] && return 3
         return 4
     fi
