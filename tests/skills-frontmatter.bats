@@ -222,3 +222,57 @@ _bare_bash_grants() {
     # A precise pattern is allowed, and a body line is not frontmatter.
     [[ "$output" != *"c.md"* ]]
 }
+
+# -----------------------------------------------------------------------------
+# Agents: a `skills:` preload of a manual-only skill loads NOTHING (2026-09-25)
+# -----------------------------------------------------------------------------
+# The skills doc: disable-model-invocation "also prevents the skill from being
+# preloaded into subagents". Measured: the qa-chrome agent preloads qa-chrome
+# (manual-only) and qa-design; in its subagent context qa-design's body was
+# present and qa-chrome's absent. Three agents carried such a preload, silently
+# empty since 2026-01-30 — the same dead pointer as above, in frontmatter.
+
+# _agent_preloads <agent.md> — print "agent skill" for each `skills:` entry.
+_agent_preloads() {
+    awk 'FNR == 1 { fm = 0; inlist = 0; a = FILENAME; sub(/.*\//, "", a); sub(/\.md$/, "", a) }
+         /^---[[:space:]]*$/ { fm++; inlist = 0; next }
+         fm != 1 { next }
+         /^skills:/ {
+             inlist = 1; line = $0; sub(/^skills:[[:space:]]*/, "", line)
+             gsub(/[][,"\047]/, " ", line); n = split(line, p, /[ \t]+/)
+             for (i = 1; i <= n; i++) if (p[i] != "") print a, p[i]
+             next
+         }
+         inlist && /^[[:space:]]*$/ { next }
+         inlist && /^[[:space:]]*-/ { s = $0; sub(/^[[:space:]]*-[[:space:]]*/, "", s); sub(/[[:space:]]*#.*$/, "", s); gsub(/["\047[:space:]]/, "", s); print a, s; next }
+         inlist { inlist = 0 }' "$@"
+}
+
+@test "agents: no agent preloads a manual-only or missing skill (it would load nothing)" {
+    # A missing name (typo, deleted skill) is the same silent nothing: the
+    # sub-agents doc says Claude Code skips it with a debug-log warning only.
+    local manual dead=""
+    manual=" $(_manual_only_skills | tr '\n' ' ') "
+    while read -r agent skill; do
+        [ -n "$skill" ] || continue
+        case "$manual" in *" $skill "*) dead="$dead $agent->$skill(manual-only)" ;; esac
+        [ -f "$SKILLS_DIR/$skill/SKILL.md" ] || dead="$dead $agent->$skill(missing)"
+    done < <(_agent_preloads "$CLAUDE_DIR"/agents/*.md)
+    [ -z "$dead" ] || { echo "dead preloads:$dead" >&2; return 1; }
+}
+
+@test "agents: the preload scanner is not vacuous" {
+    run _agent_preloads "$CLAUDE_DIR"/agents/*.md
+    [ -n "$output" ]
+    local d="$BATS_TEST_TMPDIR"
+    printf -- '---\nname: x\nskills:\n  - alpha\n  - "beta"   # note\n\n  - epsilon\n---\nskills:\n  - body\n' > "$d/x.md"
+    printf -- '---\nname: y\nskills: [gamma, delta]\n---\n' > "$d/y.md"
+    run _agent_preloads "$d/x.md" "$d/y.md"
+    [[ "$output" == *"x alpha"* ]]
+    [[ "$output" == *"x beta"* ]]
+    [[ "$output" != *"#"* ]]                 # a trailing comment is not part of the name
+    [[ "$output" == *"x epsilon"* ]]         # a blank line does not end the list
+    [[ "$output" == *"y gamma"* ]]
+    [[ "$output" == *"y delta"* ]]
+    [[ "$output" != *"body"* ]]
+}
