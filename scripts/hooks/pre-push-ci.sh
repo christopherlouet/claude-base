@@ -46,6 +46,7 @@ if [ -n "$_dir" ] && [ -f "$_dir/_gate-budget.sh" ]; then
 else
   gate_budget_init() { :; }
   gate_run() { "$@"; }
+  gate_run_tail() { local n="$1"; shift; "$@" 2>&1 | tail -"$n"; return "${PIPESTATUS[0]}"; }
   gate_block_if_timed_out() { :; }
 fi
 is_git_push_command "$CMD" || exit 0
@@ -70,54 +71,54 @@ if [ -f package.json ] && { grep -q '"lint"' package.json || grep -q '"typecheck
      || { [ "$NPM_PLACEHOLDER" = 0 ] && grep -q '"test"' package.json; }; }; then
   if grep -q '"lint"' package.json; then
     echo "[1/3] Lint..."
-    gate_run npm run lint --silent 2>&1 | tail -5
-    rc=${PIPESTATUS[0]}; gate_block_if_timed_out "$rc" "pre-push-ci"
+    gate_run_tail 5 npm run lint --silent
+    rc=$?; gate_block_if_timed_out "$rc" "pre-push-ci"
     [ "$rc" -ne 0 ] && { echo "FAILED: Lint"; FAILED=1; }
   fi
   if grep -q '"typecheck"' package.json; then
     echo "[2/3] Type-check..."
-    gate_run npm run typecheck --silent 2>&1 | tail -5
-    rc=${PIPESTATUS[0]}; gate_block_if_timed_out "$rc" "pre-push-ci"
+    gate_run_tail 5 npm run typecheck --silent
+    rc=$?; gate_block_if_timed_out "$rc" "pre-push-ci"
     [ "$rc" -ne 0 ] && { echo "FAILED: Type-check"; FAILED=1; }
   elif [ -f tsconfig.json ] && [ -f node_modules/.bin/tsc ]; then
     echo "[2/3] tsc --noEmit..."
-    gate_run npx tsc --noEmit 2>&1 | tail -5
-    rc=${PIPESTATUS[0]}; gate_block_if_timed_out "$rc" "pre-push-ci"
+    gate_run_tail 5 npx tsc --noEmit
+    rc=$?; gate_block_if_timed_out "$rc" "pre-push-ci"
     [ "$rc" -ne 0 ] && { echo "FAILED: TypeScript"; FAILED=1; }
   fi
   if [ "$NPM_PLACEHOLDER" = 0 ] && grep -q '"test"' package.json; then
     echo "[3/3] Tests..."
-    gate_run npm test --silent 2>&1 | tail -10
-    rc=${PIPESTATUS[0]}; gate_block_if_timed_out "$rc" "pre-push-ci"
+    gate_run_tail 10 npm test --silent
+    rc=$?; gate_block_if_timed_out "$rc" "pre-push-ci"
     [ "$rc" -ne 0 ] && { echo "FAILED: Tests"; FAILED=1; }
   fi
 elif [ -f pyproject.toml ] || [ -f requirements.txt ]; then
   if command -v ruff >/dev/null 2>&1; then
     echo "[1/3] Ruff..."
-    gate_run ruff check . 2>&1 | tail -5
-    rc=${PIPESTATUS[0]}; gate_block_if_timed_out "$rc" "pre-push-ci"
+    gate_run_tail 5 ruff check .
+    rc=$?; gate_block_if_timed_out "$rc" "pre-push-ci"
     [ "$rc" -ne 0 ] && FAILED=1
   fi
   if command -v mypy >/dev/null 2>&1; then
     echo "[2/3] Mypy..."
-    gate_run mypy . --ignore-missing-imports 2>&1 | tail -5
-    rc=${PIPESTATUS[0]}; gate_block_if_timed_out "$rc" "pre-push-ci"
+    gate_run_tail 5 mypy . --ignore-missing-imports
+    rc=$?; gate_block_if_timed_out "$rc" "pre-push-ci"
     [ "$rc" -ne 0 ] && FAILED=1
   fi
   if command -v pytest >/dev/null 2>&1; then
     echo "[3/3] Pytest..."
-    gate_run pytest --tb=short -q 2>&1 | tail -10
-    rc=${PIPESTATUS[0]}; gate_block_if_timed_out "$rc" "pre-push-ci"
+    gate_run_tail 10 pytest --tb=short -q
+    rc=$?; gate_block_if_timed_out "$rc" "pre-push-ci"
     [ "$rc" -ne 0 ] && FAILED=1
   fi
 elif [ -f go.mod ]; then
   echo "[1/2] Go vet..."
-  gate_run go vet ./... 2>&1 | tail -5
-  rc=${PIPESTATUS[0]}; gate_block_if_timed_out "$rc" "pre-push-ci"
+  gate_run_tail 5 go vet ./...
+  rc=$?; gate_block_if_timed_out "$rc" "pre-push-ci"
   [ "$rc" -ne 0 ] && FAILED=1
   echo "[2/2] Go test..."
-  gate_run go test ./... 2>&1 | tail -10
-  rc=${PIPESTATUS[0]}; gate_block_if_timed_out "$rc" "pre-push-ci"
+  gate_run_tail 10 go test ./...
+  rc=$?; gate_block_if_timed_out "$rc" "pre-push-ci"
   [ "$rc" -ne 0 ] && FAILED=1
 fi
 

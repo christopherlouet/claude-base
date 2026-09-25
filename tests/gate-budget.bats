@@ -108,3 +108,31 @@ npm_project() {
         [ "$budget" -lt "$t" ] || { echo "$h: budget $budget >= hook timeout $t" >&2; return 1; }
     done
 }
+
+# --- Independent review of #592: what the pipe let through --------------------
+# `gate_run cmd | tail` ended only at the pipe's EOF: a grandchild that ignores
+# TERM (npm dies, its worker lives) kept stdout open, `tail` waited, and the
+# hook ran past its budget — measured 30 s for a 2 s budget; past the 1800 s
+# hook timeout that is the fail-open again. Output now goes to a file.
+
+@test "gates: a grandchild that ignores TERM does not hold the gate past its budget" {
+    npm_project "$TEST_DIR/p" '{"test": "bash -c \"trap '"''"' TERM; sleep 40\""}'
+    local start=$SECONDS
+    run_gate pre-commit-tests.sh "$TEST_DIR/p" 'git commit -m wip' CLAUDE_BASE_GATE_SECONDS=2
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"did not finish within 2 s"* ]]
+    [ $((SECONDS - start)) -lt 25 ] || { echo "gate held for $((SECONDS - start)) s" >&2; return 1; }
+}
+
+@test "gate-budget: a command KILLed after ignoring TERM (137) reads as budget spent" {
+    run bash -c ". '$HOOKS/_gate-budget.sh'; CLAUDE_BASE_GATE_SECONDS=1 gate_budget_init; gate_run_tail 5 bash -c \"trap '' TERM; sleep 40\"; gate_block_if_timed_out \$? probe; echo not-blocked"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"did not finish within 1 s"* ]]
+}
+
+@test "gate-budget: a suite that exits 124 by itself is a failure, not a budget overrun" {
+    run bash -c ". '$HOOKS/_gate-budget.sh'; CLAUDE_BASE_GATE_SECONDS=60 gate_budget_init; gate_run_tail 5 sh -c 'exit 124'; rc=\$?; gate_block_if_timed_out \$rc probe; echo rc=\$rc"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"rc=124"* ]]
+    [[ "$output" != *"did not finish"* ]]
+}

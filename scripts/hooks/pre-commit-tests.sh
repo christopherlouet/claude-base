@@ -41,6 +41,7 @@ if [ -n "$_dir" ] && [ -f "$_dir/_gate-budget.sh" ]; then
 else
   gate_budget_init() { :; }
   gate_run() { "$@"; }
+  gate_run_tail() { local n="$1"; shift; "$@" 2>&1 | tail -"$n"; return "${PIPESTATUS[0]}"; }
   gate_block_if_timed_out() { :; }
 fi
 is_git_commit_command "$CMD" || exit 0
@@ -51,8 +52,8 @@ gate_budget_init
 if [ -f package.json ] && grep -q "husky" package.json; then
   if [ ! -d node_modules/husky ] && [ ! -d .husky/_ ]; then
     echo "[WARN] Husky configured but not installed. Installing..."
-    npm install --silent 2>/dev/null || true
-    npx husky install 2>/dev/null || true
+    gate_run npm install --silent >/dev/null 2>&1 < /dev/null || true
+    gate_run npx husky install >/dev/null 2>&1 < /dev/null || true
     [ ! -d node_modules/husky ] && echo "[WARN] Husky cannot be installed. Tests run manually."
   fi
 fi
@@ -73,18 +74,18 @@ fi
 
 if [ "$NPM_PLACEHOLDER" = 0 ] && [ -f package.json ] && grep -q '"test"' package.json; then
   echo "Running tests before commit..."
-  gate_run npm test 2>&1 | tail -20
-  rc=${PIPESTATUS[0]}; gate_block_if_timed_out "$rc" "pre-commit-tests"
+  gate_run_tail 20 npm test
+  rc=$?; gate_block_if_timed_out "$rc" "pre-commit-tests"
   [ "$rc" -ne 0 ] && { echo "BLOCKED: Tests failed. Fix before committing."; exit 2; }
 elif [ -f pyproject.toml ] && command -v pytest >/dev/null 2>&1; then
   echo "Running tests before commit..."
-  gate_run pytest --tb=short -q 2>&1 | tail -20
-  rc=${PIPESTATUS[0]}; gate_block_if_timed_out "$rc" "pre-commit-tests"
+  gate_run_tail 20 pytest --tb=short -q
+  rc=$?; gate_block_if_timed_out "$rc" "pre-commit-tests"
   [ "$rc" -ne 0 ] && { echo "BLOCKED: Tests failed. Fix before committing."; exit 2; }
 elif [ -f go.mod ] && command -v go >/dev/null 2>&1; then
   echo "Running tests before commit..."
-  gate_run go test ./... 2>&1 | tail -20
-  rc=${PIPESTATUS[0]}; gate_block_if_timed_out "$rc" "pre-commit-tests"
+  gate_run_tail 20 go test ./...
+  rc=$?; gate_block_if_timed_out "$rc" "pre-commit-tests"
   [ "$rc" -ne 0 ] && { echo "BLOCKED: Tests failed. Fix before committing."; exit 2; }
 fi
 

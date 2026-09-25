@@ -12,8 +12,15 @@
 #   gate_budget_init            read CLAUDE_BASE_GATE_SECONDS (default 1500,
 #                               below the 1800 s hook timeout; a test pins that)
 #   gate_run <cmd…>             run within what is left; 124 = budget spent
+#   gate_run_tail <n> <cmd…>    same, output to a file, then its last n lines.
+#                               The gate never waits on a pipe: a grandchild
+#                               that ignores TERM (npm dies, its worker lives)
+#                               held `cmd | tail` open past the budget — measured
+#                               30 s for 2, i.e. the fail-open again past 1800.
 #   gate_block_if_timed_out <rc> <gate>
-#                               on 124: print why and exit 2
+#                               124 (TERM) or 137 (KILL after -k) AND the budget
+#                               really elapsed: print why and exit 2. A suite that
+#                               exits 124 by itself is an ordinary failure.
 #
 # Without timeout(1) or gtimeout (stock macOS) commands run unbounded, as
 # before; the hook timeout is then the only bound. NOT a hook: do not register
@@ -36,12 +43,24 @@ gate_run() {
     [ -n "$GATE_TIMEOUT_BIN" ] || { "$@"; return $?; }
     local left=$((GATE_SECONDS - (SECONDS - GATE_START)))
     [ "$left" -gt 0 ] || return 124
-    # -k: a suite that ignores TERM (test runners with workers) is still stopped.
+    # -k: a DIRECT child that ignores TERM is KILLed 10 s later (exit 137). A
+    # grandchild escaping both no longer holds the gate: see gate_run_tail.
     "$GATE_TIMEOUT_BIN" -k 10 "$left" "$@"
 }
 
+gate_run_tail() {
+    local n="$1" log rc; shift
+    log=$(mktemp 2>/dev/null) || { gate_run "$@" 2>&1 | tail -"$n"; return "${PIPESTATUS[0]}"; }
+    gate_run "$@" > "$log" 2>&1 < /dev/null
+    rc=$?
+    tail -"$n" "$log"
+    rm -f "$log"
+    return "$rc"
+}
+
 gate_block_if_timed_out() {
-    [ "$1" = 124 ] || return 0
+    case "$1" in 124|137) ;; *) return 0 ;; esac
+    [ $((SECONDS - ${GATE_START:-$SECONDS})) -ge "${GATE_SECONDS:-1500}" ] || return 0
     echo "BLOCKED: $2 did not finish within ${GATE_SECONDS} s (CLAUDE_BASE_GATE_SECONDS). A gate cut by Claude Code's hook timeout lets the action through, so it blocks instead. Raise the budget, or bypass once with the gate's SKIP_ variable."
     exit 2
 }
