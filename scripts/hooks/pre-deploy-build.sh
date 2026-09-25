@@ -36,7 +36,19 @@ else
   echo >&2 "[pre-deploy-build] policy core _policy-triggers.sh missing - pre-deploy build gate DISABLED. Run 'claude-base update' to restore."
   exit 0
 fi
+# One time budget for the whole gate (_gate-budget.sh): a gate cut by the hook
+# timeout would let the action through, so it blocks when the budget runs out.
+# Missing helper → unbounded, as before.
+if [ -n "$_dir" ] && [ -f "$_dir/_gate-budget.sh" ]; then
+  # shellcheck source=_gate-budget.sh
+  . "$_dir/_gate-budget.sh"
+else
+  gate_budget_init() { :; }
+  gate_run() { "$@"; }
+  gate_block_if_timed_out() { :; }
+fi
 is_deploy_command "$CMD" || exit 0
+gate_budget_init
 
 echo "=== Pre-deploy build check ==="
 
@@ -44,16 +56,18 @@ echo "=== Pre-deploy build check ==="
 # checked so the `| tail` does not mask the real exit status.
 if [ -f package.json ] && grep -q '"build"' package.json; then
   echo "[1/1] Build prod..."
-  npm run build --silent 2>&1 | tail -5
-  if [ "${PIPESTATUS[0]}" -ne 0 ]; then
+  gate_run npm run build --silent 2>&1 | tail -5
+  rc=${PIPESTATUS[0]}; gate_block_if_timed_out "$rc" "pre-deploy-build"
+  if [ "$rc" -ne 0 ]; then
     echo "BLOCKED: Production build failed. Fix before deploying."
     exit 2
   fi
   echo "Build OK"
 elif [ -f go.mod ] && command -v go >/dev/null 2>&1; then
   echo "[1/1] Go build..."
-  go build ./... 2>&1 | tail -5
-  if [ "${PIPESTATUS[0]}" -ne 0 ]; then
+  gate_run go build ./... 2>&1 | tail -5
+  rc=${PIPESTATUS[0]}; gate_block_if_timed_out "$rc" "pre-deploy-build"
+  if [ "$rc" -ne 0 ]; then
     echo "BLOCKED: Go build failed. Fix before deploying."
     exit 2
   fi

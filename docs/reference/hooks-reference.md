@@ -174,6 +174,7 @@ Migration path: existing projects must run `claude-base update -f --all <project
 | `SKIP_SECRET_SCAN=1` | Disable the built-in hardcoded-secret scan (`scripts/hooks/secret-scan.sh`) |
 | `SKIP_SUBSTANCE_CHECK=1` | Disable the substance gate (advisory hollow-test / stub detector) |
 | `SKIP_PRE_PUSH_CI=1` | Disable local pre-push CI check |
+| `CLAUDE_BASE_GATE_SECONDS=N` | Time budget, shared across all steps, of each blocking gate (pre-commit tests, pre-push CI, pre-deploy build); default 1500, below their 1800 s hook timeout. When it runs out the gate **blocks** (exit 2) instead of being cut by the hook timeout, which would let the action through. Needs `timeout` or `gtimeout`; without either the gate runs unbounded (`scripts/hooks/_gate-budget.sh`) |
 | `SKIP_DESTRUCTIVE_CHECK=1` | Disable destructive operations protection |
 | `SKIP_PROMPT_CONTEXT=1` | Disable repo context injection on free-form prompts |
 | `SKIP_VENDOR_PRECEDENCE=1` | Disable the once-per-session installed-vendor precedence hint |
