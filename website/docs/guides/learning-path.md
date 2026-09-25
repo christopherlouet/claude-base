@@ -1403,7 +1403,6 @@ allowed-tools:
   - Read
   - Grep
   - Glob
-  - Bash
 context: fork
 model: sonnet
 argument-hint: "[file-or-description]"
@@ -1416,7 +1415,7 @@ The key fields of the frontmatter:
 |-------|-------------|---------|
 | `name` | Unique identifier of the skill | `sql-optimizer` |
 | `description` | Description + automatic trigger keywords | See above |
-| `allowed-tools` | Authorized tools (least privilege principle) | `Read, Grep, Bash` |
+| `allowed-tools` | Tools **pre-approved** (no prompt) during the skill's turn: it grants, never restricts; a `deny` still wins. Never bare `Bash` | `Read, Grep, Bash(npm test:*)` |
 | `context` | `fork` (isolated, recommended) or `shared` (main context) | `fork` |
 | `model` | Preferred model for this skill | `haiku`, `sonnet`, `opus` |
 | `argument-hint` | Hint shown to the user about expected arguments | `"[description]"` |

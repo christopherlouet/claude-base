@@ -5,7 +5,6 @@ allowed-tools:
   - Read
   - Glob
   - Grep
-  - Bash
 context: fork
 background: false
 model: sonnet

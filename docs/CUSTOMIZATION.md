@@ -346,7 +346,7 @@ For large examples, move to `examples/` and include via link.
 ### Best practices
 
 - **`context: fork`**: isolates the skill from the main conversation (recommended for complex workflows).
-- **Limit `allowed-tools`**: principle of least privilege.
+- **`allowed-tools` grants, it does not restrict**: the listed tools run without a permission prompt during the skill's turn (a `deny` rule still wins). Never list bare `Bash` — it pre-approves every shell command; use a precise pattern such as `Bash(npm test:*)` when a skill truly needs unattended commands (`tests/skills-frontmatter.bats` refuses bare `Bash`).
 - **Precise description**: Claude uses the description to decide when to trigger, be specific.
 - **Skills ≠ Agents**: a skill complements Claude; an agent is an isolated subprocess.
 

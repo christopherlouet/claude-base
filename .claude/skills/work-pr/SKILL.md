@@ -3,7 +3,6 @@ name: work-pr
 description: Create a complete and well-documented Pull Request. Use when the user wants to create a PR, submit their changes, or prepare a merge request.
 allowed-tools:
   - Read
-  - Bash
   - Grep
   - Glob
 context: fork

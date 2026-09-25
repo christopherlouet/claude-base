@@ -34,7 +34,6 @@ allowed-tools:
   - Read
   - Write      # If the skill modifies files
   - Edit       # If the skill edits existing files
-  - Bash       # If the skill executes commands
   - Glob       # File search
   - Grep       # Content search
 context: fork  # Always fork for isolation
@@ -64,7 +63,7 @@ All fields available in the YAML frontmatter of a skill:
 |-------|----------|-------------|
 | `name` | No | Skill name (default: folder name). Lowercase, digits, hyphens (max 64 chars) |
 | `description` | Recommended | What the skill does and when to use it. Claude uses this to decide when to load the skill |
-| `allowed-tools` | No | Tools authorized without permission prompt |
+| `allowed-tools` | No | Tools **pre-approved** without permission prompt during the skill's turn — it grants, never restricts (a `deny` still wins). Never bare `Bash`: use `Bash(<cmd>:*)` |
 | `context` | No | `fork` for execution in an isolated sub-agent |
 | `background` | No | With `context: fork` only. Since CC 2.1.218 forked skills run in the BACKGROUND by default (async result, narrower background tool set, edits bypass `/rewind` checkpoints). Set `false` to block in-turn — the foundation default for workflow skills |
 | `model` | No | Model to use: `sonnet`, `opus`, `haiku`, `inherit` (default: inherits from context) |
@@ -115,7 +114,7 @@ Example:
 [ ] Valid YAML frontmatter (name, description, allowed-tools, context)
 [ ] kebab-case name
 [ ] Description with trigger context
-[ ] Minimal necessary tools (principle of least privilege)
+[ ] `allowed-tools` pre-approves only what must run unprompted; no bare `Bash`
 [ ] context: fork (isolation)
 [ ] background: false (block in-turn; omit only for a deliberately detached skill)
 ```

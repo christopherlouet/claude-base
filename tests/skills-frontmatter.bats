@@ -157,3 +157,52 @@ _dead_pointers() {
     [[ "$output" != *"other.md"* ]]
     teardown_test_dir
 }
+
+# =============================================================================
+# allowed-tools GRANTS, it does not restrict (measured 2026-09-25)
+# =============================================================================
+# A skill's allowed-tools pre-approves the listed tools for its turn. Measured:
+# with `allowed-tools: Bash`, a command that otherwise needs approval ran
+# unprompted; a deny rule still won. Forty skills listed bare Bash, so a user
+# who removed Bash from their own allow list got it back, silently, for every
+# skill turn — and a copied skill carried a whole shell grant with it. Bare Bash
+# is refused; a precise pattern (Bash(npm test:*)) stays possible.
+
+# _bare_bash_grants <SKILL.md>... — print each file whose frontmatter
+# allowed-tools (block list or inline) grants bare Bash.
+_bare_bash_grants() {
+    awk 'FNR == 1 { fm = 0; inlist = 0 }
+         /^---[[:space:]]*$/ { fm++; inlist = 0; next }
+         fm != 1 { next }
+         /^allowed-tools:/ {
+             inlist = 1
+             line = $0; sub(/^allowed-tools:[[:space:]]*/, "", line)
+             n = split(line, parts, /[,[:space:]\[\]]+/)
+             for (i = 1; i <= n; i++) if (parts[i] == "Bash") { print FILENAME; nextfile }
+             next
+         }
+         inlist && /^[[:space:]]+-[[:space:]]*/ {
+             item = $0; sub(/^[[:space:]]+-[[:space:]]*/, "", item); sub(/[[:space:]]+$/, "", item)
+             gsub(/["\047]/, "", item)
+             if (item == "Bash") { print FILENAME; nextfile }
+             next
+         }
+         inlist && !/^[[:space:]]/ { inlist = 0 }' "$@"
+}
+
+@test "skills: no skill grants bare Bash through allowed-tools" {
+    run _bare_bash_grants "$BASE_DIR"/.claude/skills/*/SKILL.md
+    [ -z "$output" ] || { echo "bare Bash grants: $output" >&2; return 1; }
+}
+
+@test "skills: the bare-Bash scanner is not vacuous" {
+    local d="$BATS_TEST_TMPDIR"
+    printf -- '---\nname: a\nallowed-tools:\n  - Read\n  - Bash\n---\nbody\n' > "$d/a.md"
+    printf -- '---\nname: b\nallowed-tools: Read, Bash\n---\n' > "$d/b.md"
+    printf -- '---\nname: c\nallowed-tools:\n  - Bash(npm test:*)\n---\n  - Bash\n' > "$d/c.md"
+    run _bare_bash_grants "$d/a.md" "$d/b.md" "$d/c.md"
+    [[ "$output" == *"a.md"* ]]
+    [[ "$output" == *"b.md"* ]]
+    # A precise pattern is allowed, and a body line is not frontmatter.
+    [[ "$output" != *"c.md"* ]]
+}

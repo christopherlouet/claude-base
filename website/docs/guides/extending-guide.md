@@ -127,7 +127,6 @@ allowed-tools:
   - Read
   - Write
   - Edit
-  - Bash
   - Glob
   - Grep
 context: fork
@@ -160,7 +159,7 @@ Output format.
 |-------|----------|--------|-------------|
 | `name` | No | kebab-case | Skill name (default: folder name) |
 | `description` | Recommended | text | Trigger context |
-| `allowed-tools` | No | list | Tools authorized without confirmation |
+| `allowed-tools` | No | list | Tools **pre-approved** (no permission prompt) during the skill's turn. It grants, never restricts; a `deny` rule still wins. Never bare `Bash`: use `Bash(<cmd>:*)` |
 | `context` | No | `fork` | Execution in an isolated sub-agent |
 | `model` | No | `sonnet`, `opus`, `haiku`, `inherit` | Model to use |
 | `argument-hint` | No | text | Autocompletion in the `/` menu |
@@ -194,7 +193,6 @@ description: Generates a CHANGELOG.md entry from recent commits. Trigger when th
 allowed-tools:
   - Read
   - Edit
-  - Bash
   - Glob
 context: fork
 model: sonnet
