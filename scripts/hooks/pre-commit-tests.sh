@@ -32,15 +32,28 @@ else
   echo >&2 "[pre-commit-tests] policy core _policy-triggers.sh missing - pre-commit test gate DISABLED. Run 'claude-base update' to restore."
   exit 0
 fi
+# One time budget for the whole gate (_gate-budget.sh): a gate cut by the hook
+# timeout would let the action through, so it blocks when the budget runs out.
+# Missing helper → unbounded, as before.
+if [ -n "$_dir" ] && [ -f "$_dir/_gate-budget.sh" ]; then
+  # shellcheck source=_gate-budget.sh
+  . "$_dir/_gate-budget.sh"
+else
+  gate_budget_init() { :; }
+  gate_run() { "$@"; }
+  gate_run_tail() { local n="$1"; shift; "$@" 2>&1 | tail -"$n"; return "${PIPESTATUS[0]}"; }
+  gate_block_if_timed_out() { :; }
+fi
 is_git_commit_command "$CMD" || exit 0
+gate_budget_init
 
 # Husky (JS): if configured but not installed, try to repair so the project's
 # own git hooks still run. Best-effort — never fatal.
 if [ -f package.json ] && grep -q "husky" package.json; then
   if [ ! -d node_modules/husky ] && [ ! -d .husky/_ ]; then
     echo "[WARN] Husky configured but not installed. Installing..."
-    npm install --silent 2>/dev/null || true
-    npx husky install 2>/dev/null || true
+    gate_run npm install --silent >/dev/null 2>&1 < /dev/null || true
+    gate_run npx husky install >/dev/null 2>&1 < /dev/null || true
     [ ! -d node_modules/husky ] && echo "[WARN] Husky cannot be installed. Tests run manually."
   fi
 fi
@@ -61,16 +74,19 @@ fi
 
 if [ "$NPM_PLACEHOLDER" = 0 ] && [ -f package.json ] && grep -q '"test"' package.json; then
   echo "Running tests before commit..."
-  npm test 2>&1 | tail -20
-  [ "${PIPESTATUS[0]}" -ne 0 ] && { echo "BLOCKED: Tests failed. Fix before committing."; exit 2; }
+  gate_run_tail 20 npm test
+  rc=$?; gate_block_if_timed_out "$rc" "pre-commit-tests"
+  [ "$rc" -ne 0 ] && { echo "BLOCKED: Tests failed. Fix before committing."; exit 2; }
 elif [ -f pyproject.toml ] && command -v pytest >/dev/null 2>&1; then
   echo "Running tests before commit..."
-  pytest --tb=short -q 2>&1 | tail -20
-  [ "${PIPESTATUS[0]}" -ne 0 ] && { echo "BLOCKED: Tests failed. Fix before committing."; exit 2; }
+  gate_run_tail 20 pytest --tb=short -q
+  rc=$?; gate_block_if_timed_out "$rc" "pre-commit-tests"
+  [ "$rc" -ne 0 ] && { echo "BLOCKED: Tests failed. Fix before committing."; exit 2; }
 elif [ -f go.mod ] && command -v go >/dev/null 2>&1; then
   echo "Running tests before commit..."
-  go test ./... 2>&1 | tail -20
-  [ "${PIPESTATUS[0]}" -ne 0 ] && { echo "BLOCKED: Tests failed. Fix before committing."; exit 2; }
+  gate_run_tail 20 go test ./...
+  rc=$?; gate_block_if_timed_out "$rc" "pre-commit-tests"
+  [ "$rc" -ne 0 ] && { echo "BLOCKED: Tests failed. Fix before committing."; exit 2; }
 fi
 
 exit 0
