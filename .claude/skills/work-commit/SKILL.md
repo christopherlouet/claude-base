@@ -2,7 +2,6 @@
 name: work-commit
 description: Generates clear commit messages following Conventional Commits. Use when the user wants to commit, asks for a commit message, or after completing a modification.
 allowed-tools:
-  - Bash
   - Read
   - Grep
 context: fork

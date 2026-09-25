@@ -3,7 +3,6 @@ name: qa-chrome
 description: Visual tests and browser debugging via Chrome. Use to test web pages, verify visual rendering, debug with the console, or automate browser actions. Trigger when the user mentions "visual test", "Chrome", "browser", "browser console", "DOM", "screenshot", "GIF".
 allowed-tools:
   - Read
-  - Bash
   - Grep
   - Glob
 context: fork
