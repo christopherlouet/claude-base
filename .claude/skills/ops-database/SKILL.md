@@ -1,12 +1,6 @@
 ---
 name: ops-database
 description: Database schema design. Trigger when the user wants to create tables, migrations, or optimize queries.
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
 context: fork
 background: false
 disable-model-invocation: true

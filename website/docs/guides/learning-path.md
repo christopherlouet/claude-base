@@ -1399,10 +1399,6 @@ Each skill is a `SKILL.md` file in `.claude/skills/[skill-name]/` with a mandato
 name: my-skill
 description: Analyzes and optimizes slow SQL queries. Trigger when
   the user mentions slow queries, N+1, or wants to optimize a DB.
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
 context: fork
 model: sonnet
 argument-hint: "[file-or-description]"
@@ -1415,7 +1411,7 @@ The key fields of the frontmatter:
 |-------|-------------|---------|
 | `name` | Unique identifier of the skill | `sql-optimizer` |
 | `description` | Description + automatic trigger keywords | See above |
-| `allowed-tools` | Tools **pre-approved** (no prompt) during the skill's turn: it grants, never restricts; `deny` and `ask` rules still win. Never bare `Bash` | `Read, Grep, Bash(npm test:*)` |
+| `allowed-tools` | Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none — see [Pre-approving tools](/docs/concepts/customization#pre-approving-tools-allowed-tools) | _(none)_ |
 | `context` | `fork` (isolated, recommended) or `shared` (main context) | `fork` |
 | `model` | Preferred model for this skill | `haiku`, `sonnet`, `opus` |
 | `argument-hint` | Hint shown to the user about expected arguments | `"[description]"` |

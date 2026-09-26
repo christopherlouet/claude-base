@@ -165,62 +165,81 @@ _dead_pointers() {
 # with `allowed-tools: Bash`, a command that otherwise needs approval ran
 # unprompted; a deny rule still won. Forty skills listed bare Bash, so a user
 # who removed Bash from their own allow list got it back, silently, for every
-# skill turn — and a copied skill carried a whole shell grant with it. Bare Bash
-# is refused; a precise pattern (Bash(npm test:*)) stays possible.
+# skill turn — and a copied skill carried a whole shell grant with it.
+#
+# The same holds for every other tool (2026-09-26): 38 skills granted bare
+# Write, 37 bare Edit, one WebFetch, one WebSearch, and all 53 bare Read.
+#
+# Be exact about what that bought. The foundation's shipped settings.json
+# ALREADY allows Read, Bash, Edit, Write, WebFetch and WebSearch on every turn (a
+# v1.9.0 choice; deny rules and hooks are the safety net), so in an installed
+# project these grants added nothing. They mattered in a project that narrowed
+# its allow list, and in a skill copied elsewhere — where they silently widened
+# what runs unprompted. Even bare Read: in the project a read needs no prompt,
+# so the grant only ever mattered OUTSIDE it (~/.ssh, ~/.aws).
+#
+# Two independent reviews broke two scanners that tried to tell a safe grant
+# from a dangerous one (a list of dangerous names missed PowerShell, Monitor and
+# mcp__*; "real scopes" passed Edit(~/**), Bash(bash:*), WebFetch(domain:*.com);
+# a YAML comment, a quoted key or a BOM hid the grant from both). So a
+# foundation skill or command declares NO allowed-tools — nothing to parse,
+# and no exception list either: the one drafted here was never used and two
+# shapes (a block list, a YAML continuation line) slipped past it. A real
+# need later gets its own reviewed design.
+# Out of scope, like every guard here: a key spelled with YAML escapes
+# ("allowed\x2dtools") is deliberate obfuscation, not an accident.
 
-# _bare_bash_grants <SKILL.md>... — print each file whose frontmatter
-# allowed-tools (block list or inline) grants bare Bash.
-_bare_bash_grants() {
-    # POSIX awk only (BSD awk on the macOS column, busybox): no bracket
-    # expressions holding [ or ] — the brackets are deleted before splitting.
-    awk 'function bare(item) {
-             sub(/[[:space:]]*#.*$/, "", item)
-             gsub(/["\047]/, "", item)
-             gsub(/^[[:space:]]+|[[:space:]]+$/, "", item)
-             return item == "Bash" || item == "Bash(*)"
-         }
-         FNR == 1 { fm = 0; inlist = 0 }
-         /^---[[:space:]]*$/ { fm++; inlist = 0; next }
-         fm != 1 { next }
-         /^allowed-tools:/ {
-             inlist = 1
-             line = $0; sub(/^allowed-tools:[[:space:]]*/, "", line)
-             sub(/[[:space:]]*#.*$/, "", line)
-             gsub(/[][]/, " ", line)
-             n = split(line, parts, /[ ,\t]+/)
-             for (i = 1; i <= n; i++) if (bare(parts[i])) { print FILENAME; nextfile }
-             next
-         }
-         inlist && /^[[:space:]]*-/ {
-             item = $0; sub(/^[[:space:]]*-[[:space:]]*/, "", item)
-             if (bare(item)) { print FILENAME; nextfile }
-             next
-         }
-         inlist { inlist = 0 }' "$@"
+# _grant_decls <file>... — print "<file><TAB><line>" for each frontmatter line
+# whose KEY is allowed-tools in any accidental spelling (quoted, spaced before
+# the colon, any case, `_` for `-`, after a BOM). A top-level key only:
+# disallowedTools, a nested key or a description mentioning it is not a grant.
+_grant_decls() {
+    # The first line opens the frontmatter when it is `---`, possibly after a
+    # BOM. No byte escapes: the macOS awk (BWK) does not read /\357.../ and
+    # failed the BOM case in CI; nor character classes: gawk in a UTF-8 locale
+    # files U+FEFF under one of them. A BOM is at most 3 bytes (1 character in
+    # UTF-8) with no printable ASCII, which `Notes ---` or `x---` never is.
+    awk 'FNR == 1 { fm = 0; pre = $0; sub(/---[[:space:]]*$/, "", pre) }
+         fm == 0 && FNR == 1 && /---[[:space:]]*$/ && (pre == "" || (length(pre) <= 3 && pre !~ /[ -~]/)) { fm = 1; next }
+         fm == 1 && /^---[[:space:]]*$/ { fm = 2; next }
+         fm == 1 && tolower($0) ~ /^["\047]?allowed[-_ ]?tools[[:space:]"\047]*:/ {
+             print FILENAME "\t" $0 }' "$@"
 }
 
-@test "skills: no skill grants bare Bash through allowed-tools" {
-    run _bare_bash_grants "$BASE_DIR"/.claude/skills/*/SKILL.md
-    [ -z "$output" ] || { echo "bare Bash grants: $output" >&2; return 1; }
+@test "skills & commands: none pre-approves tools through allowed-tools" {
+    local files=( "$BASE_DIR"/.claude/skills/*/SKILL.md ) f out
+    while IFS= read -r -d '' f; do files+=( "$f" ); done \
+        < <(find "$BASE_DIR/.claude/commands" -name '*.md' -print0)
+    [ "${#files[@]}" -gt 100 ] || { echo "scan set too small: ${#files[@]}" >&2; return 1; }
+    out=$(_grant_decls "${files[@]}")
+    [ -z "$out" ] || { echo "declares allowed-tools: $out" >&2; return 1; }
 }
 
-@test "skills: the bare-Bash scanner is not vacuous" {
+@test "skills & commands: the allowed-tools scanner is not vacuous" {
+    local d="$BATS_TEST_TMPDIR" f
+    # Each shape an independent review slipped past a parsing scanner.
+    printf -- '---\nname: a\nallowed-tools:\n  - Read\n---\n' > "$d/plain.md"
+    printf -- '---\nname: a\nallowed-tools: [Read, Write]\n---\n' > "$d/inline.md"
+    printf -- '---\nname: a\n"allowed-tools": [Write]\n---\n' > "$d/quoted.md"
+    printf -- '---\nname: a\nallowed-tools : [Write]\n---\n' > "$d/spaced.md"
+    printf -- '\357\273\277---\nname: a\nallowed-tools: [Write]\n---\n' > "$d/bom.md"
+    printf -- '---\nname: a\nAllowed_Tools: [Write]\n---\n' > "$d/case.md"
+    for f in "$d"/*.md; do
+        [ "$(_grant_decls "$f" | cut -f1)" = "$f" ] || { echo "not flagged: $f" >&2; return 1; }
+    done
+}
+
+@test "skills & commands: only an allowed-tools KEY in the frontmatter counts" {
     local d="$BATS_TEST_TMPDIR"
-    printf -- '---\nname: a\nallowed-tools:\n  - Read\n  - Bash\n---\nbody\n' > "$d/a.md"
-    printf -- '---\nname: b\nallowed-tools: Read, Bash\n---\n' > "$d/b.md"
-    printf -- '---\nname: c\nallowed-tools:\n  - Bash(npm test:*)\n---\n  - Bash\n' > "$d/c.md"
-    # Independent review of #589: three shapes slipped through.
-    printf -- '---\nname: e\nallowed-tools:\n  - Read\n  - Bash   # If the skill executes commands\n---\n' > "$d/e.md"
-    printf -- '---\nname: f\nallowed-tools:\n- Bash\n---\n' > "$d/f.md"
-    printf -- '---\nname: g\nallowed-tools: [Read, "Bash(*)"]\n---\n' > "$d/g.md"
-    run _bare_bash_grants "$d/a.md" "$d/b.md" "$d/c.md" "$d/e.md" "$d/f.md" "$d/g.md"
-    [[ "$output" == *"a.md"* ]]
-    [[ "$output" == *"b.md"* ]]
-    [[ "$output" == *"e.md"* ]]
-    [[ "$output" == *"f.md"* ]]
-    [[ "$output" == *"g.md"* ]]
-    # A precise pattern is allowed, and a body line is not frontmatter.
-    [[ "$output" != *"c.md"* ]]
+    printf -- '---\nname: a\ndescription: x\n---\nNever declare allowed-tools here.\n' > "$d/body.md"
+    printf -- 'no frontmatter\nallowed-tools: [Write]\n' > "$d/nofm.md"
+    # The review of the first version: a restriction and a mention were flagged.
+    printf -- '---\nname: a\ndisallowedTools: Write\n---\n' > "$d/disallowed.md"
+    printf -- '---\nname: a\ndescription: never use allowed-tools: it grants\n---\n' > "$d/descr.md"
+    # A first line that merely ENDS in --- opens no frontmatter; a nested key is no grant.
+    printf -- 'Notes ---\nallowed-tools: [Write]\n' > "$d/notfm.md"
+    printf -- '---\nname: a\nmetadata:\n  allowed-tools: x\n---\n' > "$d/nested.md"
+    [ -z "$(_grant_decls "$d/body.md" "$d/nofm.md" "$d/disallowed.md" "$d/descr.md" "$d/notfm.md" "$d/nested.md")" ]
 }
 
 # -----------------------------------------------------------------------------

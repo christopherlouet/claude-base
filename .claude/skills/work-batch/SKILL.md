@@ -1,12 +1,6 @@
 ---
 name: work-batch
 description: Sequential execution of user stories from a PRD file. Autonomous mode that implements and commits each story one by one. Trigger when the user wants to process a backlog, execute multiple stories, or launch an autonomous mode.
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
 context: fork
 background: false
 model: sonnet
@@ -104,6 +98,7 @@ If `progress.json` exists, resume at the last `in_progress` or `pending` story.
 - STOP if 2 consecutive stories fail
 - Each story must pass the tests before continuing
 - Commit after each story (no giant commits)
+- Unattended runs need file writes allowed: the foundation's settings allow `Edit`/`Write`; a project that narrowed them needs auto mode or those rules back, since this skill pre-approves nothing
 
 ---
 

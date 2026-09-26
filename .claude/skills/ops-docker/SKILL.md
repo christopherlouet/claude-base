@@ -1,12 +1,6 @@
 ---
 name: ops-docker
 description: Docker and Docker Compose containerization. Trigger when the user wants to dockerize an application or create containers.
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
 context: fork
 background: false
 disable-model-invocation: true

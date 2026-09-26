@@ -1,12 +1,6 @@
 ---
 name: doc-changelog
 description: CHANGELOG maintenance following Keep a Changelog. Trigger when the user wants to document changes or prepare a release.
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
 context: fork
 background: false
 disable-model-invocation: true

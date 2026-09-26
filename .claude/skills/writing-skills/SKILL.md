@@ -1,12 +1,6 @@
 ---
 name: writing-skills
 description: Guide for creating new skills for the Claude Code foundation. Trigger when the user wants to create a skill, add a command, or extend the foundation.
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
 context: fork
 background: false
 ---
@@ -30,12 +24,6 @@ Framework for creating quality skills for the Claude Code foundation, respecting
 ---
 name: my-skill
 description: Clear description of the skill. Trigger when [activation context].
-allowed-tools:
-  - Read
-  - Write      # If the skill modifies files
-  - Edit       # If the skill edits existing files
-  - Glob       # File search
-  - Grep       # Content search
 context: fork  # Always fork for isolation
 background: false  # Fork skills run DETACHED by default since CC 2.1.218 (async result, narrower tool set, edits skip /rewind checkpoints) — workflow skills must block
 ---
@@ -63,7 +51,7 @@ All fields available in the YAML frontmatter of a skill:
 |-------|----------|-------------|
 | `name` | No | Skill name (default: folder name). Lowercase, digits, hyphens (max 64 chars) |
 | `description` | Recommended | What the skill does and when to use it. Claude uses this to decide when to load the skill |
-| `allowed-tools` | No | Tools **pre-approved** without permission prompt during the skill's turn — it grants, never restricts (`deny` and `ask` rules still win). Never bare `Bash`: use `Bash(<cmd>:*)` |
+| `allowed-tools` | No | Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none: the project's permission settings decide; add one precise, reviewed rule such as `Bash(npm test:*)` only for a truly unattended need |
 | `context` | No | `fork` for execution in an isolated sub-agent |
 | `background` | No | With `context: fork` only. Since CC 2.1.218 forked skills run in the BACKGROUND by default (async result, narrower background tool set, edits bypass `/rewind` checkpoints). Set `false` to block in-turn — the foundation default for workflow skills |
 | `model` | No | Model to use: `sonnet`, `opus`, `haiku`, `inherit` (default: inherits from context) |
@@ -88,7 +76,7 @@ Use the backtick-bang syntax to inject live data:
 - Example: `!` followed by backtick then `gh pr diff` then backtick
 - The command runs BEFORE Claude sees the content
 - The result replaces the placeholder
-- Outside auto mode the command must be pre-approved, or the invocation aborts: list the precise pattern, e.g. `Bash(gh pr diff:*)`, in `allowed-tools` — never bare `Bash`
+- Outside auto mode the command must be allowed, or the invocation aborts. The foundation's settings allow `Bash`; a project that narrowed them allows the precise command in its own permission settings (e.g. `Bash(gh pr diff:*)`). Foundation skills still declare no `allowed-tools`
 
 Example:
 ```markdown
@@ -112,10 +100,10 @@ Example:
 ### Structure
 
 ```
-[ ] Valid YAML frontmatter (name, description, allowed-tools, context)
+[ ] Valid YAML frontmatter (name, description, context)
 [ ] kebab-case name
 [ ] Description with trigger context
-[ ] `allowed-tools` pre-approves only what must run unprompted; no bare `Bash`
+[ ] No `allowed-tools` (the foundation pre-approves nothing)
 [ ] context: fork (isolation)
 [ ] background: false (block in-turn; omit only for a deliberately detached skill)
 ```
@@ -210,7 +198,7 @@ Format: frontmatter with paths, contextual rules per file type.
 ```
 1. IDENTIFY the need (which problem does this skill solve?)
 2. NAME according to conventions (domain-action)
-3. DEFINE what must run without a prompt (`allowed-tools` pre-approves, never restricts; no bare `Bash`)
+3. DEFINE nothing to pre-approve: `allowed-tools` grants, never restricts, and the foundation declares none
 4. WRITE the SKILL.md with the template
 5. CREATE the associated command if manual invocation is needed
 6. CREATE the associated agent if isolated execution is needed

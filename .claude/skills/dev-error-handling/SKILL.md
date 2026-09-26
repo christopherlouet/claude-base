@@ -1,12 +1,6 @@
 ---
 name: dev-error-handling
 description: Error handling strategy. Trigger when the user wants to implement error handling, exceptions, or error boundaries.
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
 context: fork
 background: false
 ---

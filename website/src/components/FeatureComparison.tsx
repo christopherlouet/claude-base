@@ -36,7 +36,7 @@ const DEFAULT_DATA: ComparisonRow[] = [
     aspect: 'Outils',
     Commands: 'Tous disponibles',
     Agents: 'Restreints',
-    Skills: 'Restreints (allowed-tools)',
+    Skills: 'Tous (allowed-tools pré-approuve, ne restreint pas)',
   },
   {
     aspect: "Cas d'usage",

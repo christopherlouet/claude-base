@@ -1,12 +1,6 @@
 ---
 name: dev-flutter
 description: Flutter development with Clean Architecture and BLoC. Trigger when the user wants to create widgets, screens, or Flutter features.
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
 context: fork
 background: false
 argument-hint: "[widget-or-screen]"
