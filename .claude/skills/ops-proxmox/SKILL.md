@@ -3,8 +3,6 @@ name: ops-proxmox
 description: Proxmox VE infrastructure with Terraform (VMs, LXC, network, storage, backup)
 allowed-tools:
   - Read
-  - Write
-  - Edit
   - Glob
   - Grep
 context: fork

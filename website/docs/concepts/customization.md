@@ -331,8 +331,6 @@ allowed-tools:
   - Read
   - Grep
   - Glob
-  - Edit
-  - Write
 context: fork    # `fork` (recommended) or `inherit`
 ---
 
@@ -356,7 +354,7 @@ For large examples, move to `examples/` and include via link.
 ### Best practices
 
 - **`context: fork`**: isolates the skill from the main conversation (recommended for complex workflows).
-- **`allowed-tools` grants, it does not restrict**: the listed tools run without a permission prompt during the skill's turn (`deny` and `ask` rules still win). Never list bare `Bash` — it pre-approves every shell command; use a precise pattern such as `Bash(npm test:*)` when a skill truly needs unattended commands (`tests/skills-frontmatter.bats` refuses bare `Bash`).
+- **`allowed-tools` grants, it does not restrict**: the listed tools run without a permission prompt during the skill's turn (`deny` and `ask` rules still win). Never list bare `Bash` — it pre-approves every shell command; use a precise pattern such as `Bash(npm test:*)` when a skill truly needs unattended commands. The same goes for `Write`, `Edit`, `WebFetch` and `WebSearch`: the skill still uses them, it just asks like any other turn, and a scoped pattern (`Edit(docs/**)`) stays possible (`tests/skills-frontmatter.bats` refuses the bare forms).
 - **Precise description**: Claude uses the description to decide when to trigger, be specific.
 - **Skills ≠ Agents**: a skill complements Claude; an agent is an isolated subprocess.
 

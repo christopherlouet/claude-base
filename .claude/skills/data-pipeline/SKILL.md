@@ -3,8 +3,6 @@ name: data-pipeline
 description: ETL/ELT pipeline design. Trigger when the user wants to create data flows, transformations, or orchestration.
 allowed-tools:
   - Read
-  - Write
-  - Edit
   - Glob
   - Grep
 context: fork

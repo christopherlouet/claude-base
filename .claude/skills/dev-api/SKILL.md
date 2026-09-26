@@ -3,8 +3,6 @@ name: dev-api
 description: Develop and document a REST, GraphQL, or tRPC API, including versioning strategy. Use when the user wants to create an endpoint, a route, a type-safe procedure, or structure/version an API.
 allowed-tools:
   - Read
-  - Edit
-  - Write
   - Grep
   - Glob
 context: fork

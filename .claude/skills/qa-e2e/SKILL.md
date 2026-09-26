@@ -3,8 +3,6 @@ name: qa-e2e
 description: End-to-end tests with Playwright or Cypress. Trigger when the user wants to create user journey tests, UI integration tests, or browser automation.
 allowed-tools:
   - Read
-  - Write
-  - Edit
   - Glob
   - Grep
 context: fork

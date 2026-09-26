@@ -3,8 +3,6 @@ name: ops-infra-code
 description: Infrastructure as Code with Terraform/OpenTofu. Trigger to create modules, configure backends, write idiomatic HCL, or audit infrastructure.
 allowed-tools:
   - Read
-  - Write
-  - Edit
   - Glob
   - Grep
 context: fork

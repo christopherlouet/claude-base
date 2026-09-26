@@ -5,8 +5,6 @@ allowed-tools:
   - Read
   - Glob
   - Grep
-  - Edit
-  - Write
 context: fork
 background: false
 ---

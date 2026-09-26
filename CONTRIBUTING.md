@@ -146,8 +146,6 @@ allowed-tools:
   - Read
   - Grep
   - Glob
-  - Edit
-  - Write
 context: fork
 ---
 ```

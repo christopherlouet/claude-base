@@ -167,17 +167,26 @@ _dead_pointers() {
 # who removed Bash from their own allow list got it back, silently, for every
 # skill turn — and a copied skill carried a whole shell grant with it. Bare Bash
 # is refused; a precise pattern (Bash(npm test:*)) stays possible.
+#
+# The same holds for the WRITE and network tools (2026-09-26): 38 skills granted
+# bare Write, 37 bare Edit, one WebFetch — file writes and fetches pre-approved
+# for every skill turn, in any project that copied the skill. A skill still
+# USES these tools (a forked skill was measured holding the agent's full tool
+# set whatever allowed-tools says); it simply asks like any other turn. A scoped
+# pattern (Edit(docs/**)) stays possible.
 
-# _bare_bash_grants <SKILL.md>... — print each file whose frontmatter
-# allowed-tools (block list or inline) grants bare Bash.
-_bare_bash_grants() {
+# _bare_grants <SKILL.md>... — print each file whose frontmatter allowed-tools
+# (block list or inline) grants a bare Bash, Write, Edit or web tool.
+_bare_grants() {
     # POSIX awk only (BSD awk on the macOS column, busybox): no bracket
     # expressions holding [ or ] — the brackets are deleted before splitting.
     awk 'function bare(item) {
              sub(/[[:space:]]*#.*$/, "", item)
              gsub(/["\047]/, "", item)
              gsub(/^[[:space:]]+|[[:space:]]+$/, "", item)
-             return item == "Bash" || item == "Bash(*)"
+             sub(/\(\*\)$/, "", item)
+             return item == "Bash" || item == "Write" || item == "Edit" || item == "MultiEdit" \
+                 || item == "NotebookEdit" || item == "WebFetch" || item == "WebSearch"
          }
          FNR == 1 { fm = 0; inlist = 0 }
          /^---[[:space:]]*$/ { fm++; inlist = 0; next }
@@ -199,12 +208,12 @@ _bare_bash_grants() {
          inlist { inlist = 0 }' "$@"
 }
 
-@test "skills: no skill grants bare Bash through allowed-tools" {
-    run _bare_bash_grants "$BASE_DIR"/.claude/skills/*/SKILL.md
-    [ -z "$output" ] || { echo "bare Bash grants: $output" >&2; return 1; }
+@test "skills: no skill grants bare Bash, Write, Edit or web tools through allowed-tools" {
+    run _bare_grants "$BASE_DIR"/.claude/skills/*/SKILL.md
+    [ -z "$output" ] || { echo "bare grants: $output" >&2; return 1; }
 }
 
-@test "skills: the bare-Bash scanner is not vacuous" {
+@test "skills: the bare-grant scanner is not vacuous" {
     local d="$BATS_TEST_TMPDIR"
     printf -- '---\nname: a\nallowed-tools:\n  - Read\n  - Bash\n---\nbody\n' > "$d/a.md"
     printf -- '---\nname: b\nallowed-tools: Read, Bash\n---\n' > "$d/b.md"
@@ -213,7 +222,13 @@ _bare_bash_grants() {
     printf -- '---\nname: e\nallowed-tools:\n  - Read\n  - Bash   # If the skill executes commands\n---\n' > "$d/e.md"
     printf -- '---\nname: f\nallowed-tools:\n- Bash\n---\n' > "$d/f.md"
     printf -- '---\nname: g\nallowed-tools: [Read, "Bash(*)"]\n---\n' > "$d/g.md"
-    run _bare_bash_grants "$d/a.md" "$d/b.md" "$d/c.md" "$d/e.md" "$d/f.md" "$d/g.md"
+    printf -- '---\nname: h\nallowed-tools:\n  - Read\n  - Write\n---\n' > "$d/h.md"
+    printf -- '---\nname: i\nallowed-tools: Read, Edit, WebFetch\n---\n' > "$d/i.md"
+    printf -- '---\nname: j\nallowed-tools:\n  - Edit(docs/**)\n  - Read\n---\n' > "$d/j.md"
+    run _bare_grants "$d/a.md" "$d/b.md" "$d/c.md" "$d/e.md" "$d/f.md" "$d/g.md" "$d/h.md" "$d/i.md" "$d/j.md"
+    [[ "$output" == *"h.md"* ]]
+    [[ "$output" == *"i.md"* ]]
+    [[ "$output" != *"j.md"* ]]
     [[ "$output" == *"a.md"* ]]
     [[ "$output" == *"b.md"* ]]
     [[ "$output" == *"e.md"* ]]

@@ -3,8 +3,6 @@ name: writing-skills
 description: Guide for creating new skills for the Claude Code foundation. Trigger when the user wants to create a skill, add a command, or extend the foundation.
 allowed-tools:
   - Read
-  - Write
-  - Edit
   - Glob
   - Grep
 context: fork
@@ -210,7 +208,7 @@ Format: frontmatter with paths, contextual rules per file type.
 ```
 1. IDENTIFY the need (which problem does this skill solve?)
 2. NAME according to conventions (domain-action)
-3. DEFINE what must run without a prompt (`allowed-tools` pre-approves, never restricts; no bare `Bash`)
+3. DEFINE what must run without a prompt (`allowed-tools` pre-approves, never restricts; no bare `Bash`, `Write`, `Edit` or web tool)
 4. WRITE the SKILL.md with the template
 5. CREATE the associated command if manual invocation is needed
 6. CREATE the associated agent if isolated execution is needed

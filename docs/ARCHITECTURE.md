@@ -162,8 +162,6 @@ name: skill-name
 description: When to trigger this skill
 allowed-tools:
   - Read
-  - Write
-  - Edit
 context: fork
 ---
 
@@ -179,8 +177,6 @@ name: dev-tdd
 description: TDD development with Red-Green-Refactor cycle
 allowed-tools:
   - Read
-  - Write
-  - Edit
   - Glob
   - Grep
 context: fork
@@ -422,7 +418,7 @@ All read-only, isolated contexts
 
 ### Skills
 - `context: fork` recommended
-- `allowed-tools` **grants**, it does not restrict: the listed tools run without a permission prompt during the skill's turn (`deny` and `ask` rules still win). Never list bare `Bash` — it pre-approves every shell command; use a precise pattern such as `Bash(npm test:*)` when a skill truly needs unattended commands (`tests/skills-frontmatter.bats` refuses bare `Bash`)
+- `allowed-tools` **grants**, it does not restrict: the listed tools run without a permission prompt during the skill's turn (`deny` and `ask` rules still win). Never list bare `Bash` — it pre-approves every shell command; use a precise pattern such as `Bash(npm test:*)` when a skill truly needs unattended commands. The same goes for `Write`, `Edit`, `WebFetch` and `WebSearch`: the skill still uses them, it just asks like any other turn, and a scoped pattern (`Edit(docs/**)`) stays possible (`tests/skills-frontmatter.bats` refuses the bare forms)
 - Clear trigger keywords
 
 ### Agents

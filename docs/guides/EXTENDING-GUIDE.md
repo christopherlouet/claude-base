@@ -115,8 +115,6 @@ name: my-skill
 description: What the skill does. Trigger when the user [context].
 allowed-tools:
   - Read
-  - Write
-  - Edit
   - Glob
   - Grep
 context: fork
@@ -159,7 +157,7 @@ Output format.
 ### Best practices
 
 - Limit SKILL.md to 500 lines maximum. Move detail to `examples/` or `references/`
-- `allowed-tools` pre-approves, it never restricts: list only what must run without a prompt, never bare `Bash` (`deny` and `ask` rules still win)
+- `allowed-tools` pre-approves, it never restricts: list only what must run without a prompt, never a bare `Bash`, `Write`, `Edit` or web tool (`deny` and `ask` rules still win)
 - Always use `context: fork` for isolation
 - Write the `description` with the trigger context: Claude uses this field to automatically decide when to load the skill
 - Prefer tables over prose for quick references
@@ -182,7 +180,6 @@ name: changelog-entry
 description: Generates a CHANGELOG.md entry from recent commits. Trigger when the user wants to document a release or update the changelog.
 allowed-tools:
   - Read
-  - Edit
   - Glob
 context: fork
 model: sonnet

@@ -3,8 +3,6 @@ name: ops-opnsense
 description: OPNsense configuration via Terraform. Trigger for interfaces, firewall, NAT, DHCP/DNS, aliases.
 allowed-tools:
   - Read
-  - Write
-  - Edit
   - Glob
   - Grep
 context: fork
