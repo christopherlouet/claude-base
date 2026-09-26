@@ -42,6 +42,69 @@ else
 fi
 # --- end policy bootstrap ---
 
+# _pipe_interp_runs_stdin <interpreter> <text-after-it>
+# Return 1 ONLY when the word right after the interpreter hands it its program
+# as an argument, so the piped download is mere data; return 0 (refuse) for
+# everything else. An ALLOW-list on purpose: parsing options to find the
+# program let through `bash /dev/stdin`, `bash -euo pipefail`, an empty
+# `bash $opts` and option VALUES holding a c or an e — each of which runs the
+# download (independent review, 2026-09-26). The list is what 17,093 real
+# agent commands showed: `python3 -c`, `python3 -m`, `node -e`, plus the plain
+# shapes of the same idea. A script-file operand stays refused, as before.
+# Input is lowercased: perl's -E arrives as -e.
+_pipe_interp_runs_stdin() {
+  local interp="$1" rest="$2" tok
+  [[ "$rest" =~ ^[[:space:]]+([^[:space:]]+) ]] || return 0
+  tok="${BASH_REMATCH[1]}"
+  case "$interp" in
+    sh|bash|zsh|dash|ksh) [[ "$tok" =~ ^-[eux]*c$ ]] && return 1 ;;
+    python*) [[ "$tok" =~ ^-[cm]$ ]] && return 1 ;;
+    perl|ruby) [[ "$tok" =~ ^-[nlpa]*e$ ]] && return 1 ;;
+    node) [[ "$tok" =~ ^(-e|-p|--eval|--print)$ ]] && return 1 ;;
+  esac
+  return 0
+}
+
+# _pipe_to_shell <lowercased-command>
+# Print the downloader (curl or wget) and return 0 when some line pipes its
+# download into an interpreter that runs it. Line-scoped, like the grep it
+# replaced, and every match on a line is examined: a harmless `| python3 -c`
+# must not shield a later `| sh`.
+#
+# Cost matters: this runs on EVERY command under the hook's timeout. A command
+# without curl or wget returns at once (a saving only, no verdict depends on
+# it), and lines are split into an array in one linear pass — peeling them one
+# by one with ${s#*$'\n'} took 10 s on a 2,000-line heredoc in a UTF-8 locale.
+# Not read from a heredoc or here-string either:
+# bash serves those from a temp file, and one it cannot create skips the loop
+# and ALLOWS the command.
+_pipe_to_shell() {
+  local s="$1" line rest tool interp glob_was_on=0 IFS
+  case "$s" in *curl*|*wget*) ;; *) return 1 ;; esac
+  local re='(curl|wget)[[:space:]][^|]*\|[[:space:]]*([^[:space:]|]*/)?(sh|bash|zsh|dash|ksh|python[0-9.]*|perl|ruby|node)($|[^a-z0-9].*$)'
+  local lines
+  case "$-" in *f*) ;; *) glob_was_on=1; set -f ;; esac
+  IFS=$'\n'
+  # shellcheck disable=SC2206  # word-splitting on newlines is the point; globbing is off
+  lines=( $s )
+  [ "$glob_was_on" = 1 ] && set +f
+  for line in "${lines[@]}"; do
+    rest="$line"
+    while [[ "$rest" =~ $re ]]; do
+      # Copy the groups out first: the helper runs its own =~ and overwrites
+      # BASH_REMATCH, which once made every later pipe on the line unseen.
+      tool="${BASH_REMATCH[1]}"
+      interp="${BASH_REMATCH[3]}"
+      rest="${BASH_REMATCH[4]}"
+      if _pipe_interp_runs_stdin "$interp" "$rest"; then
+        printf '%s' "$tool"
+        return 0
+      fi
+    done
+  done
+  return 1
+}
+
 validate_command() {
   local CMD="$1"
   [ -z "$CMD" ] && return 0
@@ -92,14 +155,14 @@ validate_command() {
   # (`| /bin/sh`, `| zsh`, `| python3`). The trailing ($|[^a-z0-9]) both terminates
   # the interpreter name and stops `sh` from matching inside `shellcheck`. Scope:
   # the plain `curl … | sh` an agent actually writes; deliberate obfuscation
-  # (`\sh`, process substitution `sh <(curl …)`) is out of scope by design.
-  local PIPE_INTERP='([^[:space:]|]*/)?(sh|bash|zsh|dash|ksh|python[0-9.]*|perl|ruby|node)($|[^a-z0-9])'
-  if echo "$CMD_LOWER" | grep -qE "curl\s+[^|]*\|\s*$PIPE_INTERP"; then
-    printf '%s\n' "BLOCKED: Pipe-to-shell detected (curl | sh). Download first, verify, then execute."
-    return 1
-  fi
-  if echo "$CMD_LOWER" | grep -qE "wget\s+[^|]*\|\s*$PIPE_INTERP"; then
-    printf '%s\n' "BLOCKED: Pipe-to-shell detected (wget | sh). Download first, verify, then execute."
+  # (`\sh`, process substitution `sh <(curl …)`, `python3 -c 'exec(stdin)'`,
+  # `bash -c "$(cat)"`) is out of scope by design. Only an interpreter that takes its PROGRAM from the
+  # pipe is refused (see _pipe_interp_runs_stdin): `| python3 -c '…'` parses
+  # the download as data, the shape of 79 of 84 blocks measured on real agent
+  # commands, none of which executed a download.
+  local _dl
+  if _dl=$(_pipe_to_shell "$CMD_LOWER"); then
+    printf '%s\n' "BLOCKED: Pipe-to-shell detected ($_dl | sh). Download first, verify, then execute."
     return 1
   fi
 
