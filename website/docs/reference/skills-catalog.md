@@ -83,7 +83,7 @@ cannot drift apart.
 ## Skills Configuration
 
 Each skill defines:
-- **allowed-tools**: Tools authorized for the skill
+- **allowed-tools**: Tools **pre-approved** (no permission prompt) during the skill's turn: it grants, never restricts. Foundation skills and commands declare none (`tests/skills-frontmatter.bats` refuses the key): in the project a read needs no prompt anyway, so a grant only widens what runs unprompted. A truly unattended need gets one precise, reviewed rule such as `Bash(npm test:*)`
 - **context: fork**: Execution in an isolated context (recommended)
 
 Skills are triggered automatically by Claude based on context — except those marked **manual only**
@@ -117,7 +117,6 @@ Refer to the upstream Claude Code changelog for the canonical JSON shape and any
 ---
 name: my-skill
 description: Short description of the skill
-allowed-tools: Read, Grep, Glob
 context: fork
 disable-model-invocation: true   # Do not trigger automatically
 user-invocable: false             # Background-only skill

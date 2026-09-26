@@ -1,10 +1,6 @@
 ---
 name: qa-design
 description: UI/UX design audit and verification of web best practices, including responsive/mobile-first breakpoints. Trigger when the user wants to audit the design, verify the UI/UX, check responsive behaviour, or improve the user interface.
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
 context: fork
 background: false
 ---

@@ -1,10 +1,6 @@
 ---
 name: dev-react-perf
 description: React/Next.js performance optimization. Trigger when the user wants to optimize rendering, reduce re-renders, or improve Core Web Vitals.
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
 context: fork
 background: false
 ---

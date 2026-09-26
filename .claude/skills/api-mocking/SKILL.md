@@ -1,10 +1,6 @@
 ---
 name: api-mocking
 description: API mock configuration for tests. Trigger when the user wants to mock APIs, use MSW, or test without a backend.
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
 context: fork
 background: false
 user-invocable: false

@@ -142,10 +142,6 @@ skills:
 
 ```yaml
 ---
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
 context: fork
 ---
 ```

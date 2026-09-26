@@ -1,10 +1,6 @@
 ---
 name: growth-cro
 description: Conversion rate optimization (CRO) and funnel analysis. Trigger when the user wants to optimize conversions, map/analyze a conversion funnel, improve a signup form, a checkout, a landing page, or an onboarding/activation flow.
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
 context: fork
 background: false
 ---

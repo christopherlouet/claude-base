@@ -1,10 +1,6 @@
 ---
 name: feature-flags
 description: Feature flags and toggles management. Trigger when the user wants to implement feature flagging, A/B testing, or progressive deployment.
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
 context: fork
 background: false
 user-invocable: false

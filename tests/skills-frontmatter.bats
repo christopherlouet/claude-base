@@ -165,119 +165,62 @@ _dead_pointers() {
 # with `allowed-tools: Bash`, a command that otherwise needs approval ran
 # unprompted; a deny rule still won. Forty skills listed bare Bash, so a user
 # who removed Bash from their own allow list got it back, silently, for every
-# skill turn — and a copied skill carried a whole shell grant with it. Bare Bash
-# is refused; a precise pattern (Bash(npm test:*)) stays possible.
+# skill turn — and a copied skill carried a whole shell grant with it.
 #
-# The same holds for every tool that is not read-only (2026-09-26): 38 skills
-# granted bare Write, 37 bare Edit, one WebFetch and one WebSearch — file writes
-# and fetches pre-approved for every skill turn, in any project that copied the
-# skill. A skill still USES these tools (a forked skill was measured holding the
-# agent's full tool set whatever allowed-tools says); it simply asks like any
-# other turn.
+# The same holds for every other tool (2026-09-26). 38 skills granted bare
+# Write, 37 bare Edit, one WebFetch and one WebSearch. Two independent reviews
+# then broke two scanners that tried to tell a safe grant from a dangerous one:
+# a list of dangerous names missed PowerShell, Monitor and mcp__*; an allow-list
+# with "real scopes" passed Edit(~/**), Bash(bash:*) and WebFetch(domain:*.com);
+# and a YAML comment, a quoted key or a BOM hid the grant from both. Even bare
+# Read is no exception: in the project a read needs no prompt anyway, so the
+# grant only ever matters OUTSIDE it (~/.ssh, ~/.aws).
 #
-# An ALLOW-list, not a list of dangerous names: an independent review of the
-# first draft found PowerShell, Monitor and mcp__* missing from it, `Edit(**)`
-# or `Bash(:*)` passing as "scoped", and a comment or blank line inside the list
-# hiding every item after it. Only read-only tools may be listed bare; any other
-# needs a scope that is more than wildcards (`Bash(npm test:*)`, `Edit(docs/**)`).
+# So a foundation skill or command declares NO allowed-tools at all — nothing
+# to parse, nothing to get wrong. A skill still USES every tool (a forked skill
+# was measured holding the agent's full tool set); it asks like any other turn.
+# A reviewed need goes in GRANT_EXCEPTIONS below, by path.
+GRANT_EXCEPTIONS=""
 
-# _bare_grants <SKILL.md>... — print each file whose frontmatter allowed-tools
-# pre-approves a non-read-only tool without a real scope.
-_bare_grants() {
-    # POSIX awk only (BSD awk on the macOS column, busybox): no bracket
-    # expressions holding [ or ].
-    awk 'function granted(item,    scope) {
-             gsub(/["\047]/, "", item)
-             gsub(/^[[:space:]]+|[[:space:]]+$/, "", item)
-             if (item == "" || item == "Read" || item == "Grep" || item == "Glob" || item == "LS") return 0
-             if (item ~ /^[A-Za-z_][A-Za-z0-9_]*\(.+\)$/) {
-                 scope = item; sub(/^[^(]*\(/, "", scope); sub(/\)$/, "", scope)
-                 sub(/^domain:/, "", scope)
-                 gsub(/[*\/:. ]/, "", scope)
-                 return scope == ""
-             }
-             return 1
-         }
-         # Split on spaces, commas and list brackets OUTSIDE parentheses, so
-         # Bash(npm test:*) stays one item.
-         function scan(line,    i, c, depth, tok) {
-             sub(/(^|[[:space:]])#.*$/, "", line)
-             depth = 0; tok = ""
-             for (i = 1; i <= length(line); i++) {
-                 c = substr(line, i, 1)
-                 if (c == "(") depth++
-                 if (c == ")" && depth > 0) depth--
-                 if (depth == 0 && (c == " " || c == "," || c == "\t" || c == "[" || c == "]")) {
-                     if (granted(tok)) return 1
-                     tok = ""
-                 } else tok = tok c
-             }
-             return granted(tok)
-         }
-         FNR == 1 { fm = 0; inlist = 0 }
-         /^---[[:space:]]*$/ { fm++; inlist = 0; next }
-         fm != 1 { next }
-         /^allowed-tools:/ {
-             inlist = 1
-             line = $0; sub(/^allowed-tools:[[:space:]]*/, "", line)
-             sub(/^[>|][-+]?/, "", line)
-             if (scan(line)) { print FILENAME; nextfile }
-             next
-         }
-         # Inside the list, a blank or comment line does not end it.
-         inlist && /^[[:space:]]*(#.*)?$/ { next }
-         inlist && /^[[:space:]]*-/ {
-             item = $0; sub(/^[[:space:]]*-[[:space:]]*/, "", item)
-             if (scan(item)) { print FILENAME; nextfile }
-             next
-         }
-         # An indented line that is not an item continues a folded scalar.
-         inlist && /^[[:space:]]+[^[:space:]]/ {
-             if (scan($0)) { print FILENAME; nextfile }
-             next
-         }
-         inlist { inlist = 0 }' "$@"
+# _grant_decls <file>... — print each file whose FRONTMATTER mentions an
+# allowed-tools key in any spelling (quoted, spaced, any case, after a BOM).
+_grant_decls() {
+    awk 'FNR == 1 { fm = 0 }
+         fm == 0 && FNR == 1 && /---[[:space:]]*$/ { fm = 1; next }
+         fm == 1 && /^---[[:space:]]*$/ { fm = 2; next }
+         fm == 1 && tolower($0) ~ /allowed[-_ ]?tools/ { print FILENAME; nextfile }' "$@"
 }
 
-@test "skills: no skill pre-approves a non-read-only tool without a real scope" {
-    run _bare_grants "$BASE_DIR"/.claude/skills/*/SKILL.md
-    [ -z "$output" ] || { echo "bare grants: $output" >&2; return 1; }
+@test "skills & commands: none pre-approves tools through allowed-tools" {
+    local found f
+    found=$(_grant_decls "$BASE_DIR"/.claude/skills/*/SKILL.md \
+        $(find "$BASE_DIR/.claude/commands" -name '*.md' 2>/dev/null))
+    for f in $found; do
+        case " $GRANT_EXCEPTIONS " in *" ${f#"$BASE_DIR"/} "*) continue ;; esac
+        echo "declares allowed-tools: ${f#"$BASE_DIR"/}" >&2
+        return 1
+    done
 }
 
-@test "skills: the bare-grant scanner is not vacuous" {
+@test "skills & commands: the allowed-tools scanner is not vacuous" {
     local d="$BATS_TEST_TMPDIR" f
-    # Each file holds ONE offending shape, so every shape is proven on its own.
-    printf -- '---\nname: a\nallowed-tools:\n  - Read\n  - Bash\n---\nbody\n' > "$d/a.md"
-    printf -- '---\nname: b\nallowed-tools: Read, Bash\n---\n' > "$d/b.md"
-    # Independent review of #589: three shapes slipped through.
-    printf -- '---\nname: e\nallowed-tools:\n  - Read\n  - Bash   # If the skill executes commands\n---\n' > "$d/e.md"
-    printf -- '---\nname: f\nallowed-tools:\n- Bash\n---\n' > "$d/f.md"
-    printf -- '---\nname: g\nallowed-tools: [Read, "Bash(*)"]\n---\n' > "$d/g.md"
-    # Independent review of #598: every non-read-only tool, and the list shapes.
-    for t in Write Edit MultiEdit NotebookEdit WebFetch WebSearch PowerShell Monitor mcp__srv__tool; do
-        printf -- '---\nname: t\nallowed-tools:\n  - Read\n  - %s\n---\n' "$t" > "$d/tool-$t.md"
-    done
-    printf -- '---\nname: k\nallowed-tools:\n  - Read\n  # writers\n  - Write\n---\n' > "$d/k.md"
-    printf -- '---\nname: l\nallowed-tools:\n  - Read\n\n  - Write\n---\n' > "$d/l.md"
-    printf -- '---\nname: m\nallowed-tools: >-\n  Read Write\n---\n' > "$d/m.md"
-    for t in 'Edit(**)' 'Write(/**)' 'Bash(:*)' 'WebFetch(domain:*)'; do
-        printf -- '---\nname: w\nallowed-tools:\n  - %s\n---\n' "$t" > "$d/wild-${#t}-$(printf '%s' "$t" | tr -c 'A-Za-z' x).md"
-    done
+    # Each shape an independent review slipped past a parsing scanner.
+    printf -- '---\nname: a\nallowed-tools:\n  - Read\n---\n' > "$d/plain.md"
+    printf -- '---\nname: a\nallowed-tools: [Read, Write]\n---\n' > "$d/inline.md"
+    printf -- '---\nname: a\n"allowed-tools": [Write]\n---\n' > "$d/quoted.md"
+    printf -- '---\nname: a\nallowed-tools : [Write]\n---\n' > "$d/spaced.md"
+    printf -- '\357\273\277---\nname: a\nallowed-tools: [Write]\n---\n' > "$d/bom.md"
+    printf -- '---\nname: a\nAllowed_Tools: [Write]\n---\n' > "$d/case.md"
     for f in "$d"/*.md; do
-        run _bare_grants "$f"
-        [ "$output" = "$f" ] || { echo "not flagged: $(sed -n '3,6p' "$f")" >&2; return 1; }
+        [ "$(_grant_decls "$f")" = "$f" ] || { echo "not flagged: $f" >&2; return 1; }
     done
 }
 
-@test "skills: the bare-grant scanner allows read-only tools and real scopes" {
+@test "skills & commands: a body mention of allowed-tools is not a declaration" {
     local d="$BATS_TEST_TMPDIR"
-    printf -- '---\nname: c\nallowed-tools:\n  - Bash(npm test:*)\n---\n  - Bash\n' > "$d/c.md"
-    printf -- '---\nname: j\nallowed-tools:\n  - Edit(docs/**)\n  - Read\n  - Grep\n  - Glob\n---\n' > "$d/j.md"
-    printf -- '---\nname: y\nallowed-tools: Read, Bash(npm test:*), WebFetch(domain:docs.example.com)\n---\n' > "$d/y.md"
-    # A trailing comment is not a tool (the writing-skills template has one).
-    printf -- '---\nname: z\nallowed-tools:\n  - Read       # read-only tools may be listed bare\n---\n' > "$d/z.md"
-    run _bare_grants "$d/c.md" "$d/j.md" "$d/y.md" "$d/z.md"
-    [ -z "$output" ] || { echo "falsely flagged: $output" >&2; return 1; }
+    printf -- '---\nname: a\ndescription: x\n---\nNever declare allowed-tools here.\n' > "$d/body.md"
+    printf -- 'no frontmatter\nallowed-tools: [Write]\n' > "$d/nofm.md"
+    [ -z "$(_grant_decls "$d/body.md" "$d/nofm.md")" ]
 }
 
 # -----------------------------------------------------------------------------

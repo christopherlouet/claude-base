@@ -1,10 +1,6 @@
 ---
 name: dev-auth
 description: Modern web auth implementation (better-auth, Lucia, NextAuth/Auth.js, Clerk, Supabase Auth). Trigger when the user wants to add login, signup, sessions, OAuth, magic links, 2FA, or when existing auth code is detected to audit or migrate.
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
 context: fork
 background: false
 ---

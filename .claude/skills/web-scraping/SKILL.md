@@ -1,8 +1,6 @@
 ---
 name: web-scraping
 description: Clean LLM-ready web scraping via Firecrawl (scrape/crawl/map/extract/search). Trigger when the user wants to extract content from a page, crawl a site, collect structured data, bypass anti-bot/JS-rendering, or perform a web search with integrated extraction. Fallback to Playwright/curl if Firecrawl is unavailable.
-allowed-tools:
-  - Read
 context: fork
 background: false
 ---

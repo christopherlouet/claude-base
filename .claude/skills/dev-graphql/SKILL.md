@@ -1,10 +1,6 @@
 ---
 name: dev-graphql
 description: GraphQL API development. Trigger when the user wants to create schemas, resolvers, or GraphQL queries.
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
 context: fork
 background: false
 ---

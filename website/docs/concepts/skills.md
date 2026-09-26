@@ -66,10 +66,6 @@ Skills live in `.claude/skills/`, each in its own folder:
 ---
 name: dev-tdd
 description: TDD development with Red-Green-Refactor cycle
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
 context: fork
 ---
 
@@ -112,7 +108,7 @@ NEVER write more code than necessary to pass the test.
 
 | Field | Description | Values |
 |-------|-------------|--------|
-| `allowed-tools` | Tools **pre-approved** without a prompt during the skill's turn (grants, never restricts) | Read-only tools bare; anything else scoped, e.g. `Bash(npm test:*)` |
+| `allowed-tools` | Tools **pre-approved** (no permission prompt) during the skill's turn: it grants, never restricts. Foundation skills and commands declare none (`tests/skills-frontmatter.bats` refuses the key): in the project a read needs no prompt anyway, so a grant only widens what runs unprompted. A truly unattended need gets one precise, reviewed rule such as `Bash(npm test:*)` | None in the foundation |
 | `context` | Context type | `fork` or `shared` |
 
 ### Contexts
@@ -211,16 +207,12 @@ type(scope): description
 - chore: maintenance
 ```
 
-### Skill that pre-approves only read-only tools
+### Skill that pre-approves nothing
 
 ```markdown
 ---
 name: work-explore
 description: Explore and understand a codebase
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
 context: fork
 ---
 
@@ -256,8 +248,6 @@ mkdir -p .claude/skills/my-skill
 ---
 name: my-skill
 description: Description of my skill
-allowed-tools:
-  - Read
 context: fork
 ---
 

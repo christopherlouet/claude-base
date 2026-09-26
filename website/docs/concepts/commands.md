@@ -71,10 +71,6 @@ Description of the expected result.
 ```markdown
 ---
 description: Short description for the help
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
 ---
 
 # My Command

@@ -1,10 +1,6 @@
 ---
 name: ops-mobile-release
 description: Publishing apps to the App Store and Google Play. Trigger when the user wants to deploy a mobile app or configure Fastlane.
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
 context: fork
 background: false
 ---

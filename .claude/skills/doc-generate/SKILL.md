@@ -1,10 +1,6 @@
 ---
 name: doc-generate
 description: Technical documentation generation. Trigger when the user wants to create a README, API docs, or guides.
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
 context: fork
 background: false
 disable-model-invocation: true

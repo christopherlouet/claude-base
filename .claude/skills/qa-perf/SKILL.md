@@ -1,10 +1,6 @@
 ---
 name: qa-perf
 description: Application performance optimization. Trigger when the user wants to improve speed, reduce latency, or optimize resources.
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
 context: fork
 background: false
 model: sonnet

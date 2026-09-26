@@ -1,10 +1,6 @@
 ---
 name: ops-monitoring
 description: Application instrumentation for monitoring. Trigger when the user wants to add logs, metrics, or traces.
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
 context: fork
 background: false
 disable-model-invocation: true

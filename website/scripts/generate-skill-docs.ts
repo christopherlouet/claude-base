@@ -186,7 +186,7 @@ function generateSkillPage(skill: SkillInfo, position: number): string {
 
   const toolsList = skill.allowedTools.length > 0
     ? skill.allowedTools.map((t) => `\`${t}\``).join(', ')
-    : '_All tools_';
+    : '_None: every tool asks like any other turn_';
 
   const keywordsList = skill.keywords.length > 0
     ? skill.keywords.map((k) => `\`${k}\``).join(', ')
@@ -205,7 +205,7 @@ ${contextBadge}
 | Property | Value |
 |-----------|--------|
 | **Context** | ${skill.context} |
-| **Allowed tools** | ${toolsList} |
+| **Pre-approved tools** | ${toolsList} |
 | **Trigger** | ${skill.manualOnly ? `**manual only** — run \`/${skill.name}\`` : `keywords: ${keywordsList}`} |
 
 ## Detailed description
@@ -304,7 +304,7 @@ import SkillCard from '@site/src/components/SkillCard';
 
 - **Automatic triggering**: Activated by keywords in the conversation
 - **Configurable context**: Fork (isolated) or Shared (shared)
-- **Restricted tools**: Limited access via \`allowed-tools\`
+- **Nothing pre-approved**: \`allowed-tools\` grants, never restricts; foundation skills declare none
 - **Transparency**: The user sees when a skill is activated
 
 ## Skills by context

@@ -2,7 +2,7 @@
 
 Cross-tool entry point for AI coding agents (Claude Code, Codex, Cursor, Copilot, Gemini CLI, and other [Agent Skills](https://agentskills.io)-compatible tools).
 
-Native home is Claude Code — `.claude/skills/` and `.claude/rules/` directories follow the Anthropic conventions. The skills use the **SKILL.md open standard frontmatter** (`name`, `description`), so other agents can read them; Claude-specific extensions (`allowed-tools`, `context: fork`, `model`) are silently ignored by tools that don't support them.
+Native home is Claude Code — `.claude/skills/` and `.claude/rules/` directories follow the Anthropic conventions. The skills use the **SKILL.md open standard frontmatter** (`name`, `description`), so other agents can read them; Claude-specific extensions (`context: fork`, `model`) are silently ignored by tools that don't support them.
 
 ## Workflow
 

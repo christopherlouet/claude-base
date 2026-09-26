@@ -1,10 +1,6 @@
 ---
 name: parallel-agents
 description: Orchestration of parallel agents to maximize efficiency. Trigger when a task can be decomposed into independent sub-tasks that can run in parallel.
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
 context: fork
 background: false
 ---

@@ -1,10 +1,6 @@
 ---
 name: ops-proxmox
 description: Proxmox VE infrastructure with Terraform (VMs, LXC, network, storage, backup)
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
 context: fork
 background: false
 argument-hint: "[resource-type]"

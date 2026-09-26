@@ -113,10 +113,6 @@ A skill is a `SKILL.md` file in a subfolder of `.claude/skills/`. It encapsulate
 ---
 name: my-skill
 description: What the skill does. Trigger when the user [context].
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
 context: fork
 model: sonnet
 argument-hint: "[project-name] [options]"
@@ -147,7 +143,7 @@ Output format.
 |-------|----------|--------|-------------|
 | `name` | No | kebab-case | Skill name (default: folder name) |
 | `description` | Recommended | text | Trigger context |
-| `allowed-tools` | No | list | Tools **pre-approved** (no permission prompt) during the skill's turn. It grants, never restricts; `deny` and `ask` rules still win. Never bare `Bash`: use `Bash(<cmd>:*)` |
+| `allowed-tools` | No | list | Tools **pre-approved** (no permission prompt) during the skill's turn: it grants, never restricts. Foundation skills and commands declare none (`tests/skills-frontmatter.bats` refuses the key): in the project a read needs no prompt anyway, so a grant only widens what runs unprompted. A truly unattended need gets one precise, reviewed rule such as `Bash(npm test:*)` |
 | `context` | No | `fork` | Execution in an isolated sub-agent |
 | `model` | No | `sonnet`, `opus`, `haiku`, `inherit` | Model to use |
 | `argument-hint` | No | text | Autocompletion in the `/` menu |
@@ -157,7 +153,7 @@ Output format.
 ### Best practices
 
 - Limit SKILL.md to 500 lines maximum. Move detail to `examples/` or `references/`
-- `allowed-tools` pre-approves, it never restricts: list only what must run without a prompt, never a bare `Bash`, `Write`, `Edit` or web tool (`deny` and `ask` rules still win)
+- `allowed-tools`: Tools **pre-approved** (no permission prompt) during the skill's turn: it grants, never restricts. Foundation skills and commands declare none (`tests/skills-frontmatter.bats` refuses the key): in the project a read needs no prompt anyway, so a grant only widens what runs unprompted. A truly unattended need gets one precise, reviewed rule such as `Bash(npm test:*)`.
 - Always use `context: fork` for isolation
 - Write the `description` with the trigger context: Claude uses this field to automatically decide when to load the skill
 - Prefer tables over prose for quick references
@@ -178,9 +174,6 @@ Output format.
 ---
 name: changelog-entry
 description: Generates a CHANGELOG.md entry from recent commits. Trigger when the user wants to document a release or update the changelog.
-allowed-tools:
-  - Read
-  - Glob
 context: fork
 model: sonnet
 argument-hint: "[version] [since-tag]"
@@ -528,7 +521,7 @@ gh pr create --title "feat(skills): add python-typing skill" --body "..."
 
 ```
 [ ] The skill/agent has a kebab-case name following the domain-action convention
-[ ] The YAML frontmatter is valid (name, description, allowed-tools)
+[ ] The YAML frontmatter is valid (name, description)
 [ ] The description contains the trigger context
 [ ] Declared tools are the minimum necessary
 [ ] context: fork is present for skills

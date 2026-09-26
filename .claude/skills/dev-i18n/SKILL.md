@@ -1,10 +1,6 @@
 ---
 name: dev-i18n
 description: Internationalization (i18n) and localization (l10n) for web and mobile applications. Libraries next-intl, react-i18next, vue-i18n, formatjs, flutter_localizations, ARB. Trigger when the user wants to add multiple languages, extract strings, handle plurals, date/number formats, or when translation files are detected.
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
 context: fork
 background: false
 ---

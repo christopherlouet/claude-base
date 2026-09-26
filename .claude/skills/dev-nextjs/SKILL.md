@@ -1,10 +1,6 @@
 ---
 name: dev-nextjs
 description: Next.js development (App Router, Server Components, caching, streaming). Trigger when the user works with Next.js, modifies app/, pages/, next.config, or talks about RSC, Server Actions, Route Handlers, middleware.
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
 context: fork
 background: false
 ---
