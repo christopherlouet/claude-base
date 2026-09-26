@@ -116,6 +116,16 @@ validate_command() {
   # "document mkfs usage"`, `git log --grep "passwd rotation"`). Done on the raw
   # CMD (case preserved) so -F/--grep match precisely, then lowercased for the
   # scans.
+  #
+  # Heredoc BODIES are deliberately NOT stripped, even when they only quote a
+  # command (a note, a PR body). An attempt to strip "data" heredocs (#596,
+  # closed 2026-09-26) freed 7 of 3,959 real heredoc commands, and an
+  # independent review then found 8 confirmed bypasses: `tee x.sh >/dev/null
+  # <<EOF` then `bash x.sh`, `bash -c "$(cat <<EOF…)"`, a `<<EOF` inside a
+  # comment hiding the real commands after it, writes to ~/.bashrc or
+  # .git/hooks. Telling a heredoc apart with regexes, without a shell parser,
+  # leaves one more hole each time. Pass quoted text through a FILE instead
+  # (`gh pr create --body-file f`, `git commit -F f`).
   local CMD_STRIPPED CMD_LOWER CMD_NQ
   CMD_STRIPPED=$(strip_msg_values "$CMD")
   # Normalize: lowercase, collapse whitespace
