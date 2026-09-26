@@ -105,9 +105,100 @@ _pipe_to_shell() {
   return 1
 }
 
+# _strip_data_heredocs <raw-command>
+# Print the command with the BODY of each data heredoc removed (the operator
+# line and the terminator stay). A body is data, never executed, only when ALL
+# hold — anything unsure keeps the body, so it is scanned as before:
+#   - the command receiving it is cat, tee, gh or git (a note, a PR body, a
+#     commit message); an interpreter, ssh or a `done` loop may execute it;
+#   - the operator line holds nothing but redirections after `<<EOF`: a pipe
+#     or `&& bash x.sh` sends the text on to a shell;
+#   - an unquoted delimiter's body has no `$(` or backtick, which the shell
+#     WOULD run while expanding it;
+#   - the file it writes (`cat > x.sh`, `tee x.sh`) is not named again later
+#     in the command, where it may be executed;
+#   - it has a terminator: an unterminated body cannot be bounded.
+# `<<<` is a here-string, not a heredoc: the lines after it are commands.
+# Measured 2026-09-26 on 17,093 real agent commands: 36 refusals were a data
+# body and nothing else, typically a note or PR body QUOTING a command.
+_strip_data_heredocs() {
+  local s="$1" glob_was_on=0 IFS
+  case "$s" in *'<<'*) ;; *) printf '%s' "$s"; return 0 ;; esac
+  local lines
+  case "$-" in *f*) ;; *) glob_was_on=1; set -f ;; esac
+  IFS=$'\n'
+  # shellcheck disable=SC2206  # word-splitting on newlines is the point; globbing is off
+  lines=( $s )
+  [ "$glob_was_on" = 1 ] && set +f
+  local n=${#lines[@]} i=0 j k line pre tail delim dash oq cq seg word target keep body later end
+  local re_hd="(^|[^<])<<(-?)[[:space:]]*([\"']?)([A-Za-z_][A-Za-z0-9_]*)([\"']?)(.*)$"
+  local re_redir='^([[:space:]]*([0-9]*>>?|&>)[[:space:]]*[^[:space:]<>|;&]+|[[:space:]]*[0-9]*>&[0-9])*[[:space:]]*$'
+  local out=()
+  while [ "$i" -lt "$n" ]; do
+    line="${lines[$i]}"
+    out[${#out[@]}]="$line"
+    i=$((i + 1))
+    [[ "$line" =~ $re_hd ]] || continue
+    dash="${BASH_REMATCH[2]}"; oq="${BASH_REMATCH[3]}"; delim="${BASH_REMATCH[4]}"
+    cq="${BASH_REMATCH[5]}"; tail="${BASH_REMATCH[6]}"
+    pre="${line%"${BASH_REMATCH[0]}"}${BASH_REMATCH[1]}"
+    [ "$oq" = "$cq" ] || continue
+    # Find the terminator; without one nothing is removed.
+    end=-1; j=$i
+    while [ "$j" -lt "$n" ]; do
+      k="${lines[$j]}"
+      [ -n "$dash" ] && k="${k#"${k%%[!$'\t']*}"}"
+      if [ "$k" = "$delim" ]; then end=$j; break; fi
+      j=$((j + 1))
+    done
+    [ "$end" -ge 0 ] || continue
+    keep=0
+    # The receiving command: the first word of the last segment before `<<`,
+    # past VAR=value assignments.
+    seg="${pre##*[;&|(\`]}"
+    word=""
+    while [[ "$seg" =~ ^[[:space:]]*([^[:space:]]+)(.*)$ ]]; do
+      word="${BASH_REMATCH[1]}"; seg="${BASH_REMATCH[2]}"
+      [[ "$word" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]] || break
+    done
+    case "${word##*/}" in cat|tee|gh|git) ;; *) keep=1 ;; esac
+    [[ "$tail" =~ $re_redir ]] || keep=1
+    body=""
+    for ((k = i; k < end; k++)); do body+="${lines[$k]}"$'\n'; done
+    if [ -z "$oq" ]; then
+      case "$body" in *'$('*|*'`'*) keep=1 ;; esac
+    fi
+    # The file written: `> path` / `>> path` anywhere on the operator line, or
+    # tee's first operand.
+    target=""
+    if [[ "$pre $tail" =~ \>\>?[[:space:]]*([^[:space:]<>|;&]+) ]]; then
+      target="${BASH_REMATCH[1]}"
+    elif [ "${word##*/}" = tee ] && [[ "$seg" =~ ^[[:space:]]*(-[^[:space:]]+[[:space:]]+)*([^-[:space:]<>|;&][^[:space:]<>|;&]*) ]]; then
+      target="${BASH_REMATCH[2]}"
+    fi
+    target="${target//[\"\']/}"
+    case "$target" in /dev/null|/dev/stdout|/dev/stderr|'&'*) target="" ;; esac
+    if [ -n "$target" ]; then
+      later=""
+      for ((k = end + 1; k < n; k++)); do later+="${lines[$k]}"$'\n'; done
+      case "$later" in *"${target##*/}"*) keep=1 ;; esac
+    fi
+    if [ "$keep" = 0 ]; then
+      out[${#out[@]}]="${lines[$end]}"
+      i=$((end + 1))
+    fi
+  done
+  IFS=$'\n'
+  printf '%s' "${out[*]}"
+}
+
 validate_command() {
   local CMD="$1"
   [ -z "$CMD" ] && return 0
+  # A data heredoc body (a note, a PR body, a commit message) is text, never
+  # executed: remove it before any scan. See _strip_data_heredocs for the
+  # conditions; anything unsure keeps the body.
+  CMD=$(_strip_data_heredocs "$CMD")
 
   # Strip git message / --grep / --file VALUES (the quoted string or next token
   # after -m/-am/--message/--file/-F/--grep) BEFORE the pattern scans. A trigger
