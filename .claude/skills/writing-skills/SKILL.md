@@ -76,7 +76,7 @@ Use the backtick-bang syntax to inject live data:
 - Example: `!` followed by backtick then `gh pr diff` then backtick
 - The command runs BEFORE Claude sees the content
 - The result replaces the placeholder
-- Outside auto mode the command must be pre-approved, or the invocation aborts: list the precise pattern, e.g. `Bash(gh pr diff:*)`, in `allowed-tools` — reviewed, and never bare (inside the foundation repo it must also be pinned in `GRANT_EXCEPTIONS`)
+- Outside auto mode the command must be allowed, or the invocation aborts. The foundation's settings allow `Bash`; a project that narrowed them allows the precise command in its own permission settings (e.g. `Bash(gh pr diff:*)`). Foundation skills still declare no `allowed-tools`
 
 Example:
 ```markdown

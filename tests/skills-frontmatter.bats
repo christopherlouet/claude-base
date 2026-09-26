@@ -171,7 +171,7 @@ _dead_pointers() {
 # Write, 37 bare Edit, one WebFetch, one WebSearch, and all 53 bare Read.
 #
 # Be exact about what that bought. The foundation's shipped settings.json
-# ALREADY allows Bash, Edit, Write, WebFetch and WebSearch on every turn (a
+# ALREADY allows Read, Bash, Edit, Write, WebFetch and WebSearch on every turn (a
 # v1.9.0 choice; deny rules and hooks are the safety net), so in an installed
 # project these grants added nothing. They mattered in a project that narrowed
 # its allow list, and in a skill copied elsewhere — where they silently widened
@@ -182,35 +182,22 @@ _dead_pointers() {
 # from a dangerous one (a list of dangerous names missed PowerShell, Monitor and
 # mcp__*; "real scopes" passed Edit(~/**), Bash(bash:*), WebFetch(domain:*.com);
 # a YAML comment, a quoted key or a BOM hid the grant from both). So a
-# foundation skill or command declares NO allowed-tools — nothing to parse. A
-# reviewed need is pinned below as "<path><TAB><exact frontmatter line>", in the
-# inline form: the exception covers that value only, any other stays refused.
+# foundation skill or command declares NO allowed-tools — nothing to parse,
+# and no exception list either: the one drafted here was never used and two
+# shapes (a block list, a YAML continuation line) slipped past it. A real
+# need later gets its own reviewed design.
 # Out of scope, like every guard here: a key spelled with YAML escapes
 # ("allowed\x2dtools") is deliberate obfuscation, not an accident.
-GRANT_EXCEPTIONS=""
-
 # _grant_decls <file>... — print "<file><TAB><line>" for each frontmatter line
 # whose KEY is allowed-tools in any accidental spelling (quoted, spaced before
-# the colon, any case, `_` for `-`, after a BOM). A key only: disallowedTools
-# or a description that mentions allowed-tools is not a grant.
+# the colon, any case, `_` for `-`, after a BOM). A top-level key only:
+# disallowedTools, a nested key or a description mentioning it is not a grant.
 _grant_decls() {
-    awk 'FNR == 1 { fm = 0 }
-         fm == 0 && FNR == 1 && /---[[:space:]]*$/ { fm = 1; next }
+    awk 'FNR == 1 { fm = 0; sub(/^\357\273\277/, "") }
+         fm == 0 && FNR == 1 && /^---[[:space:]]*$/ { fm = 1; next }
          fm == 1 && /^---[[:space:]]*$/ { fm = 2; next }
-         fm == 1 && tolower($0) ~ /^[[:space:]"\047]*allowed[-_ ]?tools[[:space:]"\047]*:/ {
+         fm == 1 && tolower($0) ~ /^["\047]?allowed[-_ ]?tools[[:space:]"\047]*:/ {
              print FILENAME "\t" $0 }' "$@"
-}
-
-# _unexcepted_grants <exceptions> <file>... — the declarations the exception
-# list does not pin exactly.
-_unexcepted_grants() {
-    local exceptions="$1" f line rel
-    shift
-    _grant_decls "$@" | while IFS=$'\t' read -r f line; do
-        rel="${f#"$BASE_DIR"/}"
-        case $'\n'"$exceptions"$'\n' in *$'\n'"$rel"$'\t'"$line"$'\n'*) continue ;; esac
-        printf '%s\t%s\n' "$rel" "$line"
-    done
 }
 
 @test "skills & commands: none pre-approves tools through allowed-tools" {
@@ -218,7 +205,7 @@ _unexcepted_grants() {
     while IFS= read -r -d '' f; do files+=( "$f" ); done \
         < <(find "$BASE_DIR/.claude/commands" -name '*.md' -print0)
     [ "${#files[@]}" -gt 100 ] || { echo "scan set too small: ${#files[@]}" >&2; return 1; }
-    out=$(_unexcepted_grants "$GRANT_EXCEPTIONS" "${files[@]}")
+    out=$(_grant_decls "${files[@]}")
     [ -z "$out" ] || { echo "declares allowed-tools: $out" >&2; return 1; }
 }
 
@@ -243,19 +230,10 @@ _unexcepted_grants() {
     # The review of the first version: a restriction and a mention were flagged.
     printf -- '---\nname: a\ndisallowedTools: Write\n---\n' > "$d/disallowed.md"
     printf -- '---\nname: a\ndescription: never use allowed-tools: it grants\n---\n' > "$d/descr.md"
-    [ -z "$(_grant_decls "$d/body.md" "$d/nofm.md" "$d/disallowed.md" "$d/descr.md")" ]
-}
-
-@test "skills & commands: an exception pins one exact value, not the file" {
-    local d="$BATS_TEST_TMPDIR"
-    local BASE_DIR="$d"
-    mkdir -p "$d/s"
-    printf -- '---\nname: a\nallowed-tools: Bash(gh pr diff:*)\n---\n' > "$d/s/ok.md"
-    printf -- '---\nname: a\nallowed-tools: Bash, Write\n---\n' > "$d/s/drift.md"
-    local exc
-    exc=$(printf 's/ok.md\tallowed-tools: Bash(gh pr diff:*)\ns/drift.md\tallowed-tools: Bash(gh pr diff:*)')
-    run _unexcepted_grants "$exc" "$d/s/ok.md" "$d/s/drift.md"
-    [ "$output" = "$(printf 's/drift.md\tallowed-tools: Bash, Write')" ]
+    # A first line that merely ENDS in --- opens no frontmatter; a nested key is no grant.
+    printf -- 'Notes ---\nallowed-tools: [Write]\n' > "$d/notfm.md"
+    printf -- '---\nname: a\nmetadata:\n  allowed-tools: x\n---\n' > "$d/nested.md"
+    [ -z "$(_grant_decls "$d/body.md" "$d/nofm.md" "$d/disallowed.md" "$d/descr.md" "$d/notfm.md" "$d/nested.md")" ]
 }
 
 # -----------------------------------------------------------------------------

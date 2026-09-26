@@ -82,7 +82,7 @@ cannot drift apart.
 
 ## Skills Configuration
 
-Each skill defines:
+Each skill's frontmatter may carry:
 - **allowed-tools**: Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none — see [Pre-approving tools](/docs/concepts/customization#pre-approving-tools-allowed-tools)
 - **context: fork**: Execution in an isolated context (recommended)
 

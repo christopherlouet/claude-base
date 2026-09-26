@@ -533,7 +533,7 @@ gh pr create --title "feat(skills): add python-typing skill" --body "..."
 [ ] The skill/agent has a kebab-case name following the domain-action convention
 [ ] The YAML frontmatter is valid (name, description)
 [ ] The description contains the trigger context
-[ ] Declared tools are the minimum necessary
+[ ] No `allowed-tools` declared (the foundation pre-approves nothing)
 [ ] context: fork is present for skills
 [ ] The file is under 500 lines
 [ ] Code examples are relevant and functional

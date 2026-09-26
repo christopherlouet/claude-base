@@ -114,6 +114,17 @@ describe('generate-skill-docs: the pre-approved tools row', () => {
     }
   });
 
+  it('splits the space-separated inline form outside parentheses', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-tools-'));
+    try {
+      const skill = parseSkillFile(writeRaw(tmp, 'probe-spaces', 'allowed-tools: Read Grep Bash(npm test:*)\n'));
+      const page = generateSkillPage(skill!, 1);
+      assert.match(page, /\| \*\*Pre-approved tools\*\* \| `Read`, `Grep`, `Bash\(npm test:\*\)` \|/);
+    } finally {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
   it('a skill that declares nothing says the project settings apply, not that every tool asks', () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-tools-'));
     try {

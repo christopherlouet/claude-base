@@ -26,7 +26,7 @@ const DOCS_DIR = path.resolve(__dirname, '../docs/skills');
 interface SkillFrontmatter {
   name?: string;
   description?: string;
-  'allowed-tools'?: string[];
+  'allowed-tools'?: string | string[];
   context?: string;
   'disable-model-invocation'?: boolean;
 }
