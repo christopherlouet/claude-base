@@ -81,7 +81,7 @@ claude-base/
 
 **Discoverability:** when `claude-base init` runs on an empty directory without `--preset` / `--type` and auto-detection produces no match, a pre-prompt asks "What are you building?" with an 8-entry intent taxonomy and filters the subsequent menu accordingly. Each preset opts in by declaring `categories: [string]` in its manifest (strict enum, validated).
 
-**Cross-tool entry point:** the foundation ships an `AGENTS.md` at repo root signaling SKILL.md open-standard compliance to Codex / Cursor / Copilot / Gemini CLI. Skills under `.claude/skills/` are theoretically portable in form ; Claude-specific extensions (`allowed-tools`, `context: fork`, `model`) are silently ignored by other tools.
+**Cross-tool entry point:** the foundation ships an `AGENTS.md` at repo root signaling SKILL.md open-standard compliance to Codex / Cursor / Copilot / Gemini CLI. Skills under `.claude/skills/` are theoretically portable in form ; Claude-specific extensions (`context: fork`, `model`) are silently ignored by other tools.
 
 ### Commands (<!-- count:commands -->106<!-- /count -->)
 
@@ -123,7 +123,7 @@ claude-base/
 **Characteristics:**
 - Automatic triggering on keywords
 - Forked (isolated) or shared context
-- Restricted tools via `allowed-tools`
+- Nothing pre-approved: `allowed-tools` grants, never restricts, and the foundation declares none
 - `SKILL.md` files in `.claude/skills/`
 
 **Triggering example:**

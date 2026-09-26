@@ -1,12 +1,6 @@
 ---
 name: dev-refactor
 description: Code refactoring to improve quality. Trigger when the user wants to clean up, restructure, or improve existing code.
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
 context: fork
 background: false
 argument-hint: "[file-or-module]"

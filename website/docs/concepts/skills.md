@@ -66,12 +66,6 @@ Skills live in `.claude/skills/`, each in its own folder:
 ---
 name: dev-tdd
 description: TDD development with Red-Green-Refactor cycle
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
 context: fork
 ---
 
@@ -114,7 +108,7 @@ NEVER write more code than necessary to pass the test.
 
 | Field | Description | Values |
 |-------|-------------|--------|
-| `allowed-tools` | Authorized tools | List of tools |
+| `allowed-tools` | Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none — see [Pre-approving tools](/docs/concepts/customization#pre-approving-tools-allowed-tools) | None in the foundation |
 | `context` | Context type | `fork` or `shared` |
 
 ### Contexts
@@ -213,16 +207,12 @@ type(scope): description
 - chore: maintenance
 ```
 
-### Skill with restricted tools
+### Skill that pre-approves nothing
 
 ```markdown
 ---
 name: work-explore
 description: Explore and understand a codebase
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
 context: fork
 ---
 
@@ -258,10 +248,6 @@ mkdir -p .claude/skills/my-skill
 ---
 name: my-skill
 description: Description of my skill
-allowed-tools:
-  - Read
-  - Write
-  - Edit
 context: fork
 ---
 

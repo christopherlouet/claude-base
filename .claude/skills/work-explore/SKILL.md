@@ -1,10 +1,6 @@
 ---
 name: work-explore
 description: Explore and understand an existing codebase. Use when the user wants to understand the code, explore a project, discover an architecture, or before modifying existing code.
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
 context: fork
 background: false
 disable-model-invocation: true

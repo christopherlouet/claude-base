@@ -11,6 +11,7 @@ import {
   ensureDir,
 } from './utils/file-scanner.js';
 import { rewriteUnsyncedRepoLinks } from './utils/rewrite-links.js';
+import { parseToolsField } from './utils/parse-tools.js';
 import {
   parseFrontmatter,
   extractFirstHeading,
@@ -54,16 +55,6 @@ function parseAgentFile(filePath: string): AgentInfo | null {
     // Extract title from first heading
     const heading = extractFirstHeading(markdownContent);
     const description = extractDescription(markdownContent);
-
-    // Tools can be a string "Read, Grep" or an array ["Read", "Grep"]
-    const parseToolsField = (tools: string | string[] | undefined): string[] => {
-      if (!tools) return [];
-      if (Array.isArray(tools)) return tools;
-      if (typeof tools === 'string') {
-        return tools.split(',').map((t) => t.trim()).filter(Boolean);
-      }
-      return [];
-    };
 
     return {
       name: fileName,

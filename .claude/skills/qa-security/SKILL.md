@@ -1,10 +1,6 @@
 ---
 name: qa-security
 description: Perform a security audit based on OWASP. Use when the user wants to verify security, look for vulnerabilities, or before a production deployment.
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
 context: fork
 background: false
 model: opus

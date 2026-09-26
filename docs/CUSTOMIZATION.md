@@ -317,12 +317,6 @@ Skills are triggered automatically by Claude based on context (keywords in the c
 ---
 name: my-skill
 description: When to trigger this skill (keywords or context)
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
-  - Edit
-  - Write
 context: fork    # `fork` (recommended) or `inherit`
 ---
 
@@ -346,9 +340,26 @@ For large examples, move to `examples/` and include via link.
 ### Best practices
 
 - **`context: fork`**: isolates the skill from the main conversation (recommended for complex workflows).
-- **`allowed-tools` grants, it does not restrict**: the listed tools run without a permission prompt during the skill's turn (`deny` and `ask` rules still win). Never list bare `Bash` — it pre-approves every shell command; use a precise pattern such as `Bash(npm test:*)` when a skill truly needs unattended commands (`tests/skills-frontmatter.bats` refuses bare `Bash`).
+- **`allowed-tools`**: the foundation declares none — see [Pre-approving tools](#pre-approving-tools-allowed-tools) below.
 - **Precise description**: Claude uses the description to decide when to trigger, be specific.
 - **Skills ≠ Agents**: a skill complements Claude; an agent is an isolated subprocess.
+
+### Pre-approving tools (`allowed-tools`)
+
+`allowed-tools` pre-approves tools — no permission prompt — for the skill's turn. It **grants**, it never
+restricts: a skill can use every tool whatever the field says (measured on a forked skill).
+
+**The foundation's skills and commands declare none**, and `tests/skills-frontmatter.bats` refuses the key.
+The reason is honest rather than dramatic: the shipped `.claude/settings.json` already allows `Read`, `Bash`,
+`Edit`, `Write`, `WebFetch` and `WebSearch` on every turn (deny rules and hooks are the safety net), so in an installed
+project a grant adds nothing. It only matters in a project that narrowed its allow list, or for a skill copied
+elsewhere — and there it silently widens what runs unprompted; even a bare `Read` then reaches outside the
+project (`~/.ssh`, `~/.aws`), since reads inside it never prompt anyway. (With the shipped settings, bare
+`Read` is already allowed on every turn, outside the project included: that is a property of the settings,
+not of any skill.)
+
+If your own skill truly needs an unattended command, give it one precise rule such as `Bash(npm test:*)` and
+review it; never a bare tool or a wildcard-only scope like `Edit(**)`.
 
 ### Example: TypeScript code review skill
 
@@ -356,10 +367,6 @@ For large examples, move to `examples/` and include via link.
 ---
 name: review-typescript-strict
 description: Activate when the user wants a strict TypeScript review (any, implicit types, null safety)
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
 context: fork
 ---
 

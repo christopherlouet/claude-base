@@ -1,10 +1,6 @@
 ---
 name: qa-tech-debt
 description: Technical debt management and prioritization, including test-coverage analysis and Kaizen continuous improvement. Trigger when the user wants to identify, prioritize or plan the repayment of technical debt, analyse/improve test coverage, or run a PDCA continuous-improvement cycle.
-allowed-tools:
-  - Read
-  - Grep
-  - Glob
 context: fork
 background: false
 ---

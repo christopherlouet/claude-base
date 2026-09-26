@@ -93,3 +93,46 @@ describe('generate-skill-docs: the manual-only branch', () => {
     assert.ok(manual.length > 0, 'no skill carries disable-model-invocation — guard is vacuous');
   });
 });
+
+describe('generate-skill-docs: the pre-approved tools row', () => {
+  function writeRaw(root: string, name: string, frontmatter: string): string {
+    const dir = path.join(root, name);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'SKILL.md'), `---\nname: ${name}\ndescription: probe\n${frontmatter}---\n\n# ${name}\n`);
+    return dir;
+  }
+
+  it('renders the inline string form of allowed-tools (it once crashed the generator)', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-tools-'));
+    try {
+      const skill = parseSkillFile(writeRaw(tmp, 'probe-inline', 'allowed-tools: Read, Bash(gh pr diff:*)\n'));
+      assert.ok(skill);
+      const page = generateSkillPage(skill!, 1);
+      assert.match(page, /\| \*\*Pre-approved tools\*\* \| `Read`, `Bash\(gh pr diff:\*\)` \|/);
+    } finally {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  it('splits the space-separated inline form outside parentheses', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-tools-'));
+    try {
+      const skill = parseSkillFile(writeRaw(tmp, 'probe-spaces', 'allowed-tools: Read Grep Bash(npm test:*)\n'));
+      const page = generateSkillPage(skill!, 1);
+      assert.match(page, /\| \*\*Pre-approved tools\*\* \| `Read`, `Grep`, `Bash\(npm test:\*\)` \|/);
+    } finally {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  it('a skill that declares nothing says the project settings apply, not that every tool asks', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-tools-'));
+    try {
+      const skill = parseSkillFile(writeRaw(tmp, 'probe-none', ''));
+      const page = generateSkillPage(skill!, 1);
+      assert.match(page, /\| \*\*Pre-approved tools\*\* \| _None declared: the project's permission settings apply_ \|/);
+    } finally {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+});

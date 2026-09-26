@@ -1,12 +1,6 @@
 ---
 name: work-quick
 description: Quick workflow for trivial changes (single-file fix, rename, typo). Skip the full Explore-Plan-TDD-Audit cycle. Trigger when the user wants a quick fix, a simple change, or mentions "quick", "fast", "rapid".
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Glob
-  - Grep
 context: fork
 background: false
 model: sonnet
