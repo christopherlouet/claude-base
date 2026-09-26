@@ -188,13 +188,19 @@ _dead_pointers() {
 # need later gets its own reviewed design.
 # Out of scope, like every guard here: a key spelled with YAML escapes
 # ("allowed\x2dtools") is deliberate obfuscation, not an accident.
+
 # _grant_decls <file>... — print "<file><TAB><line>" for each frontmatter line
 # whose KEY is allowed-tools in any accidental spelling (quoted, spaced before
 # the colon, any case, `_` for `-`, after a BOM). A top-level key only:
 # disallowedTools, a nested key or a description mentioning it is not a grant.
 _grant_decls() {
-    awk 'FNR == 1 { fm = 0; sub(/^\357\273\277/, "") }
-         fm == 0 && FNR == 1 && /^---[[:space:]]*$/ { fm = 1; next }
+    # The first line opens the frontmatter when it is `---`, possibly after a
+    # BOM. No byte escapes: the macOS awk (BWK) does not read /\357.../ and
+    # failed the BOM case in CI; nor character classes: gawk in a UTF-8 locale
+    # files U+FEFF under one of them. A BOM is at most 3 bytes (1 character in
+    # UTF-8) with no printable ASCII, which `Notes ---` or `x---` never is.
+    awk 'FNR == 1 { fm = 0; pre = $0; sub(/---[[:space:]]*$/, "", pre) }
+         fm == 0 && FNR == 1 && /---[[:space:]]*$/ && (pre == "" || (length(pre) <= 3 && pre !~ /[ -~]/)) { fm = 1; next }
          fm == 1 && /^---[[:space:]]*$/ { fm = 2; next }
          fm == 1 && tolower($0) ~ /^["\047]?allowed[-_ ]?tools[[:space:]"\047]*:/ {
              print FILENAME "\t" $0 }' "$@"
