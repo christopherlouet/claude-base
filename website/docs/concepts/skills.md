@@ -68,8 +68,6 @@ name: dev-tdd
 description: TDD development with Red-Green-Refactor cycle
 allowed-tools:
   - Read
-  - Write
-  - Edit
   - Glob
   - Grep
 context: fork
@@ -114,7 +112,7 @@ NEVER write more code than necessary to pass the test.
 
 | Field | Description | Values |
 |-------|-------------|--------|
-| `allowed-tools` | Authorized tools | List of tools |
+| `allowed-tools` | Tools **pre-approved** without a prompt during the skill's turn (grants, never restricts) | Read-only tools bare; anything else scoped, e.g. `Bash(npm test:*)` |
 | `context` | Context type | `fork` or `shared` |
 
 ### Contexts
@@ -213,7 +211,7 @@ type(scope): description
 - chore: maintenance
 ```
 
-### Skill with restricted tools
+### Skill that pre-approves only read-only tools
 
 ```markdown
 ---
@@ -260,8 +258,6 @@ name: my-skill
 description: Description of my skill
 allowed-tools:
   - Read
-  - Write
-  - Edit
 context: fork
 ---
 

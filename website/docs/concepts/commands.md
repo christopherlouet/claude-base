@@ -75,7 +75,6 @@ allowed-tools:
   - Read
   - Grep
   - Glob
-  - Edit
 ---
 
 # My Command

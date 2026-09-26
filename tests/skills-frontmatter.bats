@@ -168,25 +168,51 @@ _dead_pointers() {
 # skill turn — and a copied skill carried a whole shell grant with it. Bare Bash
 # is refused; a precise pattern (Bash(npm test:*)) stays possible.
 #
-# The same holds for the WRITE and network tools (2026-09-26): 38 skills granted
-# bare Write, 37 bare Edit, one WebFetch — file writes and fetches pre-approved
-# for every skill turn, in any project that copied the skill. A skill still
-# USES these tools (a forked skill was measured holding the agent's full tool
-# set whatever allowed-tools says); it simply asks like any other turn. A scoped
-# pattern (Edit(docs/**)) stays possible.
+# The same holds for every tool that is not read-only (2026-09-26): 38 skills
+# granted bare Write, 37 bare Edit, one WebFetch and one WebSearch — file writes
+# and fetches pre-approved for every skill turn, in any project that copied the
+# skill. A skill still USES these tools (a forked skill was measured holding the
+# agent's full tool set whatever allowed-tools says); it simply asks like any
+# other turn.
+#
+# An ALLOW-list, not a list of dangerous names: an independent review of the
+# first draft found PowerShell, Monitor and mcp__* missing from it, `Edit(**)`
+# or `Bash(:*)` passing as "scoped", and a comment or blank line inside the list
+# hiding every item after it. Only read-only tools may be listed bare; any other
+# needs a scope that is more than wildcards (`Bash(npm test:*)`, `Edit(docs/**)`).
 
 # _bare_grants <SKILL.md>... — print each file whose frontmatter allowed-tools
-# (block list or inline) grants a bare Bash, Write, Edit or web tool.
+# pre-approves a non-read-only tool without a real scope.
 _bare_grants() {
     # POSIX awk only (BSD awk on the macOS column, busybox): no bracket
-    # expressions holding [ or ] — the brackets are deleted before splitting.
-    awk 'function bare(item) {
-             sub(/[[:space:]]*#.*$/, "", item)
+    # expressions holding [ or ].
+    awk 'function granted(item,    scope) {
              gsub(/["\047]/, "", item)
              gsub(/^[[:space:]]+|[[:space:]]+$/, "", item)
-             sub(/\(\*\)$/, "", item)
-             return item == "Bash" || item == "Write" || item == "Edit" || item == "MultiEdit" \
-                 || item == "NotebookEdit" || item == "WebFetch" || item == "WebSearch"
+             if (item == "" || item == "Read" || item == "Grep" || item == "Glob" || item == "LS") return 0
+             if (item ~ /^[A-Za-z_][A-Za-z0-9_]*\(.+\)$/) {
+                 scope = item; sub(/^[^(]*\(/, "", scope); sub(/\)$/, "", scope)
+                 sub(/^domain:/, "", scope)
+                 gsub(/[*\/:. ]/, "", scope)
+                 return scope == ""
+             }
+             return 1
+         }
+         # Split on spaces, commas and list brackets OUTSIDE parentheses, so
+         # Bash(npm test:*) stays one item.
+         function scan(line,    i, c, depth, tok) {
+             sub(/(^|[[:space:]])#.*$/, "", line)
+             depth = 0; tok = ""
+             for (i = 1; i <= length(line); i++) {
+                 c = substr(line, i, 1)
+                 if (c == "(") depth++
+                 if (c == ")" && depth > 0) depth--
+                 if (depth == 0 && (c == " " || c == "," || c == "\t" || c == "[" || c == "]")) {
+                     if (granted(tok)) return 1
+                     tok = ""
+                 } else tok = tok c
+             }
+             return granted(tok)
          }
          FNR == 1 { fm = 0; inlist = 0 }
          /^---[[:space:]]*$/ { fm++; inlist = 0; next }
@@ -194,48 +220,64 @@ _bare_grants() {
          /^allowed-tools:/ {
              inlist = 1
              line = $0; sub(/^allowed-tools:[[:space:]]*/, "", line)
-             sub(/[[:space:]]*#.*$/, "", line)
-             gsub(/[][]/, " ", line)
-             n = split(line, parts, /[ ,\t]+/)
-             for (i = 1; i <= n; i++) if (bare(parts[i])) { print FILENAME; nextfile }
+             sub(/^[>|][-+]?/, "", line)
+             if (scan(line)) { print FILENAME; nextfile }
              next
          }
+         # Inside the list, a blank or comment line does not end it.
+         inlist && /^[[:space:]]*(#.*)?$/ { next }
          inlist && /^[[:space:]]*-/ {
              item = $0; sub(/^[[:space:]]*-[[:space:]]*/, "", item)
-             if (bare(item)) { print FILENAME; nextfile }
+             if (scan(item)) { print FILENAME; nextfile }
+             next
+         }
+         # An indented line that is not an item continues a folded scalar.
+         inlist && /^[[:space:]]+[^[:space:]]/ {
+             if (scan($0)) { print FILENAME; nextfile }
              next
          }
          inlist { inlist = 0 }' "$@"
 }
 
-@test "skills: no skill grants bare Bash, Write, Edit or web tools through allowed-tools" {
+@test "skills: no skill pre-approves a non-read-only tool without a real scope" {
     run _bare_grants "$BASE_DIR"/.claude/skills/*/SKILL.md
     [ -z "$output" ] || { echo "bare grants: $output" >&2; return 1; }
 }
 
 @test "skills: the bare-grant scanner is not vacuous" {
-    local d="$BATS_TEST_TMPDIR"
+    local d="$BATS_TEST_TMPDIR" f
+    # Each file holds ONE offending shape, so every shape is proven on its own.
     printf -- '---\nname: a\nallowed-tools:\n  - Read\n  - Bash\n---\nbody\n' > "$d/a.md"
     printf -- '---\nname: b\nallowed-tools: Read, Bash\n---\n' > "$d/b.md"
-    printf -- '---\nname: c\nallowed-tools:\n  - Bash(npm test:*)\n---\n  - Bash\n' > "$d/c.md"
     # Independent review of #589: three shapes slipped through.
     printf -- '---\nname: e\nallowed-tools:\n  - Read\n  - Bash   # If the skill executes commands\n---\n' > "$d/e.md"
     printf -- '---\nname: f\nallowed-tools:\n- Bash\n---\n' > "$d/f.md"
     printf -- '---\nname: g\nallowed-tools: [Read, "Bash(*)"]\n---\n' > "$d/g.md"
-    printf -- '---\nname: h\nallowed-tools:\n  - Read\n  - Write\n---\n' > "$d/h.md"
-    printf -- '---\nname: i\nallowed-tools: Read, Edit, WebFetch\n---\n' > "$d/i.md"
-    printf -- '---\nname: j\nallowed-tools:\n  - Edit(docs/**)\n  - Read\n---\n' > "$d/j.md"
-    run _bare_grants "$d/a.md" "$d/b.md" "$d/c.md" "$d/e.md" "$d/f.md" "$d/g.md" "$d/h.md" "$d/i.md" "$d/j.md"
-    [[ "$output" == *"h.md"* ]]
-    [[ "$output" == *"i.md"* ]]
-    [[ "$output" != *"j.md"* ]]
-    [[ "$output" == *"a.md"* ]]
-    [[ "$output" == *"b.md"* ]]
-    [[ "$output" == *"e.md"* ]]
-    [[ "$output" == *"f.md"* ]]
-    [[ "$output" == *"g.md"* ]]
-    # A precise pattern is allowed, and a body line is not frontmatter.
-    [[ "$output" != *"c.md"* ]]
+    # Independent review of #598: every non-read-only tool, and the list shapes.
+    for t in Write Edit MultiEdit NotebookEdit WebFetch WebSearch PowerShell Monitor mcp__srv__tool; do
+        printf -- '---\nname: t\nallowed-tools:\n  - Read\n  - %s\n---\n' "$t" > "$d/tool-$t.md"
+    done
+    printf -- '---\nname: k\nallowed-tools:\n  - Read\n  # writers\n  - Write\n---\n' > "$d/k.md"
+    printf -- '---\nname: l\nallowed-tools:\n  - Read\n\n  - Write\n---\n' > "$d/l.md"
+    printf -- '---\nname: m\nallowed-tools: >-\n  Read Write\n---\n' > "$d/m.md"
+    for t in 'Edit(**)' 'Write(/**)' 'Bash(:*)' 'WebFetch(domain:*)'; do
+        printf -- '---\nname: w\nallowed-tools:\n  - %s\n---\n' "$t" > "$d/wild-${#t}-$(printf '%s' "$t" | tr -c 'A-Za-z' x).md"
+    done
+    for f in "$d"/*.md; do
+        run _bare_grants "$f"
+        [ "$output" = "$f" ] || { echo "not flagged: $(sed -n '3,6p' "$f")" >&2; return 1; }
+    done
+}
+
+@test "skills: the bare-grant scanner allows read-only tools and real scopes" {
+    local d="$BATS_TEST_TMPDIR"
+    printf -- '---\nname: c\nallowed-tools:\n  - Bash(npm test:*)\n---\n  - Bash\n' > "$d/c.md"
+    printf -- '---\nname: j\nallowed-tools:\n  - Edit(docs/**)\n  - Read\n  - Grep\n  - Glob\n---\n' > "$d/j.md"
+    printf -- '---\nname: y\nallowed-tools: Read, Bash(npm test:*), WebFetch(domain:docs.example.com)\n---\n' > "$d/y.md"
+    # A trailing comment is not a tool (the writing-skills template has one).
+    printf -- '---\nname: z\nallowed-tools:\n  - Read       # read-only tools may be listed bare\n---\n' > "$d/z.md"
+    run _bare_grants "$d/c.md" "$d/j.md" "$d/y.md" "$d/z.md"
+    [ -z "$output" ] || { echo "falsely flagged: $output" >&2; return 1; }
 }
 
 # -----------------------------------------------------------------------------
