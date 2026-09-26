@@ -98,7 +98,7 @@ If `progress.json` exists, resume at the last `in_progress` or `pending` story.
 - STOP if 2 consecutive stories fail
 - Each story must pass the tests before continuing
 - Commit after each story (no giant commits)
-- Unattended runs need file writes allowed: auto mode, or `Edit`/`Write` in the project's permission settings — this skill pre-approves nothing, so otherwise every write asks
+- Unattended runs need file writes allowed: the foundation's settings allow `Edit`/`Write`; a project that narrowed them needs auto mode or those rules back, since this skill pre-approves nothing
 
 ---
 

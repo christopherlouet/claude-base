@@ -108,7 +108,7 @@ NEVER write more code than necessary to pass the test.
 
 | Field | Description | Values |
 |-------|-------------|--------|
-| `allowed-tools` | Tools **pre-approved** (no permission prompt) during the skill's turn: it grants, never restricts. Foundation skills and commands declare none (`tests/skills-frontmatter.bats` refuses the key): in the project a read needs no prompt anyway, so a grant only widens what runs unprompted. A truly unattended need gets one precise, reviewed rule such as `Bash(npm test:*)` | None in the foundation |
+| `allowed-tools` | Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none — see [Pre-approving tools](/docs/concepts/customization#pre-approving-tools-allowed-tools) | None in the foundation |
 | `context` | Context type | `fork` or `shared` |
 
 ### Contexts

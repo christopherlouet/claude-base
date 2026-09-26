@@ -412,7 +412,7 @@ All read-only, isolated contexts
 
 ### Skills
 - `context: fork` recommended
-- `allowed-tools`: Tools **pre-approved** (no permission prompt) during the skill's turn: it grants, never restricts. Foundation skills and commands declare none (`tests/skills-frontmatter.bats` refuses the key): in the project a read needs no prompt anyway, so a grant only widens what runs unprompted. A truly unattended need gets one precise, reviewed rule such as `Bash(npm test:*)`.
+- `allowed-tools`: Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none — see [Pre-approving tools](CUSTOMIZATION.md#pre-approving-tools-allowed-tools)
 - Clear trigger keywords
 
 ### Agents

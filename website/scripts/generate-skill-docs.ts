@@ -17,6 +17,7 @@ import {
   generateFrontmatter,
 } from './utils/parse-frontmatter.js';
 import { rewriteUnsyncedRepoLinks } from './utils/rewrite-links.js';
+import { parseToolsField } from './utils/parse-tools.js';
 
 const CLAUDE_DIR = path.resolve(__dirname, '../../.claude');
 const SKILLS_DIR = path.join(CLAUDE_DIR, 'skills');
@@ -145,7 +146,7 @@ function parseSkillFile(dirPath: string): SkillInfo | null {
     return {
       name: data.name || skillName,
       description: data.description || description || heading || `Skill ${skillName}`,
-      allowedTools: data['allowed-tools'] || [],
+      allowedTools: parseToolsField(data['allowed-tools']),
       context: (data.context as 'fork' | 'shared') || 'fork',
       manualOnly: data['disable-model-invocation'] === true,
       keywords: extractKeywords(markdownContent, skillName),
@@ -186,7 +187,7 @@ function generateSkillPage(skill: SkillInfo, position: number): string {
 
   const toolsList = skill.allowedTools.length > 0
     ? skill.allowedTools.map((t) => `\`${t}\``).join(', ')
-    : '_None: every tool asks like any other turn_';
+    : "_None declared: the project's permission settings apply_";
 
   const keywordsList = skill.keywords.length > 0
     ? skill.keywords.map((k) => `\`${k}\``).join(', ')

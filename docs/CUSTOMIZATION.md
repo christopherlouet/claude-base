@@ -340,9 +340,24 @@ For large examples, move to `examples/` and include via link.
 ### Best practices
 
 - **`context: fork`**: isolates the skill from the main conversation (recommended for complex workflows).
-- **`allowed-tools`**: Tools **pre-approved** (no permission prompt) during the skill's turn: it grants, never restricts. Foundation skills and commands declare none (`tests/skills-frontmatter.bats` refuses the key): in the project a read needs no prompt anyway, so a grant only widens what runs unprompted. A truly unattended need gets one precise, reviewed rule such as `Bash(npm test:*)`.
+- **`allowed-tools`**: the foundation declares none — see [Pre-approving tools](#pre-approving-tools-allowed-tools) below.
 - **Precise description**: Claude uses the description to decide when to trigger, be specific.
 - **Skills ≠ Agents**: a skill complements Claude; an agent is an isolated subprocess.
+
+### Pre-approving tools (`allowed-tools`)
+
+`allowed-tools` pre-approves tools — no permission prompt — for the skill's turn. It **grants**, it never
+restricts: a skill can use every tool whatever the field says (measured on a forked skill).
+
+**The foundation's skills and commands declare none**, and `tests/skills-frontmatter.bats` refuses the key.
+The reason is honest rather than dramatic: the shipped `.claude/settings.json` already allows `Bash`, `Edit`,
+`Write`, `WebFetch` and `WebSearch` on every turn (deny rules and hooks are the safety net), so in an installed
+project a grant adds nothing. It only matters in a project that narrowed its allow list, or for a skill copied
+elsewhere — and there it silently widens what runs unprompted; even a bare `Read` then reaches outside the
+project (`~/.ssh`, `~/.aws`), since reads inside it never prompt anyway.
+
+If your own skill truly needs an unattended command, give it one precise rule such as `Bash(npm test:*)` and
+review it; never a bare tool or a wildcard-only scope like `Edit(**)`.
 
 ### Example: TypeScript code review skill
 

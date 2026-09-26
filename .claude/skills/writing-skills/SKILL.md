@@ -51,7 +51,7 @@ All fields available in the YAML frontmatter of a skill:
 |-------|----------|-------------|
 | `name` | No | Skill name (default: folder name). Lowercase, digits, hyphens (max 64 chars) |
 | `description` | Recommended | What the skill does and when to use it. Claude uses this to decide when to load the skill |
-| `allowed-tools` | No | Tools **pre-approved** (no permission prompt) during the skill's turn: it grants, never restricts. Foundation skills and commands declare none (`tests/skills-frontmatter.bats` refuses the key): in the project a read needs no prompt anyway, so a grant only widens what runs unprompted. A truly unattended need gets one precise, reviewed rule such as `Bash(npm test:*)` |
+| `allowed-tools` | No | Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none: the project's permission settings decide; add one precise, reviewed rule such as `Bash(npm test:*)` only for a truly unattended need |
 | `context` | No | `fork` for execution in an isolated sub-agent |
 | `background` | No | With `context: fork` only. Since CC 2.1.218 forked skills run in the BACKGROUND by default (async result, narrower background tool set, edits bypass `/rewind` checkpoints). Set `false` to block in-turn — the foundation default for workflow skills |
 | `model` | No | Model to use: `sonnet`, `opus`, `haiku`, `inherit` (default: inherits from context) |
@@ -76,7 +76,7 @@ Use the backtick-bang syntax to inject live data:
 - Example: `!` followed by backtick then `gh pr diff` then backtick
 - The command runs BEFORE Claude sees the content
 - The result replaces the placeholder
-- Outside auto mode the command must be pre-approved, or the invocation aborts: list the precise pattern, e.g. `Bash(gh pr diff:*)`, in `allowed-tools` — a reviewed exception, added to `GRANT_EXCEPTIONS` in `tests/skills-frontmatter.bats`
+- Outside auto mode the command must be pre-approved, or the invocation aborts: list the precise pattern, e.g. `Bash(gh pr diff:*)`, in `allowed-tools` — reviewed, and never bare (inside the foundation repo it must also be pinned in `GRANT_EXCEPTIONS`)
 
 Example:
 ```markdown

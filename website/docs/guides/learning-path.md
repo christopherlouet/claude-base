@@ -1411,7 +1411,7 @@ The key fields of the frontmatter:
 |-------|-------------|---------|
 | `name` | Unique identifier of the skill | `sql-optimizer` |
 | `description` | Description + automatic trigger keywords | See above |
-| `allowed-tools` | Tools **pre-approved** (no permission prompt) during the skill's turn: it grants, never restricts. Foundation skills and commands declare none (`tests/skills-frontmatter.bats` refuses the key): in the project a read needs no prompt anyway, so a grant only widens what runs unprompted. A truly unattended need gets one precise, reviewed rule such as `Bash(npm test:*)` | _(none)_ |
+| `allowed-tools` | Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none — see [Pre-approving tools](/docs/concepts/customization#pre-approving-tools-allowed-tools) | _(none)_ |
 | `context` | `fork` (isolated, recommended) or `shared` (main context) | `fork` |
 | `model` | Preferred model for this skill | `haiku`, `sonnet`, `opus` |
 | `argument-hint` | Hint shown to the user about expected arguments | `"[description]"` |

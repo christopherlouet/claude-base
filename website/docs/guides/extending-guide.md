@@ -153,7 +153,7 @@ Output format.
 |-------|----------|--------|-------------|
 | `name` | No | kebab-case | Skill name (default: folder name) |
 | `description` | Recommended | text | Trigger context |
-| `allowed-tools` | No | list | Tools **pre-approved** (no permission prompt) during the skill's turn: it grants, never restricts. Foundation skills and commands declare none (`tests/skills-frontmatter.bats` refuses the key): in the project a read needs no prompt anyway, so a grant only widens what runs unprompted. A truly unattended need gets one precise, reviewed rule such as `Bash(npm test:*)` |
+| `allowed-tools` | No | list | Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none — see [Pre-approving tools](/docs/concepts/customization#pre-approving-tools-allowed-tools) |
 | `context` | No | `fork` | Execution in an isolated sub-agent |
 | `model` | No | `sonnet`, `opus`, `haiku`, `inherit` | Model to use |
 | `argument-hint` | No | text | Autocompletion in the `/` menu |
@@ -163,7 +163,7 @@ Output format.
 ### Best practices
 
 - Limit SKILL.md to 500 lines maximum. Move detail to `examples/` or `references/`
-- `allowed-tools`: Tools **pre-approved** (no permission prompt) during the skill's turn: it grants, never restricts. Foundation skills and commands declare none (`tests/skills-frontmatter.bats` refuses the key): in the project a read needs no prompt anyway, so a grant only widens what runs unprompted. A truly unattended need gets one precise, reviewed rule such as `Bash(npm test:*)`.
+- `allowed-tools`: Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none — see [Pre-approving tools](/docs/concepts/customization#pre-approving-tools-allowed-tools)
 - Always use `context: fork` for isolation
 - Write the `description` with the trigger context: Claude uses this field to automatically decide when to load the skill
 - Prefer tables over prose for quick references
