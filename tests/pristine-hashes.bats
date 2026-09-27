@@ -231,13 +231,40 @@ TABLE_REL="scripts/lib/pristine-hashes.txt"
 # Self-application: the committed table covers the foundation's real history.
 # =============================================================================
 
-@test "self-application: the committed table covers every shipped hook version" {
+# _pristine_trigger — the regex .husky/pre-commit applies to decide whether to
+# regenerate the table (the grep -qE line that names substance-check.sh).
+_pristine_trigger() {
+    grep -E "grep -qE '.*substance-check" "$BASE_DIR/.husky/pre-commit" \
+        | sed -nE "s/.*grep -qE '([^']*)'.*/\1/p" | head -1
+}
+
+@test "pre-commit: regenerates the table for every managed path class" {
+    # The generator and this trigger must cover the same set: a managed file
+    # committed without regenerating leaves the table short, and the
+    # self-application test below fails on the next CI run (found in review).
+    local re p
+    re="$(_pristine_trigger)"
+    [ -n "$re" ]
+    for p in scripts/hooks/guard.sh scripts/substance-check.sh \
+             .claude/skills/dev-tdd/SKILL.md .claude/skills/x/references/r.md \
+             .claude/agents/qa-audit.md .claude/rules/testing.md \
+             .claude/commands/work/work-quick.md .claude/output-styles/o.md \
+             .claude/templates/t/f.md; do
+        printf '%s\n' "$p" | grep -qE "$re" || { echo "does not fire: $p" >&2; return 1; }
+    done
+    for p in .claude/settings.json scripts/hooks/lib/x.sh README.md; do
+        if printf '%s\n' "$p" | grep -qE "$re"; then echo "fires: $p" >&2; return 1; fi
+    done
+}
+
+@test "self-application: the committed table covers every shipped version" {
     [ "$(git -C "$BASE_DIR" rev-parse --is-shallow-repository)" = "false" ] \
         || skip "shallow clone: the history the table is derived from is not here"
     run bash "$GEN" --check
     [ "$status" -eq 0 ] || { printf '%s\n' "$output" >&2; return 1; }
     # Not vacuous: the real table holds more than the current files.
     [ "$(grep -c ' scripts/hooks/' "$BASE_DIR/$TABLE_REL")" -gt "$(ls "$BASE_DIR"/scripts/hooks/*.sh | wc -l)" ]
+    [ "$(grep -c ' \.claude/skills/' "$BASE_DIR/$TABLE_REL")" -gt "$(find "$BASE_DIR/.claude/skills" -type f | wc -l)" ]
 }
 
 # =============================================================================

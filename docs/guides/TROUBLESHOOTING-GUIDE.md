@@ -232,7 +232,9 @@ release is replaced; one you edited is skipped with
 `skipped (use --force to overwrite)`. Before this, every file that differed from
 the current release was skipped, including untouched ones. A v5.4.0 install had
 all 52 of its skills skipped that way, so no skill change reached it without
-`--force`.
+`--force`. The flip side: a file you deliberately reverted to an older release,
+byte for byte, reads as untouched and is replaced too. Edit it, even by one
+line, to keep it.
 
 ---
 

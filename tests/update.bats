@@ -1476,12 +1476,19 @@ plant_old_copy() {
 
 @test "update.sh (no flag) refreshes an unmodified older command without --force" {
     "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
-    plant_old_copy .claude/commands/assistant.md $'---\ndescription: x\n---\nan older foundation release\n'
+    # A top-level command and a namespaced one: the lookup path must keep the
+    # namespace (a basename-only lookup passed the top-level case alone).
+    local f
+    for f in .claude/commands/assistant.md .claude/commands/work/work-commit.md; do
+        plant_old_copy "$f" $'---\ndescription: x\n---\nan older foundation release\n'
+    done
 
     PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
     [ "$status" -eq 0 ]
-    cmp -s "$BASE_DIR/.claude/commands/assistant.md" "$TEST_DIR/proj/.claude/commands/assistant.md"
-    [[ "$output" != *"assistant.md skipped"* ]]
+    for f in .claude/commands/assistant.md .claude/commands/work/work-commit.md; do
+        cmp -s "$BASE_DIR/$f" "$TEST_DIR/proj/$f" || { echo "$f not refreshed" >&2; return 1; }
+    done
+    [[ "$output" != *"skipped (use --force"* ]]
 }
 
 @test "update.sh --skills --dry-run leaves an unmodified older skill untouched" {
@@ -1492,6 +1499,8 @@ plant_old_copy() {
     PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -n -y --skills "$TEST_DIR/proj"
     [ "$status" -eq 0 ]
     [ "$(cat "$TEST_DIR/proj/.claude/skills/dev-debug/SKILL.md")" = "$before" ]
+    # And says what a real run would do, not a conflict.
+    [[ "$output" == *"Update (unmodified older copy): dev-debug/SKILL.md"* ]]
 }
 
 @test "update.sh --skills from an OLDER foundation does not replace a skill without --force" {
