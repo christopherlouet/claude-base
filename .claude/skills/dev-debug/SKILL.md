@@ -1,7 +1,6 @@
 ---
 name: dev-debug
 description: Debug and resolve problems. Use when the user has a bug, an error, an unexpected behavior, or wants to understand why something is not working.
-model: opus
 argument-hint: "[error-description]"
 ---
 
