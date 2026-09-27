@@ -86,6 +86,40 @@ TABLE_REL="scripts/lib/pristine-hashes.txt"
     grep -qx "$(sha_of $'old\n') scripts/hooks/retired.sh" "$REPO/$TABLE_REL"
 }
 
+@test "gen: records every version of the .claude/ files update refreshes" {
+    local f
+    for f in skills/x/SKILL.md skills/x/references/r.md agents/a.md rules/r.md \
+             commands/c.md commands/ns/c.md output-styles/o.md templates/t/f.md; do
+        mkdir -p "$(dirname "$REPO/.claude/$f")"
+        printf 'v1\n' > "$REPO/.claude/$f"
+    done
+    commit_all one
+    printf 'v2\n' > "$REPO/.claude/skills/x/SKILL.md"; commit_all two
+
+    run_gen
+    [ "$status" -eq 0 ]
+    grep -qx "$(sha_of $'v1\n') .claude/skills/x/SKILL.md" "$REPO/$TABLE_REL"
+    grep -qx "$(sha_of $'v2\n') .claude/skills/x/SKILL.md" "$REPO/$TABLE_REL"
+    for f in skills/x/references/r.md agents/a.md rules/r.md commands/c.md \
+             commands/ns/c.md output-styles/o.md templates/t/f.md; do
+        grep -qx "$(sha_of $'v1\n') .claude/$f" "$REPO/$TABLE_REL" || { echo "missing .claude/$f" >&2; return 1; }
+    done
+}
+
+@test "gen: ignores .claude/ files update never refreshes" {
+    mkdir -p "$REPO/.claude/skills/x"
+    printf '{}\n' > "$REPO/.claude/settings.json"
+    printf 'x\n' > "$REPO/.claude/CLAUDE.local.md"
+    printf 'v1\n' > "$REPO/.claude/skills/x/SKILL.md"
+    commit_all one
+
+    run_gen
+    [ "$status" -eq 0 ]
+    if grep -q 'settings.json' "$REPO/$TABLE_REL"; then return 1; fi
+    if grep -q 'CLAUDE.local.md' "$REPO/$TABLE_REL"; then return 1; fi
+    grep -q '.claude/skills/x/SKILL.md' "$REPO/$TABLE_REL"
+}
+
 @test "gen: ignores files outside the managed set" {
     printf 'x\n' > "$REPO/scripts/hooks/README.md"
     printf 'x\n' > "$REPO/scripts/other.sh"

@@ -235,6 +235,15 @@ as a local customisation: it is skipped, and the advisory says so. Review it,
 then add `--force`, which discards the edit, or run `update --hook-scripts`
 without `-y` to resolve each one individually.
 
+The same table covers the `.claude/` files `update` refreshes: commands on a
+plain `update`, plus skills, agents, rules, output-styles and templates with
+their flags (`--skills`, `--agents`, `--rules`…). An unmodified copy of an older
+release is replaced; one you edited is skipped with
+`skipped (use --force to overwrite)`. Before this, every file that differed from
+the current release was skipped, including untouched ones. A v5.4.0 install had
+all 52 of its skills skipped that way, so no skill change reached it without
+`--force`.
+
 ---
 
 ## 3. Quick diagnosis
