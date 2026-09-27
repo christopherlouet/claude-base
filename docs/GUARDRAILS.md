@@ -96,6 +96,43 @@ tool says so rather than leaving the zero to speak. Today the corpus holds no `d
 `chown` command at all, so for those families it is blind and a wider rule still needs evidence from
 somewhere else.
 
+### Path rules and the Bash sandbox: why neither ships
+
+A path rule such as `deny: Read(~/.ssh/**)` looks like it fences a directory off. Measured on
+2026-09-27 (CLI 2.1.283, fresh `claude -p` sessions, a witness file standing in for the secret, a
+decoy rule as control), it does less:
+
+| Read of the denied file | Refused? |
+|---|---|
+| the `Read` tool | yes |
+| `cat <path>` with the path written in the command | yes |
+| a script that builds the path, then reads it | **no — the content leaks** |
+| `ssh -i <path> …` | **no** — the rule knows readers like `cat`, not the options of `ssh` |
+
+So the rule refuses the literal read and nothing that goes around it. On `~/.ssh` it would also
+block the legitimate gestures around keys (`cat *.pub`, `grep '^Host' ~/.ssh/config`) while
+leaving the key itself usable. The foundation therefore ships **no** path rule on `~/.ssh`,
+`~/.gnupg` or `~/.aws`.
+
+What would close the gap is the **Bash sandbox** (`sandbox.enabled`), which limits what a command
+and its children can read, write and reach on the network. It is not enabled in the shipped
+settings either, because it does not start on recent Ubuntu:
+
+- Since 24.04, Ubuntu sets `kernel.apparmor_restrict_unprivileged_userns=1`. `bwrap` itself runs,
+  but everything it launches drops to a profile that denies capabilities, and Claude Code's seccomp
+  helper needs one in a nested user namespace. **Every** Bash command then fails, `echo` included:
+  `apply-seccomp: write /proc/self/setgroups (nested userns is capability-restricted …)`.
+  `enableWeakerNestedSandbox` does not change it.
+- With the default `allowUnsandboxedCommands: "retry"`, a `claude -p` run did **not** fall back
+  outside the sandbox: the command simply failed.
+
+Enabling it by default would break Bash for every user on such a host. On macOS (Seatbelt) or a
+Linux without that restriction, it can be enabled per machine in `~/.claude/settings.json` (not
+measured there yet); prove it on a harmless command first, since a sandbox that cannot start
+turns every Bash call into a failure. Making it start on Ubuntu means
+relaxing the user-namespace restriction for a `bwrap` binary, a host-wide trade-off the foundation
+does not make for you.
+
 ## 3. Verification gates — *proof, not the model's word*
 
 | Gate | What it prevents | How enforced | Native? |
