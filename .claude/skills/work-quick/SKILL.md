@@ -1,6 +1,6 @@
 ---
 name: work-quick
-description: Quick workflow for trivial changes (single-file fix, rename, typo). Skip the full Explore-Plan-TDD-Audit cycle. Trigger when the user wants a quick fix, a simple change, or mentions "quick", "fast", "rapid".
+description: Quick workflow for trivial edits to EXISTING code (typo, rename, one-line fix, config value). Skip the full Explore-Plan-TDD-Audit cycle. Trigger when the user wants a quick fix or mentions "quick", "fast", "rapid". Not for adding a function, a file or a feature, however small (that is dev-tdd).
 argument-hint: "[change description]"
 ---
 
