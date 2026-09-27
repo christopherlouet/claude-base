@@ -26,3 +26,24 @@ Pro/Max plan that is an estimate, drawn from the plan's usage limits, not billed
 
 Limits: N=3 per case, one model, three prompts. This fixes one measured conflict;
 it says nothing yet about the other skills.
+
+## 2026-09-27 — campaign: four overlapping pairs
+
+Same method, after the `work-quick` fix. 3 runs per case, `claude-opus-5-5`, about
+2.5 USD at list price for the campaign.
+
+| Case | Result |
+|---|---|
+| `ops-ci-fix` — "Our GitHub Actions workflow fails on every push…" | 3/3 alone |
+| `qa-perf` — "Our Express API takes 3 seconds on GET /orders…" | 3/3 alone |
+| `dev-react-perf` — "My React list re-renders every item…" | 3/3 alone |
+| `dev-refactor` — "Our 400-line utils.js has grown messy. Restructure it…" | 3/3 alone |
+| `dev-api` — "Add a REST endpoint POST /users…" | 3/3 alone |
+| `dev-graphql` — "Add a resolver for a `user(id)` query…" | 3/3 alone (although `dev-api` also claims GraphQL) |
+| no skill — "Difference between `let` and `const`?" | 3/3 no skill |
+| `dev-debug` — "`node list.js` crashes with TypeError… Why, and how do I fix it?" | **0/3 — no skill**, with or without the buggy file in the workspace |
+
+Every pair separated cleanly. `dev-debug` is the exception: on a bug whose cause
+is one read away, Opus reads the file, explains and fixes it without loading any
+skill. Whether that is a defect depends on what `dev-debug` is for; a harder,
+multi-file bug was not tested.
