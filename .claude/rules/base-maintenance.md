@@ -86,6 +86,15 @@ tell a reader to run — because a refusal there is a self-contradiction.
 exception, so a widening that starts taxing ordinary documented commands fails
 with the offending command named. Refusing *fewer* commands never fails.
 
+That corpus is single-line by construction, so it cannot see a multi-line command
+or a heredoc body that merely cites a trigger. For those, measure the agent's own
+commands, judged whole as the hook sees them (local only, personal data):
+
+```bash
+scripts/validator-corpus.sh --transcripts --summary   # counts per refusal reason
+scripts/validator-corpus.sh --transcripts             # reason, project, command
+```
+
 Precedent: the loop guard shipped the literal `yes \|`, which refused
 `echo YES || echo NO` while the real generator escaped as `yes|consumer`. It was
 found by tripping over it in normal work, not by review.
