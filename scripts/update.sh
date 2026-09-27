@@ -838,7 +838,18 @@ update_command_file() {
             return
         fi
 
-        # File differs
+        # File differs. An unmodified copy of an older release is replaced
+        # without --force, as in update_directory.
+        if ! $FORCE_UPDATE && _replaceable_without_force "$COMMANDS_SUBDIR/$rel_path" "$dest"; then
+            if $DRY_RUN; then
+                echo -e "${DIM}[DRY-RUN]${NC} Update (unmodified older copy): $filename"
+            else
+                cp "$src" "$dest"
+                info "  $filename updated (unmodified copy of an older release)"
+            fi
+            ((UPDATED++)) || true
+            return
+        fi
         if $FORCE_UPDATE; then
             # Force mode: overwrite
             if $DRY_RUN; then
@@ -1409,8 +1420,9 @@ update_directory() {
             # not a customisation: its hash is in the pristine-hashes table, so it
             # is replaced without --force. Without this, --hook-scripts left every
             # changed security library of an older install behind (measured
-            # 2026-09-15, v5.3.0 -> v5.5.0). Pinned by tests/update.bats.
-            if [[ "$name" == "hook_scripts" ]] && _replaceable_without_force "$HOOK_SCRIPTS_SUBDIR/$rel_path" "$dest_file"; then
+            # 2026-09-15, v5.3.0 -> v5.5.0), and --skills skipped all 52 skills
+            # of a v5.4.0 install (2026-09-27). Pinned by tests/update.bats.
+            if _replaceable_without_force "$src_subdir/$rel_path" "$dest_file"; then
                 if $DRY_RUN; then
                     echo -e "${DIM}[DRY-RUN]${NC} Update (unmodified older copy): $rel_path"
                 else

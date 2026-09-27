@@ -86,6 +86,40 @@ TABLE_REL="scripts/lib/pristine-hashes.txt"
     grep -qx "$(sha_of $'old\n') scripts/hooks/retired.sh" "$REPO/$TABLE_REL"
 }
 
+@test "gen: records every version of the .claude/ files update refreshes" {
+    local f
+    for f in skills/x/SKILL.md skills/x/references/r.md agents/a.md rules/r.md \
+             commands/c.md commands/ns/c.md output-styles/o.md templates/t/f.md; do
+        mkdir -p "$(dirname "$REPO/.claude/$f")"
+        printf 'v1\n' > "$REPO/.claude/$f"
+    done
+    commit_all one
+    printf 'v2\n' > "$REPO/.claude/skills/x/SKILL.md"; commit_all two
+
+    run_gen
+    [ "$status" -eq 0 ]
+    grep -qx "$(sha_of $'v1\n') .claude/skills/x/SKILL.md" "$REPO/$TABLE_REL"
+    grep -qx "$(sha_of $'v2\n') .claude/skills/x/SKILL.md" "$REPO/$TABLE_REL"
+    for f in skills/x/references/r.md agents/a.md rules/r.md commands/c.md \
+             commands/ns/c.md output-styles/o.md templates/t/f.md; do
+        grep -qx "$(sha_of $'v1\n') .claude/$f" "$REPO/$TABLE_REL" || { echo "missing .claude/$f" >&2; return 1; }
+    done
+}
+
+@test "gen: ignores .claude/ files update never refreshes" {
+    mkdir -p "$REPO/.claude/skills/x"
+    printf '{}\n' > "$REPO/.claude/settings.json"
+    printf 'x\n' > "$REPO/.claude/CLAUDE.local.md"
+    printf 'v1\n' > "$REPO/.claude/skills/x/SKILL.md"
+    commit_all one
+
+    run_gen
+    [ "$status" -eq 0 ]
+    if grep -q 'settings.json' "$REPO/$TABLE_REL"; then return 1; fi
+    if grep -q 'CLAUDE.local.md' "$REPO/$TABLE_REL"; then return 1; fi
+    grep -q '.claude/skills/x/SKILL.md' "$REPO/$TABLE_REL"
+}
+
 @test "gen: ignores files outside the managed set" {
     printf 'x\n' > "$REPO/scripts/hooks/README.md"
     printf 'x\n' > "$REPO/scripts/other.sh"
@@ -197,13 +231,40 @@ TABLE_REL="scripts/lib/pristine-hashes.txt"
 # Self-application: the committed table covers the foundation's real history.
 # =============================================================================
 
-@test "self-application: the committed table covers every shipped hook version" {
+# _pristine_trigger — the regex .husky/pre-commit applies to decide whether to
+# regenerate the table (the grep -qE line that names substance-check.sh).
+_pristine_trigger() {
+    grep -E "grep -qE '.*substance-check" "$BASE_DIR/.husky/pre-commit" \
+        | sed -nE "s/.*grep -qE '([^']*)'.*/\1/p" | head -1
+}
+
+@test "pre-commit: regenerates the table for every managed path class" {
+    # The generator and this trigger must cover the same set: a managed file
+    # committed without regenerating leaves the table short, and the
+    # self-application test below fails on the next CI run (found in review).
+    local re p
+    re="$(_pristine_trigger)"
+    [ -n "$re" ]
+    for p in scripts/hooks/guard.sh scripts/substance-check.sh \
+             .claude/skills/dev-tdd/SKILL.md .claude/skills/x/references/r.md \
+             .claude/agents/qa-audit.md .claude/rules/testing.md \
+             .claude/commands/work/work-quick.md .claude/output-styles/o.md \
+             .claude/templates/t/f.md; do
+        printf '%s\n' "$p" | grep -qE "$re" || { echo "does not fire: $p" >&2; return 1; }
+    done
+    for p in .claude/settings.json scripts/hooks/lib/x.sh README.md; do
+        if printf '%s\n' "$p" | grep -qE "$re"; then echo "fires: $p" >&2; return 1; fi
+    done
+}
+
+@test "self-application: the committed table covers every shipped version" {
     [ "$(git -C "$BASE_DIR" rev-parse --is-shallow-repository)" = "false" ] \
         || skip "shallow clone: the history the table is derived from is not here"
     run bash "$GEN" --check
     [ "$status" -eq 0 ] || { printf '%s\n' "$output" >&2; return 1; }
     # Not vacuous: the real table holds more than the current files.
     [ "$(grep -c ' scripts/hooks/' "$BASE_DIR/$TABLE_REL")" -gt "$(ls "$BASE_DIR"/scripts/hooks/*.sh | wc -l)" ]
+    [ "$(grep -c ' \.claude/skills/' "$BASE_DIR/$TABLE_REL")" -gt "$(find "$BASE_DIR/.claude/skills" -type f | wc -l)" ]
 }
 
 # =============================================================================
