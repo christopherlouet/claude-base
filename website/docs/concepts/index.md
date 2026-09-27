@@ -80,8 +80,8 @@ Claude Code is a CLI tool from Anthropic that lets you interact with Claude dire
 | Aspect | Command | Skill | Agent |
 |--------|---------|-------|-------|
 | **Trigger** | Manual (`/xxx`) | Auto (keywords) | Auto (delegation) |
-| **Context** | Shared | Fork (isolated) | Isolated |
-| **Tools** | All | Restricted | Restricted |
+| **Context** | Shared | Inline (fork on review) | Isolated |
+| **Tools** | All | All (`allowed-tools` grants, never restricts) | Restricted |
 | **File** | `.claude/commands/*.md` | `.claude/skills/*/SKILL.md` | `.claude/agents/*.md` |
 
 ## File structure

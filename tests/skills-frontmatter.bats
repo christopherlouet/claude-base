@@ -391,35 +391,116 @@ _generated_excludes() {
 }
 
 _old_fork_contract() {
-    # $1: optional revision to scan instead of the working tree
+    # $1: optional revision to scan instead of the working tree. A phrase list
+    # catches prose; the structural checks below catch examples and tables.
     local -a excl
     # shellcheck disable=SC2207  # one pathspec per line, no spaces in paths
     excl=( $(_generated_excludes "$1") )
     git -C "$BASE_DIR" grep -n -iE \
-        'fork` *\((isolated, )?recommended\)|always (use `)?context: fork|always fork for isolation|context: fork` recommended|context: fork is present|context: fork.*`inherit`|`fork` or `shared`|^\| *`shared` *\||fork context\*{0,2}: *recommended|runs in an isolated context \(`fork`\)|forked context recommended|fork or shared|\| *shared *\| *\*{0,2}fork\*{0,2} *\||\| *\*\*skill\*\* *\|[^|]*\| *fork *\|' \
+        'fork` *\((isolated, )?recommended\)|always (use `)?context: fork|always fork for isolation|context: fork` recommended|context: fork is present|context: fork.*`inherit`|fork(ed)?`?( *\([^)]*\))? or `?shared|fork context\*{0,2}: *recommended|runs in an isolated context \(`fork`\)|forked context recommended|preferred model for this skill|\| *\*{0,2}skills?\*{0,2} *\|[^|]*\| *\*{0,2}fork(ed)?\*{0,2} *\|' \
         ${1:+"$1"} -- '*.md' ':!CHANGELOG.md' "${excl[@]}"
 }
 
-# _inline_skill_model_pins — fenced frontmatter examples in the docs that look
-# like a SKILL (a name and a description, and none of the fields only agents
-# carry: tools, disallowedTools, permissionMode, maxTurns), are not forked, and
-# pin a `model:`. Inline, that line switches the reader's session model (#604).
-_inline_skill_model_pins() {
+# _skill_table_cells — comparison tables with a Skill(s) COLUMN: on the Context
+# and Tools rows, the skill cell must not teach fork/shared or restricted tools.
+# Structural, because phrase patterns leaked both ways on tables: a
+# Command|Agent table legitimately says "Restricted", and "Fork (isolated)"
+# escaped a pattern that expected the cell to end after "Fork".
+_skill_table_cells() {
     local -a excl
     # shellcheck disable=SC2207
     excl=( $(_generated_excludes) )
     git -C "$BASE_DIR" ls-files -- '*.md' ':!CHANGELOG.md' ':!specs' "${excl[@]}" \
         | while read -r f; do
             awk -v F="$f" '
-                /^```/ { if (inb) { if (fm == 2 && model && named && described && !agent && !fork) print F ":" mline; inb = 0 } else { inb = 1; fm = 0; model = named = described = agent = fork = 0 }; next }
-                inb && /^---$/ { fm++; next }
-                inb && fm == 1 && /^model:/ { model = 1; mline = NR }
-                inb && fm == 1 && /^name:/ { named = 1 }
-                inb && fm == 1 && /^description:/ { described = 1 }
-                inb && fm == 1 && /^(tools|disallowedTools|permissionMode|maxTurns):/ { agent = 1 }
-                inb && fm == 1 && /^context:[[:space:]]*fork/ { fork = 1 }
+                function clean(x) { gsub(/\*|`/, "", x); gsub(/^[ \t]+|[ \t]+$/, "", x); return tolower(x) }
+                !/^\|/ { col = 0; next }
+                {
+                    n = split($0, c, "|")
+                    if (!col) { for (i = 2; i < n; i++) if (clean(c[i]) ~ /^skills?$/) col = i; next }
+                    k = clean(c[2]); v = clean(c[col])
+                    # "Shared (same conversation)" is right for an inline skill.
+                    if (k ~ /^context$/ && v ~ /fork|isolated/ && v !~ /inline/) print F ":" NR ": " $0
+                    if (k ~ /^tools$/ && v ~ /restrict|configurable|whitelist|defined/ && v !~ /grant|never restrict/) print F ":" NR ": " $0
+                }
             ' "$BASE_DIR/$f"
         done
+}
+
+@test "docs: no comparison table says skills fork or restrict tools" {
+    run _skill_table_cells
+    [ -z "$output" ] || { echo "$output"; false; }
+}
+
+@test "docs: the table check reads the Skill column, not the row" {
+    setup_test_dir
+    local saved="$BASE_DIR"
+    BASE_DIR="$TEST_DIR/repo"; mkdir -p "$BASE_DIR"; git -C "$BASE_DIR" init -q
+    printf '| Aspect | Command | Agent |\n|---|---|---|\n| Tools | All | Restricted |\n' > "$BASE_DIR/ok.md"
+    printf '| Aspect | Agent | Skill |\n|---|---|---|\n| Context | Isolated | Shared (same conversation) |\n| Tools | Restricted | All (never restricts) |\n' > "$BASE_DIR/ok2.md"
+    printf '\n| Aspect | Command | **Skill** | Agent |\n|---|---|---|---|\n| **Context** | Shared | Fork (isolated) | Isolated |\n| Tools | All | Restricted | Restricted |\n| Context | Shared | Inline (fork on review) | Isolated |\n' > "$BASE_DIR/bad.md"
+    git -C "$BASE_DIR" add -A
+    run _skill_table_cells
+    BASE_DIR="$saved"; teardown_test_dir
+    [ "$(printf '%s\n' "$output" | grep -c .)" -eq 2 ] || { echo "$output"; false; }
+    [[ "$output" == *"bad.md:4:"* && "$output" == *"bad.md:5:"* ]]
+}
+
+# _skill_examples — one line per fenced frontmatter example in the shipped docs:
+#   file:line <TAB> name <TAB> forked <TAB> model-line (0 = none) <TAB> agent
+# `agent` is 1 when the block carries a field only agents have (tools,
+# disallowedTools, permissionMode, maxTurns). Tolerates ``` and ~~~ fences,
+# indented fences (a list item), CRLF, and a `---` rule in the body: only the
+# first two `---` delimit the frontmatter.
+_skill_examples() {
+    local -a excl
+    # shellcheck disable=SC2207
+    excl=( $(_generated_excludes) )
+    git -C "$BASE_DIR" ls-files -- '*.md' ':!CHANGELOG.md' ':!specs' "${excl[@]}" \
+        | while read -r f; do
+            awk -v F="$f" '
+                { sub(/\r$/, ""); l = $0; sub(/^[ \t]+/, "", l) }
+                l ~ /^(```|~~~)/ {
+                    if (inb) {
+                        if (fm >= 2 && named) printf "%s:%d\t%s\t%d\t%d\t%d\n", F, start, name, fork, mline, agent
+                        inb = 0
+                    } else { inb = 1; start = NR; fm = 0; named = fork = mline = agent = 0; name = "" }
+                    next
+                }
+                !inb || fm >= 2 { next }
+                l == "---" { fm++; next }
+                fm == 1 && l ~ /^name:/ { named = 1; name = l; sub(/^name:[ \t]*/, "", name); sub(/[ \t]*(#.*)?$/, "", name) }
+                fm == 1 && l ~ /^model:/ { mline = NR }
+                fm == 1 && l ~ /^(tools|disallowedTools|permissionMode|maxTurns):/ { agent = 1 }
+                fm == 1 && l ~ /^context:[ \t]*fork[ \t]*(#.*)?$/ { fork = 1 }
+            ' "$BASE_DIR/$f"
+        done
+}
+
+# _inline_skill_model_pins — skill examples (not an agent's) that are not
+# forked and pin a `model:`. Inline, that line switches the reader's session
+# model (#604).
+_inline_skill_model_pins() {
+    _skill_examples | awk -F'\t' '!$5 && !$3 && $4 { split($1, a, ":"); print a[1] ":" $4 }'
+}
+
+# _named_example_mismatches — an example that names a REAL skill must show that
+# skill's real context: re-adding `context: fork` to the dev-tdd example of a
+# concepts page passed every phrase check (found in review 2026-09-27).
+_named_example_mismatches() {
+    local loc name fork model agent real
+    while IFS=$'\t' read -r loc name fork model agent; do
+        [ "$agent" = 0 ] && [ -f "$BASE_DIR/.claude/skills/$name/SKILL.md" ] || continue
+        if _fm "$BASE_DIR/.claude/skills/$name/SKILL.md" | grep -qE '^context:[[:space:]]*fork[[:space:]]*(#.*)?$'; then real=1; else real=0; fi
+        [ "$fork" = "$real" ] || echo "$loc $name: example forked=$fork, real skill forked=$real"
+    done < <(_skill_examples)
+}
+
+@test "docs: an example naming a real skill shows its real context" {
+    run _named_example_mismatches
+    [ -z "$output" ] || { echo "$output"; false; }
+    # Not vacuous: the concepts page names real skills in its examples.
+    [ "$(_skill_examples | awk -F'\t' '{print $2}' | while read -r n; do [ -f "$BASE_DIR/.claude/skills/$n/SKILL.md" ] && echo "$n"; done | grep -c .)" -ge 3 ]
 }
 
 @test "docs: no skill example pins a model on an inline skill" {
@@ -428,7 +509,8 @@ _inline_skill_model_pins() {
 }
 
 @test "docs: the inline-model scan is not blind" {
-    # Drives the real awk on a planted page, not a copy of it.
+    # Drives the real awk on planted pages, not a copy of it, including the
+    # shapes an earlier draft missed (review 2026-09-27).
     setup_test_dir
     local saved="$BASE_DIR"
     BASE_DIR="$TEST_DIR/repo"; mkdir -p "$BASE_DIR"; git -C "$BASE_DIR" init -q
@@ -436,10 +518,54 @@ _inline_skill_model_pins() {
     printf '```yaml\n---\nname: s\ndescription: d\ncontext: fork\nmodel: sonnet\n---\n```\n' > "$BASE_DIR/b.md"
     printf '```yaml\n---\nname: a\ndescription: d\ntools: Read\nmodel: sonnet\n---\n```\n' > "$BASE_DIR/c.md"
     printf '```yaml\n---\nname: a\ndescription: d\nmodel: opus\npermissionMode: plan\n---\n```\n' > "$BASE_DIR/d.md"
+    printf '```markdown\n---\nname: s\nmodel: haiku\n---\n# body\n---\nmore\n```\n' > "$BASE_DIR/e.md"
+    printf -- '- step:\n  ```yaml\n  ---\n  name: s\n  model: haiku\n  ---\n  ```\n' > "$BASE_DIR/f.md"
+    printf '~~~yaml\n---\nname: s\nmodel: haiku\n---\n~~~\n' > "$BASE_DIR/g.md"
+    printf '```yaml\r\n---\r\nname: s\r\nmodel: haiku\r\n---\r\n```\r\n' > "$BASE_DIR/h.md"
+    printf '```yaml\n---\nname: s\ncontext: forked\nmodel: haiku\n---\n```\n' > "$BASE_DIR/i.md"
     git -C "$BASE_DIR" add -A
     run _inline_skill_model_pins
     BASE_DIR="$saved"; teardown_test_dir
-    [ "$output" = "a.md:5" ]
+    [ "$output" = "$(printf 'a.md:5\ne.md:4\nf.md:5\ng.md:4\nh.md:4\ni.md:5')" ] || { echo "$output"; false; }
+}
+
+@test "docs: the fork phrase scan catches the variants and spares the correct lines" {
+    setup_test_dir
+    local saved="$BASE_DIR" line
+    BASE_DIR="$TEST_DIR/repo"; mkdir -p "$BASE_DIR"; git -C "$BASE_DIR" init -q
+    for line in \
+        '| Skill | Keywords | Fork |' \
+        '| **Skill** | Keywords | **Fork** |' \
+        '| `context` | `fork` (isolated) or `shared` (main) | x |' \
+        '- Forked (isolated) or shared context' \
+        '| `model` | Preferred model for this skill | sonnet |'; do
+        printf '%s\n' "$line" > "$BASE_DIR/bad.md"; git -C "$BASE_DIR" add -A
+        run _old_fork_contract
+        [ -n "$output" ] || { echo "missed: $line"; BASE_DIR="$saved"; teardown_test_dir; return 1; }
+    done
+    for line in \
+        '| Context | Shared | Inline (fork on review) | Isolated |' \
+        '| `context` | omit (inline) or `fork` | x |' \
+        '| Tools | All | All (`allowed-tools` grants) | Restricted |'; do
+        printf '%s\n' "$line" > "$BASE_DIR/bad.md"; git -C "$BASE_DIR" add -A
+        run _old_fork_contract
+        [ -z "$output" ] || { echo "false positive: $line"; BASE_DIR="$saved"; teardown_test_dir; return 1; }
+    done
+    BASE_DIR="$saved"; teardown_test_dir
+}
+
+@test "docs: the named-example check sees a forked example of an inline skill" {
+    setup_test_dir
+    local saved="$BASE_DIR"
+    BASE_DIR="$TEST_DIR/repo"; mkdir -p "$BASE_DIR/.claude/skills/inl" "$BASE_DIR/.claude/skills/frk"
+    git -C "$BASE_DIR" init -q
+    printf -- '---\nname: inl\ndescription: d\n---\n' > "$BASE_DIR/.claude/skills/inl/SKILL.md"
+    printf -- '---\nname: frk\ndescription: d\ncontext: fork\n---\n' > "$BASE_DIR/.claude/skills/frk/SKILL.md"
+    printf '```yaml\n---\nname: inl\ncontext: fork\n---\n```\n```yaml\n---\nname: frk\ncontext: fork\n---\n```\n' > "$BASE_DIR/doc.md"
+    git -C "$BASE_DIR" add -A
+    run _named_example_mismatches
+    BASE_DIR="$saved"; teardown_test_dir
+    [ "$output" = "doc.md:1 inl: example forked=1, real skill forked=0" ] || { echo "$output"; false; }
 }
 
 @test "docs: nothing teaches forking every skill" {

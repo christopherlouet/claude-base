@@ -2,7 +2,7 @@ import React from 'react';
 import Link from '@docusaurus/Link';
 import clsx from 'clsx';
 
-export type Context = 'fork' | 'shared';
+export type Context = 'fork' | 'inline';
 
 export interface SkillCardProps {
   name: string;
@@ -29,7 +29,7 @@ export default function SkillCard({
             color: 'white'
           }}
         >
-          {context === 'fork' ? 'Fork' : 'Shared'}
+          {context === 'fork' ? 'Fork' : 'Inline'}
         </span>
         <span style={{ fontFamily: 'var(--ifm-font-family-monospace)', fontWeight: 600 }}>
           {name}

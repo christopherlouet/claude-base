@@ -122,7 +122,7 @@ claude-base/
 
 **Characteristics:**
 - Automatic triggering on keywords
-- Forked (isolated) or shared context
+- Inline by default; `context: fork` (a sub-agent) only for a self-contained job
 - Nothing pre-approved: `allowed-tools` grants, never restricts, and the foundation declares none
 - `SKILL.md` files in `.claude/skills/`
 
