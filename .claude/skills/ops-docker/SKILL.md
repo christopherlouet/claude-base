@@ -1,8 +1,6 @@
 ---
 name: ops-docker
 description: Docker and Docker Compose containerization. Trigger when the user wants to dockerize an application or create containers.
-context: fork
-background: false
 disable-model-invocation: true
 ---
 

@@ -1,8 +1,6 @@
 ---
 name: writing-skills
 description: Guide for creating new skills for the Claude Code foundation. Trigger when the user wants to create a skill, add a command, or extend the foundation.
-context: fork
-background: false
 ---
 
 # Creating New Skills

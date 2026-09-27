@@ -1,8 +1,6 @@
 ---
 name: work-pr
 description: Create a complete and well-documented Pull Request. Use when the user wants to create a PR, submit their changes, or prepare a merge request.
-context: fork
-background: false
 disable-model-invocation: true
 ---
 

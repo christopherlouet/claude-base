@@ -1,8 +1,6 @@
 ---
 name: git-worktrees
 description: Using git worktrees for parallel development. Trigger when the user wants to work on multiple branches simultaneously, do parallel dev, or manage worktrees.
-context: fork
-background: false
 ---
 
 # Git Worktrees (pointer)

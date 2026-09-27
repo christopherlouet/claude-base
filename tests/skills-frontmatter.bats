@@ -17,15 +17,78 @@ load 'test_helper'
 SKILLS_DIR="$BASE_DIR/.claude/skills"
 
 # _fm <file> — print the first frontmatter block (between the two first ---).
+# CR is dropped first: on a CRLF file `^---$` never matches, and every guard
+# below would read an empty frontmatter and pass.
 _fm() {
-    awk '/^---$/{c++; if(c==2) exit; next} c==1 {print}' "$1"
+    awk '{sub(/\r$/, "")} /^---$/{c++; if(c==2) exit; next} c==1 {print}' "$1"
+}
+
+# _ctx <file> — the `context` value as YAML reads it: trailing comment,
+# surrounding quotes and spaces removed. Empty when the key is absent.
+_ctx() {
+    _fm "$1" | sed -n 's/^context:[[:space:]]*//p' | head -1 \
+        | sed -e 's/[[:space:]]#.*$//' -e 's/[[:space:]]*$//' \
+              -e 's/^"\(.*\)"$/\1/' -e "s/^'\(.*\)'$/\1/"
+}
+
+# A forked skill sees NONE of the conversation (measured 2026-09-26) and holds
+# every tool of its agent whatever `allowed-tools` says. That suits a skill whose
+# job is a self-contained report or batch over the repo; it breaks a skill meant
+# to guide the work in progress. Reviewed skill by skill on 2026-09-26 — these
+# ten stay forked, every other skill runs inline (no `context` key: the default).
+FORKED_SKILLS="doc-changelog doc-generate ops-standup qa-design qa-review qa-security qa-tech-debt web-scraping work-batch work-explore"
+
+@test "_ctx: reads the value through CRLF, a trailing comment, quotes and spaces" {
+    # YAML reads all of these as `fork`; a guard that does not would let a
+    # CRLF file slip past every check, and refuse a valid commented line.
+    setup_test_dir
+    local n=0 body got
+    for body in 'context: fork\r' 'context: fork   # self-contained job' 'context: "fork"' "context: 'fork'  " 'context: inherit  # x'; do
+        n=$((n + 1))
+        mkdir -p "$TEST_DIR/s$n"
+        printf -- "---\r\nname: s$n\r\ndescription: x\r\n$body\n---\nbody\n" > "$TEST_DIR/s$n/SKILL.md"
+        got="$got $(_ctx "$TEST_DIR/s$n/SKILL.md")"
+    done
+    teardown_test_dir
+    echo "got:$got"
+    [ "$got" = " fork fork fork fork inherit" ]
+}
+
+@test "skills: the forked set is exactly the reviewed one" {
+    local actual="" f n
+    for f in "$SKILLS_DIR"/*/SKILL.md; do
+        [ -f "$f" ] || continue
+        n=$(basename "$(dirname "$f")")
+        [ "$(_ctx "$f")" = fork ] && actual="$actual $n"
+    done
+    actual=$(printf '%s\n' $actual | sort | tr '\n' ' ')
+    local expected
+    expected=$(printf '%s\n' $FORKED_SKILLS | sort | tr '\n' ' ')
+    if [ "$actual" != "$expected" ]; then
+        echo "forked skills:  $actual" >&2
+        echo "reviewed set:   $expected" >&2
+        echo "A skill that must follow the conversation runs inline; forking one is a review decision." >&2
+        return 1
+    fi
+}
+
+@test "skills: context takes no value but fork" {
+    # `inherit` and `shared` were taught by our docs and read by the site
+    # generator; Claude Code documents only `fork` (absent = inline).
+    local bad="" f val
+    for f in "$SKILLS_DIR"/*/SKILL.md; do
+        [ -f "$f" ] || continue
+        val=$(_ctx "$f")
+        [ -z "$val" ] || [ "$val" = "fork" ] || bad="$bad $(basename "$(dirname "$f")")=$val"
+    done
+    [ -z "$bad" ] || { echo "unknown context values:$bad" >&2; return 1; }
 }
 
 @test "skills: every context:fork skill declares background explicitly" {
     local missing="" f
     for f in "$SKILLS_DIR"/*/SKILL.md; do
         [ -f "$f" ] || continue
-        if _fm "$f" | grep -q '^context: fork' && ! _fm "$f" | grep -q '^background:'; then
+        if [ "$(_ctx "$f")" = fork ] && ! _fm "$f" | grep -q '^background:'; then
             missing="$missing $(basename "$(dirname "$f")")"
         fi
     done
@@ -53,7 +116,7 @@ _fm() {
     local orphan="" f
     for f in "$SKILLS_DIR"/*/SKILL.md; do
         [ -f "$f" ] || continue
-        if _fm "$f" | grep -q '^background:' && ! _fm "$f" | grep -q '^context: fork'; then
+        if _fm "$f" | grep -q '^background:' && [ "$(_ctx "$f")" != fork ]; then
             orphan="$orphan $(basename "$(dirname "$f")")"
         fi
     done

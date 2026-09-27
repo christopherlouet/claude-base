@@ -1,8 +1,6 @@
 ---
 name: work-plan
 description: Plan the implementation of a feature. Use when the user wants to plan, architect, define an approach, or before coding a complex feature.
-context: fork
-background: false
 disable-model-invocation: true
 ---
 

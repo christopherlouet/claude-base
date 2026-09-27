@@ -1,8 +1,6 @@
 ---
 name: dev-graphql
 description: GraphQL API development. Trigger when the user wants to create schemas, resolvers, or GraphQL queries.
-context: fork
-background: false
 ---
 
 # GraphQL Development

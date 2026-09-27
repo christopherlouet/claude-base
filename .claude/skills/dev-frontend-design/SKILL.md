@@ -1,8 +1,6 @@
 ---
 name: dev-frontend-design
 description: Distinctive UI design with strong art direction. Trigger when the user wants to create an interface, a landing page, a visual component, or when frontend code creation is detected without a defined design direction.
-context: fork
-background: false
 ---
 
 # Frontend Design with Art Direction
