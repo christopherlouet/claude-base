@@ -170,7 +170,6 @@ Patterns automatically triggered by Claude based on the conversation context.
 ---
 name: skill-name
 description: When to trigger this skill
-context: fork
 ---
 
 # Instructions
@@ -183,7 +182,6 @@ Instructions for the skill...
 ---
 name: dev-tdd
 description: TDD development with Red-Green-Refactor cycle
-context: fork
 ---
 
 # TDD Skill
@@ -421,7 +419,7 @@ All read-only, isolated contexts
 - Document expected arguments
 
 ### Skills
-- `context: fork` recommended
+- Inline by default (no `context`); `context: fork` + `background: false` only for a self-contained job, since a forked skill sees none of the conversation
 - `allowed-tools`: Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none — see [Pre-approving tools](/docs/concepts/customization#pre-approving-tools-allowed-tools)
 - Clear trigger keywords
 

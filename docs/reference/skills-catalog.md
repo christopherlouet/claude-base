@@ -74,7 +74,7 @@ cannot drift apart.
 
 Each skill's frontmatter may carry:
 - **allowed-tools**: Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none — see [Pre-approving tools](../CUSTOMIZATION.md#pre-approving-tools-allowed-tools)
-- **context: fork**: Execution in an isolated context (recommended)
+- **context**: absent (the default) = the skill runs inline, in the conversation; `context: fork` = a sub-agent that sees none of it, for a self-contained job only (with `background: false`)
 
 Skills are triggered automatically by Claude based on context — except those marked **manual only**
 in the tables above, which carry `disable-model-invocation: true` and can be started by you alone.
@@ -107,7 +107,8 @@ Refer to the upstream Claude Code changelog for the canonical JSON shape and any
 ---
 name: my-skill
 description: Short description of the skill
-context: fork
+context: fork                     # only for a self-contained job; omit = inline
+background: false                 # with fork: wait for the result in the same turn
 disable-model-invocation: true   # Do not trigger automatically
 user-invocable: false             # Background-only skill
 argument-hint: "[description]"    # Hint for arguments

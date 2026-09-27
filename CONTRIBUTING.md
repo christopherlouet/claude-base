@@ -140,11 +140,7 @@ skills:
 
 ### Skill frontmatter
 
-```yaml
----
-context: fork
----
-```
+Omit `context` (the default): the skill runs inline and sees the conversation. Set `context: fork` (the only value) with `background: false` only for a self-contained job, such as a report or a batch over the repo: a forked skill sees none of the conversation. In this repository the forked set is a review decision, pinned by `tests/skills-frontmatter.bats`.
 
 ### Choosing the model for an agent
 
