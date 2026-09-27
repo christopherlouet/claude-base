@@ -358,3 +358,31 @@ _agent_preloads() {
     [[ "$output" == *"y delta"* ]]
     [[ "$output" != *"body"* ]]
 }
+
+# -----------------------------------------------------------------------------
+# The docs taught "context: fork (recommended)" for months, and one page offered
+# an `inherit` value Claude Code never had. Skills now run inline by default and
+# fork only by review; a doc that re-teaches the old contract re-creates the
+# 43 forks the next time someone writes a skill from it.
+# -----------------------------------------------------------------------------
+
+_old_fork_contract() {
+    # $1: optional revision to scan instead of the working tree
+    git -C "$BASE_DIR" grep -n -iE \
+        'fork` *\(recommended\)|always (use `)?context: fork|always fork for isolation|context: fork` recommended|context: fork is present|context: fork.*`inherit`' \
+        ${1:+"$1"} -- '*.md' ':!CHANGELOG.md' ':!website/docs'
+}
+
+@test "docs: nothing teaches forking every skill" {
+    run _old_fork_contract
+    [ -z "$output" ] || { echo "old fork-by-default contract taught at:"; echo "$output"; false; }
+}
+
+@test "docs: the old-contract scan is not blind (it finds the docs as they were)" {
+    # 6fe8ed6f still taught fork-by-default in six files; the real helper must
+    # see them. Needs history (CI checks out with fetch-depth: 0).
+    git -C "$BASE_DIR" cat-file -e 6fe8ed6f 2>/dev/null || skip "shallow clone: 6fe8ed6f absent"
+    run _old_fork_contract 6fe8ed6f
+    echo "$output"
+    [ "$(printf '%s\n' "$output" | grep -c .)" -ge 6 ]
+}

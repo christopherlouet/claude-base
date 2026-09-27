@@ -317,7 +317,6 @@ Skills are triggered automatically by Claude based on context (keywords in the c
 ---
 name: my-skill
 description: When to trigger this skill (keywords or context)
-context: fork    # `fork` (recommended) or `inherit`
 ---
 
 # My Skill
@@ -339,7 +338,7 @@ For large examples, move to `examples/` and include via link.
 
 ### Best practices
 
-- **`context: fork`**: isolates the skill from the main conversation (recommended for complex workflows).
+- **`context`**: omit it (default) and the skill runs inline, in the conversation. `fork` is the only value: it runs the skill in a sub-agent that sees **none** of the conversation, so keep it for a self-contained job (a report, a batch over the repo) and pair it with `background: false`, or the result arrives asynchronously.
 - **`allowed-tools`**: the foundation declares none — see [Pre-approving tools](#pre-approving-tools-allowed-tools) below.
 - **Precise description**: Claude uses the description to decide when to trigger, be specific.
 - **Skills ≠ Agents**: a skill complements Claude; an agent is an isolated subprocess.
@@ -367,7 +366,8 @@ review it; never a bare tool or a wildcard-only scope like `Edit(**)`.
 ---
 name: review-typescript-strict
 description: Activate when the user wants a strict TypeScript review (any, implicit types, null safety)
-context: fork
+context: fork        # a self-contained review of the code, not of the conversation
+background: false    # wait for the result in the same turn
 ---
 
 # Strict TypeScript Review
