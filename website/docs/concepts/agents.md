@@ -248,8 +248,8 @@ Expected format.
 | Aspect | Command | Skill | Agent |
 |--------|---------|-------|-------|
 | Triggering | Manual | Auto (keywords) | Auto (delegation) |
-| Context | Shared | Fork | **Isolated** |
-| Tools | All | Restricted | **Highly restricted** |
+| Context | Shared | Inline (fork on review) | **Isolated** |
+| Tools | All | All (`allowed-tools` grants, never restricts) | **Highly restricted** |
 | Model | Main | Main | **Configurable** |
 | Parallelization | No | No | **Yes** |
 

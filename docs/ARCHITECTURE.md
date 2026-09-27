@@ -85,8 +85,8 @@ This architecture enables:
 |--------|----------|--------|--------|-------|
 | **Folder** | `.claude/commands/` | `.claude/skills/` | `.claude/agents/` | `.claude/rules/` |
 | **Trigger** | Manual (`/cmd`) | Automatic | Auto delegation | Path-based |
-| **Context** | Shared | Fork or shared | **Isolated** | Injected |
-| **Tools** | All | Configurable | Restricted | N/A |
+| **Context** | Shared | Inline (fork on review) | **Isolated** | Injected |
+| **Tools** | All | All (`allowed-tools` grants) | Restricted | N/A |
 | **Model** | Default | Default | Configurable | N/A |
 | **Use case** | Explicit actions | Detected patterns | Isolated tasks | Constraints |
 
@@ -144,8 +144,8 @@ Patterns automatically triggered by Claude based on the conversation context.
 
 ### Characteristics
 - Automatic trigger (keywords, context)
-- Forked context recommended
-- Configurable tools (whitelist)
+- Inline by default; `context: fork` only for a self-contained job
+- `allowed-tools` pre-approves tools, it never restricts them
 - Structure: YAML frontmatter + instructions
 
 ### File structure
@@ -501,6 +501,6 @@ DEPLOY    docs/recipes/curation-bot-deploy.md    nightly ($0) + monthly (capped 
 | Concept | Trigger | Context | Main usage |
 |---------|-------------|----------|-----------------|
 | **Command** | `/name` | Shared | Explicit actions |
-| **Skill** | Keywords | Fork | Auto patterns |
+| **Skill** | Keywords | Inline (fork on review) | Auto patterns |
 | **Agent** | Delegation | **Isolated** | Parallel tasks |
 | **Rule** | File path | Injected | Constraints |

@@ -380,11 +380,66 @@ _agent_preloads() {
 # 43 forks the next time someone writes a skill from it.
 # -----------------------------------------------------------------------------
 
+# _generated_excludes [rev] — a `:!path` pathspec for every GENERATED page under
+# website/docs (it carries the sync banner): its source is scanned instead, and
+# it is rewritten on the next generate. The HAND-WRITTEN pages there (concepts/,
+# intro/, learning-path) are scanned: excluding the whole tree hid the fork
+# template of concepts/skills.md that readers copy (found in review 2026-09-27).
+_generated_excludes() {
+    git -C "$BASE_DIR" grep -l 'Auto-generated from' ${1:+"$1"} -- website/docs \
+        | sed -e "s|^${1:+$1:}||" -e 's|^|:!|'
+}
+
 _old_fork_contract() {
     # $1: optional revision to scan instead of the working tree
+    local -a excl
+    # shellcheck disable=SC2207  # one pathspec per line, no spaces in paths
+    excl=( $(_generated_excludes "$1") )
     git -C "$BASE_DIR" grep -n -iE \
-        'fork` *\(recommended\)|always (use `)?context: fork|always fork for isolation|context: fork` recommended|context: fork is present|context: fork.*`inherit`' \
-        ${1:+"$1"} -- '*.md' ':!CHANGELOG.md' ':!website/docs'
+        'fork` *\((isolated, )?recommended\)|always (use `)?context: fork|always fork for isolation|context: fork` recommended|context: fork is present|context: fork.*`inherit`|`fork` or `shared`|^\| *`shared` *\||fork context\*{0,2}: *recommended|runs in an isolated context \(`fork`\)|forked context recommended|fork or shared|\| *shared *\| *\*{0,2}fork\*{0,2} *\||\| *\*\*skill\*\* *\|[^|]*\| *fork *\|' \
+        ${1:+"$1"} -- '*.md' ':!CHANGELOG.md' "${excl[@]}"
+}
+
+# _inline_skill_model_pins — fenced frontmatter examples in the docs that look
+# like a SKILL (a name and a description, and none of the fields only agents
+# carry: tools, disallowedTools, permissionMode, maxTurns), are not forked, and
+# pin a `model:`. Inline, that line switches the reader's session model (#604).
+_inline_skill_model_pins() {
+    local -a excl
+    # shellcheck disable=SC2207
+    excl=( $(_generated_excludes) )
+    git -C "$BASE_DIR" ls-files -- '*.md' ':!CHANGELOG.md' ':!specs' "${excl[@]}" \
+        | while read -r f; do
+            awk -v F="$f" '
+                /^```/ { if (inb) { if (fm == 2 && model && named && described && !agent && !fork) print F ":" mline; inb = 0 } else { inb = 1; fm = 0; model = named = described = agent = fork = 0 }; next }
+                inb && /^---$/ { fm++; next }
+                inb && fm == 1 && /^model:/ { model = 1; mline = NR }
+                inb && fm == 1 && /^name:/ { named = 1 }
+                inb && fm == 1 && /^description:/ { described = 1 }
+                inb && fm == 1 && /^(tools|disallowedTools|permissionMode|maxTurns):/ { agent = 1 }
+                inb && fm == 1 && /^context:[[:space:]]*fork/ { fork = 1 }
+            ' "$BASE_DIR/$f"
+        done
+}
+
+@test "docs: no skill example pins a model on an inline skill" {
+    run _inline_skill_model_pins
+    [ -z "$output" ] || { echo "inline skill examples pinning a model:"; echo "$output"; false; }
+}
+
+@test "docs: the inline-model scan is not blind" {
+    # Drives the real awk on a planted page, not a copy of it.
+    setup_test_dir
+    local saved="$BASE_DIR"
+    BASE_DIR="$TEST_DIR/repo"; mkdir -p "$BASE_DIR"; git -C "$BASE_DIR" init -q
+    printf '```yaml\n---\nname: s\ndescription: d\nmodel: sonnet\n---\n```\n' > "$BASE_DIR/a.md"
+    printf '```yaml\n---\nname: s\ndescription: d\ncontext: fork\nmodel: sonnet\n---\n```\n' > "$BASE_DIR/b.md"
+    printf '```yaml\n---\nname: a\ndescription: d\ntools: Read\nmodel: sonnet\n---\n```\n' > "$BASE_DIR/c.md"
+    printf '```yaml\n---\nname: a\ndescription: d\nmodel: opus\npermissionMode: plan\n---\n```\n' > "$BASE_DIR/d.md"
+    git -C "$BASE_DIR" add -A
+    run _inline_skill_model_pins
+    BASE_DIR="$saved"; teardown_test_dir
+    [ "$output" = "a.md:5" ]
 }
 
 @test "docs: nothing teaches forking every skill" {
