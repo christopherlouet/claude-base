@@ -1,8 +1,6 @@
 ---
 name: dev-supabase
 description: Backend development with Supabase. Trigger when the user wants to configure auth, the database, or Supabase storage.
-context: fork
-background: false
 ---
 
 # Supabase (pointer)

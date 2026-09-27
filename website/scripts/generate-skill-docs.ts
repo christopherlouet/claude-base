@@ -147,7 +147,9 @@ function parseSkillFile(dirPath: string): SkillInfo | null {
       name: data.name || skillName,
       description: data.description || description || heading || `Skill ${skillName}`,
       allowedTools: parseToolsField(data['allowed-tools']),
-      context: (data.context as 'fork' | 'shared') || 'fork',
+      // Claude Code documents one value, `fork`; absent means inline, which this
+      // site labels "shared" (the skill shares the conversation).
+      context: data.context === 'fork' ? 'fork' : 'shared',
       manualOnly: data['disable-model-invocation'] === true,
       keywords: extractKeywords(markdownContent, skillName),
       content: markdownContent,

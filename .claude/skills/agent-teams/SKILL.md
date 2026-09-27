@@ -1,8 +1,6 @@
 ---
 name: agent-teams
 description: Multi-agent team orchestration with native Agent Teams. Trigger when the user wants to launch a team of agents, coordinate parallel work with inter-agent communication, or use swarm mode.
-context: fork
-background: false
 ---
 
 # Agent Teams (Multi-Agent Orchestration)

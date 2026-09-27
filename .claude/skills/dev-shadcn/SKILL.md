@@ -1,8 +1,6 @@
 ---
 name: dev-shadcn
 description: Integration and customization of shadcn/ui (copy-paste React components, Radix + Tailwind). Trigger when the user wants to install shadcn, add components, customize the theme, or when shadcn/ui usage is detected in the project.
-context: fork
-background: false
 ---
 
 # shadcn/ui (pointer)

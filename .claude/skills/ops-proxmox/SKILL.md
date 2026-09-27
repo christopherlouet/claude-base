@@ -1,8 +1,6 @@
 ---
 name: ops-proxmox
 description: Proxmox VE infrastructure with Terraform (VMs, LXC, network, storage, backup)
-context: fork
-background: false
 argument-hint: "[resource-type]"
 ---
 

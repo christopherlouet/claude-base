@@ -1,8 +1,6 @@
 ---
 name: session-handoff
 description: Context transfer between AI sessions. Trigger when the user wants to save the context, resume a task, or hand off the work to another session.
-context: fork
-background: false
 ---
 
 # Session Handoff

@@ -1,8 +1,6 @@
 ---
 name: ops-opnsense
 description: OPNsense configuration via Terraform. Trigger for interfaces, firewall, NAT, DHCP/DNS, aliases.
-context: fork
-background: false
 argument-hint: "[component]"
 ---
 

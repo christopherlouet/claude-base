@@ -1,8 +1,6 @@
 ---
 name: dev-error-handling
 description: Error handling strategy. Trigger when the user wants to implement error handling, exceptions, or error boundaries.
-context: fork
-background: false
 ---
 
 # Error Handling
