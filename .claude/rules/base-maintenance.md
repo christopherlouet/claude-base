@@ -121,6 +121,15 @@ assertion line). Write defensively:
 Catch it locally: `scripts/preflight.sh` runs the foundation gates pre-push, but
 true bash-3.2 behavior only shows on the macOS CI column — keep new scripts simple.
 
+**awk has four dialects in the field**: gawk and BWK are covered by the CI
+columns above; mawk (Ubuntu's default awk) and busybox (Alpine) by the
+`awk-portability` job, which replays the hook policy suites under each. Before
+pushing a hook-policy change that touches awk:
+
+```bash
+scripts/awk-portability.sh              # mawk + busybox, if installed
+```
+
 ## Files to update when adding / removing
 
 ### New command (`.claude/commands/<ns>/<cmd>.md`)

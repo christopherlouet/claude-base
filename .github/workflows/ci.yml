@@ -165,6 +165,41 @@ jobs:
         # the only job where that case means anything.
         run: bats tests/gitleaks.bats tests/secret-scan.bats
 
+  # The hook policies call awk, and a hook runs on the USER's machine: mawk is
+  # Ubuntu's default awk, busybox the awk of Alpine images. The runners above
+  # use gawk (ubuntu) and BWK (macOS), so nothing else ever ran the guards under
+  # those two. The script refuses to report "ok" if an always-failing awk breaks
+  # none of the suites (the shim would not be reaching them).
+  awk-portability:
+    name: Awk portability (mawk, busybox)
+    runs-on: ubuntu-latest
+    needs: changes
+    if: github.event_name == 'push' || needs.changes.outputs.shell == 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Bats
+        uses: bats-core/bats-action@4.0.0
+
+      # mawk is a "required" Ubuntu package, so the runner already has it (the
+      # script exits 2 if not). busybox is fetched like gitleaks above: pinned
+      # static binary + SHA-256, no sudo. Upstream publishes no checksum, so the
+      # hash was taken on first download (2026-09-27) and is what gets trusted.
+      - name: Install busybox (pinned static binary + SHA-256)
+        run: |
+          set -euo pipefail
+          BB_URL=https://busybox.net/downloads/binaries/1.35.0-x86_64-linux-musl/busybox
+          BB_SHA256=6e123e7f3202a8c1e9b1f94d8941580a25135382b99e8d3e34fb858bba311348
+          mkdir -p "$HOME/.local/bin"
+          curl -fsSL -o "$HOME/.local/bin/busybox" "$BB_URL"
+          echo "${BB_SHA256}  $HOME/.local/bin/busybox" | sha256sum -c -
+          chmod +x "$HOME/.local/bin/busybox"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Replay the policy suites under mawk and busybox
+        run: ./scripts/awk-portability.sh mawk busybox
+
   # macOS portability check — BSD utilities (sed, awk, date, grep, base64, wc)
   # differ from GNU on Ubuntu. This column verifies ONLY what is portability-
   # sensitive: the bash test suite and the bash count-validator running under
