@@ -56,8 +56,10 @@ _pipe_interp_runs_stdin() {
   local interp="$1" rest="$2" tok
   [[ "$rest" =~ ^[[:space:]]+([^[:space:]]+) ]] || return 0
   tok="${BASH_REMATCH[1]}"
+  # The shell family gets no -c exemption: its -c program can read the pipe in
+  # turn (`sh -c sh`, `bash -c "$(cat)"`), and no real agent command piped a
+  # download into `sh -c` (30 days of transcripts, 2026-09-27).
   case "$interp" in
-    sh|bash|zsh|dash|ksh) [[ "$tok" =~ ^-[eux]*c$ ]] && return 1 ;;
     python*) [[ "$tok" =~ ^-[cm]$ ]] && return 1 ;;
     perl|ruby) [[ "$tok" =~ ^-[nlpa]*e$ ]] && return 1 ;;
     node) [[ "$tok" =~ ^(-e|-p|--eval|--print)$ ]] && return 1 ;;
@@ -68,8 +70,10 @@ _pipe_interp_runs_stdin() {
 # _pipe_to_shell <lowercased-command>
 # Print the downloader (curl or wget) and return 0 when some line pipes its
 # download into an interpreter that runs it. Line-scoped, like the grep it
-# replaced, and every match on a line is examined: a harmless `| python3 -c`
-# must not shield a later `| sh`.
+# replaced. Every pipe after the download is examined, not only the first:
+# the download flows down the whole pipeline, so neither a harmless
+# `| python3 -c` nor a filter (`| jq`, `| tr`) makes a later `| sh` harmless.
+# A `||` is not a pipe and is stepped over.
 #
 # Cost matters: this runs on EVERY command under the hook's timeout. A command
 # without curl or wget returns at once (a saving only, no verdict depends on
@@ -81,7 +85,8 @@ _pipe_interp_runs_stdin() {
 _pipe_to_shell() {
   local s="$1" line rest tool interp glob_was_on=0 IFS
   case "$s" in *curl*|*wget*) ;; *) return 1 ;; esac
-  local re='(curl|wget)[[:space:]][^|]*\|[[:space:]]*([^[:space:]|]*/)?(sh|bash|zsh|dash|ksh|python[0-9.]*|perl|ruby|node)($|[^a-z0-9].*$)'
+  local dl_re='(curl|wget)[[:space:]](.*)$'
+  local stage_re='^[[:space:]]*([^[:space:]|]*/)?(sh|bash|zsh|dash|ksh|python[0-9.]*|perl|ruby|node)($|[^a-z0-9].*$)'
   local lines
   case "$-" in *f*) ;; *) glob_was_on=1; set -f ;; esac
   IFS=$'\n'
@@ -89,14 +94,19 @@ _pipe_to_shell() {
   lines=( $s )
   [ "$glob_was_on" = 1 ] && set +f
   for line in "${lines[@]}"; do
-    rest="$line"
-    while [[ "$rest" =~ $re ]]; do
+    # Leftmost-longest: the FIRST downloader on the line, so every pipe after
+    # any download on it is examined.
+    [[ "$line" =~ $dl_re ]] || continue
+    tool="${BASH_REMATCH[1]}"
+    rest="${BASH_REMATCH[2]}"
+    while [[ "$rest" =~ ^[^|]*\|(.*)$ ]]; do
+      rest="${BASH_REMATCH[1]}"
+      case "$rest" in '|'*) rest="${rest#|}"; continue ;; esac
+      [[ "$rest" =~ $stage_re ]] || continue
       # Copy the groups out first: the helper runs its own =~ and overwrites
-      # BASH_REMATCH, which once made every later pipe on the line unseen.
-      tool="${BASH_REMATCH[1]}"
-      interp="${BASH_REMATCH[3]}"
-      rest="${BASH_REMATCH[4]}"
-      if _pipe_interp_runs_stdin "$interp" "$rest"; then
+      # BASH_REMATCH.
+      interp="${BASH_REMATCH[2]}"
+      if _pipe_interp_runs_stdin "$interp" "${BASH_REMATCH[3]}"; then
         printf '%s' "$tool"
         return 0
       fi
@@ -161,15 +171,15 @@ validate_command() {
   fi
 
   # === CATEGORY 2: Dangerous pipe-to-shell patterns ===
-  # Match any interpreter after the pipe, with an optional path prefix
-  # (`| /bin/sh`, `| zsh`, `| python3`). The trailing ($|[^a-z0-9]) both terminates
-  # the interpreter name and stops `sh` from matching inside `shellcheck`. Scope:
-  # the plain `curl … | sh` an agent actually writes; deliberate obfuscation
-  # (`\sh`, process substitution `sh <(curl …)`, `python3 -c 'exec(stdin)'`,
-  # `bash -c "$(cat)"`) is out of scope by design. Only an interpreter that takes its PROGRAM from the
-  # pipe is refused (see _pipe_interp_runs_stdin): `| python3 -c '…'` parses
-  # the download as data, the shape of 79 of 84 blocks measured on real agent
-  # commands, none of which executed a download.
+  # Match any interpreter at any pipe after the download, with an optional path
+  # prefix (`| /bin/sh`, `| zsh`, `| python3`). The trailing ($|[^a-z0-9]) both
+  # terminates the interpreter name and stops `sh` from matching inside
+  # `shellcheck`. Scope: the plain `curl … | sh` an agent actually writes;
+  # deliberate obfuscation (`\sh`, process substitution `sh <(curl …)`,
+  # `python3 -c 'exec(stdin)'`) is out of scope by design. Only an interpreter
+  # that takes its PROGRAM from the pipe is refused (see _pipe_interp_runs_stdin):
+  # `| python3 -c '…'` parses the download as data, the shape of 79 of 84 blocks
+  # measured on real agent commands, none of which executed a download.
   local _dl
   if _dl=$(_pipe_to_shell "$CMD_LOWER"); then
     printf '%s\n' "BLOCKED: Pipe-to-shell detected ($_dl | sh). Download first, verify, then execute."
