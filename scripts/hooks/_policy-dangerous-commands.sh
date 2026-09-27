@@ -83,36 +83,79 @@ _pipe_interp_runs_stdin() {
 # bash serves those from a temp file, and one it cannot create skips the loop
 # and ALLOWS the command.
 _pipe_to_shell() {
-  local s="$1" line rest tool interp glob_was_on=0 IFS
+  local s="$1" line rest tool interp stage glob_was_on=0 after_or i IFS _PQ_S _PQ_D
   case "$s" in *curl*|*wget*) ;; *) return 1 ;; esac
   local dl_re='(curl|wget)[[:space:]](.*)$'
   local stage_re='^[[:space:]]*([^[:space:]|]*/)?(sh|bash|zsh|dash|ksh|python[0-9.]*|perl|ruby|node)($|[^a-z0-9].*$)'
-  local lines
+  local cont=$'\\\n' lines stages
+  # A backslash-newline continues the same command: join it before the line
+  # split, or a download and the pipe continued below it read as two lines.
+  s="${s//"$cont"/ }"
   case "$-" in *f*) ;; *) glob_was_on=1; set -f ;; esac
   IFS=$'\n'
   # shellcheck disable=SC2206  # word-splitting on newlines is the point; globbing is off
   lines=( $s )
-  [ "$glob_was_on" = 1 ] && set +f
   for line in "${lines[@]}"; do
     # Leftmost-longest: the FIRST downloader on the line, so every pipe after
     # any download on it is examined.
     [[ "$line" =~ $dl_re ]] || continue
     tool="${BASH_REMATCH[1]}"
     rest="${BASH_REMATCH[2]}"
-    while [[ "$rest" =~ ^[^|]*\|(.*)$ ]]; do
-      rest="${BASH_REMATCH[1]}"
-      case "$rest" in '|'*) rest="${rest#|}"; continue ;; esac
-      [[ "$rest" =~ $stage_re ]] || continue
-      # Copy the groups out first: the helper runs its own =~ and overwrites
-      # BASH_REMATCH.
-      interp="${BASH_REMATCH[2]}"
-      if _pipe_interp_runs_stdin "$interp" "${BASH_REMATCH[3]}"; then
-        printf '%s' "$tool"
-        return 0
+    # One split into pipeline stages, linear in the line: re-matching the rest
+    # after each pipe was quadratic (4.6 s for 3,000 pipes on one line). An
+    # empty stage is the middle of `||`, which is not a pipe.
+    IFS='|'
+    # shellcheck disable=SC2206  # splitting on | is the point; globbing is off
+    stages=( $rest )
+    IFS=$'\n'
+    # Indexed, not "${stages[@]:1}": an empty array under `set -u` is an
+    # unbound-variable error on bash < 4.4 (macOS ships 3.2).
+    [ "${#stages[@]}" -gt 1 ] || continue
+    _PQ_S=0; _PQ_D=0; after_or=0
+    _pq_advance "${stages[0]}"
+    i=0
+    while [ $((i += 1)) -lt "${#stages[@]}" ]; do
+      stage="${stages[$i]}"
+      if [ -z "$stage" ]; then after_or=1; continue; fi
+      # A | inside a quoted argument (`grep -E 'a|b'`, `sed 's|x|y|'`) is not
+      # a pipe: judge a stage only when no quote is open before it. A leading
+      # & is the `|&` form, which pipes stderr too.
+      if [ "$after_or" = 0 ] && [ "$_PQ_S" = 0 ] && [ "$_PQ_D" = 0 ] \
+         && [[ "${stage#&}" =~ $stage_re ]]; then
+        # Copy the groups out first: the helper runs its own =~ and
+        # overwrites BASH_REMATCH.
+        interp="${BASH_REMATCH[2]}"
+        if _pipe_interp_runs_stdin "$interp" "${BASH_REMATCH[3]}"; then
+          [ "$glob_was_on" = 1 ] && set +f
+          printf '%s' "$tool"
+          return 0
+        fi
       fi
+      after_or=0
+      _pq_advance "$stage"
     done
   done
+  [ "$glob_was_on" = 1 ] && set +f
   return 1
+}
+
+# _pq_advance <text>
+# Carry the open/closed state of single and double quotes (_PQ_S, _PQ_D)
+# across <text>. Only the quote characters are walked, so a stage without
+# quotes costs one pattern test. Escaped quotes are not modelled.
+_pq_advance() {
+  local t="$1" q
+  case "$t" in *[\'\"]*) ;; *) return 0 ;; esac
+  t="${t//[^\'\"]/}"
+  while [ -n "$t" ]; do
+    q="${t:0:1}"; t="${t:1}"
+    if [ "$q" = "'" ]; then
+      [ "$_PQ_D" = 0 ] && _PQ_S=$((1 - _PQ_S))
+    else
+      [ "$_PQ_S" = 0 ] && _PQ_D=$((1 - _PQ_D))
+    fi
+  done
+  return 0
 }
 
 validate_command() {
