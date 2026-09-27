@@ -69,3 +69,32 @@ is ops-ci-fix), before reading code to guess at the cause."
 Trade-off to keep in mind: inline, a fired skill puts its content into the
 session. On a bug that one read would solve, that is extra context for a
 method the model would not have needed.
+
+## 2026-09-27 — campaign 2: every other auto-triggerable inline skill
+
+25 skills (the nine `disable-model-invocation` skills cannot fire and were left
+out). 3 runs per case, `claude-opus-5-5`, about 10 USD at list price.
+
+**23/25 fire alone, 3/3**: agent-teams, api-mocking, data-pipeline, dev-auth,
+dev-error-handling, dev-flutter, dev-frontend-design, dev-i18n, dev-nextjs,
+dev-prisma, dev-shadcn, dev-supabase, feature-flags, git-worktrees, growth-cro,
+ops-infra-code, ops-mobile-release, ops-opnsense, ops-proxmox, qa-e2e,
+session-handoff, state-management, writing-skills. Every deliberate neighbour
+pair separated: dev-auth / dev-supabase, ops-infra-code / ops-proxmox /
+ops-opnsense, dev-shadcn / dev-frontend-design, api-mocking / qa-e2e,
+agent-teams / parallel-agents.
+
+The other two:
+
+- `dev-document` fired first 3/3, then loaded `dataviz`, a skill bundled with
+  Claude Code, to draw the requested chart. A legitimate composition, not a
+  conflict: the "no other skill" grader counts bundled skills too.
+- `parallel-agents` fired 1/3 in an empty workspace. With five real services
+  scaffolded, Opus launched parallel subagents itself, without the skill (0/2;
+  the third run hit the 1 USD ceiling, subagents cost more). The behaviour the
+  skill teaches happens anyway on this model. Left unchanged: making it fire
+  would add its content to the session for something Opus already does.
+
+Across all three campaigns: 34 auto-triggerable inline skills measured, 2
+descriptions fixed (`work-quick`, `dev-debug`), 1 skill found redundant on
+Opus (`parallel-agents`).
