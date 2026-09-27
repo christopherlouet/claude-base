@@ -43,7 +43,29 @@ Same method, after the `work-quick` fix. 3 runs per case, `claude-opus-5-5`, abo
 | no skill — "Difference between `let` and `const`?" | 3/3 no skill |
 | `dev-debug` — "`node list.js` crashes with TypeError… Why, and how do I fix it?" | **0/3 — no skill**, with or without the buggy file in the workspace |
 
-Every pair separated cleanly. `dev-debug` is the exception: on a bug whose cause
-is one read away, Opus reads the file, explains and fixes it without loading any
-skill. Whether that is a defect depends on what `dev-debug` is for; a harder,
-multi-file bug was not tested.
+Every pair separated cleanly. `dev-debug` was the exception: Opus read the code,
+explained and fixed the bug without loading any skill, on a one-file bug (0/3)
+and on a three-file one whose cause sits two modules from the symptom (0/3).
+
+## 2026-09-27 — `dev-debug` never fired
+
+The description ("Use when the user has a bug, an error…") matched every prompt
+and still lost to reading the code directly. It now states the method and asks to
+be used first: "Systematic debugging - reproduce, isolate the root cause, fix,
+pin it with a regression test. Use it first whenever the user reports a bug, a
+crash, an error message, a wrong result or a failing test (a failing CI pipeline
+is ops-ci-fix), before reading code to guess at the cause."
+
+| Case | Before | After |
+|---|---|---|
+| `dev-debug` — one-file bug | 0/3 | **3/3** alone |
+| `dev-debug` — three-file bug | 0/3 | **3/3** alone |
+| `ops-ci-fix` (its neighbour) | 3/3 | 3/3 alone |
+| no skill — `let` vs `const` | 3/3 | 3/3 |
+| `dev-tdd` — "Add a function…" | 3/3 | 3/3 alone |
+| `work-quick` — typo | 3/3 | 3/3 alone |
+| `dev-tdd` quiet — "explain this regex" | 3/3 | 3/3 |
+
+Trade-off to keep in mind: inline, a fired skill puts its content into the
+session. On a bug that one read would solve, that is extra context for a
+method the model would not have needed.
