@@ -84,6 +84,20 @@ FORKED_SKILLS="doc-changelog doc-generate ops-standup qa-design qa-review qa-sec
     [ -z "$bad" ] || { echo "unknown context values:$bad" >&2; return 1; }
 }
 
+@test "skills: an inline skill pins no model" {
+    # Inline, `model:` switches the SESSION's model for the rest of the turn
+    # (Claude Code docs), on a skill that triggers by itself: a Sonnet session
+    # silently ran on Opus after dev-tdd. Forked, it only sets the subagent's
+    # model, which stays allowed. Removed from five skills on 2026-09-27.
+    local pinned="" f
+    for f in "$SKILLS_DIR"/*/SKILL.md; do
+        [ -f "$f" ] || continue
+        [ "$(_ctx "$f")" = fork ] && continue
+        _fm "$f" | grep -q '^model:' && pinned="$pinned $(basename "$(dirname "$f")")"
+    done
+    [ -z "$pinned" ] || { echo "inline skills switching the session model:$pinned" >&2; return 1; }
+}
+
 @test "skills: every context:fork skill declares background explicitly" {
     local missing="" f
     for f in "$SKILLS_DIR"/*/SKILL.md; do

@@ -50,7 +50,7 @@ All fields available in the YAML frontmatter of a skill:
 | `allowed-tools` | No | Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none: the project's permission settings decide; add one precise, reviewed rule such as `Bash(npm test:*)` only for a truly unattended need |
 | `context` | No | Omit it (default): the skill runs inline and sees the conversation. `fork` (the only value) runs it in a sub-agent that sees NONE of the conversation — only for a self-contained job such as a report or a batch over the repo |
 | `background` | No | With `context: fork` only. Since CC 2.1.218 forked skills run in the BACKGROUND by default (async result, narrower background tool set, edits bypass `/rewind` checkpoints). Set `false` to block in-turn — the foundation default for workflow skills |
-| `model` | No | Model to use: `sonnet`, `opus`, `haiku`, `inherit` (default: inherits from context) |
+| `model` | No | Forked skills only in this foundation: the subagent's model (`sonnet`, `opus`, `haiku`, `inherit`). On an inline skill it switches the SESSION's model for the rest of the turn, so leave it out |
 | `agent` | No | Sub-agent type when `context: fork` (`Explore`, `Plan`, `general-purpose`, or custom agent) |
 | `disable-model-invocation` | No | `true` = manual invocation only (Claude cannot auto-load). Default: `false` |
 | `user-invocable` | No | `false` = invisible in the `/` menu (background skills). Default: `true` |
@@ -88,7 +88,7 @@ Example:
 - Supporting files: `examples/`, `scripts/`, `reference.md` in the skill folder
 - Use `disable-model-invocation: true` for skills that should only be launched manually (e.g.: commit, PR, plan)
 - Use `user-invocable: false` for context/background skills that Claude loads automatically (state-management, api-mocking)
-- Use `model: sonnet` for complex skills requiring deep reasoning (debug, security, TDD, perf)
+- No `model` on an inline skill (it would switch the user's session model); on a forked skill, pick the subagent's tier by cost
 - Use `argument-hint` to guide the user on the expected parameters
 
 ## Skill quality checklist
