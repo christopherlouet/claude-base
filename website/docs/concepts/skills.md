@@ -66,7 +66,6 @@ Skills live in `.claude/skills/`, each in its own folder:
 ---
 name: dev-tdd
 description: TDD development with Red-Green-Refactor cycle
-context: fork
 ---
 
 # Test Driven Development Skill
@@ -109,14 +108,20 @@ NEVER write more code than necessary to pass the test.
 | Field | Description | Values |
 |-------|-------------|--------|
 | `allowed-tools` | Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none — see [Pre-approving tools](/docs/concepts/customization#pre-approving-tools-allowed-tools) | None in the foundation |
-| `context` | Context type | `fork` or `shared` |
+| `context` | Where the skill runs | omit (inline) or `fork` |
+| `background` | With `context: fork` only: `false` waits for the result in the same turn | `true` (default) or `false` |
 
 ### Contexts
 
 | Context | Description | Usage |
 |---------|-------------|-------|
-| `fork` | Isolated context | Autonomous tasks (recommended) |
-| `shared` | Shared context | Interactive tasks |
+| _(omitted)_ | **Inline** (the default): runs in the conversation and sees it | Almost every skill |
+| `fork` | A sub-agent that sees none of the conversation | A self-contained job only, reviewed case by case |
+
+A forked skill cannot see what you and Claude just discussed, so a skill that
+needs the conversation must stay inline. `model:` follows the same split: on a
+forked skill it sets the sub-agent's model; on an inline one it switches your
+session's model for the rest of the turn, so leave it out.
 
 ## Trigger keywords
 
@@ -176,7 +181,6 @@ This skill activates when the user mentions:
 ---
 name: work-commit
 description: Generate Conventional Commits commit messages
-context: fork
 ---
 
 # Work Commit
@@ -213,7 +217,8 @@ type(scope): description
 ---
 name: work-explore
 description: Explore and understand a codebase
-context: fork
+context: fork        # reads the codebase, needs nothing from the conversation
+background: false    # wait for the result in the same turn
 ---
 
 # Work Explore
@@ -248,7 +253,6 @@ mkdir -p .claude/skills/my-skill
 ---
 name: my-skill
 description: Description of my skill
-context: fork
 ---
 
 # My Skill
@@ -286,15 +290,15 @@ touch .claude/skills/my-skill/examples/example.md
 | Aspect | Command | Skill | Agent |
 |--------|---------|-------|-------|
 | Trigger | Manual (`/xxx`) | **Auto (keywords)** | Auto (delegation) |
-| Context | Shared | **Fork** | Isolated |
+| Context | Shared | **Inline** (fork on review) | Isolated |
 | Control | Total | **Partial** | Delegated |
 | Visibility | Explicit | **Transparent** | Transparent |
 
 ## Best practices
 
 1. **Precise keywords**: Avoid false positives
-2. **Fork context**: Recommended for isolation
-3. **Minimal tools**: Restrict to what's needed
+2. **Inline by default**: fork only a self-contained job that needs nothing from the conversation
+3. **No tool grants by default**: `allowed-tools` pre-approves tools, it never restricts them
 4. **Clear instructions**: The skill must be self-contained
 5. **Practical examples**: Help understand usage
 

@@ -111,7 +111,7 @@ $ARGUMENTS
 | Aspect | Command | Skill | Agent |
 |--------|---------|-------|-------|
 | Trigger | Manual | Auto (keywords) | Auto (delegation) |
-| Context | Shared | Fork | Isolated |
+| Context | Shared | Inline (fork on review) | Isolated |
 | Control | Total | Partial | Delegated |
 | Use case | Explicit actions | Recurring behaviors | Autonomous tasks |
 

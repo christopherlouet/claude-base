@@ -123,7 +123,6 @@ A skill is a `SKILL.md` file in a subfolder of `.claude/skills/`. It encapsulate
 ---
 name: my-skill
 description: What the skill does. Trigger when the user [context].
-model: sonnet
 argument-hint: "[project-name] [options]"
 ---
 
@@ -155,7 +154,7 @@ Output format.
 | `allowed-tools` | No | list | Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none — see [Pre-approving tools](/docs/concepts/customization#pre-approving-tools-allowed-tools) |
 | `context` | No | `fork` | Omit (default) = inline, in the conversation. `fork` = a sub-agent that sees none of it: self-contained jobs only |
 | `background` | No | `true`/`false` | With `context: fork` only; default `true` (result arrives asynchronously). Set `false` to wait for it |
-| `model` | No | `sonnet`, `opus`, `haiku`, `inherit` | Model to use |
+| `model` | No | `sonnet`, `opus`, `haiku`, `inherit` | On a forked skill, the sub-agent's model. On an inline skill it switches the session's model for the rest of the turn: leave it out |
 | `argument-hint` | No | text | Autocompletion in the `/` menu |
 | `disable-model-invocation` | No | `true`/`false` | Manual invocation only |
 | `user-invocable` | No | `true`/`false` | Visible in the `/` menu |
