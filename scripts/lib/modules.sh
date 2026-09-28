@@ -328,8 +328,8 @@ set_manifest_tier() {
 }
 
 # set_manifest_preset <dir> <preset> — rewrite ONLY the .preset field (atomic).
-# Used by update to record the preset it resolved (--preset, or a single
-# detected match), so later updates read it instead of re-detecting.
+# Used by update to record an explicit --preset, so later updates read it from
+# the manifest. A detected preset is never recorded.
 # Returns 1 if the manifest is missing or jq fails.
 set_manifest_preset() {
     local dir="${1:?target dir required}" preset="${2:?preset required}"

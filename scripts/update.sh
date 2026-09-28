@@ -202,8 +202,9 @@ ${BOLD}OPTIONS${NC}
     --add-plugin ID     Enable a marketplace plugin in the existing settings.json
                         without overwriting other keys (e.g., astral@astral-sh).
                         Idempotent: re-running on an already-enabled plugin succeeds silently.
-    --preset NAME       Apply NAME's skill filter (e.g. nextjs) and record NAME in
-                        .claude/foundation.json, so later updates use it without
+    --preset NAME       Apply NAME's skill filter (e.g. nextjs) and, when the update
+                        runs to the end (not --dry-run), record NAME in
+                        .claude/foundation.json so later updates use it without
                         the flag. Skips skills the preset drops; prevents update
                         --all from silently re-introducing them. Resolves official
                         then community presets.
@@ -397,6 +398,11 @@ parse_args() {
                 if [[ -z "${2:-}" ]]; then
                     error "Option --preset requires an argument (preset name, e.g. nextjs)"
                 fi
+                # A preset NAME, never a path: it resolves to presets/NAME.json and
+                # is recorded in the manifest, so "../x" must not get that far.
+                case "$2" in
+                    */*|*..*) error "Invalid preset name: $2 (a preset name, e.g. nextjs, not a path)" ;;
+                esac
                 UPDATE_PRESET_NAME="$2"
                 shift 2
                 ;;

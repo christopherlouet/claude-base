@@ -586,6 +586,29 @@ _init_without_preset() {
     [[ "$output" == *"Active preset: astro (detected)"* ]]
 }
 
+@test "update-presets: a run that stops early records no preset" {
+    _init_without_preset
+    touch "$TEST_DIR/proj/next.config.js"
+
+    run "$UPDATE" --preset nextjs --backup-only -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ "$(jq -r '.preset' "$TEST_DIR/proj/.claude/foundation.json")" = "null" ]
+
+    run "$UPDATE" --preset nextjs --add-plugin astral@astral-sh -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ "$(jq -r '.preset' "$TEST_DIR/proj/.claude/foundation.json")" = "null" ]
+}
+
+@test "update-presets: a --preset name holding a path is refused, nothing recorded" {
+    _init_without_preset
+    for bad in "../nextjs" "sub/nextjs" ".."; do
+        run "$UPDATE" --preset "$bad" -y "$TEST_DIR/proj"
+        [ "$status" -ne 0 ]
+        [[ "$output" == *"preset name"* ]]
+    done
+    [ "$(jq -r '.preset' "$TEST_DIR/proj/.claude/foundation.json")" = "null" ]
+}
+
 @test "update-presets: a dry run records no preset" {
     _init_without_preset
     touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/astro.config.mjs"
