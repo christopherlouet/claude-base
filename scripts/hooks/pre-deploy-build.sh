@@ -49,6 +49,9 @@ else
   gate_block_if_timed_out() { :; }
 fi
 is_deploy_command "$CMD" || exit 0
+# Claude Code feeds a blocking hook's STDERR back and drops its stdout: all the
+# gate prints goes there, or a red build blocks with "No stderr output".
+exec 1>&2
 gate_budget_init
 
 echo "=== Pre-deploy build check ==="
