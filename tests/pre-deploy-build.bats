@@ -141,3 +141,15 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" != *"BLOCKED"* ]]
 }
+
+# On exit 2 Claude Code feeds STDERR back and drops stdout — the tests above
+# merge the two streams, so this one reads stderr alone.
+@test "pre-deploy-build: a block states its reason on stderr" {
+    command -v npm >/dev/null 2>&1 || skip "npm not available"
+    mk_npm_project "$TEST_DIR/proj" "echo BUILD-RED; exit 1"
+    jq -n '{tool_name:"Bash", tool_input:{command:"./deploy.sh production"}}' > "$TEST_DIR/input.json"
+    run bash -c "cd '$TEST_DIR/proj' && bash '$HOOK' < '$TEST_DIR/input.json' 2>&1 >/dev/null"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"BLOCKED"* ]]
+    [[ "$output" == *"BUILD-RED"* ]]
+}

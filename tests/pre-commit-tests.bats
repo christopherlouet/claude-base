@@ -172,3 +172,15 @@ fake_red_tool() {
     run_hook_in "$TEST_DIR/proj" 'git commit -m "wip"'
     [ "$status" -eq 2 ]
 }
+
+# On exit 2 Claude Code feeds STDERR back and drops stdout — the tests above
+# merge the two streams, so this one reads stderr alone.
+@test "pre-commit-tests: a block states its reason on stderr" {
+    command -v npm >/dev/null 2>&1 || skip "npm not available"
+    mk_npm_project "$TEST_DIR/proj" "echo SUITE-RED; exit 1"
+    jq -n '{tool_name:"Bash", tool_input:{command:"git commit -m wip"}}' > "$TEST_DIR/input.json"
+    run bash -c "cd '$TEST_DIR/proj' && bash '$HOOK' < '$TEST_DIR/input.json' 2>&1 >/dev/null"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"BLOCKED"* ]]
+    [[ "$output" == *"SUITE-RED"* ]]
+}
