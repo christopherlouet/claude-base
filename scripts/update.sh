@@ -1153,7 +1153,7 @@ resolve_active_preset() {
     if [[ "$count" -gt 1 ]]; then
         local list
         list=$(echo "$matches" | tr '\n' ' ' | sed 's/ $//')
-        error "multiple presets match the project: $list\nRe-run with --preset <name> to pick one, or --no-preset to skip preset filtering"
+        error "multiple presets match the project: $list\nRe-run once with --preset <name> to pick one (it is recorded in .claude/foundation.json for later updates), or --no-preset to skip preset filtering for this run"
     fi
 
     ACTIVE_PRESET_NAME="$matches"
@@ -2425,6 +2425,24 @@ main() {
                 success "Project graduated to a full install (tier \"full\" recorded)"
             else
                 warning "could not record tier \"full\" in .claude/foundation.json"
+            fi
+        fi
+        # Record the preset this run resolved (--preset, or a single detected
+        # match) so the next update reads it instead of re-detecting — the
+        # adoption path the stack-pivot notice points at. A manifest preset is
+        # already recorded; --no-preset leaves the manifest alone. Detection
+        # never replaces a recorded name (one that no longer resolves falls
+        # back to detection with a warning; the user decides, not update).
+        local _record_preset=false
+        case "$ACTIVE_PRESET_SOURCE" in
+            --preset) _record_preset=true ;;
+            detected) [[ -z "$(manifest_preset "$TARGET_DIR" 2>/dev/null || true)" ]] && _record_preset=true ;;
+        esac
+        if $_record_preset; then
+            if set_manifest_preset "$TARGET_DIR" "$ACTIVE_PRESET_NAME"; then
+                info "Preset $ACTIVE_PRESET_NAME recorded in .claude/foundation.json: later updates use it without --preset"
+            else
+                warning "could not record preset \"$ACTIVE_PRESET_NAME\" in .claude/foundation.json"
             fi
         fi
         # Persist the new recommendation snapshot so the NEXT update can diff

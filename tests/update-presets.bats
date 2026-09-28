@@ -500,6 +500,8 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"nextjs"* ]]
     [[ "$output" == *"--preset"* ]]
+    # ...and re-records it (stack-pivot-redetect US-2: the adoption command).
+    [ "$(jq -r '.preset' "$TEST_DIR/proj/.claude/foundation.json")" = "nextjs" ]
 }
 
 @test "update-presets: --no-preset still disables filtering despite the manifest" {
@@ -528,6 +530,107 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"synth-drop"* ]]
     [[ "$output" != *"multiple presets match"* ]]
+}
+
+# --- The resolved preset is recorded -----------------------------------------
+# Nothing used to write the preset update resolved: `--preset X` held for one
+# run, and a detected preset was re-detected on every run. A project installed
+# (or migrated from a legacy marker) with "preset": null that later matched two
+# presets could then never be updated without a flag on every run. Real
+# presets: the resolution path scans the official presets directory.
+
+# _init_without_preset — install into an empty dir (no preset recorded).
+_init_without_preset() {
+    "$NEW_PROJECT" -y --simple "$TEST_DIR/proj" >/dev/null 2>&1
+    [ "$(jq -r '.preset' "$TEST_DIR/proj/.claude/foundation.json")" = "null" ]
+}
+
+@test "update-presets: the multi-match refusal says an explicit --preset is remembered" {
+    _init_without_preset
+    touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/astro.config.mjs"
+
+    run "$UPDATE" -y "$TEST_DIR/proj"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"multiple presets match"* ]]
+    [[ "$output" == *"recorded"* ]]
+}
+
+@test "update-presets: --preset on an ambiguous project is recorded, later updates need no flag" {
+    _init_without_preset
+    touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/astro.config.mjs"
+
+    run "$UPDATE" --preset nextjs -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ "$(jq -r '.preset' "$TEST_DIR/proj/.claude/foundation.json")" = "nextjs" ]
+
+    run "$UPDATE" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Active preset: nextjs (manifest)"* ]]
+    [[ "$output" != *"multiple presets match"* ]]
+}
+
+@test "update-presets: a detected preset is recorded, the next update reads the manifest" {
+    _init_without_preset
+    touch "$TEST_DIR/proj/next.config.js"
+
+    run "$UPDATE" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Active preset: nextjs (detected)"* ]]
+    [ "$(jq -r '.preset' "$TEST_DIR/proj/.claude/foundation.json")" = "nextjs" ]
+
+    run "$UPDATE" -y "$TEST_DIR/proj"
+    [[ "$output" == *"Active preset: nextjs (manifest)"* ]]
+}
+
+@test "update-presets: a legacy project keeps the preset it was detected with after migration" {
+    _init_without_preset
+    rm -f "$TEST_DIR/proj/.claude/foundation.json"
+    echo "5.0.0" > "$TEST_DIR/proj/.claude/.foundation-version"
+    touch "$TEST_DIR/proj/next.config.js"
+
+    run "$UPDATE" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ "$(jq -r '.preset' "$TEST_DIR/proj/.claude/foundation.json")" = "nextjs" ]
+
+    # Stack grows a second match: the recorded preset holds, no refusal.
+    touch "$TEST_DIR/proj/astro.config.mjs"
+    run "$UPDATE" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Active preset: nextjs (manifest)"* ]]
+}
+
+@test "update-presets: a dry run records no preset" {
+    _init_without_preset
+    touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/astro.config.mjs"
+
+    run "$UPDATE" --preset nextjs --dry-run -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ "$(jq -r '.preset' "$TEST_DIR/proj/.claude/foundation.json")" = "null" ]
+}
+
+@test "update-presets: --no-preset leaves the recorded preset alone" {
+    _init_without_preset
+    touch "$TEST_DIR/proj/next.config.js"
+    "$UPDATE" --preset nextjs -y "$TEST_DIR/proj" >/dev/null 2>&1
+
+    run "$UPDATE" --no-preset -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ "$(jq -r '.preset' "$TEST_DIR/proj/.claude/foundation.json")" = "nextjs" ]
+}
+
+@test "update-presets: detection never replaces a recorded preset that no longer resolves" {
+    local preset_dir="$TEST_DIR/synthetic-presets"
+    _write_synthetic_preset "$preset_dir"
+    "$NEW_PROJECT" --preset synth-drop --presets-dir "$preset_dir" -y "$TEST_DIR/proj" >/dev/null 2>&1
+    touch "$TEST_DIR/proj/next.config.js"
+
+    # Without --presets-dir, synth-drop does not resolve: update warns and
+    # falls back to detection (nextjs) for this run, but keeps the record.
+    run "$UPDATE" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"not found: synth-drop"* ]]
+    [[ "$output" == *"Active preset: nextjs (detected)"* ]]
+    [ "$(jq -r '.preset' "$TEST_DIR/proj/.claude/foundation.json")" = "synth-drop" ]
 }
 
 @test "update-presets: corrupted manifest fails loud instead of silent auto-detect fallback" {
