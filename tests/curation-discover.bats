@@ -809,7 +809,7 @@ unpopular() {
     [[ "$output" != *"able/least-starred"* ]]
 }
 
-@test "discover: a repo two sources both return is judged once" {
+@test "discover: a repo two sources both return is judged once (guard)" {
     jq -cn '{version:"1.0.0", perPage:15, sources:[{domain:"alpha", query:"alpha q"}, {domain:"beta", query:"beta q"}]}' \
         > "$TEST_DIR/sources.json"
     search_fixture "alpha q" shared/skill zulu/one
@@ -898,7 +898,7 @@ unpopular() {
     [ "$(jq -r '.entries[0].repo' "$TEST_DIR/digest/judged.json")" = "ok/lowfit" ]
 }
 
-@test "discover: --dry-run records nothing in the judged ledger" {
+@test "discover: --dry-run records nothing in the judged ledger (guard)" {
     healthy_candidate "ok/lowfit"
     llm_response '{"neutrality":"pass","fit":1,"rationale":"x","borderline":false,"tokensUsed":10}'
     mkdir -p "$TEST_DIR/digest"
@@ -1001,4 +1001,62 @@ unpopular() {
     ! grep -q '<img' "$TEST_DIR/digest/proposals.md" || false
     ! grep -q '@octocat' "$TEST_DIR/digest/proposals.md" || false
     ! grep -qF '[click](' "$TEST_DIR/digest/proposals.md" || false
+}
+
+# --- A judge reply outside the contract is not a verdict ---------------------
+# llm_judge accepted any JSON with a neutrality and a non-null fit. A fit sent as
+# a string ("5") read as 0 and became a recorded rejection: a repo the model
+# rated 5/5 hidden for 180 days. Outside the contract = unanswered = unjudged.
+
+@test "discover: a fit sent as a string is unjudged, not a recorded rejection" {
+    healthy_candidate "ok/good"
+    llm_response '{"neutrality":"pass","fit":"5","rationale":"great fit","borderline":false,"tokensUsed":10}'
+    run_discover --digest-dir "$TEST_DIR/digest"
+    [ "$(digest_json | jq -r '.counts.unjudged')" -eq 1 ]
+    [ "$(jq -r '.entries | length' "$TEST_DIR/digest/judged.json")" -eq 0 ]
+}
+
+@test "discover: a neutrality outside pass/flag is unjudged" {
+    healthy_candidate "ok/good"
+    llm_response '{"neutrality":"PASS","fit":5,"borderline":false,"tokensUsed":10}'
+    run_discover --digest-dir "$TEST_DIR/digest"
+    [ "$(digest_json | jq -r '.counts.unjudged')" -eq 1 ]
+    [ "$(jq -r '.entries | length' "$TEST_DIR/digest/judged.json")" -eq 0 ]
+}
+
+@test "discover: a backslash in model text cannot unescape the digest markdown" {
+    healthy_candidate "ok/lowfit"
+    llm_response '{"neutrality":"pass","fit":1,"rationale":"a\\|b \\[click\\](x) see https://evil.example/y","borderline":false,"tokensUsed":10}'
+    run_discover --digest-dir "$TEST_DIR/digest"
+    run grep 'ok/lowfit' "$TEST_DIR/digest/proposals.md"
+    # the backslash is doubled BEFORE the pipe and brackets are escaped
+    [[ "$output" == *'a\\\|b'* ]]
+    [[ "$output" == *'\\\[click\\\]'* ]]
+    # a bare URL in model text is not left for GitHub to autolink
+    [[ "$output" != *'https://evil'* ]]
+}
+
+@test "discover: the digest lists a bounded number of rejections" {
+    search_items '{"items":[{"full_name":"r/one"},{"full_name":"r/two"},{"full_name":"r/three"}]}'
+    unpopular r/one r/two r/three
+    CURATION_DIGEST_REJECTIONS=2 run_discover --digest-dir "$TEST_DIR/digest"
+    [ "$(grep -c '^| \[r/' "$TEST_DIR/digest/proposals.md")" -eq 2 ]
+    grep -q '1 more' "$TEST_DIR/digest/proposals.md"
+    [ "$(digest_json | jq -r '.rejections | length')" -eq 3 ]
+}
+
+# The screen reasons that mean "could not run", read from the SHIPPED script:
+# every operational reason the screen emits matches, and no finding category does.
+@test "curation-discover.sh (shipped): the safety outage pattern splits outages from findings" {
+    local re
+    re=$(sed -n "s/^_SAFETY_OUTAGE='\(.*\)'$/\1/p" "$DISCOVER")
+    [ -n "$re" ]
+    for r in content-unfetchable doc-unreadable subpath-unresolved exec-surface-unfetchable \
+             exec-file-unfetchable scan-error scan-blind screen-emit-failed; do
+        printf '%s' "$r" | grep -qE "$re" || { echo "outage not matched: $r" >&2; return 1; }
+    done
+    for r in remote-exec obfuscated-exec destructive-rm prompt-injection uncategorized-pattern \
+             exec-surface-truncated exec-surface-over-cap; do
+        if printf '%s' "$r" | grep -qE "$re"; then echo "finding taken for an outage: $r" >&2; return 1; fi
+    done
 }

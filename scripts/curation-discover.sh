@@ -31,6 +31,11 @@
 #                        [--fit-threshold N]
 #                        [--model NAME] [--escalate-model NAME] [--thresholds FILE]
 #
+# With --digest-dir, rejections are also recorded in DIR/judged.json (judgements
+# only, never an outage): a rejected repo is skipped until CURATION_REJUDGE_DAYS
+# (180) pass. CURATION_DIGEST_REJECTIONS (50) bounds the rejections the markdown
+# lists; proposals.json keeps them all.
+#
 # --emit-issue opens ONE propose-only GitHub issue with the proposals (mirrors the
 # nightly watch; no-noise — only when there is something to review). Reuses
 # emit_issue (CWD-independent -R, fail-safe). Proposal only — never auto-adds.
@@ -64,6 +69,9 @@ DRY_RUN=false
 EMIT_ISSUE=false
 BUDGET="${CURATION_BUDGET:-200000}"
 MAX_CANDIDATES="${CURATION_MAX_CANDIDATES:-40}"
+# Rejections listed in the digest markdown (all of them stay in proposals.json):
+# the markdown becomes the issue body, which GitHub caps at 65,536 characters.
+DIGEST_REJECTIONS="${CURATION_DIGEST_REJECTIONS:-50}"
 # Days a rejection stands before the repo is judged again (judged ledger).
 REJUDGE_DAYS="${CURATION_REJUDGE_DAYS:-180}"
 FIT_THRESHOLD="${CURATION_FIT_THRESHOLD:-4}"
@@ -95,6 +103,9 @@ done
 command -v jq >/dev/null 2>&1 || { echo "[ERROR] jq is required" >&2; exit 2; }
 [ -f "$SOURCES" ] || { echo "[ERROR] sources not found: $SOURCES" >&2; exit 2; }
 case "$REJUDGE_DAYS" in ''|*[!0-9]*) echo "[ERROR] CURATION_REJUDGE_DAYS must be a whole number of days" >&2; exit 2 ;; esac
+case "$DIGEST_REJECTIONS" in ''|*[!0-9]*) echo "[ERROR] CURATION_DIGEST_REJECTIONS must be a whole number" >&2; exit 2 ;; esac
+# Base 10 explicitly: "0180" must not reach jq's --argjson as a leading-zero number.
+REJUDGE_DAYS=$((10#$REJUDGE_DAYS)); DIGEST_REJECTIONS=$((10#$DIGEST_REJECTIONS))
 
 # The judged ledger lives beside the digest: rejections with their gate and
 # reason, so a rejected repo is not judged again until REJUDGE_DAYS pass. No
@@ -308,7 +319,9 @@ PROMPT
     # despite the "raw JSON only" instruction. Strip fence lines defensively so a
     # well-formed-but-fenced verdict is NOT discarded as unparseable.
     out=$(printf '%s' "$out" | sed -e '/^[[:space:]]*```/d')
-    if printf '%s' "$out" | jq -e '.neutrality and (.fit != null)' >/dev/null 2>&1; then
+    # The contract, not merely "parses": a fit sent as a string would floor to 0
+    # and read as a verdict (recorded, hidden 180 days). Outside it = unanswered.
+    if printf '%s' "$out" | jq -e '(.neutrality == "pass" or .neutrality == "flag") and (.fit | type == "number")' >/dev/null 2>&1; then
         printf '%s' "$out"
     else
         curation_warn "llm judge failed/unparseable for $repo"
@@ -358,6 +371,9 @@ _reject() {
 }
 
 # Safety reasons that mean the screen could not run, not that it found something.
+# exec-surface-truncated / -over-cap are NOT in it on purpose: the repo is too
+# large to scan whole, a property of the repo that a re-run would meet again, so
+# it is recorded like a finding.
 _SAFETY_OUTAGE='unfetchable|unreadable|unresolved|scan-error|scan-blind|failed'
 
 moat_arr=()
@@ -495,9 +511,10 @@ digest=$(jq -cn \
 
 # _MD_DEFS — jq helpers for the digest tables. Reasons and rationales are written
 # by a model reading third-party SKILL.md content and end up in a GitHub issue
-# body: esc keeps them inert text (no HTML, no markdown link, no @mention, no
-# line break that ends the table row) and bounds their length.
-_MD_DEFS='def esc: tostring | gsub("[\r\n]+"; " ") | gsub("&"; "&amp;") | gsub("<"; "&lt;") | gsub(">"; "&gt;")
+# body: esc keeps them inert text (no HTML, no markdown link or autolinked URL,
+# no @mention, no line break that ends the table row; a backslash is doubled
+# first so it cannot undo the escapes after it) and bounds their length.
+_MD_DEFS='def esc: tostring | gsub("[\r\n]+"; " ") | gsub("\\\\"; "\\\\") | gsub("://"; ":/\u200b/") | gsub("&"; "&amp;") | gsub("<"; "&lt;") | gsub(">"; "&gt;")
     | gsub("\\|"; "\\|") | gsub("\\["; "\\[") | gsub("\\]"; "\\]") | gsub("`"; "\\`") | gsub("@"; "@\u200b")
     | if length > 300 then .[0:300] + "…" else . end;
   def link: "[\(.)](https://github.com/\(.))";'
@@ -546,8 +563,9 @@ render_markdown() {
     if [ "$rejected" -gt 0 ]; then
         printf '\n<details><summary>Rejected (%s): the gate that stopped each one</summary>\n\n' "$rejected"
         printf '| Repo | Gate | Reason |\n|---|---|---|\n'
-        printf '%s' "$rejections" | jq -r "$_MD_DEFS"'
-            .[] | "| \(.repo|link) | \(.gate|esc) | \(.reason|esc) |"'
+        printf '%s' "$rejections" | jq -r --argjson max "$DIGEST_REJECTIONS" "$_MD_DEFS"'
+            (.[:$max][] | "| \(.repo|link) | \(.gate|esc) | \(.reason|esc) |"),
+            (if length > $max then "\n… and \(length - $max) more: see `rejections` in proposals.json" else empty end)'
         printf '\n</details>\n'
     fi
 }
