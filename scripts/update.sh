@@ -106,6 +106,9 @@ COMMANDS_DEPOSITED=0
 # When set, resolve_active_preset() looks there BEFORE the official presets dir.
 # Intended for testing only (synthetic presets); not documented in --help.
 PRESETS_DIR_OVERRIDE=""
+# Set by main() before the legacy-marker migration: true when the project
+# already had .claude/foundation.json (see resolve_active_preset).
+MANIFEST_PREEXISTED=false
 UPGRADE_CLAUDE_MD=false
 RESTORE_BACKUP=""
 
@@ -1083,7 +1086,10 @@ _count_dir_files() {
 # Decides which preset's filter applies to this update run, based on:
 #   --no-preset                    → no active preset (no filter)
 #   --preset NAME                  → resolve NAME against .claude/presets/
-#   (none of the above)            → call scan_presets() on TARGET_DIR
+#   manifest names a preset        → that preset
+#   manifest records none (null)   → no active preset (no filter), unless
+#                                    this run's migration just wrote it
+#   (legacy install, no manifest)  → call scan_presets() on TARGET_DIR
 #                                    - 0 matches: no active preset
 #                                    - 1 match : that preset becomes active
 #                                    - 2+ match: refuse, list, instruct
@@ -1139,6 +1145,12 @@ resolve_active_preset() {
             return 0
         fi
         warning "preset recorded in foundation.json not found: $recorded — falling back to auto-detection"
+    elif [[ "$mp_status" -eq 0 ]] && $MANIFEST_PREEXISTED; then
+        # "preset": null is what init records when it installs WITHOUT a
+        # preset (none matched, or several did). Re-detecting it would apply
+        # a filter the project never had, or refuse the whole update when
+        # several presets match. Pick one explicitly with --preset.
+        return 0
     fi
 
     # Auto-detect via scan_presets (PR #160 lib) — legacy projects only.
@@ -2199,6 +2211,11 @@ main() {
             preset_pivot_report "$_recorded" "$TARGET_DIR" || true
         exit 0
     fi
+
+    # Whether the project had a manifest BEFORE this run: the migration below
+    # writes one (preset null) for a legacy install, which must still be
+    # auto-detected — only a manifest the install itself wrote is a record.
+    [[ -f "$TARGET_DIR/.claude/foundation.json" ]] && MANIFEST_PREEXISTED=true
 
     # Legacy marker → manifest migration on first contact (EF-205, direct
     # replacement). Real runs only — dry-run must not mutate the project.

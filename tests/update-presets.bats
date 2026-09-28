@@ -52,9 +52,13 @@ teardown() {
     [[ "$output" == *"mutually exclusive"* ]]
 }
 
-@test "update-presets: multi-match without flag refuses with disambiguation message (T005)" {
+@test "update-presets: legacy multi-match without flag refuses with disambiguation message (T005)" {
     local proj="$TEST_DIR/proj-multi"
     "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
+    # A legacy install: version marker, no manifest. Only such a project is
+    # auto-detected (manifest-first resolution, foundation-modules CS-205).
+    rm -f "$proj/.claude/foundation.json"
+    echo "5.0.0" > "$proj/.claude/.foundation-version"
     # Make the project match BOTH nextjs and astro detect rules.
     touch "$proj/next.config.js"
     touch "$proj/astro.config.mjs"
@@ -66,12 +70,16 @@ teardown() {
     [[ "$output" == *"--preset"* ]] || [[ "$output" == *"--no-preset"* ]]
 }
 
-@test "update-presets: multi-match nextjs+react-vite-spa hybrid refuses with disambiguation message (T044)" {
+@test "update-presets: legacy multi-match nextjs+react-vite-spa hybrid refuses with disambiguation message (T044)" {
     # Hybrid fixture: satisfies BOTH nextjs (next.config.js + "next" in package.json)
     # and react-vite-spa (vite.config.ts + "react-router-dom" in package.json).
     # The update --skills auto-detect path must refuse and name both matches.
     local proj="$TEST_DIR/proj-hybrid-multi"
     "$NEW_PROJECT" -y --simple "$proj" >/dev/null 2>&1
+    # A legacy install: version marker, no manifest. Only such a project is
+    # auto-detected (manifest-first resolution, foundation-modules CS-205).
+    rm -f "$proj/.claude/foundation.json"
+    echo "5.0.0" > "$proj/.claude/.foundation-version"
     cat > "$proj/vite.config.ts" <<'EOF'
 import { defineConfig } from 'vite';
 export default defineConfig({});
@@ -528,6 +536,49 @@ EOF
     [ "$status" -eq 0 ]
     [[ "$output" == *"synth-drop"* ]]
     [[ "$output" != *"multiple presets match"* ]]
+}
+
+# --- A manifest that records NO preset ---------------------------------------
+# `init` writes "preset": null when it installs without a preset (none or
+# several matched). That is a recorded choice, not a legacy install: update must
+# not re-detect it. It did, and `update -y` then refused such a project as soon
+# as two presets matched, on every run (commands always go through the filter).
+# Real presets: the resolution path scans the official presets directory.
+
+# _init_without_preset — install into an empty dir (no preset recorded).
+_init_without_preset() {
+    "$NEW_PROJECT" -y --simple "$TEST_DIR/proj" >/dev/null 2>&1
+    [ "$(jq -r '.preset' "$TEST_DIR/proj/.claude/foundation.json")" = "null" ]
+}
+
+@test "update-presets: a manifest recording no preset updates when several presets match" {
+    _init_without_preset
+    touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/astro.config.mjs"
+
+    run "$UPDATE" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"multiple presets match"* ]]
+    [[ "$output" != *"Active preset"* ]]
+}
+
+@test "update-presets: a manifest recording no preset is not re-detected when one preset matches" {
+    _init_without_preset
+    touch "$TEST_DIR/proj/next.config.js"
+
+    run "$UPDATE" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"Active preset"* ]]
+}
+
+@test "update-presets: a legacy project migrated in the same real run is still auto-detected" {
+    _init_without_preset
+    rm -f "$TEST_DIR/proj/.claude/foundation.json"
+    echo "5.0.0" > "$TEST_DIR/proj/.claude/.foundation-version"
+    touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/astro.config.mjs"
+
+    run "$UPDATE" -y "$TEST_DIR/proj"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"multiple presets match"* ]]
 }
 
 @test "update-presets: corrupted manifest fails loud instead of silent auto-detect fallback" {
