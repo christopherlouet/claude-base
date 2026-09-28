@@ -1075,6 +1075,7 @@ run_module() {
 @test "modules: set_manifest_preset fails when there is no manifest" {
     mkdir -p "$TEST_DIR/none/.claude"
     run_lib set_manifest_preset "$TEST_DIR/none" nextjs
-    [ "$status" -ne 0 ]
+    [ "$status" -eq 1 ]
+    [ -z "$output" ]
     [ ! -f "$TEST_DIR/none/.claude/foundation.json" ]
 }
