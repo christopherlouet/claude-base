@@ -107,23 +107,24 @@ decoy rule as control), it does less:
 | the `Read` tool | yes |
 | `cat <path>` with the path written in the command | yes |
 | a script that builds the path, then reads it | **no — the content leaks** |
-| `ssh -i <path> …` | **no** — the rule knows readers like `cat`, not the options of `ssh` |
+| `ssh -i <path> …` | **no** |
 
-So the rule refuses the literal read and nothing that goes around it. On `~/.ssh` it would also
-block the legitimate gestures around keys (`cat *.pub`, `grep '^Host' ~/.ssh/config`) while
-leaving the key itself usable. The foundation therefore ships **no** path rule on `~/.ssh`,
+So the rule refuses the literal read and nothing that goes around it. On `~/.ssh` it would still
+leave the key usable, while a literal read of anything under the directory (a public key, the
+`config` file) is refused like the key itself. The foundation therefore ships **no** path rule on `~/.ssh`,
 `~/.gnupg` or `~/.aws`.
 
-What would close the gap is the **Bash sandbox** (`sandbox.enabled`), which limits what a command
-and its children can read, write and reach on the network. It is not enabled in the shipped
-settings either, because it does not start on recent Ubuntu:
+The **Bash sandbox** (`sandbox.enabled`) is designed to close that gap: it limits what a command
+and its children can read, write and reach on the network. That was not measured, because on the
+host tested (Ubuntu 26.04, CLI 2.1.283) the sandbox does not start, and it is not enabled in the
+shipped settings for that reason:
 
 - Since 24.04, Ubuntu sets `kernel.apparmor_restrict_unprivileged_userns=1`. `bwrap` itself runs,
   but everything it launches drops to a profile that denies capabilities, and Claude Code's seccomp
   helper needs one in a nested user namespace. **Every** Bash command then fails, `echo` included:
   `apply-seccomp: write /proc/self/setgroups (nested userns is capability-restricted …)`.
   `enableWeakerNestedSandbox` does not change it.
-- With the default `allowUnsandboxedCommands: "retry"`, a `claude -p` run did **not** fall back
+- With `allowUnsandboxedCommands` at its default (`true`), a `claude -p` run did **not** fall back
   outside the sandbox: the command simply failed.
 
 Enabling it by default would break Bash for every user on such a host. On macOS (Seatbelt) or a
@@ -132,6 +133,9 @@ measured there yet); prove it on a harmless command first, since a sandbox that 
 turns every Bash call into a failure. Making it start on Ubuntu means
 relaxing the user-namespace restriction for a `bwrap` binary, a host-wide trade-off the foundation
 does not make for you.
+
+These are observations of CLI 2.1.283, not limits of the design: re-test when a later CLI changes
+how the sandbox starts its seccomp helper, and revisit the shipped settings if it then starts.
 
 ## 3. Verification gates — *proof, not the model's word*
 
