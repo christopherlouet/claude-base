@@ -29,7 +29,9 @@ setup() {
 echo "gh \$*" >> "$TEST_DIR/gh.log"
 if [ "\$1" != "api" ]; then exit 0; fi   # non-api (e.g. issue create) → log + succeed
 case "\$2" in
-  search/repositories*) cat "$TEST_DIR/fx/search.json" 2>/dev/null || { echo "fake gh: 404 search" >&2; exit 1; } ;;
+  search/repositories*) f="$TEST_DIR/fx/\$(printf '%s' "\$2" | tr '/' '_')"
+     if [ -f "\$f" ]; then cat "\$f"
+     else cat "$TEST_DIR/fx/search.json" 2>/dev/null || { echo "fake gh: 404 search" >&2; exit 1; }; fi ;;
   *git/trees/*) f="$TEST_DIR/fx/\$(printf '%s' "\$2" | tr '/' '_')"
      if [ -f "\$f" ]; then cat "\$f"; else echo '{"tree":[],"truncated":false}'; fi ;;
   *) f="$TEST_DIR/fx/\$(printf '%s' "\$2" | tr '/' '_')"
@@ -65,6 +67,22 @@ repo_meta() {
         '{stargazers_count:$s, forks_count:5, pushed_at:$p, archived:$a, license:{spdx_id:$l}}'
 }
 search_items() { printf '%s' "$1" > "$TEST_DIR/fx/search.json"; }   # JSON: {items:[...]}
+# search_fixture <query> <owner/repo>... — serve THIS query's hits, in this order
+# (GitHub returns them by stars, the order the source ranks them in).
+search_fixture() {
+    local q="$1"; shift
+    jq -cn '{items: [$ARGS.positional[] | {full_name: .}]}' --args "$@" \
+        > "$TEST_DIR/fx/$(printf '%s' "search/repositories?q=${q// /+}&per_page=15&sort=stars" | tr '/' '_')"
+}
+# judged_repos — the repos the run examined (each examined candidate's metadata
+# is fetched by the trust gate), in call order.
+# refute_called <path> — fail when the fake gh was asked for <path>. A bare
+# `! grep …` line never fails a bats test (set -e ignores a negated command),
+# so it cannot be used for a negative assertion before the last line.
+refute_called() {
+    if grep -qF "$1" "$TEST_DIR/gh.log"; then echo "unexpected gh call: $1" >&2; return 1; fi
+}
+judged_repos() { grep -oE 'api repos/[^/ ]+/[^/ ]+$' "$TEST_DIR/gh.log" | sed 's|^api repos/||'; }
 gh_fixture() { printf '%s' "$2" > "$TEST_DIR/fx/$(printf '%s' "$1" | tr '/' '_')"; }
 content_fixture() {
     local b64; b64=$(printf '%s' "$4" | base64 | tr -d '\n')
@@ -242,6 +260,7 @@ healthy_candidate() {
     list_fixture "awesome/list" '# L
 - https://github.com/topics/claude
 - https://github.com/sponsors/foo
+- ![shot](https://github.com/user-attachments/assets/0b1c-image)
 - https://github.com/awesome/list (the list itself)
 - [real](https://github.com/auth/real)
 '
@@ -251,9 +270,10 @@ healthy_candidate() {
     llm_response '{"neutrality":"pass","fit":5,"rationale":"x","borderline":false,"tokensUsed":50}'
     run_discover
     [ "$status" -eq 0 ]
-    ! grep -q "repos/topics/claude" "$TEST_DIR/gh.log"
-    ! grep -q "repos/sponsors/foo" "$TEST_DIR/gh.log"
-    ! grep -q "repos/awesome/list/releases" "$TEST_DIR/gh.log"   # self never reached the trust/ref gate
+    refute_called "repos/topics/claude"
+    refute_called "repos/sponsors/foo"
+    refute_called "repos/user-attachments/assets"   # an uploaded image, not a repo
+    refute_called "repos/awesome/list/releases"   # self never reached the trust/ref gate
     [ "$(printf '%s' "$output" | jq -r '.proposals | length')" -eq 1 ]
     [ "$(printf '%s' "$output" | jq -r '.proposals[0].repo')" == "auth/real" ]
 }
@@ -740,4 +760,143 @@ SKILLS_DIR="$BATS_TEST_DIRNAME/../.claude/skills"
     [ "$status" -eq 0 ]
     [ "$(printf '%s' "$output" | jq -r '.proposals | length')" -eq 1 ]
     [ "$(printf '%s' "$output" | jq -r '.proposals[0].repo')" == "newauthor/next-skill" ]
+}
+
+# =============================================================================
+# Coverage — which candidates the cap lets through, and never judging the same
+# rejection twice. Measured 2026-09-28: 301 candidates were sorted ALPHABETICALLY
+# and cut at 40, so every month judged the same 0-9/a/b prefix and no candidate
+# past it (a Playwright skill ranked 148th, Prisma 206th) was ever examined.
+# =============================================================================
+
+# two_sources — sources "alpha" and "beta", three hits each, alpha's all sorting
+# AFTER beta's alphabetically.
+two_sources() {
+    jq -cn '{version:"1.0.0", perPage:15, sources:[{domain:"alpha", query:"alpha q"}, {domain:"beta", query:"beta q"}]}' \
+        > "$TEST_DIR/sources.json"
+    search_fixture "alpha q" zulu/one zulu/two zulu/three
+    search_fixture "beta q" able/one able/two able/three
+}
+
+@test "discover: the cap takes each source's first hits in turn, not the alphabetical head" {
+    two_sources
+    llm_response '{"neutrality":"pass","fit":1,"rationale":"x","borderline":false,"tokensUsed":10}'
+    run_discover --max-candidates 2
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.scope.candidates')" -eq 2 ]
+    run judged_repos
+    [[ "$output" == *"zulu/one"* ]]
+    [[ "$output" == *"able/one"* ]]
+    [[ "$output" != *"able/two"* ]]
+}
+
+@test "discover: within a source, its own ranking beats the alphabet" {
+    jq -cn '{version:"1.0.0", perPage:15, sources:[{domain:"alpha", query:"alpha q"}]}' > "$TEST_DIR/sources.json"
+    search_fixture "alpha q" zulu/most-starred able/least-starred
+    llm_response '{"neutrality":"pass","fit":1,"rationale":"x","borderline":false,"tokensUsed":10}'
+    run_discover --max-candidates 1
+    run judged_repos
+    [[ "$output" == *"zulu/most-starred"* ]]
+    [[ "$output" != *"able/least-starred"* ]]
+}
+
+@test "discover: a repo two sources both return is judged once" {
+    jq -cn '{version:"1.0.0", perPage:15, sources:[{domain:"alpha", query:"alpha q"}, {domain:"beta", query:"beta q"}]}' \
+        > "$TEST_DIR/sources.json"
+    search_fixture "alpha q" shared/skill zulu/one
+    search_fixture "beta q" shared/skill able/one
+    llm_response '{"neutrality":"pass","fit":1,"rationale":"x","borderline":false,"tokensUsed":10}'
+    run_discover
+    [ "$(digest_json | jq -r '.scope.candidates')" -eq 3 ]
+}
+
+@test "discover: rejections are named in the digest with the gate that stopped them" {
+    healthy_candidate "ok/lowfit"
+    llm_response '{"neutrality":"pass","fit":1,"rationale":"barely related","borderline":false,"tokensUsed":40}'
+    run_discover --digest-dir "$TEST_DIR/digest"
+    [ "$(digest_json | jq -r '.rejections[0].repo')" = "ok/lowfit" ]
+    [ "$(digest_json | jq -r '.rejections[0].gate')" = "fit" ]
+    [ "$(digest_json | jq -r '.rejections[0].reason')" = "barely related" ]
+    grep -q 'ok/lowfit' "$TEST_DIR/digest/proposals.md"
+}
+
+@test "discover: a trust rejection is named too, without a model call" {
+    search_items '{"items":[{"full_name":"tiny/repo"}]}'
+    gh_fixture "repos/tiny/repo" "$(repo_meta 3 '2026-06-10T00:00:00Z' false MIT)"
+    run_discover
+    [ "$(digest_json | jq -r '.rejections[0].gate')" = "trust" ]
+    [ ! -f "$TEST_DIR/llm.log" ]
+}
+
+@test "discover: a rejected repo is recorded and skipped next month, so the cap reaches new ones" {
+    two_sources
+    llm_response '{"neutrality":"pass","fit":1,"rationale":"x","borderline":false,"tokensUsed":10}'
+    CURATION_NOW=2026-09-01 run_discover --digest-dir "$TEST_DIR/digest" --max-candidates 2
+    [ "$(jq -r '.entries | length' "$TEST_DIR/digest/judged.json")" -eq 2 ]
+
+    : > "$TEST_DIR/gh.log"
+    CURATION_NOW=2026-10-01 run_discover --digest-dir "$TEST_DIR/digest" --max-candidates 2
+    run judged_repos
+    [[ "$output" == *"zulu/two"* ]]
+    [[ "$output" == *"able/two"* ]]
+    [[ "$output" != *"zulu/one"* ]]
+}
+
+@test "discover: a rejection older than the re-judge window is judged again" {
+    healthy_candidate "ok/lowfit"
+    mkdir -p "$TEST_DIR/digest"
+    jq -cn '{version:"1.0.0", entries:[{repo:"ok/lowfit", judgedAt:"2026-01-01", gate:"fit", reason:"old"}]}' \
+        > "$TEST_DIR/digest/judged.json"
+    llm_response '{"neutrality":"pass","fit":1,"rationale":"x","borderline":false,"tokensUsed":10}'
+    CURATION_NOW=2026-09-01 run_discover --digest-dir "$TEST_DIR/digest"
+    [ -f "$TEST_DIR/llm.log" ]
+    [ "$(jq -r '[.entries[] | select(.repo == "ok/lowfit")] | length' "$TEST_DIR/digest/judged.json")" -eq 1 ]
+    [ "$(jq -r '.entries[] | select(.repo == "ok/lowfit") | .judgedAt' "$TEST_DIR/digest/judged.json")" = "2026-09-01" ]
+}
+
+@test "discover: a recent rejection is skipped without a model call" {
+    healthy_candidate "ok/lowfit"
+    mkdir -p "$TEST_DIR/digest"
+    jq -cn '{version:"1.0.0", entries:[{repo:"ok/lowfit", judgedAt:"2026-08-01", gate:"fit", reason:"x"}]}' \
+        > "$TEST_DIR/digest/judged.json"
+    CURATION_NOW=2026-09-01 run_discover --digest-dir "$TEST_DIR/digest"
+    [ "$(digest_json | jq -r '.scope.candidates')" -eq 0 ]
+    [ ! -f "$TEST_DIR/llm.log" ]
+}
+
+@test "discover: proposals and unjudged candidates are not recorded (they stay eligible)" {
+    healthy_candidate "newauthor/next-skill"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"strong","borderline":false,"tokensUsed":50}'
+    run_discover --digest-dir "$TEST_DIR/digest"
+    [ "$(jq -r '.entries | length' "$TEST_DIR/digest/judged.json")" -eq 0 ]
+
+    printf 'not json' > "$TEST_DIR/llm-response.json"
+    rm -f "$TEST_DIR/llm.log"
+    run_discover --digest-dir "$TEST_DIR/digest"
+    [ "$(digest_json | jq -r '.counts.unjudged')" -eq 1 ]
+    [ "$(jq -r '.entries | length' "$TEST_DIR/digest/judged.json")" -eq 0 ]
+}
+
+@test "discover: a corrupted judged ledger fails safe (nothing skipped, run completes)" {
+    healthy_candidate "ok/lowfit"
+    mkdir -p "$TEST_DIR/digest"
+    printf '{ broken' > "$TEST_DIR/digest/judged.json"
+    llm_response '{"neutrality":"pass","fit":1,"rationale":"x","borderline":false,"tokensUsed":10}'
+    run_discover --digest-dir "$TEST_DIR/digest"
+    [ "$status" -eq 0 ]
+    [ -f "$TEST_DIR/llm.log" ]
+}
+
+@test "discover: --dry-run records nothing in the judged ledger" {
+    healthy_candidate "ok/lowfit"
+    llm_response '{"neutrality":"pass","fit":1,"rationale":"x","borderline":false,"tokensUsed":10}'
+    run_discover --digest-dir "$TEST_DIR/digest" --dry-run
+    [ ! -f "$TEST_DIR/digest/judged.json" ]
+}
+
+@test "discovery-sources.json (shipped): covers accessibility, scraping and maps" {
+    local f="$BATS_TEST_DIRNAME/../.claude/curation/discovery-sources.json"
+    for d in accessibility scraping maps; do
+        jq -e --arg d "$d" '.sources[] | select(.domain == $d) | .query' "$f" >/dev/null
+    done
 }

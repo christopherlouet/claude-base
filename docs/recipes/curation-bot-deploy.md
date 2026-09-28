@@ -270,6 +270,8 @@ catches it a day sooner.
 
 It runs **monthly**, in its **own unit, never mixed with the $0 nightly watch**, under a hard `--budget` token cap.
 
+**Which candidates a run examines.** The sources yield a few hundred repos; `--max-candidates` (default 40) caps how many are judged. The cap takes the sources' hits **in turn**, each in its own ranking (a search by stars, a list in document order), so every covered domain gets its best hits examined. A rejection is recorded, with the gate that stopped it and the reason, in **`judged.json` beside the digest** (`--digest-dir`); that repo is skipped until `CURATION_REJUDGE_DAYS` (default 180) pass, so each month's cap reaches candidates not yet examined. Proposals, moat signals, unanswered judge calls and budget-deferred candidates are not recorded: they stay eligible. The digest lists every rejection under a collapsed *Rejected* section. Without `--digest-dir` there is no ledger and every run judges from scratch.
+
 > **Billing status (verify before relying on it):** the 2026-06-15 plan to meter `claude -p` on a separate "agentic" credit was **paused on 2026-06-16** and is being reworked. As of this writing, `claude -p` counts against your **normal subscription limits** — but the policy is unstable, so confirm the current state and keep `--budget` tight.
 
 ### Auth — two paths (pick by your environment)
