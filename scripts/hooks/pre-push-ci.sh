@@ -50,6 +50,9 @@ else
   gate_block_if_timed_out() { :; }
 fi
 is_git_push_command "$CMD" || exit 0
+# Claude Code feeds a blocking hook's STDERR back and drops its stdout: all the
+# gate prints goes there, or a red push blocks with "No stderr output".
+exec 1>&2
 gate_budget_init
 
 echo "=== Pre-push CI check ==="
