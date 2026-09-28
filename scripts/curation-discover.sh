@@ -236,13 +236,13 @@ _source_hits() {
 collect_candidates() {
     # Exclude both already-tracked repos AND reviewed-and-declined ones.
     local known; known=$(printf '%s\n%s\n%s\n' "$(known_set)" "$(declined_set)" "$(judged_recent_set)" | awk 'NF' | sort -u)
-    local per src idx=0
+    local per src src_n=0
     per=$(jq -r '(.perPage | numbers) // 15' "$SOURCES")
     {
         while IFS= read -r src; do
             [ -n "$src" ] || continue
-            idx=$((idx + 1))
-            _source_hits "$src" "$per" | awk -v s="$idx" 'NF { print NR "\t" s "\t" $0 }'
+            src_n=$((src_n + 1))
+            _source_hits "$src" "$per" | awk -v s="$src_n" 'NF { print NR "\t" s "\t" $0 }'
         done < <(jq -c '.sources[]?' "$SOURCES")
     } | LC_ALL=C sort -t "$(printf '\t')" -k1,1n -k2,2n \
       | awk -F '\t' 'NR == FNR { skip[tolower($0)] = 1; next }
