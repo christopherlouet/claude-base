@@ -152,8 +152,9 @@ describe('generate-skill-docs: the context badge', () => {
     const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-ctx-'));
     try {
       const skill = parseSkillFile(writeCtx(tmp, 'probe-inline', ''));
-      assert.notEqual(skill!.context, 'fork');
+      assert.equal(skill!.context, 'inline');
       assert.doesNotMatch(generateSkillPage(skill!, 1), /\| \*\*Context\*\* \| fork \|/);
+      assert.match(generateSkillPage(skill!, 1), /\*\*Inline\*\* means the skill runs in the conversation/);
     } finally {
       fs.rmSync(tmp, { recursive: true, force: true });
     }

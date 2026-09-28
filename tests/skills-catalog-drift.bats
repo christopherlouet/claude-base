@@ -109,3 +109,29 @@ MARK="manual only"
 # check lives in `website/scripts/generate-skill-docs.test.ts`: it renders both
 # branches and asserts on the output, and re-renders every real skill. A grep
 # beside it would only be a weaker second way to fail on the same fact.
+
+# _context_cell <row> — the last cell of a catalogue row, trimmed.
+_context_cell() {
+    printf '%s\n' "$1" | awk -F'|' '{ c = $(NF-1); gsub(/^[[:space:]]+|[[:space:]]+$/, "", c); print c }'
+}
+
+@test "catalog: the Context column matches each skill's frontmatter" {
+    # #602 moved 43 skills inline and left all 53 rows saying `fork`: a reader
+    # copying a row's context wrote a skill that could not see the conversation.
+    local bad="" f name row want got
+    for f in "$SKILLS_DIR"/*/SKILL.md; do
+        [ -f "$f" ] || continue
+        name=$(basename "$(dirname "$f")")
+        row=$(_row "$name")
+        [ -n "$row" ] || continue
+        if _fm "$f" | grep -q '^context:[[:space:]]*fork'; then want=fork; else want=inline; fi
+        got=$(_context_cell "$row")
+        [ "$got" = "$want" ] || bad="$bad $name($got, frontmatter:$want)"
+    done
+    [ -z "$bad" ] || { echo "Context column disagrees with frontmatter:$bad" >&2; return 1; }
+}
+
+@test "catalog: the Context check sees both values (guard is not vacuous)" {
+    grep -qE '^\|.*\|[[:space:]]*fork[[:space:]]*\|$' "$CATALOG"
+    grep -qE '^\|.*\|[[:space:]]*inline[[:space:]]*\|$' "$CATALOG"
+}

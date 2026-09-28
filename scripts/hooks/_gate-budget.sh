@@ -61,6 +61,6 @@ gate_run_tail() {
 gate_block_if_timed_out() {
     case "$1" in 124|137) ;; *) return 0 ;; esac
     [ $((SECONDS - ${GATE_START:-$SECONDS})) -ge "${GATE_SECONDS:-1500}" ] || return 0
-    echo "BLOCKED: $2 did not finish within ${GATE_SECONDS} s (CLAUDE_BASE_GATE_SECONDS). A gate cut by Claude Code's hook timeout lets the action through, so it blocks instead. Raise the budget, or bypass once with the gate's SKIP_ variable."
+    echo "BLOCKED: $2 did not finish within ${GATE_SECONDS} s (CLAUDE_BASE_GATE_SECONDS). A gate cut by Claude Code's hook timeout lets the action through, so it blocks instead. Raise the budget, or bypass once with the gate's SKIP_ variable." >&2
     exit 2
 }

@@ -41,7 +41,7 @@ export interface SkillInfo {
   name: string;
   description: string;
   allowedTools: string[];
-  context: 'fork' | 'shared';
+  context: 'fork' | 'inline';
   manualOnly: boolean;
   keywords: string[];
   content: string;
@@ -147,9 +147,9 @@ function parseSkillFile(dirPath: string): SkillInfo | null {
       name: data.name || skillName,
       description: data.description || description || heading || `Skill ${skillName}`,
       allowedTools: parseToolsField(data['allowed-tools']),
-      // Claude Code documents one value, `fork`; absent means inline, which this
-      // site labels "shared" (the skill shares the conversation).
-      context: data.context === 'fork' ? 'fork' : 'shared',
+      // Claude Code documents one value, `fork`; absent means inline, the
+      // default: the skill runs in the conversation.
+      context: data.context === 'fork' ? 'fork' : 'inline',
       manualOnly: data['disable-model-invocation'] === true,
       keywords: extractKeywords(markdownContent, skillName),
       content: markdownContent,
@@ -185,7 +185,7 @@ function generateSkillPage(skill: SkillInfo, position: number): string {
     tags: ['skill', skill.context],
   });
 
-  const contextBadge = `<span className="badge" style={{backgroundColor: '${skill.context === 'fork' ? 'var(--model-haiku)' : 'var(--model-sonnet)'}', color: 'white'}}>${skill.context === 'fork' ? 'Fork' : 'Shared'}</span>`;
+  const contextBadge = `<span className="badge" style={{backgroundColor: '${skill.context === 'fork' ? 'var(--model-haiku)' : 'var(--model-sonnet)'}', color: 'white'}}>${skill.context === 'fork' ? 'Fork' : 'Inline'}</span>`;
 
   const toolsList = skill.allowedTools.length > 0
     ? skill.allowedTools.map((t) => `\`${t}\``).join(', ')
@@ -232,15 +232,15 @@ ${skill.keywords.slice(0, 3).map((k) => `- _"I want to ${k}..."_`).join('\n')}`}
 ## Context ${skill.context}
 
 ${skill.context === 'fork' ? `
-**Fork** means the skill runs in an isolated context:
-- Does not pollute the main conversation
-- Results are returned cleanly
-- Ideal for autonomous tasks
+**Fork** means the skill runs as a sub-agent (\`context: fork\`):
+- Sees none of the conversation, only its own instructions
+- Returns its result to the conversation when done
+- Kept for self-contained jobs, reviewed case by case
 ` : `
-**Shared** means the skill shares the conversation context:
-- Access to the full history
-- Changes visible immediately
-- Ideal for interactive tasks
+**Inline** means the skill runs in the conversation (the default, no \`context\` key):
+- Sees the full history
+- Its work is visible as it happens
+- Right for almost every skill
 `}
 ${skill.examples.length > 0 ? `
 ---
@@ -275,7 +275,7 @@ function generateSkillsIndex(skills: SkillInfo[]): string {
   const forkSkills = skills.filter((s) => s.context === 'fork');
 
   const manualOnlySkills = skills.filter((s) => s.manualOnly);
-  const sharedSkills = skills.filter((s) => s.context === 'shared');
+  const inlineSkills = skills.filter((s) => s.context === 'inline');
 
   const generateTable = (skillList: SkillInfo[]) =>
     skillList
@@ -297,7 +297,7 @@ import SkillCard from '@site/src/components/SkillCard';
 
 <Stats items={[
   { number: ${forkSkills.length}, label: 'Fork Skills' },
-  { number: ${sharedSkills.length}, label: 'Shared Skills' },
+  { number: ${inlineSkills.length}, label: 'Inline Skills' },
   { number: ${skills.length}, label: 'Total' },
 ]} />
 
@@ -306,7 +306,7 @@ import SkillCard from '@site/src/components/SkillCard';
 **Skills** are auto-triggered behaviors:
 
 - **Automatic triggering**: Activated by keywords in the conversation
-- **Configurable context**: Fork (isolated) or Shared (shared)
+- **Context**: inline by default (in the conversation); fork (a sub-agent) only by review
 - **Nothing pre-approved**: \`allowed-tools\` grants, never restricts; foundation skills declare none
 - **Transparency**: The user sees when a skill is activated
 
@@ -314,20 +314,20 @@ import SkillCard from '@site/src/components/SkillCard';
 
 ### Fork (${forkSkills.length} skills)
 
-Skills with isolated context.
+Skills that run as a sub-agent and see none of the conversation.
 
 | Skill | Description | Keywords |
 |-------|-------------|-----------|
 ${generateTable(forkSkills)}
 
-${sharedSkills.length > 0 ? `
-### Shared (${sharedSkills.length} skills)
+${inlineSkills.length > 0 ? `
+### Inline (${inlineSkills.length} skills)
 
-Skills with shared context.
+Skills that run in the conversation.
 
 | Skill | Description | Keywords |
 |-------|-------------|-----------|
-${generateTable(sharedSkills)}
+${generateTable(inlineSkills)}
 ` : ''}
 
 ## Card view

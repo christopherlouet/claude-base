@@ -221,3 +221,24 @@ fake_red_tool() {
     run_in "$TEST_DIR/proj" "git push origin main"
     [ "$status" -eq 2 ]
 }
+
+# --- What Claude Code actually reads ----------------------------------------
+# On exit 2 Claude Code feeds STDERR back and drops stdout: a gate that printed
+# its reason on stdout blocked with "No stderr output" — every test above merges
+# the two streams (2>&1) and so could never see it. These read stderr ALONE.
+
+# run_stderr_in <dir> <command-string> — like run_in, but $output is stderr only.
+run_stderr_in() {
+    local dir="$1" cmd="$2" json
+    json=$(jq -n --arg c "$cmd" '{tool_name:"Bash", tool_input:{command:$c}}')
+    printf '%s' "$json" > "$TEST_DIR/input.json"
+    run bash -c "cd '$dir' && bash '$HOOK' < '$TEST_DIR/input.json' 2>&1 >/dev/null"
+}
+
+@test "pre-push-ci: a block states its reason and the failing check on stderr" {
+    mk_red_project
+    run_stderr_in "$TEST_DIR/proj" "git push origin main"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"BLOCKED"* ]]
+    [[ "$output" == *"FAILED: Tests"* ]]
+}

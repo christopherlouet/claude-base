@@ -45,6 +45,9 @@ else
   gate_block_if_timed_out() { :; }
 fi
 is_git_commit_command "$CMD" || exit 0
+# Claude Code feeds a blocking hook's STDERR back and drops its stdout: all the
+# gate prints goes there, or a red suite blocks with "No stderr output".
+exec 1>&2
 gate_budget_init
 
 # Husky (JS): if configured but not installed, try to repair so the project's
