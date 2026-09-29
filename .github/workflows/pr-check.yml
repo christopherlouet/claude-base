@@ -65,8 +65,21 @@ jobs:
             exit 1
           fi
 
+  # The size label is the one step that WRITES, so it runs in its own job, the
+  # only one given pull-requests: write; the title/commit/WIP checks above keep
+  # the read-only default. The workflow never granted it, and the floating v1
+  # tag hid that until it moved on 2026-09-28 to a release that reports the
+  # 403: pinned to that release's commit, bumped deliberately. A fork's token
+  # stays read-only whatever is declared, so a fork PR skips it.
+  size-label:
+    name: Label PR size
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
       - name: Check PR size
-        uses: codelytv/pr-size-labeler@v1
+        uses: codelytv/pr-size-labeler@4e3aa0f77f348c8066513d453515316ffa01a607 # v1.11.1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           xs_label: 'size/XS'

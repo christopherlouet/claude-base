@@ -24,6 +24,34 @@ WORKFLOWS="$BASE_DIR/.github/workflows"
         grep -A4 'types:' "$WORKFLOWS/pr-check.yml" | grep -q 'edited'
 }
 
+# job_of <file> <pattern> — the jobs: block (2-space key and its body) whose
+# text matches <pattern>; empty when none does. Comment lines are dropped: one
+# explaining a job sits above its key, inside the block before.
+job_of() {
+    awk -v pat="$2" '
+        /^jobs:/ { j = 1; next }
+        /^[[:space:]]*#/ { next }
+        j && /^  [A-Za-z0-9_-]+:/ { if (buf ~ pat) printf "%s", buf; buf = "" }
+        j { buf = buf $0 "\n" }
+        END { if (buf ~ pat) printf "%s", buf }' "$1"
+}
+
+# The size labeler writes (a label) and only it may: its own job gets
+# pull-requests: write, the title/commit/WIP job keeps the read-only default.
+# It is pinned to a commit — its floating v1 tag moved on 2026-09-28 and
+# started failing on the permission the workflow never granted.
+@test "pr-check.yml: only the size-label job may write, and it is pinned to a commit" {
+    local label validate
+    label=$(job_of "$WORKFLOWS/pr-check.yml" 'pr-size-labeler@')
+    validate=$(job_of "$WORKFLOWS/pr-check.yml" 'action-semantic-pull-request')
+    [ -n "$label" ] && [ -n "$validate" ]
+    [ "$label" != "$validate" ]
+    printf '%s' "$label" | grep -qE '^\s+pull-requests:\s*write'
+    printf '%s' "$label" | grep -qE 'pr-size-labeler@[0-9a-f]{40}\b'
+    if printf '%s' "$validate" | grep -qE ':\s*write'; then echo "Validate PR job can write" >&2; return 1; fi
+    if grep -E '^permissions:' -A4 "$WORKFLOWS/pr-check.yml" | grep -qE ':\s*write'; then echo "workflow-wide write" >&2; return 1; fi
+}
+
 @test "ci.yml: shellcheck also covers install.sh and bin/claude-base" {
     grep -A5 'action-shellcheck' "$WORKFLOWS/ci.yml" | grep -q 'additional_files'
     grep -A5 'action-shellcheck' "$WORKFLOWS/ci.yml" | grep -q 'install.sh'
