@@ -1069,7 +1069,7 @@ run_module() {
     printf '%s\n' '{"version":"5.6.0","preset":null,"tier":"full","modules":["biz"]}' > "$TEST_DIR/p/.claude/foundation.json"
     run_lib set_manifest_preset "$TEST_DIR/p" nextjs
     [ "$status" -eq 0 ]
-    [ "$(jq -c . "$TEST_DIR/p/.claude/foundation.json")" = '{"version":"5.6.0","preset":"nextjs","tier":"full","modules":["biz"],"presetChosenAmong":[]}' ]
+    [ "$(jq -c . "$TEST_DIR/p/.claude/foundation.json")" = '{"version":"5.6.0","preset":"nextjs","tier":"full","modules":["biz"],"presetChoice":{"preset":"nextjs","among":[]}}' ]
 }
 
 @test "modules: set_manifest_preset fails when there is no manifest" {
@@ -1085,20 +1085,20 @@ run_module() {
     printf '%s\n' '{"version":"5.6.0","preset":null,"tier":"full","modules":[]}' > "$TEST_DIR/p/.claude/foundation.json"
     run_lib set_manifest_preset "$TEST_DIR/p" nextjs playwright nextjs astro
     [ "$status" -eq 0 ]
-    [ "$(jq -c '.presetChosenAmong' "$TEST_DIR/p/.claude/foundation.json")" = '["astro","nextjs","playwright"]' ]
+    [ "$(jq -c '.presetChoice' "$TEST_DIR/p/.claude/foundation.json")" = '{"preset":"nextjs","among":["astro","nextjs","playwright"]}' ]
 }
 
 # module add/remove rewrite the manifest through write_foundation_manifest: the
 # set a preset was chosen among must survive, or the pivot notice comes back.
-@test "modules: rewriting the manifest keeps presetChosenAmong while the preset is unchanged" {
+@test "modules: rewriting the manifest keeps presetChoice while the preset is unchanged" {
     mkdir -p "$TEST_DIR/p/.claude"
-    printf '%s\n' '{"version":"5.6.0","preset":"nextjs","tier":"full","modules":[],"presetChosenAmong":["astro","nextjs"]}' \
+    printf '%s\n' '{"version":"5.6.0","preset":"nextjs","tier":"full","modules":[],"presetChoice":{"preset":"nextjs","among":["astro","nextjs"]}}' \
         > "$TEST_DIR/p/.claude/foundation.json"
     run_lib write_foundation_manifest "$TEST_DIR/p" 5.6.0 nextjs biz
     [ "$status" -eq 0 ]
-    [ "$(jq -c '.presetChosenAmong' "$TEST_DIR/p/.claude/foundation.json")" = '["astro","nextjs"]' ]
+    [ "$(jq -c '.presetChoice.among' "$TEST_DIR/p/.claude/foundation.json")" = '["astro","nextjs"]' ]
 
     # A different preset was not chosen among that set: the field is dropped.
     run_lib write_foundation_manifest "$TEST_DIR/p" 5.6.0 astro biz
-    [ "$(jq -r 'has("presetChosenAmong")' "$TEST_DIR/p/.claude/foundation.json")" = "false" ]
+    [ "$(jq -r 'has("presetChoice")' "$TEST_DIR/p/.claude/foundation.json")" = "false" ]
 }

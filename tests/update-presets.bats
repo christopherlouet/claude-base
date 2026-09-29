@@ -613,7 +613,7 @@ _init_without_preset() {
     _init_without_preset
     touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/astro.config.mjs"
     "$UPDATE" --preset nextjs -y "$TEST_DIR/proj" >/dev/null 2>&1
-    [ "$(jq -c '.presetChosenAmong' "$TEST_DIR/proj/.claude/foundation.json")" = '["astro","nextjs"]' ]
+    [ "$(jq -c '.presetChoice' "$TEST_DIR/proj/.claude/foundation.json")" = '{"preset":"nextjs","among":["astro","nextjs"]}' ]
 
     run "$UPDATE" -y "$TEST_DIR/proj"
     [ "$status" -eq 0 ]
@@ -621,6 +621,43 @@ _init_without_preset() {
 
     # A preset the choice was not made among: the notice speaks again.
     echo '{"devDependencies":{"@playwright/test":"^1"}}' > "$TEST_DIR/proj/package.json"
+    run "$UPDATE" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"changed stack"* ]]
+}
+
+@test "update-presets: after adoption, a preset that goes away is a pivot again" {
+    _init_without_preset
+    touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/astro.config.mjs"
+    "$UPDATE" --preset nextjs -y "$TEST_DIR/proj" >/dev/null 2>&1
+
+    # The recorded preset no longer matches: only astro is left.
+    rm "$TEST_DIR/proj/next.config.js"
+    run "$UPDATE" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"changed stack"* ]]
+    [[ "$output" == *"claude-base update --preset astro"* ]]
+}
+
+@test "update-presets: --detect-only reports an adopted choice as settled, with no adoption hint" {
+    _init_without_preset
+    touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/astro.config.mjs"
+    "$UPDATE" --preset nextjs -y "$TEST_DIR/proj" >/dev/null 2>&1
+
+    run "$UPDATE" --detect-only "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Diverges: no (settled: nextjs was chosen among astro, nextjs)"* ]]
+    [[ "$output" != *"To adopt"* ]]
+}
+
+@test "update-presets: a choice recorded for another preset silences nothing" {
+    _init_without_preset
+    touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/astro.config.mjs"
+    "$UPDATE" --preset nextjs -y "$TEST_DIR/proj" >/dev/null 2>&1
+    # The manifest names another preset (edited by hand); the choice is nextjs's.
+    jq '.preset = "react-vite-spa"' "$TEST_DIR/proj/.claude/foundation.json" > "$TEST_DIR/m.json"
+    mv "$TEST_DIR/m.json" "$TEST_DIR/proj/.claude/foundation.json"
+
     run "$UPDATE" -y "$TEST_DIR/proj"
     [ "$status" -eq 0 ]
     [[ "$output" == *"changed stack"* ]]

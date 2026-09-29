@@ -262,11 +262,11 @@ write_foundation_manifest() {
     if [[ -z "$ptype" && -f "$manifest" ]]; then
         ptype="$(jq -r '.projectType // empty' "$manifest" 2>/dev/null)" || ptype=""
     fi
-    # The set an explicit preset was chosen among (set_manifest_preset) belongs
-    # to THAT preset: kept while the preset is unchanged, dropped otherwise.
+    # The recorded choice of an explicit preset (set_manifest_preset) belongs to
+    # THAT preset: kept while the preset is unchanged, dropped otherwise.
     local chosen='null'
     if [[ -n "$preset" && -f "$manifest" ]]; then
-        chosen="$(jq -c --arg p "$preset" 'if .preset == $p then (.presetChosenAmong // null) else null end' \
+        chosen="$(jq -c --arg p "$preset" 'if .presetChoice.preset? == $p then .presetChoice else null end' \
             "$manifest" 2>/dev/null)" || chosen='null'
         [[ -n "$chosen" ]] || chosen='null'
     fi
@@ -287,7 +287,7 @@ write_foundation_manifest() {
           tier: $tier,
           modules: ($ARGS.positional | map(select(length > 0)))}
          + (if $ptype == "" then {} else {projectType: $ptype} end)
-         + (if $chosen == null then {} else {presetChosenAmong: $chosen} end)' \
+         + (if $chosen == null then {} else {presetChoice: $chosen} end)' \
         "$@" > "$tmp"; then
         rm -f "$tmp"
         return 1
@@ -338,7 +338,7 @@ set_manifest_tier() {
 }
 
 # set_manifest_preset <dir> <preset> [detected...] — rewrite ONLY .preset and
-# .presetChosenAmong (atomic). Used to record an explicit --preset (update and
+# .presetChoice = {preset, among} (atomic). Used to record an explicit --preset (update and
 # init), so later updates read it from the manifest; a detected preset is never
 # recorded. <detected...> is what the project matched when the choice was made:
 # the stack-pivot notice stays silent while the detection still equals it.
@@ -352,12 +352,21 @@ set_manifest_preset() {
     local tmp
     tmp="$(mktemp)" || return 1
     if ! jq --arg preset "$preset" \
-        '.preset = $preset | .presetChosenAmong = ($ARGS.positional | map(select(length > 0)) | unique)' \
+        '.preset = $preset | .presetChoice = {preset: $preset, among: ($ARGS.positional | map(select(length > 0)) | unique)}' \
         "$manifest" --args "$@" > "$tmp"; then
         rm -f "$tmp"
         return 1
     fi
     mv "$tmp" "$manifest" || { rm -f "$tmp"; return 1; }
+}
+
+# manifest_preset_choice <dir> <preset> — the presets <preset> was chosen among
+# (.presetChoice.among, one per line), empty unless the recorded choice is for
+# that very preset. Never fails.
+manifest_preset_choice() {
+    local json
+    json="$(read_foundation_manifest "${1:?target dir required}" 2>/dev/null)" || return 0
+    jq -r --arg p "${2:-}" 'select(.presetChoice.preset? == $p) | .presetChoice.among[]? // empty' <<<"$json" 2>/dev/null || true
 }
 
 # manifest_project_type <dir> — print the recorded stack type, empty when the

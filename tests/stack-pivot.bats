@@ -267,3 +267,26 @@ FAKEJQ
     [ "$status" -eq 0 ]
     [[ "$output" == *"astro"* ]]
 }
+
+@test "pivot-notice: speaks again when a preset of the chosen-among set goes away" {
+    make_preset "react-vite-spa" '{"combinator":"anyOf","files":["vite.config.ts"]}'
+    make_preset "nextjs" '{"combinator":"anyOf","files":["next.config.js"]}'
+    touch "$TEST_DIR/proj/vite.config.ts"
+
+    call "preset_pivot_notice 'nextjs' '$TEST_DIR/proj' \$'nextjs\nreact-vite-spa'"
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"claude-base update --preset react-vite-spa"* ]]
+}
+
+@test "pivot-report: an adopted choice reads as settled, with no adoption hint" {
+    make_preset "react-vite-spa" '{"combinator":"anyOf","files":["vite.config.ts"]}'
+    make_preset "nextjs" '{"combinator":"anyOf","files":["next.config.js"]}'
+    touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/vite.config.ts"
+
+    call "preset_pivot_report 'nextjs' '$TEST_DIR/proj' \$'nextjs\nreact-vite-spa'"
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Diverges: no (settled: nextjs was chosen among nextjs, react-vite-spa)"* ]]
+    [[ "$output" != *"To adopt"* ]]
+}

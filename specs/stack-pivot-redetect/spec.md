@@ -23,7 +23,7 @@ The fix follows the foundation's settled philosophy — **observe-and-propose, n
 - Surface, at `update` time, that the project now matches a preset other than (or in addition to) the recorded one.
 - Stay **100% non-blocking and non-mutating** by default: the recorded preset and skill filter are unchanged unless the user explicitly opts in.
 - Reuse existing machinery (`scan_presets`, `manifest_preset`, `resolve_preset_file`) — no new detection logic, no new persisted state for the MVP.
-  _Later amended_: US-2 AC2 (no repeated notice for an adopted pivot) needs one piece of state. An explicit `--preset` (update or init) records `presetChosenAmong` in `foundation.json`, the presets the project matched when the choice was made; the notice stays silent while the detection still equals that set, and speaks again when it changes.
+  _Later amended_: US-2 AC2 (no repeated notice for an adopted pivot) needs one piece of state. An explicit `--preset` (update or init) records `presetChoice: {preset, among}` in `foundation.json`, `among` being the presets the project matched when the choice was made. For that preset only, the notice stays silent while the detection still equals `among` and speaks again when it changes (a preset appears or goes); `--detect-only` then reports `Diverges: no (settled: …)`.
 - Give the user a one-command path to adopt the new preset when they agree.
 
 ## Non-Goals / Out of Scope

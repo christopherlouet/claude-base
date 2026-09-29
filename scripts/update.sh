@@ -2203,7 +2203,8 @@ main() {
         # Thread PRESETS_DIR_OVERRIDE → PRESETS_DIR so scan_presets uses the
         # same tree as the rest of the run (parity with the notice call site).
         PRESETS_DIR="${PRESETS_DIR_OVERRIDE:-${PRESETS_DIR:-}}" \
-            preset_pivot_report "$_recorded" "$TARGET_DIR" || true
+            preset_pivot_report "$_recorded" "$TARGET_DIR" \
+                "$(manifest_preset_choice "$TARGET_DIR" "$_recorded")" || true
         exit 0
     fi
 
@@ -2403,7 +2404,7 @@ main() {
             # The subshell env override is fail-safe: any error → empty string.
             _pivot="$(PRESETS_DIR="${PRESETS_DIR_OVERRIDE:-${PRESETS_DIR:-}}" \
                 preset_pivot_notice "$ACTIVE_PRESET_NAME" "$TARGET_DIR" \
-                    "$(jq -r '.presetChosenAmong[]? // empty' "$TARGET_DIR/.claude/foundation.json" 2>/dev/null || true)" \
+                    "$(manifest_preset_choice "$TARGET_DIR" "$ACTIVE_PRESET_NAME")" \
                 || true)"
             if [[ -n "$_pivot" ]]; then
                 section "Your project may have changed stack"
