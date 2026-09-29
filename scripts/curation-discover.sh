@@ -31,6 +31,11 @@
 #                        [--fit-threshold N]
 #                        [--model NAME] [--escalate-model NAME] [--thresholds FILE]
 #
+# With --digest-dir, rejections are also recorded in DIR/judged.json (judgements
+# only, never an outage): a rejected repo is skipped until CURATION_REJUDGE_DAYS
+# (180) pass. CURATION_DIGEST_REJECTIONS (50) bounds the rejections the markdown
+# lists; proposals.json keeps them all.
+#
 # --emit-issue opens ONE propose-only GitHub issue with the proposals (mirrors the
 # nightly watch; no-noise — only when there is something to review). Reuses
 # emit_issue (CWD-independent -R, fail-safe). Proposal only — never auto-adds.
@@ -64,6 +69,11 @@ DRY_RUN=false
 EMIT_ISSUE=false
 BUDGET="${CURATION_BUDGET:-200000}"
 MAX_CANDIDATES="${CURATION_MAX_CANDIDATES:-40}"
+# Rejections listed in the digest markdown (all of them stay in proposals.json):
+# the markdown becomes the issue body, which GitHub caps at 65,536 characters.
+DIGEST_REJECTIONS="${CURATION_DIGEST_REJECTIONS:-50}"
+# Days a rejection stands before the repo is judged again (judged ledger).
+REJUDGE_DAYS="${CURATION_REJUDGE_DAYS:-180}"
 FIT_THRESHOLD="${CURATION_FIT_THRESHOLD:-4}"
 MODEL="${CURATION_MODEL:-claude-haiku-4-5}"
 ESCALATE_MODEL="${CURATION_ESCALATE_MODEL:-claude-sonnet-4-6}"
@@ -92,6 +102,16 @@ done
 
 command -v jq >/dev/null 2>&1 || { echo "[ERROR] jq is required" >&2; exit 2; }
 [ -f "$SOURCES" ] || { echo "[ERROR] sources not found: $SOURCES" >&2; exit 2; }
+case "$REJUDGE_DAYS" in ''|*[!0-9]*) echo "[ERROR] CURATION_REJUDGE_DAYS must be a whole number of days" >&2; exit 2 ;; esac
+case "$DIGEST_REJECTIONS" in ''|*[!0-9]*) echo "[ERROR] CURATION_DIGEST_REJECTIONS must be a whole number" >&2; exit 2 ;; esac
+# Base 10 explicitly: "0180" must not reach jq's --argjson as a leading-zero number.
+REJUDGE_DAYS=$((10#$REJUDGE_DAYS)); DIGEST_REJECTIONS=$((10#$DIGEST_REJECTIONS))
+
+# The judged ledger lives beside the digest: rejections with their gate and
+# reason, so a rejected repo is not judged again until REJUDGE_DAYS pass. No
+# digest dir ⟹ no ledger (every run judges from scratch, as before).
+LEDGER=""
+[ -n "$DIGEST_DIR" ] && LEDGER="$DIGEST_DIR/judged.json"
 
 read -ra _LLM <<< "$LLM_CMD"
 
@@ -147,7 +167,7 @@ declined_set() {
 
 # _LIST_RESERVED — github.com path roots that are NOT user/org repos (so a link
 # to one must never become a candidate). Pipe-joined for a single egrep.
-_LIST_RESERVED='topics|sponsors|features|about|marketplace|apps|settings|orgs|users|collections|login|join|pricing|search|explore|notifications|readme|new|site|security|enterprise|contact|customer-stories|blog'
+_LIST_RESERVED='user-attachments|topics|sponsors|features|about|marketplace|apps|settings|orgs|users|collections|login|join|pricing|search|explore|notifications|readme|new|site|security|enterprise|contact|customer-stories|blog'
 
 # _list_candidates <list-repo> [<path>] — fetch a curated awesome-LIST's doc
 # (default branch README.md, or <path>) and echo the owner/repo of every
@@ -180,47 +200,85 @@ _list_candidates() {
         | grep -vixF "$repo"
 }
 
+# _source_hits <source-json> <per-page> — one source's hits (owner/repo), in the
+# source's own ranking: a search by stars, a list in document order. A fetch
+# failure is appended to $SOURCE_FAIL_LOG and yields nothing.
+_source_hits() {
+    local src="$1" per="$2" kind repo lpath rc query path items
+    kind=$(printf '%s' "$src" | jq -r '.kind // "search"')
+    if [ "$kind" = "list" ]; then
+        repo=$(printf '%s' "$src" | jq -r '.repo // empty')
+        [ -n "$repo" ] || return 0
+        lpath=$(printf '%s' "$src" | jq -r '.path // "README.md"')
+        _list_candidates "$repo" "$lpath"; rc=$?
+        # rc 3 = unreachable/404, rc 4 = over the 1MB contents-API cap
+        # (empty content). No stderr warn — the digest field below is the
+        # surfacing channel, and a stderr line would corrupt the JSON on
+        # stdout under `run`'s merged capture. Reason string is kept
+        # human-actionable and greppable by the digest tests.
+        if [ "$rc" = 4 ]; then
+            [ -n "${SOURCE_FAIL_LOG:-}" ] && printf 'list %s/%s (empty content — over the 1MB API cap)\n' "$repo" "$lpath" >> "$SOURCE_FAIL_LOG"
+        elif [ "$rc" != 0 ]; then
+            [ -n "${SOURCE_FAIL_LOG:-}" ] && printf 'list %s/%s (unreachable)\n' "$repo" "$lpath" >> "$SOURCE_FAIL_LOG"
+        fi
+    else
+        query=$(printf '%s' "$src" | jq -r '.query // empty')
+        [ -n "$query" ] || return 0
+        path="search/repositories?q=${query// /+}&per_page=${per}&sort=stars"
+        if items=$(curation_gh_api "$path" 2>/dev/null); then
+            printf '%s' "$items" | jq -r '.items[]?.full_name // empty' 2>/dev/null
+        else
+            [ -n "${SOURCE_FAIL_LOG:-}" ] && printf 'search %s (unreachable)\n' "$(printf '%s' "$src" | jq -r '.domain // .query // "?"')" >> "$SOURCE_FAIL_LOG"
+        fi
+    fi
+}
+
 # collect_candidates — run every source (search query OR curated list), flatten to
-# owner/repo, dedupe, drop known repos, cap. A per-source FETCH FAILURE is still
+# owner/repo, dedupe, drop known repos, cap. The cap takes the sources' hits IN
+# TURN, each in its own ranking (a search by stars, a list in document order):
+# every source's best hits first, then every source's second, and so on. It
+# used to sort the whole pool alphabetically and cut at the cap, so each month
+# judged the same 0-9/a/b prefix of ~300 candidates and never reached the rest.
+# A repo rejected within the re-judge window (judged_recent_set) is dropped too,
+# so the cap moves on to candidates not yet examined. A per-source FETCH FAILURE is still
 # non-fatal (the other sources run), but the source's identifier is appended to
 # $SOURCE_FAIL_LOG (a file the caller reads) so the run SURFACES it in the digest
 # rather than presenting a shrunken candidate set as if it were complete.
 collect_candidates() {
     # Exclude both already-tracked repos AND reviewed-and-declined ones.
-    local known; known=$(printf '%s\n%s\n' "$(known_set)" "$(declined_set)" | awk 'NF' | sort -u)
-    local per src kind query repo lpath path items rc
+    local known; known=$(printf '%s\n%s\n%s\n' "$(known_set)" "$(declined_set)" "$(judged_recent_set)" | awk 'NF' | sort -u)
+    local per src src_n=0
     per=$(jq -r '(.perPage | numbers) // 15' "$SOURCES")
     {
         while IFS= read -r src; do
             [ -n "$src" ] || continue
-            kind=$(printf '%s' "$src" | jq -r '.kind // "search"')
-            if [ "$kind" = "list" ]; then
-                repo=$(printf '%s' "$src" | jq -r '.repo // empty')
-                [ -n "$repo" ] || continue
-                lpath=$(printf '%s' "$src" | jq -r '.path // "README.md"')
-                _list_candidates "$repo" "$lpath"; rc=$?
-                # rc 3 = unreachable/404, rc 4 = over the 1MB contents-API cap
-                # (empty content). No stderr warn — the digest field below is the
-                # surfacing channel, and a stderr line would corrupt the JSON on
-                # stdout under `run`'s merged capture. Reason string is kept
-                # human-actionable and greppable by the digest tests.
-                if [ "$rc" = 4 ]; then
-                    [ -n "${SOURCE_FAIL_LOG:-}" ] && printf 'list %s/%s (empty content — over the 1MB API cap)\n' "$repo" "$lpath" >> "$SOURCE_FAIL_LOG"
-                elif [ "$rc" != 0 ]; then
-                    [ -n "${SOURCE_FAIL_LOG:-}" ] && printf 'list %s/%s (unreachable)\n' "$repo" "$lpath" >> "$SOURCE_FAIL_LOG"
-                fi
-            else
-                query=$(printf '%s' "$src" | jq -r '.query // empty')
-                [ -n "$query" ] || continue
-                path="search/repositories?q=${query// /+}&per_page=${per}&sort=stars"
-                if items=$(curation_gh_api "$path" 2>/dev/null); then
-                    printf '%s' "$items" | jq -r '.items[]?.full_name // empty' 2>/dev/null
-                else
-                    [ -n "${SOURCE_FAIL_LOG:-}" ] && printf 'search %s (unreachable)\n' "$(printf '%s' "$src" | jq -r '.domain // .query // "?"')" >> "$SOURCE_FAIL_LOG"
-                fi
-            fi
+            src_n=$((src_n + 1))
+            _source_hits "$src" "$per" | awk -v s="$src_n" 'NF { print NR "\t" s "\t" $0 }'
         done < <(jq -c '.sources[]?' "$SOURCES")
-    } | awk 'NF' | sort -u | grep -vxF -f <(printf '%s\n' "$known") 2>/dev/null | head -n "$MAX_CANDIDATES"
+    } | LC_ALL=C sort -t "$(printf '\t')" -k1,1n -k2,2n \
+      | awk -F '\t' 'NR == FNR { skip[tolower($0)] = 1; next }
+            { k = tolower($3) } !(k in skip) && !seen[k]++ { print $3 }' \
+            <(printf '#known\n%s\n' "$known") - \
+      | head -n "$MAX_CANDIDATES"
+}
+
+# _LEDGER_DEFS — jq helpers shared by the ledger read and write. fresh/2 is true
+# for a well-formed entry judged within the window; an entry whose date (or
+# shape) cannot be read is never fresh, so it is skipped on read and dropped on
+# write instead of failing the whole ledger.
+_LEDGER_DEFS='def epoch: try (strptime("%Y-%m-%d") | mktime) catch null;
+  def fresh($now; $days): type == "object" and (.repo | type) == "string"
+    and ((.judgedAt | epoch) as $j | ($now | epoch) as $n
+         | $j != null and $n != null and ($n - $j) < ($days * 86400));'
+
+# judged_recent_set — repos REJECTED within the re-judge window, from the judged
+# ledger ($DIGEST_DIR/judged.json). Skipping them is what lets the cap reach new
+# candidates month after month; past the window a repo is judged again (it may
+# have grown). No digest dir, missing or corrupted ledger ⟹ nothing skipped.
+judged_recent_set() {
+    [ -n "$LEDGER" ] && [ -f "$LEDGER" ] || return 0
+    jq -r --arg now "$NOW" --argjson days "$REJUDGE_DAYS" "$_LEDGER_DEFS"'
+        .entries[]? | select(fresh($now; $days)) | .repo | ascii_downcase' "$LEDGER" 2>/dev/null || true
 }
 
 # resolve_ref <repo> — a pinnable current ref: latest release tag, else HEAD sha.
@@ -261,7 +319,9 @@ PROMPT
     # despite the "raw JSON only" instruction. Strip fence lines defensively so a
     # well-formed-but-fenced verdict is NOT discarded as unparseable.
     out=$(printf '%s' "$out" | sed -e '/^[[:space:]]*```/d')
-    if printf '%s' "$out" | jq -e '.neutrality and (.fit != null)' >/dev/null 2>&1; then
+    # The contract, not merely "parses": a fit sent as a string would floor to 0
+    # and read as a verdict (recorded, hidden 180 days). Outside it = unanswered.
+    if printf '%s' "$out" | jq -e '(.neutrality == "pass" or .neutrality == "flag") and (.fit | type == "number")' >/dev/null 2>&1; then
         printf '%s' "$out"
     else
         curation_warn "llm judge failed/unparseable for $repo"
@@ -275,6 +335,10 @@ PROMPT
 # Run
 # ---------------------------------------------------------------------------
 NOW=$(curation_now)
+case "$NOW" in
+    [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]) ;;
+    *) echo "[ERROR] run date must be YYYY-MM-DD (CURATION_NOW): $NOW" >&2; exit 2 ;;
+esac
 # Failed-source log: collect_candidates appends one line per unreachable source
 # (fail-safe — the run continues), read back afterwards so the digest reports
 # how much of the intended coverage was actually fetched.
@@ -291,7 +355,27 @@ fi
 spent=0
 proposed=0 rejected=0 deferred=0 moat=0 graduation=0 unjudged=0
 proposals_arr=()
+rejections_arr=()
 unjudged_arr=()
+
+# _reject <repo> <gate> <reason> <recorded:true|false> — count a rejection and
+# keep WHY: the digest names it. Only a JUDGEMENT is recorded in the ledger (and
+# skips the repo until REJUDGE_DAYS pass). An outage — a fetch that failed, a
+# scan that could not run — says nothing about the repo: it is named but not
+# recorded, so the next run examines the repo again (as an unanswered judge
+# call is UNJUDGED, not rejected).
+_reject() {
+    rejected=$((rejected + 1))
+    rejections_arr+=("$(jq -cn --arg repo "$1" --arg gate "$2" --arg reason "$3" --argjson rec "$4" \
+        '{repo:$repo, gate:$gate, reason:$reason, recorded:$rec}')")
+}
+
+# Safety reasons that mean the screen could not run, not that it found something.
+# exec-surface-truncated / -over-cap are NOT in it on purpose: the repo is too
+# large to scan whole, a property of the repo that a re-run would meet again, so
+# it is recorded like a finding.
+_SAFETY_OUTAGE='unfetchable|unreadable|unresolved|scan-error|scan-blind|failed'
+
 moat_arr=()
 
 if [ "$n_candidates" -gt 0 ]; then
@@ -300,17 +384,32 @@ if [ "$n_candidates" -gt 0 ]; then
 
     # Gate 1 — trust (LLM-free). Discovery is the community track (third-party).
     score=$(trust_score "$repo" community 2>/dev/null) || true
-    if [ "$(printf '%s' "$score" | jq -r '.verdict // "error"')" != "pass" ]; then
-        rejected=$((rejected + 1)); continue
+    tverdict=$(printf '%s' "$score" | jq -r '.verdict // "error"' 2>/dev/null || echo error)
+    if [ "$tverdict" != "pass" ]; then
+        treasons=$(printf '%s' "$score" | jq -r '(.reasons // []) | join(", ")' 2>/dev/null || true)
+        # fail / flag with reasons = a verdict on the repo; error or no score = an outage.
+        case "$tverdict" in
+            fail|flag)
+                if [ -n "$treasons" ]; then _reject "$repo" trust "$treasons" true
+                else _reject "$repo" trust "no trust score (operational)" false; fi ;;
+            *) _reject "$repo" trust "${treasons:-no trust score} (operational)" false ;;
+        esac
+        continue
     fi
 
     ref=$(resolve_ref "$repo")
-    [ -n "$ref" ] || { rejected=$((rejected + 1)); continue; }
+    [ -n "$ref" ] || { _reject "$repo" ref "could not resolve a release tag or HEAD (operational)" false; continue; }
 
     # Gate 2 — safety (LLM-free).
     screen=$(curation_safety_screen "$repo" "$ref")
     if [ "$(printf '%s' "$screen" | jq -r '.verdict')" != "pass" ]; then
-        rejected=$((rejected + 1)); continue
+        sreasons=$(printf '%s' "$screen" | jq -r '(.reasons // []) | join(", ")' 2>/dev/null || true)
+        if [ -z "$sreasons" ] || printf '%s' "$sreasons" | grep -qE "$_SAFETY_OUTAGE"; then
+            _reject "$repo" safety "${sreasons:-no screen verdict} (operational)" false
+        else
+            _reject "$repo" safety "$sreasons" true
+        fi
+        continue
     fi
 
     # Budget gate — BEFORE any model call. Exhausted → defer this and the rest.
@@ -366,7 +465,8 @@ if [ "$n_candidates" -gt 0 ]; then
               rationale:$judge.rationale,
               graduationFor:(if $gradFor == "" then null else $gradFor end)}')")
     else
-        rejected=$((rejected + 1))
+        _reject "$repo" "$([ "$neutrality" = "pass" ] && echo fit || echo neutrality)" \
+            "$(printf '%s' "$verdict" | jq -r '.rationale // ""')" true
     fi
   done < <(printf '%s\n' "$candidates" | awk 'NF')
 fi
@@ -375,6 +475,11 @@ if [ "${#proposals_arr[@]}" -gt 0 ]; then
     proposals=$(printf '%s\n' "${proposals_arr[@]}" | jq -s '.')
 else
     proposals='[]'
+fi
+if [ "${#rejections_arr[@]}" -gt 0 ]; then
+    rejections=$(printf '%s\n' "${rejections_arr[@]}" | jq -s '.')
+else
+    rejections='[]'
 fi
 if [ "${#moat_arr[@]}" -gt 0 ]; then
     moat_signals=$(printf '%s\n' "${moat_arr[@]}" | jq -s '.')
@@ -396,12 +501,23 @@ digest=$(jq -cn \
     --argjson moat "$moat" --argjson graduation "$graduation" \
     --argjson limit "$BUDGET" --argjson spent "$spent" --argjson exhausted "$exhausted" \
     --argjson proposals "$proposals" --argjson moatSignals "$moat_signals" \
+    --argjson rejections "$rejections" \
     '{generatedAt:$now, scope:{candidates:$cand},
       sourcesFailed:$srcFailed, sourceFailures:$srcFailures,
       counts:{proposed:$proposed, rejected:$rejected, deferred:$deferred, unjudged:$unjudged, moat:$moat, graduation:$graduation},
       unjudgedRepos:$unjudgedRepos,
       budget:{limit:$limit, spent:$spent, exhausted:$exhausted},
-      proposals:$proposals, moatSignals:$moatSignals}')
+      proposals:$proposals, moatSignals:$moatSignals, rejections:$rejections}')
+
+# _MD_DEFS — jq helpers for the digest tables. Reasons and rationales are written
+# by a model reading third-party SKILL.md content and end up in a GitHub issue
+# body: esc keeps them inert text (no HTML, no markdown link or autolinked URL,
+# no @mention, no line break that ends the table row; a backslash is doubled
+# first so it cannot undo the escapes after it) and bounds their length.
+_MD_DEFS='def esc: tostring | gsub("[\r\n]+"; " ") | gsub("\\\\"; "\\\\") | gsub("://"; ":/\u200b/") | gsub("&"; "&amp;") | gsub("<"; "&lt;") | gsub(">"; "&gt;")
+    | gsub("\\|"; "\\|") | gsub("\\["; "\\[") | gsub("\\]"; "\\]") | gsub("`"; "\\`") | gsub("@"; "@\u200b")
+    | if length > 300 then .[0:300] + "…" else . end;
+  def link: "[\(.)](https://github.com/\(.))";'
 
 render_markdown() {
     printf '# Curation discovery — %s\n\n' "$NOW"
@@ -420,7 +536,7 @@ render_markdown() {
     if [ "$proposed" -gt 0 ]; then
         printf '## Proposed candidates\n\n'
         printf '| Repo | Provenance | Pin | Fit | Rationale |\n|---|---|---|---|---|\n'
-        printf '%s' "$proposals" | jq -r 'def esc: tostring | gsub("\\|"; "\\|"); def link: "[\(.)](https://github.com/\(.))";
+        printf '%s' "$proposals" | jq -r "$_MD_DEFS"'
             .[] | "| \(.repo|link) | \(.provenance|esc) | \(.pinnedRef|esc) | \(.fit|esc) | \(.rationale|esc) |"'
         printf '\n'
     fi
@@ -428,7 +544,7 @@ render_markdown() {
         printf '## 🎓 Graduation candidates (fill a foundation awaiting-vendor slot)\n\n'
         printf 'Cleared trust+safety+judge AND match a graduatable watch-list skill. Review for command-side graduation (specs/dev-command-vendor-graduation).\n\n'
         printf '| Repo | Graduates | Pin | Fit | Rationale |\n|---|---|---|---|---|\n'
-        printf '%s' "$proposals" | jq -r 'def esc: tostring | gsub("\\|"; "\\|"); def link: "[\(.)](https://github.com/\(.))";
+        printf '%s' "$proposals" | jq -r "$_MD_DEFS"'
             .[] | select(.graduationFor != null) |
             "| \(.repo|link) | \(.graduationFor|esc) | \(.pinnedRef|esc) | \(.fit|esc) | \(.rationale|esc) |"'
         printf '\n'
@@ -437,12 +553,20 @@ render_markdown() {
         printf '## ⚠️ Moat-encroachment signals (strategic — NOT graduation candidates)\n\n'
         printf 'High-trust skills covering durable workflow patterns the foundation owns. Review strategically; do not auto-adopt.\n\n'
         printf '| Repo | Provenance | Fit | Why it encroaches |\n|---|---|---|---|\n'
-        printf '%s' "$moat_signals" | jq -r 'def esc: tostring | gsub("\\|"; "\\|"); def link: "[\(.)](https://github.com/\(.))";
+        printf '%s' "$moat_signals" | jq -r "$_MD_DEFS"'
             .[] | "| \(.repo|link) | \(.provenance|esc) | \(.fit|esc) | \(.rationale|esc) |"'
         printf '\n'
     fi
     if [ "$proposed" -eq 0 ] && [ "$moat" -eq 0 ]; then
         printf 'No new candidates proposed.\n'
+    fi
+    if [ "$rejected" -gt 0 ]; then
+        printf '\n<details><summary>Rejected (%s): the gate that stopped each one</summary>\n\n' "$rejected"
+        printf '| Repo | Gate | Reason |\n|---|---|---|\n'
+        printf '%s' "$rejections" | jq -r --argjson max "$DIGEST_REJECTIONS" "$_MD_DEFS"'
+            (.[:$max][] | "| \(.repo|link) | \(.gate|esc) | \(.reason|esc) |"),
+            (if length > $max then "\n… and \(length - $max) more: see `rejections` in proposals.json" else empty end)'
+        printf '\n</details>\n'
     fi
 }
 
@@ -450,6 +574,23 @@ if [ -n "$DIGEST_DIR" ] && [ "$DRY_RUN" = false ]; then
     mkdir -p "$DIGEST_DIR"
     printf '%s\n' "$digest" > "$DIGEST_DIR/proposals.json"
     render_markdown > "$DIGEST_DIR/proposals.md"
+    # Judged ledger: this run's rejections replace any older entry for the same
+    # repo; entries past the re-judge window are dropped (they are eligible
+    # again anyway). A corrupted ledger is started afresh, never fatal.
+    _prev='{"entries":[]}'
+    if [ -f "$LEDGER" ] && jq -e '.entries | arrays' "$LEDGER" >/dev/null 2>&1; then _prev=$(cat "$LEDGER"); fi
+    if printf '%s' "$_prev" | jq --arg now "$NOW" --argjson days "$REJUDGE_DAYS" --argjson new "$rejections" "$_LEDGER_DEFS"'
+        ($new | map(select(.recorded) | {repo, gate, reason, judgedAt:$now})) as $add
+        | ($add | map(.repo | ascii_downcase)) as $renewed
+        | {version:"1.0.0",
+           entries: ([.entries[] | select(fresh($now; $days))
+                      | select((.repo | ascii_downcase) as $r | $renewed | index($r) | not)]
+                     + $add)}' > "$LEDGER.tmp" 2>/dev/null; then
+        mv "$LEDGER.tmp" "$LEDGER"
+    else
+        rm -f "$LEDGER.tmp"
+        echo "[WARN] could not update the judged ledger $LEDGER: this run's rejections are not recorded" >&2
+    fi
     echo "[OK] discovery digest: $DIGEST_DIR/proposals.json (+ .md) — $proposed proposal(s)" >&2
 fi
 
