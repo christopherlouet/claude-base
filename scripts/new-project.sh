@@ -800,6 +800,10 @@ record_foundation_state() {
         write_foundation_manifest "$dir" "$VERSION" "$PRESET_NAME" \
             ${SELECTED_MODULES[@]+"${SELECTED_MODULES[@]}"} \
             || error "failed to write .claude/foundation.json in $dir"
+        # What the project matched when this preset was chosen: a later update
+        # then raises no stack-pivot notice for a choice already made.
+        PRESETS_DIR="${PRESETS_DIR_OVERRIDE:-${PRESETS_DIR:-}}" \
+            record_preset_choice "$dir" "$PRESET_NAME" || true
         rm -f "$dir/.claude/.foundation-version"
         # US-9: record the initial recommendation snapshot so the first later
         # `update` can diff against it (added / removed / re-pinned).

@@ -297,7 +297,7 @@ _preset_adoption_hint() {
     fi
 }
 
-# preset_pivot_notice <recorded_preset_name> <target_dir>
+# preset_pivot_notice <recorded_preset_name> <target_dir> [chosen_among]
 #
 # Echoes a concise notice block when the project's detected preset set diverges
 # from the recorded one. Emits nothing (and exits 0) for steady-state, legacy,
@@ -306,10 +306,14 @@ _preset_adoption_hint() {
 # Arguments:
 #   $1 - recorded preset name (from .claude/foundation.json .preset)
 #   $2 - target project directory
+#   $3 - newline list the preset was chosen among (.presetChosenAmong): a pivot
+#        the user already settled with --preset. While the detection still
+#        equals it, the notice stays silent (stack-pivot-redetect US-2 AC2).
 # Return: 0 always (fail-safe)
 preset_pivot_notice() {
     local recorded="${1:-}"
     local target_dir="${2:-}"
+    local chosen_among="${3:-}"
 
     # Guard: need a recorded preset name to compare against
     [[ -z "$recorded" ]] && return 0
@@ -326,6 +330,13 @@ preset_pivot_notice() {
     detected_joined="$(printf '%s\n' "$detected_list" | tr '\n' ' ' | sed 's/ $//')"
     [[ "$detected_joined" == "$recorded" ]] && return 0
 
+    # Already adopted: the preset was chosen among exactly this detected set.
+    if [[ -n "$chosen_among" ]]; then
+        local chosen_joined
+        chosen_joined="$(printf '%s\n' "$chosen_among" | awk 'NF' | sort -u | tr '\n' ' ' | sed 's/ $//')"
+        [[ "$detected_joined" == "$chosen_joined" ]] && return 0
+    fi
+
     # Divergence: detected set differs from {recorded} — print notice.
     # Headline is provided by the caller's section() header (matches the
     # recommendation_drift convention); the body starts at the recorded preset.
@@ -338,6 +349,21 @@ preset_pivot_notice() {
     _preset_adoption_hint "$detected_list" '  '
 
     return 0
+}
+
+# record_preset_choice <target_dir> <preset>
+#
+# Records an explicitly chosen preset in the manifest together with the presets
+# the project matched at that moment (see set_manifest_preset). Callers set
+# PRESETS_DIR to the tree they resolved the preset against. Return: the status
+# of set_manifest_preset (1 when there is no manifest to write).
+record_preset_choice() {
+    local target_dir="${1:?target dir required}" preset="${2:?preset required}"
+    local detected=() name
+    while IFS= read -r name; do
+        [[ -n "$name" ]] && detected+=("$name")
+    done < <(_preset_detected_sorted "$target_dir")
+    set_manifest_preset "$target_dir" "$preset" ${detected[@]+"${detected[@]}"}
 }
 
 # preset_pivot_report <recorded_preset_name> <target_dir>

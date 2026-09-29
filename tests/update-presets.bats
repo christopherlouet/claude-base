@@ -609,6 +609,34 @@ _init_without_preset() {
     [ "$(jq -r '.preset' "$TEST_DIR/proj/.claude/foundation.json")" = "null" ]
 }
 
+@test "update-presets: an adopted preset stops the pivot notice until the stack changes again" {
+    _init_without_preset
+    touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/astro.config.mjs"
+    "$UPDATE" --preset nextjs -y "$TEST_DIR/proj" >/dev/null 2>&1
+    [ "$(jq -c '.presetChosenAmong' "$TEST_DIR/proj/.claude/foundation.json")" = '["astro","nextjs"]' ]
+
+    run "$UPDATE" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"changed stack"* ]]
+
+    # A preset the choice was not made among: the notice speaks again.
+    echo '{"devDependencies":{"@playwright/test":"^1"}}' > "$TEST_DIR/proj/package.json"
+    run "$UPDATE" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"changed stack"* ]]
+}
+
+@test "update-presets: a preset chosen at init among several raises no pivot notice" {
+    mkdir -p "$TEST_DIR/proj"
+    touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/astro.config.mjs"
+    "$NEW_PROJECT" --preset nextjs -y "$TEST_DIR/proj" >/dev/null 2>&1
+    [ "$(jq -r '.preset' "$TEST_DIR/proj/.claude/foundation.json")" = "nextjs" ]
+
+    run "$UPDATE" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"changed stack"* ]]
+}
+
 @test "update-presets: a dry run records no preset" {
     _init_without_preset
     touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/astro.config.mjs"
