@@ -327,6 +327,24 @@ set_manifest_tier() {
     mv "$tmp" "$manifest" || { rm -f "$tmp"; return 1; }
 }
 
+# set_manifest_preset <dir> <preset> — rewrite ONLY the .preset field (atomic).
+# Used by update to record an explicit --preset, so later updates read it from
+# the manifest. A detected preset is never recorded.
+# Returns 1 if the manifest is missing or jq fails.
+set_manifest_preset() {
+    local dir="${1:?target dir required}" preset="${2:?preset required}"
+    local manifest
+    manifest="$(_manifest_path "$dir")"
+    [[ -f "$manifest" ]] || return 1
+    local tmp
+    tmp="$(mktemp)" || return 1
+    if ! jq --arg preset "$preset" '.preset = $preset' "$manifest" > "$tmp"; then
+        rm -f "$tmp"
+        return 1
+    fi
+    mv "$tmp" "$manifest" || { rm -f "$tmp"; return 1; }
+}
+
 # manifest_project_type <dir> — print the recorded stack type, empty when the
 # field is absent (legacy install predating it). Callers MUST treat empty as
 # "unknown" and fall back to their pre-existing behaviour, never as "generic".

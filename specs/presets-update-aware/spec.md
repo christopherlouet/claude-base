@@ -185,6 +185,7 @@ When a project was bootstrapped with `--preset X`, every subsequent `claude-base
 ## Out of Scope
 
 - **Persisting the active preset on disk** (no `_claudeBase` field added to `settings.json`, no `.claude/.preset` file). Detection is recomputed each run, by design.
+  _Later amended_: `.claude/foundation.json` now records the preset (`specs/foundation-modules/`), and an explicit `update --preset NAME` re-records it (`specs/stack-pivot-redetect/` US-2). A detected preset is still never written.
 - **Preset migration mechanics** (e.g. converting a project from `nextjs` to `astro`) — that is a separate, larger effort.
 - **Changing the install-time behavior** of `claude-base init` or any of its flags.
 - **Filtering commands, agents, rules, or output styles by preset** — the existing preset semantics filter only skills; this spec preserves that.

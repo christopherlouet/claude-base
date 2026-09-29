@@ -1062,3 +1062,20 @@ run_module() {
     echo "compute_selected_set on the real foundation: ${elapsed}ms (budget 5000ms)"
     [ "$elapsed" -lt 5000 ]
 }
+
+# set_manifest_preset — rewrite ONLY .preset (update records the preset it resolved).
+@test "modules: set_manifest_preset rewrites only the preset field" {
+    mkdir -p "$TEST_DIR/p/.claude"
+    printf '%s\n' '{"version":"5.6.0","preset":null,"tier":"full","modules":["biz"]}' > "$TEST_DIR/p/.claude/foundation.json"
+    run_lib set_manifest_preset "$TEST_DIR/p" nextjs
+    [ "$status" -eq 0 ]
+    [ "$(jq -c . "$TEST_DIR/p/.claude/foundation.json")" = '{"version":"5.6.0","preset":"nextjs","tier":"full","modules":["biz"]}' ]
+}
+
+@test "modules: set_manifest_preset fails when there is no manifest" {
+    mkdir -p "$TEST_DIR/none/.claude"
+    run_lib set_manifest_preset "$TEST_DIR/none" nextjs
+    [ "$status" -eq 1 ]
+    [ -z "$output" ]
+    [ ! -f "$TEST_DIR/none/.claude/foundation.json" ]
+}

@@ -353,7 +353,7 @@ curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/i
 # Refresh an installed project to the current foundation
 claude-base update /path/to/your/project
 
-# Or refresh with a specific preset filter applied
+# Or adopt a preset: its filter applies now and is recorded for later updates
 claude-base update --preset nextjs /path/to/your/project
 
 # Read-only: check whether your project still matches its recorded preset

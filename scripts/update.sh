@@ -202,10 +202,12 @@ ${BOLD}OPTIONS${NC}
     --add-plugin ID     Enable a marketplace plugin in the existing settings.json
                         without overwriting other keys (e.g., astral@astral-sh).
                         Idempotent: re-running on an already-enabled plugin succeeds silently.
-    --preset NAME       Apply NAME's skill filter for this update (e.g. nextjs).
-                        Skips skills the preset drops; prevents update --all from
-                        silently re-introducing them. Resolves official then
-                        community presets.
+    --preset NAME       Apply NAME's skill filter (e.g. nextjs) and, when the update
+                        runs to the end (not --dry-run), record NAME in
+                        .claude/foundation.json so later updates use it without
+                        the flag. Skips skills the preset drops; prevents update
+                        --all from silently re-introducing them. Resolves official
+                        then community presets.
     --no-preset         Disable preset filtering (every foundation skill copied,
                         as in pre-v1.37 behavior). Mutually exclusive with --preset.
     --detect-only       Read-only: report whether the project still matches its
@@ -240,7 +242,7 @@ ${BOLD}EXAMPLES${NC}
     # Enable a marketplace plugin in settings.json (idempotent)
     $(basename "$0") --add-plugin astral@astral-sh ./my-project
 
-    # Apply the nextjs preset's skill filter for this update
+    # Adopt the nextjs preset (filter applied now, recorded for later updates)
     $(basename "$0") --preset nextjs --all ./my-app
 
     # Force the unfiltered foundation (skip preset auto-detection)
@@ -396,6 +398,11 @@ parse_args() {
                 if [[ -z "${2:-}" ]]; then
                     error "Option --preset requires an argument (preset name, e.g. nextjs)"
                 fi
+                # A preset NAME, never a path: it resolves to presets/NAME.json and
+                # is recorded in the manifest, so "../x" must not get that far.
+                case "$2" in
+                    */*|*..*) error "Invalid preset name: $2 (a preset name, e.g. nextjs, not a path)" ;;
+                esac
                 UPDATE_PRESET_NAME="$2"
                 shift 2
                 ;;
@@ -1153,7 +1160,7 @@ resolve_active_preset() {
     if [[ "$count" -gt 1 ]]; then
         local list
         list=$(echo "$matches" | tr '\n' ' ' | sed 's/ $//')
-        error "multiple presets match the project: $list\nRe-run with --preset <name> to pick one, or --no-preset to skip preset filtering"
+        error "multiple presets match the project: $list\nPick one with --preset <name> (an update run records it in .claude/foundation.json, so later updates need no flag), or pass --no-preset to skip preset filtering for this run"
     fi
 
     ACTIVE_PRESET_NAME="$matches"
@@ -2425,6 +2432,19 @@ main() {
                 success "Project graduated to a full install (tier \"full\" recorded)"
             else
                 warning "could not record tier \"full\" in .claude/foundation.json"
+            fi
+        fi
+        # Record an explicitly chosen preset so later updates read it from the
+        # manifest: the adoption command the stack-pivot notice points at
+        # (stack-pivot-redetect US-2), and the one way to settle a project
+        # several presets match. Only an explicit --preset: a DETECTED preset
+        # is never written (observe-and-propose; detection is recomputed each
+        # run), and --no-preset leaves the manifest alone.
+        if [[ "$ACTIVE_PRESET_SOURCE" == "--preset" ]]; then
+            if set_manifest_preset "$TARGET_DIR" "$ACTIVE_PRESET_NAME"; then
+                info "Preset $ACTIVE_PRESET_NAME recorded in .claude/foundation.json: later updates use it without --preset"
+            else
+                warning "could not record preset \"$ACTIVE_PRESET_NAME\" in .claude/foundation.json"
             fi
         fi
         # Persist the new recommendation snapshot so the NEXT update can diff
