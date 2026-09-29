@@ -290,3 +290,27 @@ FAKEJQ
     [[ "$output" == *"Diverges: no (settled: nextjs was chosen among nextjs, react-vite-spa)"* ]]
     [[ "$output" != *"To adopt"* ]]
 }
+
+@test "pivot-report: after adoption, a stack that changed again diverges" {
+    make_preset "react-vite-spa" '{"combinator":"anyOf","files":["vite.config.ts"]}'
+    make_preset "nextjs" '{"combinator":"anyOf","files":["next.config.js"]}'
+    make_preset "astro" '{"combinator":"anyOf","files":["astro.config.mjs"]}'
+    touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/vite.config.ts" "$TEST_DIR/proj/astro.config.mjs"
+
+    call "preset_pivot_report 'nextjs' '$TEST_DIR/proj' \$'nextjs\nreact-vite-spa'"
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Diverges: yes"* ]]
+    [[ "$output" != *"settled"* ]]
+}
+
+@test "pivot-report: a preset chosen outside what was detected reads as chosen over it" {
+    make_preset "nextjs" '{"combinator":"anyOf","files":["next.config.js"]}'
+    make_preset "astro" '{"combinator":"anyOf","files":["astro.config.mjs"]}'
+    touch "$TEST_DIR/proj/astro.config.mjs"
+
+    call "preset_pivot_report 'nextjs' '$TEST_DIR/proj' 'astro'"
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Diverges: no (settled: nextjs was chosen over astro)"* ]]
+}

@@ -112,9 +112,9 @@ The fix follows the foundation's settled philosophy — **observe-and-propose, n
 |---|---|
 | FR-1 | The pivot check runs only when a preset is recorded in the manifest AND `jq` is available AND the run is not `--no-preset` / explicit `--preset` (an explicit `--preset` is already an adoption, so no notice). |
 | FR-2 | Detection reuses `scan_presets` (`lib/preset-detect.sh`) against `TARGET_DIR`; no new detection rules. |
-| FR-3 | A pivot is "detected set ⊅ {recorded}" — i.e. the recorded preset is absent from the detected set, or the detected set contains a preset not equal to the recorded one. Identical set → no notice. |
+| FR-3 | A pivot is "detected set ⊅ {recorded}" — i.e. the recorded preset is absent from the detected set, or the detected set contains a preset not equal to the recorded one. Identical set → no notice. _Amended_: nor when the detected set equals `presetChoice.among` recorded for that preset (a pivot already settled; `--detect-only` reports `Diverges: no (settled: …)`). |
 | FR-4 | The notice is informational only: it must not change exit code, must not mutate any file, must not alter the active skill filter for the current run. |
-| FR-5 | Adoption is the **existing** `--preset <name>` path; this spec adds no new mutation logic, only the notice and (P2) the read-only report. |
+| FR-5 | Adoption is the **existing** `--preset <name>` path; this spec adds no new mutation logic, only the notice and (P2) the read-only report. _Amended_: that path now also records `presetChoice` (see Goals). |
 | FR-6 | Output respects the existing logging conventions (`info`/`warning` helpers) and is suppressible by the existing quiet/verbosity flags if any. |
 | FR-7 | Fail-safe: any error inside the pivot check (detector failure, malformed manifest already handled upstream) must never abort or alter the update — it degrades to "no notice". |
 

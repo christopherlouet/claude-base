@@ -407,7 +407,11 @@ preset_pivot_report() {
     fi
     if [[ -n "$detected_list" && "$detected_joined" != "$recorded" && -n "$chosen_joined" \
           && "$detected_joined" == "$chosen_joined" ]]; then
-        printf 'Diverges: no (settled: %s was chosen among %s)\n' "$recorded" "${chosen_joined// /, }"
+        # "among" when the recorded preset was one of the candidates, "over"
+        # when the user picked it against what was detected.
+        local how="among"
+        case " $chosen_joined " in *" $recorded "*) ;; *) how="over" ;; esac
+        printf 'Diverges: no (settled: %s was chosen %s %s)\n' "$recorded" "$how" "${chosen_joined// /, }"
     elif [[ -n "$detected_list" && "$detected_joined" != "$recorded" ]]; then
         printf 'Diverges: yes\n\nTo adopt, run:\n'
         _preset_adoption_hint "$detected_list" '  '
