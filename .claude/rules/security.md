@@ -95,19 +95,23 @@ Hardening applied directly by the CLI. Worth knowing to write consistent `permis
 - **Sandbox deniedDomains**: prefer `sandbox.network.deniedDomains` to explicitly exclude sensitive domains even under a wildcard `allowedDomains`.
 - **UI-spoofing fix**: multiline comments in Bash commands now display the full command to prevent a comment from masking the actual intent.
 
-To apply in `.claude/settings.json`:
+To apply in `.claude/settings.json` (`sandbox` is a top-level key, a sibling of `permissions`):
 
 ```json
 {
   "permissions": {
-    "deny": ["Bash(find:* -delete)", "Bash(find:* -exec *)"],
-    "sandbox": {
-      "network": {
-        "allowedDomains": ["*.npmjs.org", "*.github.com"],
-        "deniedDomains": ["pastebin.com", "transfer.sh"]
-      },
-      "failIfUnavailable": true
-    }
+    "deny": ["Bash(find:* -delete)", "Bash(find:* -exec *)"]
+  },
+  "sandbox": {
+    "network": {
+      "allowedDomains": ["*.npmjs.org", "*.github.com"],
+      "deniedDomains": ["pastebin.com", "transfer.sh"]
+    },
+    "failIfUnavailable": true
   }
 }
 ```
+
+Prove the sandbox starts on the host before committing it: on Ubuntu 24.04+ it did not (measured,
+CLI 2.1.283), and every Bash command then fails. See `docs/GUARDRAILS.md`, "Path rules and the
+Bash sandbox: why neither ships".

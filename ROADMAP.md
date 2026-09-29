@@ -139,8 +139,9 @@ gates instead of satisfying them — the foundation's safety/discipline moat):
   don't cover. *(source: claude-toolbox `evals/`)*
 - [ ] **Security hardening pack** (S–M). Hard numeric quality limits (function length,
   complexity, params, line width, zero-warnings); supply-chain defaults (exact
-  version pins, `minimumReleaseAge`, `ignore-scripts`, GH actions pinned to SHA);
-  a credential read-deny list + `/sandbox` pairing note. *(source: trailofbits)*
+  version pins, `minimumReleaseAge`, `ignore-scripts`, GH actions pinned to SHA).
+  *(source: trailofbits)* The credential read-deny list + `/sandbox` pairing is
+  decided against, for now: `docs/GUARDRAILS.md`, "Path rules and the Bash sandbox".
 - [ ] Small guardrail rules (S each): "adopt a pattern as canonical only if ≥3 files
   across directories use it"; numeric auto-stop triggers in the workflow rule
   ("5+ files changed → report scope"); checked-in ADRs for architectural decisions.
