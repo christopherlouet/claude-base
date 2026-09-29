@@ -2203,7 +2203,8 @@ main() {
         # Thread PRESETS_DIR_OVERRIDE → PRESETS_DIR so scan_presets uses the
         # same tree as the rest of the run (parity with the notice call site).
         PRESETS_DIR="${PRESETS_DIR_OVERRIDE:-${PRESETS_DIR:-}}" \
-            preset_pivot_report "$_recorded" "$TARGET_DIR" || true
+            preset_pivot_report "$_recorded" "$TARGET_DIR" \
+                "$(manifest_preset_choice "$TARGET_DIR" "$_recorded")" || true
         exit 0
     fi
 
@@ -2402,7 +2403,9 @@ main() {
             # preset_pivot_notice uses the same preset tree as resolve_preset_file.
             # The subshell env override is fail-safe: any error → empty string.
             _pivot="$(PRESETS_DIR="${PRESETS_DIR_OVERRIDE:-${PRESETS_DIR:-}}" \
-                preset_pivot_notice "$ACTIVE_PRESET_NAME" "$TARGET_DIR" || true)"
+                preset_pivot_notice "$ACTIVE_PRESET_NAME" "$TARGET_DIR" \
+                    "$(manifest_preset_choice "$TARGET_DIR" "$ACTIVE_PRESET_NAME")" \
+                || true)"
             if [[ -n "$_pivot" ]]; then
                 section "Your project may have changed stack"
                 printf '%s\n\n' "$_pivot"
@@ -2441,7 +2444,9 @@ main() {
         # is never written (observe-and-propose; detection is recomputed each
         # run), and --no-preset leaves the manifest alone.
         if [[ "$ACTIVE_PRESET_SOURCE" == "--preset" ]]; then
-            if set_manifest_preset "$TARGET_DIR" "$ACTIVE_PRESET_NAME"; then
+            # Same preset tree as the resolution (PRESETS_DIR_OVERRIDE threading).
+            if PRESETS_DIR="${PRESETS_DIR_OVERRIDE:-${PRESETS_DIR:-}}" \
+                record_preset_choice "$TARGET_DIR" "$ACTIVE_PRESET_NAME"; then
                 info "Preset $ACTIVE_PRESET_NAME recorded in .claude/foundation.json: later updates use it without --preset"
             else
                 warning "could not record preset \"$ACTIVE_PRESET_NAME\" in .claude/foundation.json"
