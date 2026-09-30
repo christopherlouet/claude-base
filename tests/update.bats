@@ -596,8 +596,9 @@ teardown() {
 
     # .claude/docs/reference/ must NOT exist
     [ ! -d "$TEST_DIR/.claude/docs/reference" ]
-    # @imports must NOT be present
-    ! grep -q "@docs/reference/" "$TEST_DIR/CLAUDE.md" || false
+    # @imports must NOT be present: the same prefix the sed above removed and
+    # the upgrade test above finds (a bare "@docs/reference/" never matched it).
+    ! grep -q "@\.claude/docs/reference/" "$TEST_DIR/CLAUDE.md" || false
 }
 
 @test "update.sh --help shows --upgrade-claude-md" {

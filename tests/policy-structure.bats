@@ -42,6 +42,12 @@ _code_only() { grep -hvE '^[[:space:]]*#' "$@"; }
 @test "structure: shells retain no decision pattern tables" {
     # Each shell's formerly-inline distinctive policy tokens must now live
     # only in its core. A hit here means policy leaked back into a shell.
+    # A missing shell would pass vacuously (grep exits 2 into an empty pipe).
+    local h
+    for h in command-validator secret-scan destructive-ops destructive-migration \
+             bash-write-guard pre-commit-tests pre-push-ci pre-deploy-build; do
+        [ -f "$HOOKS_DIR/$h.sh" ] || { echo "missing hook: $h.sh" >&2; return 1; }
+    done
     ! _code_only "$HOOKS_DIR/command-validator.sh" | grep -E 'Fork bomb|mkfs|PIPE_INTERP|visudo|masscan' || false
     ! _code_only "$HOOKS_DIR/secret-scan.sh" | grep -E 'AKIA|sk_live|xox\[baprs\]|PLACEHOLDER' || false
     ! _code_only "$HOOKS_DIR/destructive-ops.sh" | grep -E 'drop\[\[:space:\]\]\+table|force-reset|delete\[\[:space:\]\]\+from' || false
