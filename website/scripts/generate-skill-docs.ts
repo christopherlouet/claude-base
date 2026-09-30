@@ -407,4 +407,3 @@ generateSkillDocs().catch(console.error);
 // Exported for tests: the manual-only branch is the whole point of the guard in
 // scripts/generate-skill-docs.test.ts, and it lives in these two functions.
 export { generateSkillDocs, parseSkillFile, generateSkillPage };
-export type { SkillInfo };
