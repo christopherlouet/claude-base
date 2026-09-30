@@ -35,15 +35,19 @@ PORTMAP="$BASE_DIR/specs/agnostic-core/portability-map.md"
     done
 }
 
+# Code lines only: a comment naming a token (secret-scan's PLACEHOLDER note,
+# bash-write-guard's `--in-place` history) is not a pattern table.
+_code_only() { grep -hvE '^[[:space:]]*#' "$@"; }
+
 @test "structure: shells retain no decision pattern tables" {
     # Each shell's formerly-inline distinctive policy tokens must now live
     # only in its core. A hit here means policy leaked back into a shell.
-    ! grep -E 'Fork bomb|mkfs|PIPE_INTERP|visudo|masscan' "$HOOKS_DIR/command-validator.sh"
-    ! grep -E 'AKIA|sk_live|xox\[baprs\]|PLACEHOLDER' "$HOOKS_DIR/secret-scan.sh"
-    ! grep -E 'drop\[\[:space:\]\]\+table|force-reset|delete\[\[:space:\]\]\+from' "$HOOKS_DIR/destructive-ops.sh"
-    ! grep -E 'drop\[\[:space:\]\]\+\(table|\*\.up\.sql' "$HOOKS_DIR/destructive-migration.sh"
-    ! grep -E -- '--in-place|of=\[|pipx|CMD_UQ_CPMV' "$HOOKS_DIR/bash-write-guard.sh"
-    ! grep -E 'grep -qE .*(commit|push|deploy)' "$HOOKS_DIR/pre-commit-tests.sh" "$HOOKS_DIR/pre-push-ci.sh" "$HOOKS_DIR/pre-deploy-build.sh"
+    ! _code_only "$HOOKS_DIR/command-validator.sh" | grep -E 'Fork bomb|mkfs|PIPE_INTERP|visudo|masscan' || false
+    ! _code_only "$HOOKS_DIR/secret-scan.sh" | grep -E 'AKIA|sk_live|xox\[baprs\]|PLACEHOLDER' || false
+    ! _code_only "$HOOKS_DIR/destructive-ops.sh" | grep -E 'drop\[\[:space:\]\]\+table|force-reset|delete\[\[:space:\]\]\+from' || false
+    ! _code_only "$HOOKS_DIR/destructive-migration.sh" | grep -E 'drop\[\[:space:\]\]\+\(table|\*\.up\.sql' || false
+    ! _code_only "$HOOKS_DIR/bash-write-guard.sh" | grep -E -- '--in-place|of=\[|pipx|CMD_UQ_CPMV' || false
+    ! _code_only "$HOOKS_DIR/pre-commit-tests.sh" "$HOOKS_DIR/pre-push-ci.sh" "$HOOKS_DIR/pre-deploy-build.sh" | grep -E 'grep -qE .*(commit|push|deploy)' || false
 }
 
 @test "structure: every lib sourced by a shipped hook is in the manifest" {

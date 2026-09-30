@@ -62,14 +62,14 @@ teardown() { teardown_test_dir; }
     source "$EMIT"
     FAKE_EXISTING=42 PATH="$TEST_DIR/fakebin:$PATH" emit_issue "Curation digest — 2026-06-28" "$TEST_DIR/body.md" "watch-digest"
     grep -q "issue edit 42" "$TEST_DIR/gh.log"
-    ! grep -q "issue create" "$TEST_DIR/gh.log"
+    ! grep -q "issue create" "$TEST_DIR/gh.log" || false
 }
 
 @test "emit_issue creates when no rolling issue exists yet" {
     source "$EMIT"
     FAKE_EXISTING="" PATH="$TEST_DIR/fakebin:$PATH" emit_issue "Curation digest — 2026-06-28" "$TEST_DIR/body.md" "watch-digest"
     grep -q "issue create" "$TEST_DIR/gh.log"
-    ! grep -q "issue edit" "$TEST_DIR/gh.log"
+    ! grep -q "issue edit" "$TEST_DIR/gh.log" || false
 }
 
 @test "emit_issue embeds the dedupe marker in the emitted body" {
@@ -82,7 +82,7 @@ teardown() { teardown_test_dir; }
     source "$EMIT"
     PATH="$TEST_DIR/fakebin:$PATH" emit_issue "t" "$TEST_DIR/body.md"
     grep -q "issue create" "$TEST_DIR/gh.log"
-    ! grep -q "issue list" "$TEST_DIR/gh.log"
+    ! grep -q "issue list" "$TEST_DIR/gh.log" || false
 }
 
 # emit_issue delivery status — the function always returns 0 (EF-012), so the

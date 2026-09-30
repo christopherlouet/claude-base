@@ -124,8 +124,8 @@ teardown() {
 @test "export-minimal.sh: archive does NOT include excluded domains (biz, growth, legal)" {
   run "$EXPORT_SCRIPT" --output "$TMP_DIR/test.tar.gz"
   [ "$status" -eq 0 ]
-  ! tar -tzf "$TMP_DIR/test.tar.gz" | grep -qE '\.claude/commands/(biz|growth|legal)/'
-  ! tar -tzf "$TMP_DIR/test.tar.gz" | grep -qE '\.claude/agents/biz-'
+  ! tar -tzf "$TMP_DIR/test.tar.gz" | grep -qE '\.claude/commands/(biz|growth|legal)/' || false
+  ! tar -tzf "$TMP_DIR/test.tar.gz" | grep -qE '\.claude/agents/biz-' || false
 }
 
 @test "export-minimal.sh: idempotent (2 consecutive runs produce the same file list)" {

@@ -266,7 +266,7 @@ teardown() {
 
     run "$IDE_SCRIPT" setup vscode --force "$TEST_PROJECT"
     [[ "$status" -eq 0 ]]
-    ! grep -q "modified" "$TEST_PROJECT/.vscode/settings.json"
+    ! grep -q "modified" "$TEST_PROJECT/.vscode/settings.json" || false
 }
 
 # =============================================================================

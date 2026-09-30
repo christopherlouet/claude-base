@@ -1421,7 +1421,7 @@ drifting_target() {
     content_fixture acme/x v1.2.0 SKILL.md "# clean"
     run_watch --emit-pr --no-draft
     [[ "$(grep -c 'pr create' "$TEST_DIR/gh.log")" -eq 1 ]]
-    ! grep -q -- '--draft' "$TEST_DIR/gh.log"
+    ! grep -q -- '--draft' "$TEST_DIR/gh.log" || false
 }
 
 @test "watch: re-pin does NOT touch a preset entry whose url merely contains the repo-root as a fragment" {

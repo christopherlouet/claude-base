@@ -92,20 +92,20 @@ title_of() { head -1 "$1/CLAUDE.md"; }
     # copied into a user project — a row pointing at them is a dead link.
     install_into "$TEST_DIR/p" --simple -t generic
 
-    ! grep -q 'docs/CHEATSHEET\.md' "$TEST_DIR/p/CLAUDE.md"
-    ! grep -q 'learning-path\.md' "$TEST_DIR/p/CLAUDE.md"
+    ! grep -q 'docs/CHEATSHEET\.md' "$TEST_DIR/p/CLAUDE.md" || false
+    ! grep -q 'learning-path\.md' "$TEST_DIR/p/CLAUDE.md" || false
 }
 
 @test "claude-md: the generic fallback drops the foundation's own setup line" {
     install_into "$TEST_DIR/p" --simple -t generic
 
-    ! grep -q 'bin/claude-base init' "$TEST_DIR/p/CLAUDE.md"
+    ! grep -q 'bin/claude-base init' "$TEST_DIR/p/CLAUDE.md" || false
 }
 
 @test "claude-md: the generic fallback is not titled after the foundation" {
     install_into "$TEST_DIR/p" --simple -t generic
 
-    ! grep -q '^# claude-base Project' "$TEST_DIR/p/CLAUDE.md"
+    ! grep -q '^# claude-base Project' "$TEST_DIR/p/CLAUDE.md" || false
 }
 
 @test "claude-md: a type with no template still gets a clean fallback" {
@@ -113,8 +113,8 @@ title_of() { head -1 "$1/CLAUDE.md"; }
     # yet (assumed debt). The fallback must still be user-project-shaped.
     install_into "$TEST_DIR/p" --simple -t astro
 
-    ! grep -q '^# claude-base Project' "$TEST_DIR/p/CLAUDE.md"
-    ! grep -q 'docs/CHEATSHEET\.md' "$TEST_DIR/p/CLAUDE.md"
+    ! grep -q '^# claude-base Project' "$TEST_DIR/p/CLAUDE.md" || false
+    ! grep -q 'docs/CHEATSHEET\.md' "$TEST_DIR/p/CLAUDE.md" || false
 }
 
 # -----------------------------------------------------------------------------
@@ -198,10 +198,10 @@ assert_no_dead_pointers() {
     install_into "$TEST_DIR/p" --simple -t python
 
     grep -q '^@\.claude/docs/reference/best-practices\.md' "$TEST_DIR/p/CLAUDE.md"
-    ! grep -q '^@\.claude/docs/reference/commands\.md' "$TEST_DIR/p/CLAUDE.md"
+    ! grep -q '^@\.claude/docs/reference/commands\.md' "$TEST_DIR/p/CLAUDE.md" || false
     # advanced-features.md is shipped but no longer CARRIED: 37 179 bytes of
     # feature notes about the tool, in every session (2026-08-30).
-    ! grep -q '^@\.claude/docs/reference/advanced-features\.md' "$TEST_DIR/p/CLAUDE.md"
+    ! grep -q '^@\.claude/docs/reference/advanced-features\.md' "$TEST_DIR/p/CLAUDE.md" || false
 }
 
 @test "claude-md: an existing CLAUDE.md is never overwritten" {

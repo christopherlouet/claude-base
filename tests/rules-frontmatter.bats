@@ -92,7 +92,7 @@ GLOBAL_BY_DESIGN="git self-improvement vendor-precedence workflow"
     # And the mirror: a reader that answers yes to everything would pass the
     # catalogue case while proving nothing. A different file from the ones the
     # cases above assert on, so a mutation is attributed to one arm only.
-    ! _has_paths "$RULES_DIR/workflow.md"
+    ! _has_paths "$RULES_DIR/workflow.md" || false
 }
 
 @test "CONTROL: the enumeration is not vacuous" {
