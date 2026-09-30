@@ -68,8 +68,8 @@ install_as() {
     printf 'node_modules/\n' > "$TEST_DIR/.gitignore"
     run "$NEW_PROJECT_SCRIPT" -y -q --skip-prompts "$TEST_DIR"
     [ "$status" -eq 0 ]
-    ! grep -qE '^\.claude/?$' "$TEST_DIR/.gitignore"
-    ! grep -qE '^CLAUDE\.md$' "$TEST_DIR/.gitignore"
+    ! grep -qE '^\.claude/?$' "$TEST_DIR/.gitignore" || false
+    ! grep -qE '^CLAUDE\.md$' "$TEST_DIR/.gitignore" || false
 }
 
 # The foundation's OWN worktree rule lives in .git/info/exclude — local to one
@@ -132,7 +132,7 @@ install_as() {
     # install path is a build artefact. Same trap as the java wrapper jar.
     install_as ruby
 
-    ! grep -qE '^vendor/$' "$TEST_DIR/.gitignore"
+    ! grep -qE '^vendor/$' "$TEST_DIR/.gitignore" || false
     grep -qE '^vendor/bundle/$' "$TEST_DIR/.gitignore"
 }
 
@@ -164,15 +164,15 @@ install_as() {
     # gap this change closes.
     install_as java
 
-    ! grep -qE '^\*\.jar$' "$TEST_DIR/.gitignore"
+    ! grep -qE '^\*\.jar$' "$TEST_DIR/.gitignore" || false
 }
 
 @test "gitignore: a node install keeps the Node baseline and gains no foreign block" {
     install_as node-api
 
     grep -qE '^node_modules/$' "$TEST_DIR/.gitignore"
-    ! grep -qE '^__pycache__/$' "$TEST_DIR/.gitignore"
-    ! grep -qE '^target/$' "$TEST_DIR/.gitignore"
+    ! grep -qE '^__pycache__/$' "$TEST_DIR/.gitignore" || false
+    ! grep -qE '^target/$' "$TEST_DIR/.gitignore" || false
 }
 
 @test "gitignore: every install still ignores the Claude local config" {
@@ -188,10 +188,10 @@ install_as() {
     # mirrors, the curation engine's runtime state, local .deb installers.
     install_as python
 
-    ! grep -q '^website/' "$TEST_DIR/.gitignore"
-    ! grep -q 'Docusaurus' "$TEST_DIR/.gitignore"
-    ! grep -q 'curation/watch-state\.json' "$TEST_DIR/.gitignore"
-    ! grep -qE '^\*\.deb$' "$TEST_DIR/.gitignore"
+    ! grep -q '^website/' "$TEST_DIR/.gitignore" || false
+    ! grep -q 'Docusaurus' "$TEST_DIR/.gitignore" || false
+    ! grep -q 'curation/watch-state\.json' "$TEST_DIR/.gitignore" || false
+    ! grep -qE '^\*\.deb$' "$TEST_DIR/.gitignore" || false
 }
 
 @test "gitignore: the foundation-only fence is derived, not hand-copied" {
@@ -211,8 +211,8 @@ EOF
 
     grep -qE '^node_modules/$' "$out"
     grep -qE '^\.env$' "$out"
-    ! grep -q 'some-brand-new-foundation-artefact' "$out"
-    ! grep -q 'foundation-only' "$out"
+    ! grep -q 'some-brand-new-foundation-artefact' "$out" || false
+    ! grep -q 'foundation-only' "$out" || false
 }
 
 @test "gitignore: the fence markers in the real seed are balanced" {
@@ -244,8 +244,8 @@ EOF
     # ...the Claude local-config lines are appended as before...
     grep -qE '^CLAUDE\.local\.md$' "$TEST_DIR/.gitignore"
     # ...and we do not editorialise their ignore rules.
-    ! grep -qE '^__pycache__/$' "$TEST_DIR/.gitignore"
-    ! grep -qE '^node_modules/$' "$TEST_DIR/.gitignore"
+    ! grep -qE '^__pycache__/$' "$TEST_DIR/.gitignore" || false
+    ! grep -qE '^node_modules/$' "$TEST_DIR/.gitignore" || false
 }
 
 @test "gitignore: the type block is written once, not once per run" {

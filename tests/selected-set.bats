@@ -172,8 +172,8 @@ run_set() {
     local base; base=$(make_fixture)
     run_set "$base" python
     [ "$status" -eq 0 ]
-    ! printf '%s\n' "$output" | grep -E '^$|\.\.'
-    ! printf '%s\n' "$output" | grep -E ':.*:'
+    ! printf '%s\n' "$output" | grep -E '^$|\.\.' || false
+    ! printf '%s\n' "$output" | grep -E ':.*:' || false
 }
 
 @test "selected-set: deterministic (two runs identical)" {
@@ -217,8 +217,8 @@ run_set() {
     grep -q 'skill_excluded_by_preset' "$upd"
     # ...and no longer carries its own keep/drop implementation. A second copy
     # is exactly how install and update drift apart on what a preset excludes.
-    ! grep -qE '^is_skill_(kept|dropped)\(\)' "$upd"
-    ! grep -q 'ACTIVE_PRESET_KEEP_LIST\|ACTIVE_PRESET_DROP_LIST' "$upd"
+    ! grep -qE '^is_skill_(kept|dropped)\(\)' "$upd" || false
+    ! grep -q 'ACTIVE_PRESET_KEEP_LIST\|ACTIVE_PRESET_DROP_LIST' "$upd" || false
 }
 
 @test "skill filter: the shared predicate resolves keep-wins-over-drop" {

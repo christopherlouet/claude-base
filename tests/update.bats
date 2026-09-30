@@ -508,11 +508,11 @@ teardown() {
 
     # …and update must not carry back the four retired on 2026-08-30: they are
     # shipped, not carried (specs/guardrail-cleanup/carried-material.md).
-    ! grep -q "@\.claude/docs/reference/commands\.md" "$TEST_DIR/CLAUDE.md"
-    ! grep -q "@\.claude/docs/reference/agents-catalog\.md" "$TEST_DIR/CLAUDE.md"
-    ! grep -q "@\.claude/docs/reference/skills-catalog\.md" "$TEST_DIR/CLAUDE.md"
-    ! grep -q "@\.claude/docs/reference/hooks-reference\.md" "$TEST_DIR/CLAUDE.md"
-    ! grep -q "@\.claude/docs/reference/advanced-features\.md" "$TEST_DIR/CLAUDE.md"
+    ! grep -q "@\.claude/docs/reference/commands\.md" "$TEST_DIR/CLAUDE.md" || false
+    ! grep -q "@\.claude/docs/reference/agents-catalog\.md" "$TEST_DIR/CLAUDE.md" || false
+    ! grep -q "@\.claude/docs/reference/skills-catalog\.md" "$TEST_DIR/CLAUDE.md" || false
+    ! grep -q "@\.claude/docs/reference/hooks-reference\.md" "$TEST_DIR/CLAUDE.md" || false
+    ! grep -q "@\.claude/docs/reference/advanced-features\.md" "$TEST_DIR/CLAUDE.md" || false
 }
 
 @test "update.sh --upgrade-claude-md creates a backup" {
@@ -563,7 +563,7 @@ teardown() {
     [ "$status" -eq 0 ]
 
     # The duplicated section must be removed (mode -y)
-    ! grep -q "^## Commandes Essentielles" "$TEST_DIR/CLAUDE.md"
+    ! grep -q "^## Commandes Essentielles" "$TEST_DIR/CLAUDE.md" || false
 }
 
 @test "update.sh --all includes the CLAUDE.md migration" {
@@ -596,8 +596,9 @@ teardown() {
 
     # .claude/docs/reference/ must NOT exist
     [ ! -d "$TEST_DIR/.claude/docs/reference" ]
-    # @imports must NOT be present
-    ! grep -q "@docs/reference/" "$TEST_DIR/CLAUDE.md"
+    # @imports must NOT be present: the same prefix the sed above removed and
+    # the upgrade test above finds (a bare "@docs/reference/" never matched it).
+    ! grep -q "@\.claude/docs/reference/" "$TEST_DIR/CLAUDE.md" || false
 }
 
 @test "update.sh --help shows --upgrade-claude-md" {
@@ -1006,7 +1007,7 @@ _init_legal_only_project() {
     # No absent-module file is previewed as an ADDITION (the name may
     # appear in "Skip (module not installed: ...)" lines — that is the
     # correct preview of the real run's filtering).
-    ! grep -E "Add.*biz-competitor" <<<"$output"
+    ! grep -E "Add.*biz-competitor" <<<"$output" || false
     # The module skip is announced instead.
     [[ "$output" == *"not installed"* ]]
 }

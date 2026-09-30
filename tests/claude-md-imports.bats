@@ -129,7 +129,7 @@ legacy_claude_md() {
     # that already looked right. This one fails if it became a no-op.
     cp "$CM" "$TEST_DIR/before.md"
     ensure_claude_md_imports "$CM"
-    ! diff -q "$TEST_DIR/before.md" "$CM"
+    ! diff -q "$TEST_DIR/before.md" "$CM" || false
 }
 
 @test "CONTROL: a missing file is a no-op, not a crash" {

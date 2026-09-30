@@ -136,7 +136,7 @@ EOF
     # PRESETS_DIR_OVERRIDE="" at load time, clobbering any inherited value.
     _assert_equivalence --simple --presets-dir "$TEST_DIR/presets" --preset eqtest
     # The filter really bit: the dropped items are absent from BOTH sides.
-    ! grep -q 'commands/growth/' "$TEST_DIR/manifest"
+    ! grep -q 'commands/growth/' "$TEST_DIR/manifest" || false
     [ ! -d "$TEST_DIR/real/.claude/skills/growth-cro" ]
     [ ! -e "$TEST_DIR/real/.claude/agents/biz-competitor.md" ]
     # And non-dropped content shipped.

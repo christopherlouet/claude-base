@@ -16,7 +16,7 @@ WORKFLOWS="$BASE_DIR/.github/workflows"
 
 @test "release.yml: the Validate step is enforcing (no || true)" {
     grep -q 'validate.sh' "$WORKFLOWS/release.yml"
-    ! grep -E 'validate\.sh[^|]*\|\|[[:space:]]*true' "$WORKFLOWS/release.yml"
+    ! grep -E 'validate\.sh[^|]*\|\|[[:space:]]*true' "$WORKFLOWS/release.yml" || false
 }
 
 @test "pr-check.yml: title/WIP gates re-run when the PR title is edited" {
@@ -113,12 +113,12 @@ _fires() { printf '%s\n' "$1" | grep -qE "$(_trigger_regex)"; }
     # pass every arm above while running node on every commit. NOT tests/*.bats
     # since the test counters stopped being tracked (specs/guardrail-cleanup,
     # US4), and not the generated website mirror.
-    ! _fires "README.md"
-    ! _fires "tests/ci-workflows.bats"
-    ! _fires "scripts/validate-counts.sh"
-    ! _fires "website/docs/reference/commands.md"
-    ! _fires "VERSIONING.md"
-    ! _fires "specs/guardrail-cleanup/spec.md"
+    ! _fires "README.md" || false
+    ! _fires "tests/ci-workflows.bats" || false
+    ! _fires "scripts/validate-counts.sh" || false
+    ! _fires "website/docs/reference/commands.md" || false
+    ! _fires "VERSIONING.md" || false
+    ! _fires "specs/guardrail-cleanup/spec.md" || false
 }
 
 # --- Self-application: the release gate must be able to hold on the real repo

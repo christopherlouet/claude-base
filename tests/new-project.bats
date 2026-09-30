@@ -367,8 +367,8 @@ EOF
 
     # .claude/ and CLAUDE.md (pure lines, not substring) must NOT
     # appear as gitignore entries.
-    ! grep -qE "^\.claude/?$" "$TEST_DIR/.gitignore"
-    ! grep -qE "^CLAUDE\.md$" "$TEST_DIR/.gitignore"
+    ! grep -qE "^\.claude/?$" "$TEST_DIR/.gitignore" || false
+    ! grep -qE "^CLAUDE\.md$" "$TEST_DIR/.gitignore" || false
 }
 
 # =============================================================================
