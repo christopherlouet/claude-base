@@ -86,6 +86,14 @@ jobs:
         # 54 tests, ~0.3s; the dependencies are already installed above.
         run: npm --prefix website run test:scripts
 
+      - name: Website typecheck
+        # Neither Docusaurus nor tsx type-checks: both only strip types. With
+        # no step running tsc, website/ went red unseen (a duplicated key in
+        # sync-docs' LINK_MAP, a conflicting re-export, and a tsconfig that
+        # left out the Docusaurus module declarations). `--noEmit`: the
+        # tsconfig declares an outDir, and a plain `tsc` would write to it.
+        run: npm --prefix website run typecheck
+
       - name: Counts gate (regenerate counts.json + injector + git diff)
         run: |
           npm --prefix website run generate
