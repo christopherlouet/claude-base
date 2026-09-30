@@ -270,9 +270,25 @@ write_foundation_manifest() {
             "$manifest" 2>/dev/null)" || chosen='null'
         [[ -n "$chosen" ]] || chosen='null'
     fi
+    # Everything else the manifest carries is kept: this is a REWRITE of the
+    # fields above, not a fresh file. Rebuilding from a whitelist dropped the
+    # recommendation snapshot (US-9) on every module add/remove, and the next
+    # update then read "first run" and reported no drift. That snapshot is kept
+    # like presetChoice: only while the preset is unchanged, since another
+    # preset's snapshot would diff as spurious drift.
+    # Read through a file, not argv: a manifest past ~128 KiB would not fit.
+    # Anything but ONE object (two values, an array, broken JSON) reads as {},
+    # so a damaged manifest is still repaired by the rewrite, as before.
     mkdir -p "$dir/.claude" || return 1
+    local oldf
+    oldf="$(mktemp)" || return 1
+    if [[ ! -f "$manifest" ]] \
+        || ! jq -cs 'if length == 1 and (.[0] | type) == "object" then .[0] else {} end' \
+            "$manifest" > "$oldf" 2>/dev/null; then
+        printf '{}\n' > "$oldf"
+    fi
     local tmp
-    tmp="$(mktemp)" || return 1
+    tmp="$(mktemp)" || { rm -f "$oldf"; return 1; }
     # Modules arrive as positional args ($ARGS.positional — safe escaping);
     # an empty preset maps to null.
     if ! jq -n \
@@ -281,17 +297,24 @@ write_foundation_manifest() {
         --arg tier "$tier" \
         --arg ptype "$ptype" \
         --argjson chosen "$chosen" \
+        --slurpfile oldv "$oldf" \
         --args \
-        '{version: $version,
+        '$oldv[0] as $old
+         | {version: $version,
           preset: (if $preset_str == "" then null else $preset_str end),
           tier: $tier,
           modules: ($ARGS.positional | map(select(length > 0)))}
          + (if $ptype == "" then {} else {projectType: $ptype} end)
-         + (if $chosen == null then {} else {presetChoice: $chosen} end)' \
+         + (if $chosen == null then {} else {presetChoice: $chosen} end)
+         + (if ($old | has("recommendations")) and (($old.preset // "") == $preset_str)
+            then {recommendations: $old.recommendations} else {} end)
+         + ($old | del(.version, .preset, .tier, .modules, .projectType,
+                       .presetChoice, .recommendations))' \
         "$@" > "$tmp"; then
-        rm -f "$tmp"
+        rm -f "$tmp" "$oldf"
         return 1
     fi
+    rm -f "$oldf"
     mv "$tmp" "$manifest" || { rm -f "$tmp"; return 1; }
 }
 
