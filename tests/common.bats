@@ -429,6 +429,52 @@ EOF
     [ "$status" -eq 0 ]
 }
 
+# Hook timeouts are seconds (#587). An install from before it still carries the
+# millisecond values (120000 = 33 h) and `update` leaves settings.json alone by
+# default, while the gates it DOES refresh assume the 1800 s bound (#592).
+@test "detect_security_drift: flags hook timeouts written in milliseconds" {
+    skip_if_no_jq
+    mkdir -p "$TEST_DIR/.claude"
+    cat > "$TEST_DIR/.claude/settings.json" <<'EOF'
+{ "hooks": {
+  "PreToolUse": [ { "hooks": [
+    { "type": "command", "command": "echo gate", "timeout": 120000 },
+    { "type": "command", "command": "echo guard", "timeout": 5000 } ] } ],
+  "Stop": [ { "hooks": [ { "type": "command", "command": "echo done", "timeout": 2000 } ] } ] } }
+EOF
+    run detect_security_drift "$TEST_DIR"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"hook-timeout-ms"* ]]
+    # One aggregated line naming the count, not one per hook.
+    [ "$(printf '%s\n' "$output" | grep -c 'hook-timeout-ms')" -eq 1 ]
+    # 2000 (33 min read as seconds) sits under the threshold: the count is of
+    # values above 3600, and any one of them marks the install as ms-era.
+    [[ "$output" == *"2 hook timeout"* ]]
+    [[ "$output" == *"update --settings --hook-scripts"* ]]
+}
+
+@test "detect_security_drift: timeouts in seconds, up to 3600, are not drift" {
+    skip_if_no_jq
+    mkdir -p "$TEST_DIR/.claude"
+    cat > "$TEST_DIR/.claude/settings.json" <<'EOF'
+{ "hooks": { "PreToolUse": [ { "hooks": [
+    { "type": "command", "command": "echo a", "timeout": 3600 },
+    { "type": "command", "command": "echo b", "timeout": 30 },
+    { "type": "command", "command": "echo c" },
+    { "type": "command", "command": "echo d", "timeout": "30" } ] } ] } }
+EOF
+    run detect_security_drift "$TEST_DIR"
+    [[ "$output" != *"hook-timeout-ms"* ]]
+}
+
+@test "detect_security_drift: the foundation's own settings.json has no ms timeout" {
+    skip_if_no_jq
+    mkdir -p "$TEST_DIR/.claude"
+    cp "$BATS_TEST_DIRNAME/../.claude/settings.json" "$TEST_DIR/.claude/settings.json"
+    run detect_security_drift "$TEST_DIR"
+    [[ "$output" != *"hook-timeout-ms"* ]]
+}
+
 @test "hook_uses_legacy_contract: a 'jq' mention in a COMMENT does not mask legacy drift" {
     cat > "$TEST_DIR/sneaky.sh" <<'EOF'
 #!/usr/bin/env bash
