@@ -703,6 +703,26 @@ run_module() {
     [ "$status" -ne 0 ]
 }
 
+@test "module add/remove: a recommendation re-pinned since still shows as drift" {
+    setup_lean_project
+    local m="$TEST_DIR/.claude/foundation.json" t
+    t="$(mktemp)"
+    jq '.recommendations = [{"id":"x","pinnedRef":"a"}]' "$m" > "$t" && mv "$t" "$m"
+    printf '%s\n' '{"recommendedVendorSkills":[{"id":"x","pinnedRef":"b"}]}' > "$TEST_DIR/preset.json"
+
+    run_module add legal --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    run_module remove legal --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    [ "$(jq -c '.recommendations' "$m")" = '[{"id":"x","pinnedRef":"a"}]' ]
+    run bash -c "source '$REPO_ROOT_LOCAL/scripts/lib/common.sh'; \
+                 source '$REPO_ROOT_LOCAL/scripts/lib/preset-recommendations.sh'; \
+                 recommendation_drift '$TEST_DIR/preset.json' '$TEST_DIR'"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"~ repinned: x a → b"* ]]
+}
+
 @test "module remove: summary reports how many files were removed" {
     setup_lean_project
     run_module add legal --target "$TEST_DIR"
@@ -1101,4 +1121,62 @@ run_module() {
     # A different preset was not chosen among that set: the field is dropped.
     run_lib write_foundation_manifest "$TEST_DIR/p" 5.6.0 astro biz
     [ "$(jq -r 'has("presetChoice")' "$TEST_DIR/p/.claude/foundation.json")" = "false" ]
+}
+
+# The recommendation snapshot (US-9) is what the next update diffs against.
+# Dropped by a rewrite, that update reads "first run" and says nothing about a
+# recommendation added, removed or re-pinned since.
+@test "modules: rewriting the manifest keeps recommendations while the preset is unchanged" {
+    mkdir -p "$TEST_DIR/p/.claude"
+    printf '%s\n' '{"version":"5.6.0","preset":"nextjs","tier":"full","modules":[],"recommendations":[{"id":"x","pinnedRef":"a"}]}' \
+        > "$TEST_DIR/p/.claude/foundation.json"
+    run_lib write_foundation_manifest "$TEST_DIR/p" 5.6.0 nextjs biz
+    [ "$status" -eq 0 ]
+    [ "$(jq -c '.recommendations' "$TEST_DIR/p/.claude/foundation.json")" = '[{"id":"x","pinnedRef":"a"}]' ]
+    [ "$(jq -c '.modules' "$TEST_DIR/p/.claude/foundation.json")" = '["biz"]' ]
+
+    # Another preset's snapshot would diff as spurious drift: dropped.
+    run_lib write_foundation_manifest "$TEST_DIR/p" 5.6.0 astro biz
+    [ "$(jq -r 'has("recommendations")' "$TEST_DIR/p/.claude/foundation.json")" = "false" ]
+}
+
+@test "modules: a preset-less manifest keeps its recommendations on rewrite" {
+    # preset null + a snapshot: an update that DETECTED the preset recorded it.
+    mkdir -p "$TEST_DIR/p/.claude"
+    printf '%s\n' '{"version":"5.6.0","preset":null,"tier":"full","modules":[],"recommendations":[]}' \
+        > "$TEST_DIR/p/.claude/foundation.json"
+    run_lib write_foundation_manifest "$TEST_DIR/p" 5.6.0 "" legal
+    [ "$status" -eq 0 ]
+    [ "$(jq -c '.recommendations' "$TEST_DIR/p/.claude/foundation.json")" = '[]' ]
+}
+
+# The old manifest is read for its extra fields, never trusted: a damaged or
+# oversized one must not block the rewrite that repairs it (it never did).
+@test "modules: rewriting repairs a manifest holding two JSON values" {
+    mkdir -p "$TEST_DIR/p/.claude"
+    printf '%s\n' '{"version":"1","preset":null,"tier":"full","modules":[]} {"x":1}' \
+        > "$TEST_DIR/p/.claude/foundation.json"
+    run_lib write_foundation_manifest "$TEST_DIR/p" 5.6.0 "" legal
+    [ "$status" -eq 0 ]
+    [ "$(jq -c '.modules' "$TEST_DIR/p/.claude/foundation.json")" = '["legal"]' ]
+}
+
+@test "modules: rewriting a manifest larger than the argument limit still works" {
+    mkdir -p "$TEST_DIR/p/.claude"
+    head -c 300000 /dev/zero | tr '\0' 'a' \
+        | jq -Rs '{version:"1",preset:null,tier:"full",modules:[],pad:.}' > "$TEST_DIR/p/.claude/foundation.json"
+    run_lib write_foundation_manifest "$TEST_DIR/p" 5.6.0 "" legal
+    [ "$status" -eq 0 ]
+    [ "$(jq -r '.pad | length' "$TEST_DIR/p/.claude/foundation.json")" = "300000" ]
+}
+
+@test "modules: rewriting the manifest keeps a field it does not own" {
+    mkdir -p "$TEST_DIR/p/.claude"
+    printf '%s\n' '{"version":"5.5.0","preset":null,"tier":"minimal","modules":["biz"],"someFutureKey":{"a":1}}' \
+        > "$TEST_DIR/p/.claude/foundation.json"
+    run_lib write_foundation_manifest "$TEST_DIR/p" 5.6.0 "" legal
+    [ "$status" -eq 0 ]
+    [ "$(jq -c '.someFutureKey' "$TEST_DIR/p/.claude/foundation.json")" = '{"a":1}' ]
+    # The fields it owns are still rewritten, never merged with the old ones.
+    [ "$(jq -c '[.version, .modules, .tier]' "$TEST_DIR/p/.claude/foundation.json")" = '["5.6.0",["legal"],"minimal"]' ]
 }
