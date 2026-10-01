@@ -52,6 +52,40 @@ job_of() {
     if grep -E '^permissions:' -A4 "$WORKFLOWS/pr-check.yml" | grep -qE ':\s*write'; then echo "workflow-wide write" >&2; return 1; fi
 }
 
+# A tag is a pointer its owner can move: the size labeler's `v1` changed
+# behaviour under us on 2026-09-28 (#615). Every action from another repo is
+# pinned to a full commit SHA, its version in a trailing comment; Dependabot
+# (github-actions ecosystem) bumps both.
+_unpinned_actions() {
+    # A key may be quoted ("uses":) or spaced (uses :); both are valid YAML.
+    grep -nE '^[[:space:]-]*"?uses"?[[:space:]]*:[[:space:]]*[^.[:space:]][^[:space:]]*@' "$@" \
+        | grep -vE ':[[:space:]]*docker://' \
+        | grep -vE '@[0-9a-f]{40}[[:space:]]+#[[:space:]]*v?[0-9]+(\.[0-9]+)*[[:space:]]*$' || true
+}
+
+@test "workflows: every external action is pinned to a commit SHA with its version" {
+    local files=()
+    while IFS= read -r f; do files+=("$f"); done < <(find "$WORKFLOWS" -maxdepth 1 \( -name '*.yml' -o -name '*.yaml' \))
+    [ "${#files[@]}" -gt 0 ]
+    run _unpinned_actions "${files[@]}"
+    [ -z "$output" ] || { echo "actions on a movable ref:" >&2; echo "$output" >&2; return 1; }
+}
+
+@test "workflows: the pin guard is not vacuous — it flags tags, short SHAs and bare SHAs" {
+    local f="$BATS_TEST_TMPDIR/w.yml"
+    printf '%s\n' \
+        '      - uses: actions/checkout@v7' \
+        '        uses: a/b@0123456789abcdef0123456789abcdef01234567 # v1.2.3' \
+        '        uses: a/c@0123456 # v1' \
+        '        uses: a/d@0123456789abcdef0123456789abcdef01234567' \
+        '        uses: ./.github/actions/local' \
+        '        uses: docker://alpine:3' \
+        '        uses : a/e@v1' \
+        '        "uses": a/f@v1' > "$f"
+    run _unpinned_actions "$f"
+    [ "$(printf '%s\n' "$output" | cut -d: -f1 | tr '\n' ' ')" = "1 3 4 7 8 " ]
+}
+
 @test "ci.yml: shellcheck also covers install.sh and bin/claude-base" {
     grep -A5 'action-shellcheck' "$WORKFLOWS/ci.yml" | grep -q 'additional_files'
     grep -A5 'action-shellcheck' "$WORKFLOWS/ci.yml" | grep -q 'install.sh'
