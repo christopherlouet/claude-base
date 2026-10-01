@@ -57,13 +57,17 @@ job_of() {
 # pinned to a full commit SHA, its version in a trailing comment; Dependabot
 # (github-actions ecosystem) bumps both.
 _unpinned_actions() {
-    grep -nE '^[[:space:]-]*uses:[[:space:]]*[^.[:space:]][^[:space:]]*@' "$@" \
-        | grep -vE 'uses:[[:space:]]*docker://' \
+    # A key may be quoted ("uses":) or spaced (uses :); both are valid YAML.
+    grep -nE '^[[:space:]-]*"?uses"?[[:space:]]*:[[:space:]]*[^.[:space:]][^[:space:]]*@' "$@" \
+        | grep -vE ':[[:space:]]*docker://' \
         | grep -vE '@[0-9a-f]{40}[[:space:]]+#[[:space:]]*v?[0-9]+(\.[0-9]+)*[[:space:]]*$' || true
 }
 
 @test "workflows: every external action is pinned to a commit SHA with its version" {
-    run _unpinned_actions "$WORKFLOWS"/*.yml
+    local files=()
+    while IFS= read -r f; do files+=("$f"); done < <(find "$WORKFLOWS" -maxdepth 1 \( -name '*.yml' -o -name '*.yaml' \))
+    [ "${#files[@]}" -gt 0 ]
+    run _unpinned_actions "${files[@]}"
     [ -z "$output" ] || { echo "actions on a movable ref:" >&2; echo "$output" >&2; return 1; }
 }
 
@@ -75,9 +79,11 @@ _unpinned_actions() {
         '        uses: a/c@0123456 # v1' \
         '        uses: a/d@0123456789abcdef0123456789abcdef01234567' \
         '        uses: ./.github/actions/local' \
-        '        uses: docker://alpine:3' > "$f"
+        '        uses: docker://alpine:3' \
+        '        uses : a/e@v1' \
+        '        "uses": a/f@v1' > "$f"
     run _unpinned_actions "$f"
-    [ "$(printf '%s\n' "$output" | cut -d: -f1 | tr '\n' ' ')" = "1 3 4 " ]
+    [ "$(printf '%s\n' "$output" | cut -d: -f1 | tr '\n' ' ')" = "1 3 4 7 8 " ]
 }
 
 @test "ci.yml: shellcheck also covers install.sh and bin/claude-base" {
