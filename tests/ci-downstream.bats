@@ -284,9 +284,14 @@ YML
     run bash "$NEW_PROJECT_SCRIPT" -y --ci "$PROJ"
     [ "$status" -eq 0 ]
     [ -f "$PROJ/.github/dependabot.yml" ]
-    python3 -c "import yaml,sys; d=yaml.safe_load(open(sys.argv[1])); \
-u=[x for x in d['updates'] if x['package-ecosystem']=='github-actions']; \
-assert d['version']==2 and len(u)==1 and u[0]['directory']=='/', d" "$PROJ/.github/dependabot.yml"
+    # Read structurally with grep, not PyYAML: the macOS runner has no PyYAML
+    # (this test went red there first). The copy is the template, byte for byte.
+    cmp "$BASE_REPO/templates/github/dependabot.yml" "$PROJ/.github/dependabot.yml"
+    local f="$PROJ/.github/dependabot.yml"
+    grep -qE '^version:[[:space:]]*2[[:space:]]*$' "$f"
+    [ "$(grep -cE '^[[:space:]]*-[[:space:]]*package-ecosystem:' "$f")" -eq 1 ]
+    grep -qE '^[[:space:]]*-[[:space:]]*package-ecosystem:[[:space:]]*"github-actions"' "$f"
+    grep -qE '^[[:space:]]+directory:[[:space:]]*"/"[[:space:]]*$' "$f"
 }
 
 @test "install --ci: the project's own dependabot.yml is kept byte for byte" {
