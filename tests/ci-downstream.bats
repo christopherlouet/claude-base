@@ -334,3 +334,28 @@ assert d['version']==2 and len(u)==1 and u[0]['directory']=='/', d" "$PROJ/.gith
     [ "$status" -eq 0 ]
     [ ! -e "$PROJ/.github/dependabot.yml" ]
 }
+
+@test "install --ci: a dependabot.yml that is not a regular file is never written through" {
+    mkdir -p "$PROJ/.github/dependabot.yml"
+    run bash "$NEW_PROJECT_SCRIPT" -y --ci "$PROJ"
+    [ "$status" -eq 0 ]
+    [ -z "$(ls -A "$PROJ/.github/dependabot.yml")" ]
+    [[ "$output" == *"dependabot.yml"*"not a regular file"* ]]
+}
+
+@test "install --ci: a commented-out github-actions entry does not count as watching actions" {
+    mkdir -p "$PROJ/.github"
+    printf 'version: 2\nupdates:\n  - package-ecosystem: "npm"\n    directory: "/"\n#  - package-ecosystem: "github-actions"\n' \
+        > "$PROJ/.github/dependabot.yml"
+    run bash "$NEW_PROJECT_SCRIPT" -y --ci "$PROJ"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"does not watch GitHub Actions"* ]]
+}
+
+@test "install --ci: nothing seeded when every workflow was the project's own" {
+    mkdir -p "$PROJ/.github/workflows"
+    for wf in ci pr-check security; do echo "name: $wf" > "$PROJ/.github/workflows/$wf.yml"; done
+    run bash "$NEW_PROJECT_SCRIPT" -y --ci "$PROJ"
+    [ "$status" -eq 0 ]
+    [ ! -e "$PROJ/.github/dependabot.yml" ]
+}

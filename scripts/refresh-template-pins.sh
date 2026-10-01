@@ -27,11 +27,18 @@ set -euo pipefail
 
 ROOT="${PINS_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 
-USES_RE='^([[:space:]-]*uses:[[:space:]]*)([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)@([^[:space:]#]+)([[:space:]]+#[[:space:]]*([^[:space:]]+))?[[:space:]]*$'
+# Groups: 1 prefix, 2 owner/repo (what the API is asked), 3 optional /sub/path
+# (github/codeql-action/init), 4 ref, 6 version comment.
+USES_RE='^([[:space:]-]*uses:[[:space:]]*)([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+)(/[^@[:space:]]+)?@([^[:space:]#]+)([[:space:]]+#[[:space:]]*([^[:space:]]+))?[[:space:]]*$'
+# Any `uses:` naming a remote ref, in a shape USES_RE may not read (quoted value,
+# quoted key): the guard in tests/ci-workflows.bats flags those too, so this
+# script must fail on them rather than exit 0 with the line untouched.
+ANY_USES_RE='^[[:space:]-]*"?uses"?[[:space:]]*:[[:space:]]*"?[^.[:space:]"][^[:space:]]*@'
 SHA_RE='^[0-9a-f]{40}$'
 
 CACHE="$(mktemp)"
-trap 'rm -f "$CACHE"' EXIT
+ERRF="$(mktemp)"
+trap 'rm -f "$CACHE" "$ERRF"' EXIT
 FAILED=0
 
 # major_of <ref> <version-comment> — the major line, empty when unknown.
@@ -48,7 +55,9 @@ major_of() {
 }
 
 # resolve <owner/repo> <major> — prints "<tag> <sha>", or nothing on failure.
-# Memoised per run in $CACHE ("<repo> <major> <tag> <sha>", or "... FAIL").
+# Memoised per run in $CACHE ("<repo> <major> <tag> <sha>", or
+# "<repo> <major> FAIL <reason>": gh's own last error line, so a rate limit or
+# an expired login is named, not reduced to "could not resolve").
 resolve() {
     local repo="$1" major="$2" hit tag sha
     hit=$(awk -v r="$repo" -v m="$major" '$1 == r && $2 == m { print $3, $4; exit }' "$CACHE")
@@ -56,7 +65,8 @@ resolve() {
         [ "${hit#FAIL}" = "$hit" ] && printf '%s\n' "$hit"
         return 0
     fi
-    tag=$(gh api "repos/$repo/tags" --paginate --jq '.[].name' 2>/dev/null \
+    : > "$ERRF"
+    tag=$(gh api "repos/$repo/tags" --paginate --jq '.[].name' 2>"$ERRF" \
         | awk -v m="$major" '
             { n = $0; sub(/^v/, "", n) }
             n ~ /^[0-9]+\.[0-9]+\.[0-9]+$/ {
@@ -65,33 +75,40 @@ resolve() {
         | sort -k1,1n -k2,2n | tail -n 1 | cut -d' ' -f3) || tag=""
     sha=""
     if [ -n "$tag" ]; then
-        sha=$(gh api "repos/$repo/commits/$tag" --jq '.sha' 2>/dev/null) || sha=""
+        sha=$(gh api "repos/$repo/commits/$tag" --jq '.sha' 2>>"$ERRF") || sha=""
     fi
     if [ -n "$tag" ] && [[ "$sha" =~ $SHA_RE ]]; then
         printf '%s %s %s %s\n' "$repo" "$major" "$tag" "$sha" >> "$CACHE"
         printf '%s %s\n' "$tag" "$sha"
     else
-        printf '%s %s FAIL\n' "$repo" "$major" >> "$CACHE"
+        local reason
+        reason=$(awk 'NF { l = $0 } END { print l }' "$ERRF")
+        [ -n "$reason" ] || reason="no X.Y.Z release in major $major"
+        printf '%s %s FAIL %s\n' "$repo" "$major" "$reason" >> "$CACHE"
     fi
 }
 
 refresh_file() {
-    local file="$1" tmp line prefix repo ref ver major got tag sha
+    local file="$1" tmp line prefix repo sub ref ver major got tag sha why
     tmp="$(mktemp)"
     while IFS= read -r line || [ -n "$line" ]; do
         if [[ "$line" =~ $USES_RE ]]; then
-            prefix="${BASH_REMATCH[1]}" repo="${BASH_REMATCH[2]}"
-            ref="${BASH_REMATCH[3]}" ver="${BASH_REMATCH[5]:-}"
+            prefix="${BASH_REMATCH[1]}" repo="${BASH_REMATCH[2]}" sub="${BASH_REMATCH[3]:-}"
+            ref="${BASH_REMATCH[4]}" ver="${BASH_REMATCH[6]:-}"
             major=$(major_of "$ref" "$ver")
             got=""
             [ -n "$major" ] && got=$(resolve "$repo" "$major")
             if [ -n "$got" ]; then
                 tag="${got%% *}" sha="${got#* }"
-                line="${prefix}${repo}@${sha} # ${tag}"
+                line="${prefix}${repo}${sub}@${sha} # ${tag}"
             else
-                echo "[template-pins] could not resolve $repo@$ref${ver:+ ($ver)} in ${file#"$ROOT"/}: line kept" >&2
+                why=$(awk -v r="$repo" -v m="$major" '$1 == r && $2 == m && $3 == "FAIL" { $1 = $2 = $3 = ""; sub(/^ +/, ""); print; exit }' "$CACHE")
+                echo "[template-pins] could not resolve $repo$sub@$ref${ver:+ ($ver)} in ${file#"$ROOT"/}${why:+: $why}; line kept" >&2
                 FAILED=1
             fi
+        elif [[ "$line" =~ $ANY_USES_RE ]] && [[ "$line" != *docker://* ]]; then
+            echo "[template-pins] unreadable uses line in ${file#"$ROOT"/} (quoted?): ${line#"${line%%[![:space:]]*}"}; write it as uses: owner/repo@ref" >&2
+            FAILED=1
         fi
         printf '%s\n' "$line"
     done < "$file" > "$tmp"

@@ -142,3 +142,28 @@ _wf()   { printf '%s\n' "$@" > "$ROOT/templates/github-workflows/ci.yml"; }
     [ "$(sed -n 2p "$ROOT/templates/github-workflows/ci.yml")" = "      - uses: actions/setup-go@$SHA_C" ]
     [ "$(sed -n 3p "$ROOT/templates/github-workflows/ci.yml")" = "      - uses: actions/checkout@$SHA_A # v7.0.1" ]
 }
+
+@test "refresh-template-pins: a sub-path action (owner/repo/path) is re-pinned on its repo" {
+    _tags github_codeql-action v3.28.0 v3.29.1
+    _sha github_codeql-action v3.29.1 "$SHA_B"
+    _wf '      - uses: github/codeql-action/init@v3'
+    run "$SCRIPT"
+    [ "$status" -eq 0 ]
+    [ "$(cat "$ROOT/templates/github-workflows/ci.yml")" = "      - uses: github/codeql-action/init@$SHA_B # v3.29.1" ]
+}
+
+@test "refresh-template-pins: a uses line it cannot read fails the run instead of passing silently" {
+    _wf '      - uses: "actions/checkout@v6"'
+    run "$SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"actions/checkout"* ]]
+    [ "$(cat "$ROOT/templates/github-workflows/ci.yml")" = '      - uses: "actions/checkout@v6"' ]
+}
+
+@test "refresh-template-pins: the reason gh gave is in the failure message" {
+    touch "$TEST_DIR/gh/fail-actions_checkout"
+    _wf '      - uses: actions/checkout@v7'
+    run "$SCRIPT"
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"HTTP 502"* ]]
+}

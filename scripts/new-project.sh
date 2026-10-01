@@ -1104,8 +1104,15 @@ report_preserved() {
 seed_dependabot_config() {
     local dir="$1" f
     for f in "$dir/.github/dependabot.yml" "$dir/.github/dependabot.yaml"; do
-        [[ -f "$f" ]] || continue
-        if ! grep -qE "package-ecosystem:[[:space:]]*[\"']?github-actions" "$f"; then
+        # -e and -L, not -f: a directory or a dangling link at that path is
+        # the project's, and writing through it is never ours to do.
+        [[ -e "$f" || -L "$f" ]] || continue
+        if [[ ! -f "$f" || -L "$f" ]]; then
+            warning "$(basename "$f") exists but is not a regular file: left alone, no Dependabot config added"
+            return 0
+        fi
+        # A commented-out entry does not watch anything.
+        if ! grep -qE "^[[:space:]]*-?[[:space:]]*package-ecosystem:[[:space:]]*[\"']?github-actions" "$f"; then
             warning "$(basename "$f") does not watch GitHub Actions: the actions pinned in the added workflows will not be bumped. Add a \"github-actions\" entry (see templates/github/dependabot.yml)"
         fi
         return 0
@@ -1131,15 +1138,18 @@ install_cicd_files() {
     # also strictly better than the all-or-nothing detection guard it replaces:
     # the workflows the project lacks still land. Pinned by
     # tests/install-preserves-project-files.bats.
-    local wf
+    local wf landed=false
     for wf in "$BASE_DIR/templates/github-workflows/"*; do
         [[ -f "$wf" ]] || continue
+        [[ -e "$target_dir/.github/workflows/$(basename "$wf")" ]] || landed=true
         copy_unless_present "$wf" "$target_dir/.github/workflows/$(basename "$wf")"
     done
 
     success "GitHub Actions installed"
     report_preserved
-    seed_dependabot_config "$target_dir"
+    # As in merge mode: only when a template landed, its pinned actions being
+    # what needs bumping. Workflows that are all the project's own are not ours.
+    if $landed; then seed_dependabot_config "$target_dir"; fi
 }
 
 # Install pre-commit hooks (husky)
