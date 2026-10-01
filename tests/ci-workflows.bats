@@ -71,6 +71,18 @@ _unpinned_actions() {
     [ -z "$output" ] || { echo "actions on a movable ref:" >&2; echo "$output" >&2; return 1; }
 }
 
+# The templates a project receives run with ITS token (claude-review with its
+# ANTHROPIC_API_KEY): same rule. Dependabot never reads them, so their pins
+# move with scripts/refresh-template-pins.sh, once per release.
+@test "workflow templates: every external action is pinned to a commit SHA with its version" {
+    local files=()
+    while IFS= read -r f; do files+=("$f"); done < <(find "$BASE_DIR/templates/github-workflows" \
+        "$BASE_DIR/.claude/templates/github-actions" -maxdepth 1 \( -name '*.yml' -o -name '*.yaml' \))
+    [ "${#files[@]}" -ge 5 ]
+    run _unpinned_actions "${files[@]}"
+    [ -z "$output" ] || { echo "template actions on a movable ref (run scripts/refresh-template-pins.sh):" >&2; echo "$output" >&2; return 1; }
+}
+
 @test "workflows: the pin guard is not vacuous — it flags tags, short SHAs and bare SHAs" {
     local f="$BATS_TEST_TMPDIR/w.yml"
     printf '%s\n' \
