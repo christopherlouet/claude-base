@@ -276,6 +276,12 @@ already has is never overwritten, except by `--ci-existing replace`, which delet
 workflows before installing these three. `--ci-existing merge` adds only the missing ones and says
 when release automation or a secret scan is missing.
 
+Every action in these workflows is pinned to a commit SHA, its version in a trailing comment: a tag
+is a pointer its owner can move, and the workflows run with your repository's token. So that the
+pins do not go stale, the install also adds `.github/dependabot.yml`, watching GitHub Actions only,
+when the project has no Dependabot config. One the project already has (`.yml` or `.yaml`) is never
+edited; if it does not watch GitHub Actions, the install says so.
+
 ### Pre-commit Hooks
 
 `claude-base init --hooks` (or `--all`) installs two git hooks into `.husky/`: **auto-lint** on staged
