@@ -25,8 +25,8 @@ jobs:
     outputs:
       shell: ${{ steps.filter.outputs.shell }}
     steps:
-      - uses: actions/checkout@v7
-      - uses: dorny/paths-filter@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: filter
         with:
           filters: |
@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@00cae500b08a931fb5698e11e79bfbd38e612a38 # v2.0.0
@@ -65,7 +65,7 @@ jobs:
         run: bash scripts/validate-counts.sh
 
       - name: Setup Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '20'
           cache: 'npm'
@@ -117,7 +117,7 @@ jobs:
         shard: [1, 2, 3, 4]
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # Full history: tests/docs-under-claude.bats re-derives every doc the
           # foundation ever shipped from git log, to check FOUNDATION_RETIRED_DOCS
@@ -126,7 +126,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Bats
-        uses: bats-core/bats-action@4.0.0
+        uses: bats-core/bats-action@77d6fb60505b4d0d1d73e48bd035b55074bbfb43 # 4.0.0
 
       - name: Run Bats tests (shard ${{ matrix.shard }}/${{ strategy.job-total }})
         # ./scripts/test.sh runs bats with --jobs (GNU parallel, capped at 8) —
@@ -144,10 +144,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Bats
-        uses: bats-core/bats-action@4.0.0
+        uses: bats-core/bats-action@77d6fb60505b4d0d1d73e48bd035b55074bbfb43 # 4.0.0
 
       - name: Install gitleaks (pinned release binary + SHA-256)
         run: |
@@ -185,10 +185,10 @@ jobs:
     if: github.event_name == 'push' || needs.changes.outputs.shell == 'true'
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Setup Bats
-        uses: bats-core/bats-action@4.0.0
+        uses: bats-core/bats-action@77d6fb60505b4d0d1d73e48bd035b55074bbfb43 # 4.0.0
 
       # mawk is a "required" Ubuntu package, so the runner already has it (the
       # script exits 2 if not). busybox is fetched like gitleaks above: pinned
@@ -232,7 +232,7 @@ jobs:
         shard: [1, 2, 3, 4]
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # Full history — see the ubuntu bats matrix above. Sharding is
           # independent per OS, so the guard can land on either one.
