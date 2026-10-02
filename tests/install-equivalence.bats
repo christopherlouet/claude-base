@@ -34,6 +34,8 @@ _is_transform_artifact() {
         .claude/foundation.json) return 0 ;;
         .git/*|.claude.backup.*/*) return 0 ;;
         .github/workflows/*|.husky/*) return 0 ;;
+        # Seeded by the same --ci installer, beside the workflows it keeps fresh.
+        .github/dependabot.yml) return 0 ;;
         .pre-commit-config.yaml|.lintstagedrc.json|.commitlintrc.json) return 0 ;;
         Dockerfile|.dockerignore|docker-compose*.yml) return 0 ;;
     esac

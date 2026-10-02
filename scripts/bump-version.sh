@@ -176,6 +176,9 @@ else
     info "Next steps:"
     echo "  1. Review the changes: git diff"
     echo "  2. Update CHANGELOG.md"
-    echo "  3. Commit: git commit -am 'chore(release): v$NEW_VERSION'"
-    echo "  4. Tag: git tag v$NEW_VERSION"
+    # Dependabot never reads the templates (only /.github/workflows): their
+    # action pins move forward here, once per release.
+    echo "  3. Refresh the workflow templates' action pins: scripts/refresh-template-pins.sh"
+    echo "  4. Commit: git commit -am 'chore(release): v$NEW_VERSION'"
+    echo "  5. Tag: git tag v$NEW_VERSION"
 fi
