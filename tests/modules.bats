@@ -758,6 +758,61 @@ run_module() {
     [[ "$output" == *"preserved"* ]] || [[ "$output" == *"user-modified"* ]]
 }
 
+# An install updated at an older release holds that release's copy, which
+# differs from the current foundation file without being a customisation.
+# remove must recognise it from the pristine-hashes table, as update does,
+# or it leaves the file behind as an orphan of a removed module.
+@test "module remove: an unmodified copy of an older release is removed, not preserved" {
+    setup_lean_project
+    run_module add legal --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    local old_path
+    old_path=$(bash -c "source '$REPO_ROOT_LOCAL/scripts/lib/modules.sh'; \
+                        module_bundle_paths legal" | head -1)
+    echo "# as an older release shipped it" >> "$TEST_DIR/$old_path"
+    export PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt"
+    echo "$(sha256sum "$TEST_DIR/$old_path" | cut -d' ' -f1) $old_path" > "$PRISTINE_HASHES_FILE"
+
+    run_module remove legal --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ ! -e "$TEST_DIR/$old_path" ]
+    [[ "$output" != *"$old_path: preserved"* ]]
+}
+
+@test "module add: an unmodified copy of an older release is refreshed, not reported as user-modified" {
+    setup_lean_project
+    run_module add flutter --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    local old_path=".claude/skills/dev-flutter/SKILL.md"
+    echo "# as an older release shipped it" >> "$TEST_DIR/$old_path"
+    export PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt"
+    echo "$(sha256sum "$TEST_DIR/$old_path" | cut -d' ' -f1) $old_path" > "$PRISTINE_HASHES_FILE"
+
+    run_module add flutter -y --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    cmp -s "$REPO_ROOT_LOCAL/$old_path" "$TEST_DIR/$old_path"
+    [[ "$output" != *"$old_path: skipped"* ]]
+}
+
+@test "module remove: an older release's copy inside a bundled directory is removed too" {
+    setup_lean_project
+    run_module add flutter --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+
+    local old_path=".claude/skills/dev-flutter/SKILL.md"
+    [ -f "$TEST_DIR/$old_path" ]
+    echo "# as an older release shipped it" >> "$TEST_DIR/$old_path"
+    export PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt"
+    echo "$(sha256sum "$TEST_DIR/$old_path" | cut -d' ' -f1) $old_path" > "$PRISTINE_HASHES_FILE"
+
+    run_module remove flutter --target "$TEST_DIR"
+    [ "$status" -eq 0 ]
+    [ ! -e "$TEST_DIR/$old_path" ]
+    [[ "$output" != *"$old_path: preserved"* ]]
+}
+
 # -----------------------------------------------------------------------
 # remove not-installed → clean message, no error spiral (CS-206)
 # -----------------------------------------------------------------------

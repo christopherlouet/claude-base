@@ -218,6 +218,18 @@ install_bundle_file() {
             return 0
         fi
 
+        # An unmodified copy of an older release is not a customisation:
+        # refresh it without --force, as update does.
+        if is_known_foundation_copy "$rel_path" "$dest_file"; then
+            if $DRY_RUN; then
+                echo "${DIM}[DRY-RUN]${NC} Update: $rel_path"
+            else
+                cp "$src_file" "$dest_file"
+            fi
+            ((_UPDATED++)) || true
+            return 0
+        fi
+
         # File differs.
         if $FORCE_UPDATE; then
             if $DRY_RUN; then
@@ -418,8 +430,10 @@ cmd_remove() {
                 dest_file="$TARGET_DIR/$rel_path"
                 if [[ ! -f "$dest_file" ]]; then
                     ((missing++)) || true
-                elif diff -q "$src_file" "$dest_file" > /dev/null 2>&1; then
-                    # Foundation-owned (identical) — safe to remove.
+                elif diff -q "$src_file" "$dest_file" > /dev/null 2>&1 \
+                     || is_known_foundation_copy "$rel_path" "$dest_file"; then
+                    # Foundation-owned (identical, or an unmodified copy of an
+                    # older release) — safe to remove.
                     if $DRY_RUN; then
                         echo "${DIM}[DRY-RUN]${NC} Remove: $rel_path"
                     else
@@ -445,7 +459,8 @@ cmd_remove() {
             dest_file="$TARGET_DIR/$bundle_path"
             if [[ ! -f "$dest_file" ]]; then
                 ((missing++)) || true
-            elif diff -q "$src_file" "$dest_file" > /dev/null 2>&1; then
+            elif diff -q "$src_file" "$dest_file" > /dev/null 2>&1 \
+                 || is_known_foundation_copy "$bundle_path" "$dest_file"; then
                 if $DRY_RUN; then
                     echo "${DIM}[DRY-RUN]${NC} Remove: $bundle_path"
                 else
