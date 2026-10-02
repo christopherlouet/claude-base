@@ -353,14 +353,14 @@ curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/i
 # Refresh an installed project to the current foundation
 claude-base update /path/to/your/project
 
-# Or refresh with a specific preset filter applied
+# Or adopt a preset: its filter applies now and is recorded for later updates
 claude-base update --preset nextjs /path/to/your/project
 
 # Read-only: check whether your project still matches its recorded preset
 claude-base update --detect-only /path/to/your/project
 ```
 
-`claude-base update` is COPY-only by default — existing files in your project's `.claude/` are not deleted. Pass `--clean` to wipe-and-replace (a backup is created first). `update` also **flags a stack pivot**: if your project has outgrown its recorded preset (e.g. a Vite SPA that grew into Next.js), it prints a non-blocking notice pointing at `claude-base update --preset <name>`; `--detect-only` reports that check (`Diverges: yes/no`) without updating anything.
+`claude-base update` is COPY-only by default — existing files in your project's `.claude/` are not deleted. Pass `--clean` to wipe-and-replace (a backup is created first). `update` also **flags a stack pivot**: if your project has outgrown its recorded preset (e.g. a Vite SPA that grew into Next.js), it prints a non-blocking notice pointing at `claude-base update --preset <name>`, and once you pick one, it stays quiet until the stack changes again; `--detect-only` reports that check (`Diverges: yes/no`) without updating anything.
 
 ### Versioning policy
 

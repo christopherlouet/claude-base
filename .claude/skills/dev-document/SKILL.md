@@ -1,8 +1,6 @@
 ---
 name: dev-document
 description: Document generation (PDF, DOCX, XLSX, PPTX). Trigger when the user wants to create a document, generate a report, export to PDF/Word/Excel/PowerPoint, or produce an office file.
-context: fork
-background: false
 ---
 
 # Document Generation

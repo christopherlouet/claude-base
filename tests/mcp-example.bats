@@ -23,7 +23,7 @@ setup() { skip_if_no_jq; }
 }
 
 @test "mcp example: no phantom @anthropics/* npm scope survives" {
-    ! grep -q '@anthropics/' "$EXAMPLE"
+    ! grep -q '@anthropics/' "$EXAMPLE" || false
 }
 
 @test "mcp example: every npx-launched package is version-pinned" {

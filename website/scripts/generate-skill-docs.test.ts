@@ -136,3 +136,38 @@ describe('generate-skill-docs: the pre-approved tools row', () => {
     }
   });
 });
+
+describe('generate-skill-docs: the context badge', () => {
+  // Claude Code documents one value, `fork`; an absent key means the skill runs
+  // inline. The generator used to default an absent key to 'fork', so every
+  // inline skill would have been published as isolated.
+  function writeCtx(root: string, name: string, ctx: string): string {
+    const dir = path.join(root, name);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'SKILL.md'), `---\nname: ${name}\ndescription: probe\n${ctx}---\n\n# ${name}\n`);
+    return dir;
+  }
+
+  it('a skill without context is not published as Fork', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-ctx-'));
+    try {
+      const skill = parseSkillFile(writeCtx(tmp, 'probe-inline', ''));
+      assert.equal(skill!.context, 'inline');
+      assert.doesNotMatch(generateSkillPage(skill!, 1), /\| \*\*Context\*\* \| fork \|/);
+      assert.match(generateSkillPage(skill!, 1), /\*\*Inline\*\* means the skill runs in the conversation/);
+    } finally {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  it('a context: fork skill is published as Fork', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-ctx-'));
+    try {
+      const skill = parseSkillFile(writeCtx(tmp, 'probe-fork', 'context: fork\nbackground: false\n'));
+      assert.equal(skill!.context, 'fork');
+      assert.match(generateSkillPage(skill!, 1), /\| \*\*Context\*\* \| fork \|/);
+    } finally {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+});

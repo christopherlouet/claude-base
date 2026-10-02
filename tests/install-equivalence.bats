@@ -34,6 +34,8 @@ _is_transform_artifact() {
         .claude/foundation.json) return 0 ;;
         .git/*|.claude.backup.*/*) return 0 ;;
         .github/workflows/*|.husky/*) return 0 ;;
+        # Seeded by the same --ci installer, beside the workflows it keeps fresh.
+        .github/dependabot.yml) return 0 ;;
         .pre-commit-config.yaml|.lintstagedrc.json|.commitlintrc.json) return 0 ;;
         Dockerfile|.dockerignore|docker-compose*.yml) return 0 ;;
     esac
@@ -136,7 +138,7 @@ EOF
     # PRESETS_DIR_OVERRIDE="" at load time, clobbering any inherited value.
     _assert_equivalence --simple --presets-dir "$TEST_DIR/presets" --preset eqtest
     # The filter really bit: the dropped items are absent from BOTH sides.
-    ! grep -q 'commands/growth/' "$TEST_DIR/manifest"
+    ! grep -q 'commands/growth/' "$TEST_DIR/manifest" || false
     [ ! -d "$TEST_DIR/real/.claude/skills/growth-cro" ]
     [ ! -e "$TEST_DIR/real/.claude/agents/biz-competitor.md" ]
     # And non-dropped content shipped.

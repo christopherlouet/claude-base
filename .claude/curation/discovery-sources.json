@@ -1,6 +1,6 @@
 {
   "_comment": "Discovery sources for scripts/curation-discover.sh (Slice 5, specs/marketplace-curation-engine). MONTHLY, model-using, budget-capped (EF-012) — distinct from the nightly LLM-free rot-watch. A source is either a SEARCH source (`query`: a GitHub search/repositories qualifier string over a covered domain) or a LIST source (`kind`:\"list\", `repo`: a curated awesome-list whose README is mined for the github repos it links to; optional `path` defaults to README.md). Both feed the SAME pipeline: candidates are scored (trust + safety, LLM-free) then judged (advice-neutrality + fit, LLM) before being PROPOSED for maintainer review. A list only SEEDS candidates — it never bypasses a gate. Proposal only — never auto-added (observe-never-install). Periodic + targeted (clarification 3): covered domains + known channels (curated lists, vendor orgs).",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "perPage": 15,
   "sources": [
     { "domain": "nextjs",   "query": "claude skill nextjs in:name,description,readme" },
@@ -17,6 +17,9 @@
     { "domain": "homelab",  "query": "claude skill proxmox OR opnsense in:name,description,readme" },
     { "domain": "smarthome", "query": "claude skill homeassistant in:name,description,readme" },
     { "domain": "devops",   "query": "claude skill docker OR github-actions OR devops in:name,description,readme" },
+    { "domain": "accessibility", "query": "claude skill accessibility OR a11y OR wcag in:name,description,readme" },
+    { "domain": "scraping", "query": "claude skill scraping OR crawler in:name,description,readme" },
+    { "domain": "maps",     "query": "claude skill maps OR leaflet OR geospatial in:name,description,readme" },
 
     { "domain": "list-composio",   "kind": "list", "repo": "ComposioHQ/awesome-claude-skills" },
     { "domain": "list-hesreallyhim", "kind": "list", "repo": "hesreallyhim/awesome-claude-code", "path": "THE_RESOURCES_TABLE_NEW.csv" },

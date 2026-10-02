@@ -16,12 +16,86 @@ WORKFLOWS="$BASE_DIR/.github/workflows"
 
 @test "release.yml: the Validate step is enforcing (no || true)" {
     grep -q 'validate.sh' "$WORKFLOWS/release.yml"
-    ! grep -E 'validate\.sh[^|]*\|\|[[:space:]]*true' "$WORKFLOWS/release.yml"
+    ! grep -E 'validate\.sh[^|]*\|\|[[:space:]]*true' "$WORKFLOWS/release.yml" || false
 }
 
 @test "pr-check.yml: title/WIP gates re-run when the PR title is edited" {
     grep -qE 'types:.*edited|^\s+- edited' "$WORKFLOWS/pr-check.yml" || \
         grep -A4 'types:' "$WORKFLOWS/pr-check.yml" | grep -q 'edited'
+}
+
+# job_of <file> <pattern> — the jobs: block (2-space key and its body) whose
+# text matches <pattern>; empty when none does. Comment lines are dropped: one
+# explaining a job sits above its key, inside the block before.
+job_of() {
+    awk -v pat="$2" '
+        /^jobs:/ { j = 1; next }
+        /^[[:space:]]*#/ { next }
+        j && /^  [A-Za-z0-9_-]+:/ { if (buf ~ pat) printf "%s", buf; buf = "" }
+        j { buf = buf $0 "\n" }
+        END { if (buf ~ pat) printf "%s", buf }' "$1"
+}
+
+# The size labeler writes (a label) and only it may: its own job gets
+# pull-requests: write, the title/commit/WIP job keeps the read-only default.
+# It is pinned to a commit — its floating v1 tag moved on 2026-09-28 and
+# started failing on the permission the workflow never granted.
+@test "pr-check.yml: only the size-label job may write, and it is pinned to a commit" {
+    local label validate
+    label=$(job_of "$WORKFLOWS/pr-check.yml" 'pr-size-labeler@')
+    validate=$(job_of "$WORKFLOWS/pr-check.yml" 'action-semantic-pull-request')
+    [ -n "$label" ] && [ -n "$validate" ]
+    [ "$label" != "$validate" ]
+    printf '%s' "$label" | grep -qE '^\s+pull-requests:\s*write'
+    printf '%s' "$label" | grep -qE 'pr-size-labeler@[0-9a-f]{40}\b'
+    if printf '%s' "$validate" | grep -qE ':\s*write'; then echo "Validate PR job can write" >&2; return 1; fi
+    if grep -E '^permissions:' -A4 "$WORKFLOWS/pr-check.yml" | grep -qE ':\s*write'; then echo "workflow-wide write" >&2; return 1; fi
+}
+
+# A tag is a pointer its owner can move: the size labeler's `v1` changed
+# behaviour under us on 2026-09-28 (#615). Every action from another repo is
+# pinned to a full commit SHA, its version in a trailing comment; Dependabot
+# (github-actions ecosystem) bumps both.
+_unpinned_actions() {
+    # A key may be quoted ("uses":) or spaced (uses :); both are valid YAML.
+    grep -nE '^[[:space:]-]*"?uses"?[[:space:]]*:[[:space:]]*[^.[:space:]][^[:space:]]*@' "$@" \
+        | grep -vE ':[[:space:]]*docker://' \
+        | grep -vE '@[0-9a-f]{40}[[:space:]]+#[[:space:]]*v?[0-9]+(\.[0-9]+)*[[:space:]]*$' || true
+}
+
+@test "workflows: every external action is pinned to a commit SHA with its version" {
+    local files=()
+    while IFS= read -r f; do files+=("$f"); done < <(find "$WORKFLOWS" -maxdepth 1 \( -name '*.yml' -o -name '*.yaml' \))
+    [ "${#files[@]}" -gt 0 ]
+    run _unpinned_actions "${files[@]}"
+    [ -z "$output" ] || { echo "actions on a movable ref:" >&2; echo "$output" >&2; return 1; }
+}
+
+# The templates a project receives run with ITS token (claude-review with its
+# ANTHROPIC_API_KEY): same rule. Dependabot never reads them, so their pins
+# move with scripts/refresh-template-pins.sh, once per release.
+@test "workflow templates: every external action is pinned to a commit SHA with its version" {
+    local files=()
+    while IFS= read -r f; do files+=("$f"); done < <(find "$BASE_DIR/templates/github-workflows" \
+        "$BASE_DIR/.claude/templates/github-actions" -maxdepth 1 \( -name '*.yml' -o -name '*.yaml' \))
+    [ "${#files[@]}" -ge 5 ]
+    run _unpinned_actions "${files[@]}"
+    [ -z "$output" ] || { echo "template actions on a movable ref (run scripts/refresh-template-pins.sh):" >&2; echo "$output" >&2; return 1; }
+}
+
+@test "workflows: the pin guard is not vacuous — it flags tags, short SHAs and bare SHAs" {
+    local f="$BATS_TEST_TMPDIR/w.yml"
+    printf '%s\n' \
+        '      - uses: actions/checkout@v7' \
+        '        uses: a/b@0123456789abcdef0123456789abcdef01234567 # v1.2.3' \
+        '        uses: a/c@0123456 # v1' \
+        '        uses: a/d@0123456789abcdef0123456789abcdef01234567' \
+        '        uses: ./.github/actions/local' \
+        '        uses: docker://alpine:3' \
+        '        uses : a/e@v1' \
+        '        "uses": a/f@v1' > "$f"
+    run _unpinned_actions "$f"
+    [ "$(printf '%s\n' "$output" | cut -d: -f1 | tr '\n' ' ')" = "1 3 4 7 8 " ]
 }
 
 @test "ci.yml: shellcheck also covers install.sh and bin/claude-base" {
@@ -85,12 +159,12 @@ _fires() { printf '%s\n' "$1" | grep -qE "$(_trigger_regex)"; }
     # pass every arm above while running node on every commit. NOT tests/*.bats
     # since the test counters stopped being tracked (specs/guardrail-cleanup,
     # US4), and not the generated website mirror.
-    ! _fires "README.md"
-    ! _fires "tests/ci-workflows.bats"
-    ! _fires "scripts/validate-counts.sh"
-    ! _fires "website/docs/reference/commands.md"
-    ! _fires "VERSIONING.md"
-    ! _fires "specs/guardrail-cleanup/spec.md"
+    ! _fires "README.md" || false
+    ! _fires "tests/ci-workflows.bats" || false
+    ! _fires "scripts/validate-counts.sh" || false
+    ! _fires "website/docs/reference/commands.md" || false
+    ! _fires "VERSIONING.md" || false
+    ! _fires "specs/guardrail-cleanup/spec.md" || false
 }
 
 # --- Self-application: the release gate must be able to hold on the real repo

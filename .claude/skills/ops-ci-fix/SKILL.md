@@ -1,9 +1,6 @@
 ---
 name: ops-ci-fix
 description: Autonomous diagnosis and repair of failing CI/CD pipelines. Scan GitHub Actions workflows, identify failure causes, and apply fixes. Trigger when CI is broken, tests fail in CI, or workflows are stuck.
-context: fork
-background: false
-model: sonnet
 argument-hint: "[workflow-name] [--dry-run]"
 ---
 

@@ -22,69 +22,69 @@ cannot drift apart.
 ## Core skills
 | Skill | Trigger | Context |
 |-------|-------------------|---------|
-| `dev-tdd` | "TDD", "test first", "write the tests" | fork |
-| `work-commit` | **manual only** — run `/work-commit` | fork |
-| `dev-debug` | "bug", "error", "debug" | fork |
+| `dev-tdd` | "TDD", "test first", "write the tests" | inline |
+| `work-commit` | **manual only** — run `/work-commit` | inline |
+| `dev-debug` | "bug", "error", "debug" | inline |
 | `qa-review` | "review", "code review" | fork |
 | `qa-security` | "security audit", "OWASP" | fork |
-| `work-plan` | **manual only** — run `/work-plan` | fork |
+| `work-plan` | **manual only** — run `/work-plan` | inline |
 | `work-explore` | **manual only** — run `/work-explore` | fork |
-| `work-brainstorm` | **manual only** — run `/work-brainstorm` | fork |
-| `work-pr` | **manual only** — run `/work-pr` | fork |
-| `dev-api` | "API", "endpoint", "REST" | fork |
+| `work-brainstorm` | **manual only** — run `/work-brainstorm` | inline |
+| `work-pr` | **manual only** — run `/work-pr` | inline |
+| `dev-api` | "API", "endpoint", "REST" | inline |
 
 ## Additional skills
 | Skill | Trigger | Context |
 |-------|-------------------|---------|
-| `dev-flutter` | "Flutter", "widget", "BLoC" | fork |
-| `dev-supabase` | "Supabase", "auth", "RLS" | fork |
-| `dev-react-perf` | "React perf", "re-render", "memo" | fork |
-| `ops-docker` | **manual only** — run `/ops-docker` | fork |
-| `ops-ci` | **manual only** — run `/ops-ci` | fork |
-| `ops-database` | **manual only** — run `/ops-database` | fork |
-| `ops-monitoring` | **manual only** — run `/ops-monitoring` | fork |
+| `dev-flutter` | "Flutter", "widget", "BLoC" | inline |
+| `dev-supabase` | "Supabase", "auth", "RLS" | inline |
+| `dev-react-perf` | "React perf", "re-render", "memo" | inline |
+| `ops-docker` | **manual only** — run `/ops-docker` | inline |
+| `ops-ci` | **manual only** — run `/ops-ci` | inline |
+| `ops-database` | **manual only** — run `/ops-database` | inline |
+| `ops-monitoring` | **manual only** — run `/ops-monitoring` | inline |
 | `doc-generate` | **manual only** — run `/doc-generate` | fork |
 | `doc-changelog` | **manual only** — run `/doc-changelog` | fork |
-| `dev-refactor` | "refactor", "clean code", "restructure" | fork |
-| `dev-error-handling` | "error handling", "exceptions", "error boundary" | fork |
-| `dev-graphql` | "GraphQL", "resolver", "schema" | fork |
-| `ops-mobile-release` | "App Store", "Play Store", "Fastlane" | fork |
-| `data-pipeline` | "ETL", "Airflow", "dbt" | fork |
-| `qa-perf` | "optimize", "latency", "TTFB" | fork |
-| `qa-e2e` | "E2E", "Playwright", "Cypress", "user journey" | fork |
-| `feature-flags` | "feature flag", "A/B test", "progressive deployment" | fork |
-| `ops-infra-code` | "Terraform", "IaC", "OpenTofu", "module", "state" | fork |
-| `ops-proxmox` | "Proxmox", "PVE", "Proxmox VM", "LXC", "PBS" | fork |
-| `ops-opnsense` | "OPNsense", "firewall", "NAT", "DHCP", "Unbound" | fork |
+| `dev-refactor` | "refactor", "clean code", "restructure" | inline |
+| `dev-error-handling` | "error handling", "exceptions", "error boundary" | inline |
+| `dev-graphql` | "GraphQL", "resolver", "schema" | inline |
+| `ops-mobile-release` | "App Store", "Play Store", "Fastlane" | inline |
+| `data-pipeline` | "ETL", "Airflow", "dbt" | inline |
+| `qa-perf` | "optimize", "latency", "TTFB" | inline |
+| `qa-e2e` | "E2E", "Playwright", "Cypress", "user journey" | inline |
+| `feature-flags` | "feature flag", "A/B test", "progressive deployment" | inline |
+| `ops-infra-code` | "Terraform", "IaC", "OpenTofu", "module", "state" | inline |
+| `ops-proxmox` | "Proxmox", "PVE", "Proxmox VM", "LXC", "PBS" | inline |
+| `ops-opnsense` | "OPNsense", "firewall", "NAT", "DHCP", "Unbound" | inline |
 | `qa-tech-debt` | "technical debt", "tech debt", "refactoring priority" | fork |
 | `ops-standup` | "standup", "briefing", "what happened" | fork |
-| `ops-ci-fix` | "ci broken", "fix ci", "workflows failing" | fork |
+| `ops-ci-fix` | "ci broken", "fix ci", "workflows failing" | inline |
 | `qa-design` | "design audit", "UI/UX", "user interface" | fork |
-| `api-mocking` | "mock API", "MSW", "test without backend" | fork |
-| `state-management` | "state", "Redux", "Zustand", "store" | fork |
-| `dev-document` | "PDF", "DOCX", "XLSX", "PPTX", "document", "report" | fork |
-| `growth-cro` | "conversion", "CRO", "signup flow", "onboarding", "paywall" | fork |
-| `parallel-agents` | "parallel", "concurrent", "fan-out", "multi-agents" | fork |
-| `agent-teams` | "agent team", "swarm", "agent team", "parallel agents" | fork |
-| `session-handoff` | "handoff", "resume", "session transfer", "context" | fork |
-| `git-worktrees` | "worktree", "parallel dev", "simultaneous branches" | fork |
-| `qa-chrome` | **manual only** — run `/qa-chrome` | fork |
-| `dev-frontend-design` | "UI design", "landing page", "art direction", "fonts" | fork |
-| `dev-shadcn` | "shadcn", "shadcn/ui", "Radix", "React components" | fork |
-| `dev-nextjs` | "Next.js", "App Router", "Server Components", "RSC", "Server Actions" | fork |
-| `dev-auth` | "auth", "login", "signup", "OAuth", "better-auth", "NextAuth", "Lucia", "2FA" | fork |
-| `dev-prisma` | "Prisma", "schema.prisma", "migrate", "ORM", "Accelerate" | fork |
-| `dev-i18n` | "i18n", "l10n", "translation", "locale", "next-intl", "react-i18next", "vue-i18n", "flutter_localizations" | fork |
-| `writing-skills` | "create skill", "new skill", "write a skill" | fork |
+| `api-mocking` | "mock API", "MSW", "test without backend" | inline |
+| `state-management` | "state", "Redux", "Zustand", "store" | inline |
+| `dev-document` | "PDF", "DOCX", "XLSX", "PPTX", "document", "report" | inline |
+| `growth-cro` | "conversion", "CRO", "signup flow", "onboarding", "paywall" | inline |
+| `parallel-agents` | "parallel", "concurrent", "fan-out", "multi-agents" | inline |
+| `agent-teams` | "agent team", "swarm", "agent team", "parallel agents" | inline |
+| `session-handoff` | "handoff", "resume", "session transfer", "context" | inline |
+| `git-worktrees` | "worktree", "parallel dev", "simultaneous branches" | inline |
+| `qa-chrome` | **manual only** — run `/qa-chrome` | inline |
+| `dev-frontend-design` | "UI design", "landing page", "art direction", "fonts" | inline |
+| `dev-shadcn` | "shadcn", "shadcn/ui", "Radix", "React components" | inline |
+| `dev-nextjs` | "Next.js", "App Router", "Server Components", "RSC", "Server Actions" | inline |
+| `dev-auth` | "auth", "login", "signup", "OAuth", "better-auth", "NextAuth", "Lucia", "2FA" | inline |
+| `dev-prisma` | "Prisma", "schema.prisma", "migrate", "ORM", "Accelerate" | inline |
+| `dev-i18n` | "i18n", "l10n", "translation", "locale", "next-intl", "react-i18next", "vue-i18n", "flutter_localizations" | inline |
+| `writing-skills` | "create skill", "new skill", "write a skill" | inline |
 | `web-scraping` | "scrape", "crawl", "extract web", "Firecrawl", "structured data" | fork |
-| `work-quick` | "quick", "fast", "rapid" — trivial change (&lt; 50 LOC, 1-3 files) | fork |
+| `work-quick` | "quick", "fast", "rapid" — trivial change (&lt; 50 LOC, 1-3 files) | inline |
 | `work-batch` | "batch", "backlog", "PRD", "user stories in series" — sequential execution | fork |
 
 ## Skills Configuration
 
 Each skill's frontmatter may carry:
 - **allowed-tools**: Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none — see [Pre-approving tools](/docs/concepts/customization#pre-approving-tools-allowed-tools)
-- **context: fork**: Execution in an isolated context (recommended)
+- **context**: absent (the default) = the skill runs inline, in the conversation; `context: fork` = a sub-agent that sees none of it, for a self-contained job only (with `background: false`)
 
 Skills are triggered automatically by Claude based on context — except those marked **manual only**
 in the tables above, which carry `disable-model-invocation: true` and can be started by you alone.
@@ -117,11 +117,12 @@ Refer to the upstream Claude Code changelog for the canonical JSON shape and any
 ---
 name: my-skill
 description: Short description of the skill
-context: fork
+context: fork                     # only for a self-contained job; omit = inline
+background: false                 # with fork: wait for the result in the same turn
 disable-model-invocation: true   # Do not trigger automatically
 user-invocable: false             # Background-only skill
 argument-hint: "[description]"    # Hint for arguments
-model: sonnet                     # Preferred model (haiku, sonnet, opus)
+model: sonnet                     # forked skills only: inline, it switches the session model
 agent: my-agent                   # Associated agent
 hooks:
   PreToolUse:

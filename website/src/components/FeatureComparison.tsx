@@ -24,7 +24,7 @@ const DEFAULT_DATA: ComparisonRow[] = [
     aspect: 'Contexte',
     Commands: 'Partage',
     Agents: 'Isole',
-    Skills: 'Fork ou partage',
+    Skills: 'Inline (fork sur revue)',
   },
   {
     aspect: 'Modele',

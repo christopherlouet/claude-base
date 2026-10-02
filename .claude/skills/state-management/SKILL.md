@@ -1,8 +1,6 @@
 ---
 name: state-management
 description: State management patterns and implementation. Trigger when the user wants to manage global state, use Redux, Zustand, or other solutions.
-context: fork
-background: false
 user-invocable: false
 ---
 

@@ -508,11 +508,11 @@ teardown() {
 
     # …and update must not carry back the four retired on 2026-08-30: they are
     # shipped, not carried (specs/guardrail-cleanup/carried-material.md).
-    ! grep -q "@\.claude/docs/reference/commands\.md" "$TEST_DIR/CLAUDE.md"
-    ! grep -q "@\.claude/docs/reference/agents-catalog\.md" "$TEST_DIR/CLAUDE.md"
-    ! grep -q "@\.claude/docs/reference/skills-catalog\.md" "$TEST_DIR/CLAUDE.md"
-    ! grep -q "@\.claude/docs/reference/hooks-reference\.md" "$TEST_DIR/CLAUDE.md"
-    ! grep -q "@\.claude/docs/reference/advanced-features\.md" "$TEST_DIR/CLAUDE.md"
+    ! grep -q "@\.claude/docs/reference/commands\.md" "$TEST_DIR/CLAUDE.md" || false
+    ! grep -q "@\.claude/docs/reference/agents-catalog\.md" "$TEST_DIR/CLAUDE.md" || false
+    ! grep -q "@\.claude/docs/reference/skills-catalog\.md" "$TEST_DIR/CLAUDE.md" || false
+    ! grep -q "@\.claude/docs/reference/hooks-reference\.md" "$TEST_DIR/CLAUDE.md" || false
+    ! grep -q "@\.claude/docs/reference/advanced-features\.md" "$TEST_DIR/CLAUDE.md" || false
 }
 
 @test "update.sh --upgrade-claude-md creates a backup" {
@@ -563,7 +563,7 @@ teardown() {
     [ "$status" -eq 0 ]
 
     # The duplicated section must be removed (mode -y)
-    ! grep -q "^## Commandes Essentielles" "$TEST_DIR/CLAUDE.md"
+    ! grep -q "^## Commandes Essentielles" "$TEST_DIR/CLAUDE.md" || false
 }
 
 @test "update.sh --all includes the CLAUDE.md migration" {
@@ -596,8 +596,9 @@ teardown() {
 
     # .claude/docs/reference/ must NOT exist
     [ ! -d "$TEST_DIR/.claude/docs/reference" ]
-    # @imports must NOT be present
-    ! grep -q "@docs/reference/" "$TEST_DIR/CLAUDE.md"
+    # @imports must NOT be present: the same prefix the sed above removed and
+    # the upgrade test above finds (a bare "@docs/reference/" never matched it).
+    ! grep -q "@\.claude/docs/reference/" "$TEST_DIR/CLAUDE.md" || false
 }
 
 @test "update.sh --help shows --upgrade-claude-md" {
@@ -1006,7 +1007,7 @@ _init_legal_only_project() {
     # No absent-module file is previewed as an ADDITION (the name may
     # appear in "Skip (module not installed: ...)" lines — that is the
     # correct preview of the real run's filtering).
-    ! grep -E "Add.*biz-competitor" <<<"$output"
+    ! grep -E "Add.*biz-competitor" <<<"$output" || false
     # The module skip is announced instead.
     [[ "$output" == *"not installed"* ]]
 }
@@ -1441,6 +1442,90 @@ plant_old_copy() {
         cmp -s "$BASE_DIR/scripts/hooks/$lib" "$TEST_DIR/proj/scripts/hooks/$lib" \
             || { echo "$lib still stale" >&2; return 1; }
     done
+}
+
+# --- The same for .claude/: skills, agents, rules, commands -------------------
+# Measured 2026-09-27 on a real v5.4.0 install: `update --skills` skipped all 52
+# skills as customised although each was byte-identical to a release, so no
+# skill change reached an existing install without --force.
+
+@test "update.sh --skills --agents --rules refresh unmodified older copies without --force" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    local f
+    for f in .claude/skills/dev-debug/SKILL.md .claude/agents/dev-debug.md .claude/rules/api.md; do
+        plant_old_copy "$f" $'---\nname: x\n---\nan older foundation release\n'
+    done
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y --skills --agents --rules "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    for f in .claude/skills/dev-debug/SKILL.md .claude/agents/dev-debug.md .claude/rules/api.md; do
+        cmp -s "$BASE_DIR/$f" "$TEST_DIR/proj/$f" || { echo "$f not refreshed" >&2; return 1; }
+    done
+    [[ "$output" != *"skipped (use --force"* ]]
+}
+
+@test "update.sh --skills still skips a customised skill (hash not in the table)" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    printf 'my own edits\n' > "$TEST_DIR/proj/.claude/skills/dev-debug/SKILL.md"
+    : > "$TEST_DIR/pristine.txt"
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y --skills "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ "$(cat "$TEST_DIR/proj/.claude/skills/dev-debug/SKILL.md")" = "my own edits" ]
+    [[ "$output" == *"SKILL.md skipped (use --force"* ]]
+}
+
+@test "update.sh (no flag) refreshes an unmodified older command without --force" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    # A top-level command and a namespaced one: the lookup path must keep the
+    # namespace (a basename-only lookup passed the top-level case alone).
+    local f
+    for f in .claude/commands/assistant.md .claude/commands/work/work-commit.md; do
+        plant_old_copy "$f" $'---\ndescription: x\n---\nan older foundation release\n'
+    done
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    for f in .claude/commands/assistant.md .claude/commands/work/work-commit.md; do
+        cmp -s "$BASE_DIR/$f" "$TEST_DIR/proj/$f" || { echo "$f not refreshed" >&2; return 1; }
+    done
+    [[ "$output" != *"skipped (use --force"* ]]
+}
+
+@test "update.sh --skills --dry-run leaves an unmodified older skill untouched" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    plant_old_copy .claude/skills/dev-debug/SKILL.md $'---\nname: x\n---\nan older foundation release\n'
+    local before; before=$(cat "$TEST_DIR/proj/.claude/skills/dev-debug/SKILL.md")
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -n -y --skills "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ "$(cat "$TEST_DIR/proj/.claude/skills/dev-debug/SKILL.md")" = "$before" ]
+    # And says what a real run would do, not a conflict.
+    [[ "$output" == *"Update (unmodified older copy): dev-debug/SKILL.md"* ]]
+}
+
+@test "update.sh --skills from an OLDER foundation does not replace a skill without --force" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    plant_old_copy .claude/skills/dev-debug/SKILL.md $'---\nname: x\n---\nan older foundation release\n'
+    local manifest="$TEST_DIR/proj/.claude/foundation.json"
+    jq '.version = "99.0.0"' "$manifest" > "$manifest.tmp" && mv "$manifest.tmp" "$manifest"
+    local before; before=$(cat "$TEST_DIR/proj/.claude/skills/dev-debug/SKILL.md")
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y --skills "$TEST_DIR/proj"
+    [ "$(cat "$TEST_DIR/proj/.claude/skills/dev-debug/SKILL.md")" = "$before" ]
+}
+
+@test "update.sh --skills refreshes the REAL v5.6.0 dev-debug skill with the committed table" {
+    git -C "$BASE_DIR" rev-parse -q --verify 'v5.6.0^{commit}' >/dev/null 2>&1 \
+        || skip "tag v5.6.0 not available in this clone"
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    local f=.claude/skills/dev-debug/SKILL.md
+    git -C "$BASE_DIR" show "v5.6.0:$f" > "$TEST_DIR/proj/$f"
+    if cmp -s "$BASE_DIR/$f" "$TEST_DIR/proj/$f"; then return 1; fi
+
+    run "$UPDATE_SCRIPT" -y --skills "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    cmp -s "$BASE_DIR/$f" "$TEST_DIR/proj/$f" || { echo "$f still stale" >&2; return 1; }
 }
 
 @test "update.sh --hook-scripts refreshes the REAL v5.3.0 security libraries with the committed table" {

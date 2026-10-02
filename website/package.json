@@ -21,7 +21,8 @@
     "generate:sync-docs": "tsx scripts/sync-docs.ts",
     "pdf": "npm run build && tsx scripts/generate-pdfs.ts",
     "pdf:only": "tsx scripts/generate-pdfs.ts",
-    "test:scripts": "node --import tsx --test scripts/*.test.ts"
+    "test:scripts": "node --import tsx --test scripts/*.test.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@docusaurus/core": "^3.10.1",

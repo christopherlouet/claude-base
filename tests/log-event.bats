@@ -97,15 +97,15 @@ mode_of() {
         tool_input:{command:"echo SENTINEL-COMMAND"}}')
     printf '%s' "$payload" | bash "$LOGGER" notifications PERMISSION-PROMPT notification_type
     grep -q 'notification_type=permission_prompt' "$CLAUDE_BASE_LOG_DIR/notifications.log"
-    ! grep -q 'SENTINEL' "$CLAUDE_BASE_LOG_DIR/notifications.log"
+    ! grep -q 'SENTINEL' "$CLAUDE_BASE_LOG_DIR/notifications.log" || false
 }
 
 @test "log-event: a field that is not a scalar is not written" {
     skip_if_no_jq
     printf '{"tool_input":{"command":"echo SENTINEL"}}' | bash "$LOGGER" failures TOOL-FAIL tool_input
-    ! grep -q 'SENTINEL' "$CLAUDE_BASE_LOG_DIR/failures.log"
+    ! grep -q 'SENTINEL' "$CLAUDE_BASE_LOG_DIR/failures.log" || false
     # Not even a mangled remnant of the object.
-    ! grep -q 'tool_input=' "$CLAUDE_BASE_LOG_DIR/failures.log"
+    ! grep -q 'tool_input=' "$CLAUDE_BASE_LOG_DIR/failures.log" || false
 }
 
 @test "log-event: a field value cannot inject a newline or spaces" {

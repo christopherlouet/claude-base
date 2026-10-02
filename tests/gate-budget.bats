@@ -136,3 +136,11 @@ npm_project() {
     [[ "$output" == *"rc=124"* ]]
     [[ "$output" != *"did not finish"* ]]
 }
+
+# On exit 2 Claude Code feeds STDERR back and drops stdout: the budget's block
+# reason must be on stderr, read here alone.
+@test "gate-budget: the budget block states its reason on stderr" {
+    run bash -c ". '$HOOKS/_gate-budget.sh'; CLAUDE_BASE_GATE_SECONDS=1 gate_budget_init; gate_run sleep 5; gate_block_if_timed_out \$? probe 2>&1 >/dev/null"
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"did not finish within 1 s"* ]]
+}

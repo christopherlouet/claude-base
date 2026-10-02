@@ -1,8 +1,6 @@
 ---
 name: ops-ci
 description: CI/CD pipeline configuration. Trigger when the user wants to configure GitHub Actions, GitLab CI, or automate deployments.
-context: fork
-background: false
 disable-model-invocation: true
 ---
 

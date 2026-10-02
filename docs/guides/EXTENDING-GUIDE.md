@@ -113,8 +113,6 @@ A skill is a `SKILL.md` file in a subfolder of `.claude/skills/`. It encapsulate
 ---
 name: my-skill
 description: What the skill does. Trigger when the user [context].
-context: fork
-model: sonnet
 argument-hint: "[project-name] [options]"
 ---
 
@@ -144,8 +142,9 @@ Output format.
 | `name` | No | kebab-case | Skill name (default: folder name) |
 | `description` | Recommended | text | Trigger context |
 | `allowed-tools` | No | list | Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none — see [Pre-approving tools](../CUSTOMIZATION.md#pre-approving-tools-allowed-tools) |
-| `context` | No | `fork` | Execution in an isolated sub-agent |
-| `model` | No | `sonnet`, `opus`, `haiku`, `inherit` | Model to use |
+| `context` | No | `fork` | Omit (default) = inline, in the conversation. `fork` = a sub-agent that sees none of it: self-contained jobs only |
+| `background` | No | `true`/`false` | With `context: fork` only; default `true` (result arrives asynchronously). Set `false` to wait for it |
+| `model` | No | `sonnet`, `opus`, `haiku`, `inherit` | On a forked skill, the sub-agent's model. On an inline skill it switches the session's model for the rest of the turn: leave it out |
 | `argument-hint` | No | text | Autocompletion in the `/` menu |
 | `disable-model-invocation` | No | `true`/`false` | Manual invocation only |
 | `user-invocable` | No | `true`/`false` | Visible in the `/` menu |
@@ -154,7 +153,7 @@ Output format.
 
 - Limit SKILL.md to 500 lines maximum. Move detail to `examples/` or `references/`
 - `allowed-tools`: Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none — see [Pre-approving tools](../CUSTOMIZATION.md#pre-approving-tools-allowed-tools)
-- Always use `context: fork` for isolation
+- Run inline (no `context`) unless the skill needs no conversation at all
 - Write the `description` with the trigger context: Claude uses this field to automatically decide when to load the skill
 - Prefer tables over prose for quick references
 
@@ -174,7 +173,8 @@ Output format.
 ---
 name: changelog-entry
 description: Generates a CHANGELOG.md entry from recent commits. Trigger when the user wants to document a release or update the changelog.
-context: fork
+context: fork        # reads git history, needs nothing from the conversation
+background: false    # wait for the entry in the same turn
 model: sonnet
 argument-hint: "[version] [since-tag]"
 ---
@@ -524,7 +524,7 @@ gh pr create --title "feat(skills): add python-typing skill" --body "..."
 [ ] The YAML frontmatter is valid (name, description)
 [ ] The description contains the trigger context
 [ ] No `allowed-tools` declared (the foundation pre-approves nothing)
-[ ] context: fork is present for skills
+[ ] No `context` unless the skill is a self-contained job (then `context: fork` + `background: false`)
 [ ] The file is under 500 lines
 [ ] Code examples are relevant and functional
 [ ] validate-counts.sh passes without error

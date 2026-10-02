@@ -237,3 +237,80 @@ FAKEJQ
     # The detected preset is still surfaced even without a recorded baseline
     [[ "$output" == *"nextjs"* ]]
 }
+
+# ---------------------------------------------------------------------------
+# US-2 AC2 — no repeated notice for an already-adopted pivot. A preset chosen
+# with --preset while the project matched several is recorded with the set it
+# was chosen among; the notice stays silent while the detection still equals
+# that set, and speaks again when the stack changes further.
+# ---------------------------------------------------------------------------
+
+@test "pivot-notice: silent when the detection equals the set the preset was chosen among" {
+    make_preset "react-vite-spa" '{"combinator":"anyOf","files":["vite.config.ts"]}'
+    make_preset "nextjs" '{"combinator":"anyOf","files":["next.config.js"]}'
+    touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/vite.config.ts"
+
+    call "preset_pivot_notice 'react-vite-spa' '$TEST_DIR/proj' \$'nextjs\nreact-vite-spa'"
+
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "pivot-notice: speaks again when a preset appears beyond the chosen-among set" {
+    make_preset "react-vite-spa" '{"combinator":"anyOf","files":["vite.config.ts"]}'
+    make_preset "nextjs" '{"combinator":"anyOf","files":["next.config.js"]}'
+    make_preset "astro" '{"combinator":"anyOf","files":["astro.config.mjs"]}'
+    touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/vite.config.ts" "$TEST_DIR/proj/astro.config.mjs"
+
+    call "preset_pivot_notice 'react-vite-spa' '$TEST_DIR/proj' \$'nextjs\nreact-vite-spa'"
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"astro"* ]]
+}
+
+@test "pivot-notice: speaks again when a preset of the chosen-among set goes away" {
+    make_preset "react-vite-spa" '{"combinator":"anyOf","files":["vite.config.ts"]}'
+    make_preset "nextjs" '{"combinator":"anyOf","files":["next.config.js"]}'
+    touch "$TEST_DIR/proj/vite.config.ts"
+
+    call "preset_pivot_notice 'nextjs' '$TEST_DIR/proj' \$'nextjs\nreact-vite-spa'"
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"claude-base update --preset react-vite-spa"* ]]
+}
+
+@test "pivot-report: an adopted choice reads as settled, with no adoption hint" {
+    make_preset "react-vite-spa" '{"combinator":"anyOf","files":["vite.config.ts"]}'
+    make_preset "nextjs" '{"combinator":"anyOf","files":["next.config.js"]}'
+    touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/vite.config.ts"
+
+    call "preset_pivot_report 'nextjs' '$TEST_DIR/proj' \$'nextjs\nreact-vite-spa'"
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Diverges: no (settled: nextjs was chosen among nextjs, react-vite-spa)"* ]]
+    [[ "$output" != *"To adopt"* ]]
+}
+
+@test "pivot-report: after adoption, a stack that changed again diverges" {
+    make_preset "react-vite-spa" '{"combinator":"anyOf","files":["vite.config.ts"]}'
+    make_preset "nextjs" '{"combinator":"anyOf","files":["next.config.js"]}'
+    make_preset "astro" '{"combinator":"anyOf","files":["astro.config.mjs"]}'
+    touch "$TEST_DIR/proj/next.config.js" "$TEST_DIR/proj/vite.config.ts" "$TEST_DIR/proj/astro.config.mjs"
+
+    call "preset_pivot_report 'nextjs' '$TEST_DIR/proj' \$'nextjs\nreact-vite-spa'"
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Diverges: yes"* ]]
+    [[ "$output" != *"settled"* ]]
+}
+
+@test "pivot-report: a preset chosen outside what was detected reads as chosen over it" {
+    make_preset "nextjs" '{"combinator":"anyOf","files":["next.config.js"]}'
+    make_preset "astro" '{"combinator":"anyOf","files":["astro.config.mjs"]}'
+    touch "$TEST_DIR/proj/astro.config.mjs"
+
+    call "preset_pivot_report 'nextjs' '$TEST_DIR/proj' 'astro'"
+
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Diverges: no (settled: nextjs was chosen over astro)"* ]]
+}

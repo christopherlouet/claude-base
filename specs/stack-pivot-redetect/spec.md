@@ -23,6 +23,7 @@ The fix follows the foundation's settled philosophy — **observe-and-propose, n
 - Surface, at `update` time, that the project now matches a preset other than (or in addition to) the recorded one.
 - Stay **100% non-blocking and non-mutating** by default: the recorded preset and skill filter are unchanged unless the user explicitly opts in.
 - Reuse existing machinery (`scan_presets`, `manifest_preset`, `resolve_preset_file`) — no new detection logic, no new persisted state for the MVP.
+  _Later amended_: US-2 AC2 (no repeated notice for an adopted pivot) needs one piece of state. An explicit `--preset` (update or init) records `presetChoice: {preset, among}` in `foundation.json`, `among` being the presets the project matched when the choice was made. For that preset only, the notice stays silent while the detection still equals `among` and speaks again when it changes (a preset appears or goes); `--detect-only` then reports `Diverges: no (settled: …)`.
 - Give the user a one-command path to adopt the new preset when they agree.
 
 ## Non-Goals / Out of Scope
@@ -111,9 +112,9 @@ The fix follows the foundation's settled philosophy — **observe-and-propose, n
 |---|---|
 | FR-1 | The pivot check runs only when a preset is recorded in the manifest AND `jq` is available AND the run is not `--no-preset` / explicit `--preset` (an explicit `--preset` is already an adoption, so no notice). |
 | FR-2 | Detection reuses `scan_presets` (`lib/preset-detect.sh`) against `TARGET_DIR`; no new detection rules. |
-| FR-3 | A pivot is "detected set ⊅ {recorded}" — i.e. the recorded preset is absent from the detected set, or the detected set contains a preset not equal to the recorded one. Identical set → no notice. |
+| FR-3 | A pivot is "detected set ⊅ {recorded}" — i.e. the recorded preset is absent from the detected set, or the detected set contains a preset not equal to the recorded one. Identical set → no notice. _Amended_: nor when the detected set equals `presetChoice.among` recorded for that preset (a pivot already settled; `--detect-only` reports `Diverges: no (settled: …)`). |
 | FR-4 | The notice is informational only: it must not change exit code, must not mutate any file, must not alter the active skill filter for the current run. |
-| FR-5 | Adoption is the **existing** `--preset <name>` path; this spec adds no new mutation logic, only the notice and (P2) the read-only report. |
+| FR-5 | Adoption is the **existing** `--preset <name>` path; this spec adds no new mutation logic, only the notice and (P2) the read-only report. _Amended_: that path now also records `presetChoice` (see Goals). |
 | FR-6 | Output respects the existing logging conventions (`info`/`warning` helpers) and is suppressible by the existing quiet/verbosity flags if any. |
 | FR-7 | Fail-safe: any error inside the pivot check (detector failure, malformed manifest already handled upstream) must never abort or alter the update — it degrades to "no notice". |
 

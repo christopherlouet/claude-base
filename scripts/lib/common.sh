@@ -1190,6 +1190,17 @@ detect_security_drift() {
                 count=$((count + 1))
             fi
         done < <(jq -r '(.hooks // {}) | keys[]' "$settings" 2>/dev/null || true)
+
+        # Hook timeouts are SECONDS (#587); installs from before it carry the
+        # millisecond values (120000 = 33 h), and `update` leaves settings.json
+        # alone by default. Nothing is then bounded, and the refreshed gates
+        # stop their suite at the budget that assumes an 1800 s timeout (#592).
+        # Same threshold as the foundation's own guard (settings-guards.bats).
+        n=$(jq '[(.hooks // {})[][]? | (.hooks // [])[] | select((.timeout | type) == "number" and .timeout > 3600)] | length' "$settings" 2>/dev/null || echo 0)
+        if [ "${n:-0}" -gt 0 ]; then
+            printf 'hook-timeout-ms: %d hook timeout(s) above 3600 — written in milliseconds, but Claude Code reads seconds, so they bound nothing and disagree with the gates'"'"' 1500 s budget; re-sync with `update --settings --hook-scripts`\n' "$n"
+            count=$((count + 1))
+        fi
     fi
 
     # A security guard that has fallen behind the foundation is the shape that

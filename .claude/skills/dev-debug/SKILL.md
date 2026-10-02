@@ -1,9 +1,6 @@
 ---
 name: dev-debug
-description: Debug and resolve problems. Use when the user has a bug, an error, an unexpected behavior, or wants to understand why something is not working.
-context: fork
-background: false
-model: opus
+description: Systematic debugging - reproduce, isolate the root cause, fix, pin it with a regression test. Use it first whenever the user reports a bug, a crash, an error message, a wrong result or a failing test (a failing CI pipeline is ops-ci-fix), before reading code to guess at the cause.
 argument-hint: "[error-description]"
 ---
 

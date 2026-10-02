@@ -529,7 +529,7 @@ get_cicd_choice() {
 
 merge_cicd_workflows() {
     local dir="$1"
-    local added_ci=false
+    local added_ci=false added_any=false
 
     info "Adding missing workflows..."
 
@@ -545,13 +545,14 @@ merge_cicd_workflows() {
                 if [[ "$added_ci" == false ]] && [[ ! -f "$dir/.github/workflows/ci.yml" ]]; then
                     copy_file "$src/ci.yml" "$dir/.github/workflows/"
                     success "ci.yml added (lint, test, build for the detected stack)"
-                    added_ci=true
+                    added_ci=true added_any=true
                 fi
                 ;;
             "Security audit")
                 if [[ ! -f "$dir/.github/workflows/security.yml" ]]; then
                     copy_file "$src/security.yml" "$dir/.github/workflows/"
                     success "security.yml added (Gitleaks secret scan)"
+                    added_any=true
                 else
                     # The project's own security.yml is kept, and it runs no
                     # scanner the analysis recognises: say so, never skip silently.
@@ -562,6 +563,7 @@ merge_cicd_workflows() {
                 if [[ ! -f "$dir/.github/workflows/pr-check.yml" ]]; then
                     copy_file "$src/pr-check.yml" "$dir/.github/workflows/"
                     success "pr-check.yml added (PR title validation)"
+                    added_any=true
                 fi
                 ;;
             "Automated release")
@@ -571,6 +573,8 @@ merge_cicd_workflows() {
                 ;;
         esac
     done
+    # Only when a template landed: its pinned actions are what needs bumping.
+    if $added_any; then seed_dependabot_config "$dir"; fi
 }
 
 # =============================================================================
@@ -800,6 +804,12 @@ record_foundation_state() {
         write_foundation_manifest "$dir" "$VERSION" "$PRESET_NAME" \
             ${SELECTED_MODULES[@]+"${SELECTED_MODULES[@]}"} \
             || error "failed to write .claude/foundation.json in $dir"
+        # What the project matched when this preset was chosen: a later update
+        # then raises no stack-pivot notice for a choice already made.
+        if ! PRESETS_DIR="${PRESETS_DIR_OVERRIDE:-${PRESETS_DIR:-}}" \
+            record_preset_choice "$dir" "$PRESET_NAME"; then
+            warning "could not record the preset choice in .claude/foundation.json: a later update may show a stack-pivot notice"
+        fi
         rm -f "$dir/.claude/.foundation-version"
         # US-9: record the initial recommendation snapshot so the first later
         # `update` can diff against it (added / removed / re-pinned).
@@ -1086,6 +1096,32 @@ report_preserved() {
     PRESERVED_FILES=""
 }
 
+# seed_dependabot_config <dir> — the workflow templates pin each action to a
+# commit SHA (a tag can be moved under you); a pin nothing bumps goes stale, so
+# a project without a Dependabot config gets one watching GitHub Actions. The
+# project's own config (.yml or .yaml) is never touched: if it does not watch
+# actions, that is said, not fixed. Pinned by tests/ci-downstream.bats.
+seed_dependabot_config() {
+    local dir="$1" f
+    for f in "$dir/.github/dependabot.yml" "$dir/.github/dependabot.yaml"; do
+        # -e and -L, not -f: a directory or a dangling link at that path is
+        # the project's, and writing through it is never ours to do.
+        [[ -e "$f" || -L "$f" ]] || continue
+        if [[ ! -f "$f" || -L "$f" ]]; then
+            warning "$(basename "$f") exists but is not a regular file: left alone, no Dependabot config added"
+            return 0
+        fi
+        # A commented-out entry does not watch anything.
+        if ! grep -qE "^[[:space:]]*-?[[:space:]]*package-ecosystem:[[:space:]]*[\"']?github-actions" "$f"; then
+            warning "$(basename "$f") does not watch GitHub Actions: the actions pinned in the added workflows will not be bumped. Add a \"github-actions\" entry (see templates/github/dependabot.yml)"
+        fi
+        return 0
+    done
+    make_dir "$dir/.github"
+    copy_file "$BASE_DIR/templates/github/dependabot.yml" "$dir/.github/dependabot.yml"
+    success "dependabot.yml added (keeps the pinned actions current)"
+}
+
 install_cicd_files() {
     local target_dir="$1"
 
@@ -1102,14 +1138,18 @@ install_cicd_files() {
     # also strictly better than the all-or-nothing detection guard it replaces:
     # the workflows the project lacks still land. Pinned by
     # tests/install-preserves-project-files.bats.
-    local wf
+    local wf landed=false
     for wf in "$BASE_DIR/templates/github-workflows/"*; do
         [[ -f "$wf" ]] || continue
+        [[ -e "$target_dir/.github/workflows/$(basename "$wf")" ]] || landed=true
         copy_unless_present "$wf" "$target_dir/.github/workflows/$(basename "$wf")"
     done
 
     success "GitHub Actions installed"
     report_preserved
+    # As in merge mode: only when a template landed, its pinned actions being
+    # what needs bumping. Workflows that are all the project's own are not ours.
+    if $landed; then seed_dependabot_config "$target_dir"; fi
 }
 
 # Install pre-commit hooks (husky)
@@ -2005,6 +2045,7 @@ create_project() {
             echo -e "${DIM}[DRY-RUN]${NC} Replacing workflows in $TARGET_DIR/.github/workflows/"
         fi
         success "GitHub Actions replaced with the foundation templates"
+        seed_dependabot_config "$TARGET_DIR"
     fi
     $INCLUDE_HOOKS && install_hooks_files "$TARGET_DIR"
     $INCLUDE_MCP && install_mcp_file "$TARGET_DIR"

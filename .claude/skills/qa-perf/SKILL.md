@@ -1,9 +1,6 @@
 ---
 name: qa-perf
 description: Application performance optimization. Trigger when the user wants to improve speed, reduce latency, or optimize resources.
-context: fork
-background: false
-model: sonnet
 argument-hint: "[page-or-endpoint]"
 ---
 

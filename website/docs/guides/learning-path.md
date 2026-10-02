@@ -1388,7 +1388,7 @@ At this stage, you use Claude Code with ease. It is time to step out of consumer
 
 ### 4.1 Creating your own skills
 
-A **skill** is a specialized block of instructions that Claude Code can trigger automatically based on context, or that you call manually. Unlike commands, a skill runs in an isolated context (`fork`) and can be linked to an agent or called from several commands.
+A **skill** is a specialized block of instructions that Claude Code can trigger automatically based on context, or that you call manually. Like a command, a skill runs inline, in the conversation, by default; `context: fork` runs it as a sub-agent that sees none of the conversation, for a self-contained job only. A skill can be linked to an agent or called from several commands.
 
 #### Structure of a SKILL.md file
 
@@ -1399,8 +1399,6 @@ Each skill is a `SKILL.md` file in `.claude/skills/[skill-name]/` with a mandato
 name: my-skill
 description: Analyzes and optimizes slow SQL queries. Trigger when
   the user mentions slow queries, N+1, or wants to optimize a DB.
-context: fork
-model: sonnet
 argument-hint: "[file-or-description]"
 ---
 ```
@@ -1412,8 +1410,8 @@ The key fields of the frontmatter:
 | `name` | Unique identifier of the skill | `sql-optimizer` |
 | `description` | Description + automatic trigger keywords | See above |
 | `allowed-tools` | Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none — see [Pre-approving tools](/docs/concepts/customization#pre-approving-tools-allowed-tools) | _(none)_ |
-| `context` | `fork` (isolated, recommended) or `shared` (main context) | `fork` |
-| `model` | Preferred model for this skill | `haiku`, `sonnet`, `opus` |
+| `context` | Omit (default) = inline, in the conversation; `fork` = a sub-agent that sees none of it, for a self-contained job | `fork` |
+| `model` | On a forked skill, the sub-agent's model. On an inline skill it switches your session's model for the rest of the turn: leave it out | `haiku`, `sonnet`, `opus` |
 | `argument-hint` | Hint shown to the user about expected arguments | `"[description]"` |
 | `disable-model-invocation` | Prevents automatic triggering | `true` |
 | `user-invocable` | Makes the skill invisible to direct user | `false` |
@@ -1882,7 +1880,7 @@ The three design constraints:
 |---------|----------|--------|---------------|------------------|
 | **Command** | Shared | All | Manual (`/cmd`) | Interactive workflow, direct modifications |
 | **Agent** | Isolated | Restricted | Automatic or manual | Analysis, repetitive task, isolation |
-| **Skill** | Fork or shared | Defined | Automatic | Specialized instructions, detailed content |
+| **Skill** | Inline (fork on review) | All (`allowed-tools` grants) | Automatic | Specialized instructions, detailed content |
 
 An agent must have a minimal body (30-55 lines) and delegate to the skill. A skill can go up to 500 lines but must move bulky content into `examples/` and `references/`.
 

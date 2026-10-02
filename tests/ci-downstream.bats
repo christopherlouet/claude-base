@@ -271,3 +271,96 @@ YML
     [ ! -e "$PROJ/.github/workflows/release.yml" ]
     [[ "$output" == *"release"* ]]
 }
+
+# -----------------------------------------------------------------------------
+# Dependabot for the actions the templates pin (2026-10-01)
+# -----------------------------------------------------------------------------
+# The templates pin every action to a commit SHA: a tag is a pointer its owner
+# can move, and these workflows run with the project's token. A pin nothing
+# bumps goes stale, so the install seeds a github-actions dependabot.yml — never
+# over the project's own, which is only checked and, if blind to actions, named.
+
+@test "install --ci: seeds a dependabot.yml that watches the pinned actions" {
+    run bash "$NEW_PROJECT_SCRIPT" -y --ci "$PROJ"
+    [ "$status" -eq 0 ]
+    [ -f "$PROJ/.github/dependabot.yml" ]
+    # Read structurally with grep, not PyYAML: the macOS runner has no PyYAML
+    # (this test went red there first). The copy is the template, byte for byte.
+    cmp "$BASE_REPO/templates/github/dependabot.yml" "$PROJ/.github/dependabot.yml"
+    local f="$PROJ/.github/dependabot.yml"
+    grep -qE '^version:[[:space:]]*2[[:space:]]*$' "$f"
+    [ "$(grep -cE '^[[:space:]]*-[[:space:]]*package-ecosystem:' "$f")" -eq 1 ]
+    grep -qE '^[[:space:]]*-[[:space:]]*package-ecosystem:[[:space:]]*"github-actions"' "$f"
+    grep -qE '^[[:space:]]+directory:[[:space:]]*"/"[[:space:]]*$' "$f"
+}
+
+@test "install --ci: the project's own dependabot.yml is kept byte for byte" {
+    mkdir -p "$PROJ/.github"
+    printf 'version: 2\nupdates:\n  - package-ecosystem: "github-actions"\n    directory: "/"\n    schedule:\n      interval: "daily"\n' \
+        > "$PROJ/.github/dependabot.yml"
+    cp "$PROJ/.github/dependabot.yml" "$TEST_DIR/before"
+    run bash "$NEW_PROJECT_SCRIPT" -y --ci "$PROJ"
+    [ "$status" -eq 0 ]
+    cmp "$TEST_DIR/before" "$PROJ/.github/dependabot.yml"
+    [[ "$output" != *"does not watch GitHub Actions"* ]]
+}
+
+@test "install --ci: a project dependabot config blind to actions is NAMED, not edited" {
+    mkdir -p "$PROJ/.github"
+    printf 'version: 2\nupdates:\n  - package-ecosystem: "npm"\n    directory: "/"\n    schedule:\n      interval: "weekly"\n' \
+        > "$PROJ/.github/dependabot.yaml"
+    cp "$PROJ/.github/dependabot.yaml" "$TEST_DIR/before"
+    run bash "$NEW_PROJECT_SCRIPT" -y --ci "$PROJ"
+    [ "$status" -eq 0 ]
+    cmp "$TEST_DIR/before" "$PROJ/.github/dependabot.yaml"
+    # .yaml counts as the project's config: no second file beside it.
+    [ ! -e "$PROJ/.github/dependabot.yml" ]
+    [[ "$output" == *"does not watch GitHub Actions"* ]]
+}
+
+@test "install --ci-existing replace and merge: both seed dependabot.yml" {
+    mkdir -p "$PROJ/.github/workflows"
+    echo "name: Custom" > "$PROJ/.github/workflows/custom.yml"
+    run bash "$NEW_PROJECT_SCRIPT" -y --ci-existing replace "$PROJ"
+    [ "$status" -eq 0 ]
+    [ -f "$PROJ/.github/dependabot.yml" ]
+
+    local other="$TEST_DIR/other"
+    mkdir -p "$other/.github/workflows"
+    printf 'name: Custom\non: [push]\njobs:\n  t:\n    runs-on: ubuntu-latest\n    steps:\n      - run: npm test\n' \
+        > "$other/.github/workflows/custom.yml"
+    run bash "$NEW_PROJECT_SCRIPT" -y --ci-existing merge "$other"
+    [ "$status" -eq 0 ]
+    [ -f "$other/.github/dependabot.yml" ]
+}
+
+@test "install --ci --dry-run: no dependabot.yml is written" {
+    run bash "$NEW_PROJECT_SCRIPT" -y --dry-run --ci "$PROJ"
+    [ "$status" -eq 0 ]
+    [ ! -e "$PROJ/.github/dependabot.yml" ]
+}
+
+@test "install --ci: a dependabot.yml that is not a regular file is never written through" {
+    mkdir -p "$PROJ/.github/dependabot.yml"
+    run bash "$NEW_PROJECT_SCRIPT" -y --ci "$PROJ"
+    [ "$status" -eq 0 ]
+    [ -z "$(ls -A "$PROJ/.github/dependabot.yml")" ]
+    [[ "$output" == *"dependabot.yml"*"not a regular file"* ]]
+}
+
+@test "install --ci: a commented-out github-actions entry does not count as watching actions" {
+    mkdir -p "$PROJ/.github"
+    printf 'version: 2\nupdates:\n  - package-ecosystem: "npm"\n    directory: "/"\n#  - package-ecosystem: "github-actions"\n' \
+        > "$PROJ/.github/dependabot.yml"
+    run bash "$NEW_PROJECT_SCRIPT" -y --ci "$PROJ"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"does not watch GitHub Actions"* ]]
+}
+
+@test "install --ci: nothing seeded when every workflow was the project's own" {
+    mkdir -p "$PROJ/.github/workflows"
+    for wf in ci pr-check security; do echo "name: $wf" > "$PROJ/.github/workflows/$wf.yml"; done
+    run bash "$NEW_PROJECT_SCRIPT" -y --ci "$PROJ"
+    [ "$status" -eq 0 ]
+    [ ! -e "$PROJ/.github/dependabot.yml" ]
+}

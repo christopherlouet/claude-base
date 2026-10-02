@@ -95,8 +95,8 @@ This architecture enables:
 |--------|----------|--------|--------|-------|
 | **Folder** | `.claude/commands/` | `.claude/skills/` | `.claude/agents/` | `.claude/rules/` |
 | **Trigger** | Manual (`/cmd`) | Automatic | Auto delegation | Path-based |
-| **Context** | Shared | Fork or shared | **Isolated** | Injected |
-| **Tools** | All | Configurable | Restricted | N/A |
+| **Context** | Shared | Inline (fork on review) | **Isolated** | Injected |
+| **Tools** | All | All (`allowed-tools` grants) | Restricted | N/A |
 | **Model** | Default | Default | Configurable | N/A |
 | **Use case** | Explicit actions | Detected patterns | Isolated tasks | Constraints |
 
@@ -154,8 +154,8 @@ Patterns automatically triggered by Claude based on the conversation context.
 
 ### Characteristics
 - Automatic trigger (keywords, context)
-- Forked context recommended
-- Configurable tools (whitelist)
+- Inline by default; `context: fork` only for a self-contained job
+- `allowed-tools` pre-approves tools, it never restricts them
 - Structure: YAML frontmatter + instructions
 
 ### File structure
@@ -170,7 +170,6 @@ Patterns automatically triggered by Claude based on the conversation context.
 ---
 name: skill-name
 description: When to trigger this skill
-context: fork
 ---
 
 # Instructions
@@ -183,7 +182,6 @@ Instructions for the skill...
 ---
 name: dev-tdd
 description: TDD development with Red-Green-Refactor cycle
-context: fork
 ---
 
 # TDD Skill
@@ -421,7 +419,7 @@ All read-only, isolated contexts
 - Document expected arguments
 
 ### Skills
-- `context: fork` recommended
+- Inline by default (no `context`); `context: fork` + `background: false` only for a self-contained job, since a forked skill sees none of the conversation
 - `allowed-tools`: Tools pre-approved for the skill's turn (grants, never restricts). The foundation declares none — see [Pre-approving tools](/docs/concepts/customization#pre-approving-tools-allowed-tools)
 - Clear trigger keywords
 
@@ -513,6 +511,6 @@ DEPLOY    docs/recipes/curation-bot-deploy.md    nightly ($0) + monthly (capped 
 | Concept | Trigger | Context | Main usage |
 |---------|-------------|----------|-----------------|
 | **Command** | `/name` | Shared | Explicit actions |
-| **Skill** | Keywords | Fork | Auto patterns |
+| **Skill** | Keywords | Inline (fork on review) | Auto patterns |
 | **Agent** | Delegation | **Isolated** | Parallel tasks |
 | **Rule** | File path | Injected | Constraints |
