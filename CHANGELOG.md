@@ -9,6 +9,256 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 > Earlier entries (v1.30.x and before) remain in their original French
 > as a historical record of the project's pre-i18n era.
 
+## [5.7.0] - 2026-10-03
+
+Forty-five pull requests — thirty-eight written by hand, seven opened by the curation bot — and the
+question 5.6.0 asked of the README is asked here of the mechanisms themselves: **does what the
+foundation sets up actually happen?** Every hook `timeout` was written in milliseconds while Claude Code
+reads seconds, so no hook had a real bound, and a guard that outlives its bound lets the command run.
+Twenty-six hooks carried an `onFailure` field Claude Code does not have. `allowed-tools` was taught as a
+restriction on 53 skills and is a grant. All 53 skills were forked away from the conversation they were
+meant to guide. 63 test assertions asserted nothing. Fixes that did land never reached existing
+installs: `update` skipped every unmodified skill, kept millisecond timeouts without a word, and
+`module add` erased the snapshot recommendation drift is measured against. Around those, the supply
+chain is pinned — every action in the foundation's workflows and in the templates it ships now sits on
+a commit SHA — and the curation bot reaches past two blind spots: a safety screen that could answer
+`clean` on a scan that never ran, and a monthly discovery that judged the same alphabetical prefix
+every month. As before, each claim was taken to its real target and measured, and many fixes carry an
+independent review whose findings are folded in.
+
+### Added
+
+- **A SessionStart warning when session scratchpads pile up** (`scripts/hooks/scratchpad-check.sh`).
+  Claude Code removes no session temp dir when the session ends, and where `/tmp` is a tmpfs that is
+  RAM: on 2026-09-24 one session left 4 GB of `node_modules` in its scratchpad, filled the zram and the
+  OOM killer ended another session. Over `CLAUDE_BASE_SCRATCH_WARN_MB` (default 1024) it names the three
+  largest other sessions and their rebuildable dirs, says when the tree is a tmpfs, and reports files you
+  do not own (a `docker run -v` without `--user`). It is sized, not aged — the culprit was one day old —
+  and it **reports only, never deletes**. The `workflow` rule gains three lines on keeping installs,
+  container mounts and sensitive copies out of the scratchpad. (#586)
+
+- **Sub-agents launched on Fable now ask first.** `permissions.ask` holds `Agent(model:fable)`: the
+  foundation pins no agent to Fable by cost, and nothing enforced it. `ask`, not `deny`, so the rare
+  deliberate use stays open. Measured in fresh headless sessions: refused in default and auto mode, ran
+  with the rule removed, a `haiku` control ran — and an agent pinned to Fable in its **frontmatter** ran
+  unasked, which is why a test now refuses such a pin. (#583)
+
+- **`validator-corpus.sh --transcripts` measures the command guard on real agent commands.** The
+  existing corpus is single-line by construction and blind to the class that dominates real refusals —
+  a multi-line command whose body only cites a trigger. The new mode reads Bash commands from local
+  Claude Code transcripts and judges each one whole, as the hook receives it, sharded over
+  `CORPUS_JOBS` workers: 15,468 commands in 88 s instead of ~16 min. No input is never reported clean —
+  an empty directory, a format change, a `jq` failure or a dead worker exits 2. Local only, never a CI
+  input. (#600)
+
+- **The hook policies replay under mawk and busybox awk in CI.** Hooks run on the user's machine, and
+  CI covered two of four awk dialects — not Ubuntu's default (mawk) nor Alpine's (busybox).
+  `scripts/awk-portability.sh` shims each implementation in as `awk` and replays `tests/policy-*.bats`,
+  after a control with a broken awk that must fail something. 197/197 pass under both; nothing was
+  broken, this pins it. busybox is a static binary checked by SHA-256 and installed without `sudo`.
+  (#601)
+
+- **A triggering eval: does the right skill fire, and only it?** Since skills run inline, one that
+  fires on the wrong prompt injects its content into the user's session. `eval/skill-triggering/` wraps
+  `.claude/skills` in a throwaway plugin for `claude plugin eval` and passes a run only when the
+  expected skill fires **and no other does**. On `claude-opus-5-5`, 3 runs per case, it found two real
+  defects: `work-quick` shadowed `dev-tdd` on "add a function to a new file" (0/3 → 3/3 after narrowing
+  its description to edits of existing code), and `dev-debug` never fired on a reported bug (0/6 → 6/6
+  after making its description directive). The campaign then covered every other auto-triggerable
+  inline skill: 23/25 fire alone 3/3; `parallel-agents` is recorded as redundant on Opus, which launches
+  parallel sub-agents itself, and is left unchanged. 34 skills measured in all, about 9 and 10 USD at
+  list price for the two campaigns, local only. (#605, #606)
+
+### Changed
+
+- **43 skills now run inline; 10 stay forked, by review.** A `context: fork` skill runs in a sub-agent
+  that sees none of the conversation — right for a self-contained report, wrong for a skill meant to
+  guide the work in progress, and all 53 were forked. The ten kept forked (`doc-changelog`,
+  `doc-generate`, `ops-standup`, `qa-design`, `qa-review`, `qa-security`, `qa-tech-debt`,
+  `web-scraping`, `work-batch`, `work-explore`) are pinned by a test, so forking a skill is now a review
+  decision. On an inline skill `model:` switches the **session's** model, so the five inline skills that
+  pinned one (`dev-tdd`, `dev-debug` on Opus; `work-quick`, `ops-ci-fix`, `qa-perf` on Sonnet) no longer
+  do. The docs taught the old contract — six pages and the `writing-skills` guide said "`context: fork`
+  (recommended)", an `inherit` and a `shared` value that do not exist were offered, and the catalogue's
+  Context column said `fork` for all 53 — and are swept, with guards that check tables by structure
+  rather than by phrase. (#602, #603, #604, #610)
+
+- **Foundation skills pre-approve nothing.** `allowed-tools` **grants** a tool without a prompt for the
+  skill's turn; it does not restrict. Measured: a skill listing `Bash` ran an approval-requiring command
+  unprompted (a `deny` still wins). 40 of 53 skills listed bare `Bash`, 38 `Write`, 37 `Edit`, all 53
+  `Read`. In an installed project the shipped allow list already grants those tools, so the gain is not a
+  security change there; it matters in a project that narrowed its allow list, and for a skill copied
+  elsewhere, which carried its grants with it. No foundation skill or command declares `allowed-tools`
+  any more, a test refuses the key in any spelling, and "Pre-approving tools" has one canonical section
+  in `docs/CUSTOMIZATION.md`. (#589, #598)
+
+- **The pipe-to-shell guard spares a program given as an argument.** `curl URL | python3 -c '…'` parses
+  the download as data and never executes it, yet was refused. Measured on 17,093 real agent commands:
+  refusals 184 → 128, 56 freed, 0 newly refused; none of the 84 old pipe-to-shell refusals executed a
+  download. Only an allow-list of program-as-argument forms passes (`python -c/-m`, `node -e/-p`,
+  `perl`/`ruby -e`); an option parser was drafted first and a review ran payloads through four shapes it
+  let by. Heredoc bodies deliberately stay scanned: stripping them freed 7 of 3,959 heredoc commands and
+  a review found 8 bypasses. (#595, #597; see Security for #608)
+
+- **The lessons budget is settable, and defaults to 4000.** `prune-check` took its budget only as an
+  argument, so `/lessons --prune` always compared against a shipped `2000` borrowed from another tool and
+  never measured on a Claude Code store — the one real store stayed over it through two pruning passes.
+  Budget is now argument → `LESSONS_BUDGET` → `4000`, a non-numeric or oversized value is rejected, and
+  the docs call the bound a prune trigger, not a capacity. (#581)
+
+### Security
+
+- **Every hook timeout was unbounded, and a timed-out guard fails open.** Values were written in
+  milliseconds (2000, 180000…) and the docs said so; Claude Code reads seconds — measured, so 180000
+  meant 50 h. A second probe: a blocking `PreToolUse` guard that sleeps past its timeout **lets the
+  command run**, so dividing by 1000 would have let commits through untested. Fast guards get 30 s (over
+  90× their measured cost), the suite gates 1800 s, `setup-deps` 900 s, informational hooks their value
+  over 1000. The 26 `"onFailure"` fields were removed: the field does not exist in Claude Code, a probe
+  with it set to `block` still ran the command, and seven pages taught it as what makes a guard block —
+  only `exit 2` does. A test refuses any timeout above 3600 s, any blocking guard under 30 s, and
+  `onFailure`. (#587)
+
+- **The suite gates block when their suite outlives its budget.** With the hook timeout at 1800 s, a
+  suite still running at 30 min would have let the commit, push or deploy through. `_gate-budget.sh`
+  gives each gate one budget shared across its steps — `CLAUDE_BASE_GATE_SECONDS`, default 1500, below
+  the hook timeout — and blocks with exit 2, naming the variable and the gate's `SKIP_` bypass. Without
+  `timeout`/`gtimeout` (stock macOS) the gate runs unbounded, as before. (#592)
+
+- **#595 opened a hole in the pipe-to-shell guard, now closed.** An independent review replayed the
+  policy: `curl … | python3 -c '…' | sh`, `curl … | sh -c sh` and `curl … | bash -c "$(cat)"` were
+  blocked before #595 and allowed after it. Every pipe after the download is now examined, not only the
+  first, and the shell family loses its `-c` exemption (no real agent command used it in 30 days of
+  transcripts). Two older gaps close with it — a pipe continued after a backslash, and `|&` — and a `|`
+  inside quotes no longer reads as a pipe. Known gaps unchanged: `| env bash`, `| xargs sh`. (#608)
+
+- **Every workflow action, in the foundation and in the templates it ships, is pinned to a commit
+  SHA.** A tag is a pointer its owner can move; the size labeler's floating `v1` changed behaviour under
+  this repository on 2026-09-28. The foundation's 23 remaining tag references (10 actions, including
+  `gitleaks-action` and `action-gh-release`) are pinned to the release each tag resolved to — no
+  behaviour change — and a test refuses an unpinned external `uses:`. The 19 references in the shipped
+  templates, `anthropics/claude-code-action@v1` among them, are pinned too. Dependabot never reads
+  `templates/`, so `scripts/refresh-template-pins.sh` re-pins each to the latest release of its major as
+  a release step, and `init --ci` seeds a `github-actions`-only `.github/dependabot.yml` when the
+  project has none — never editing one it has. Its first run, for this release, moves
+  `anthropics/claude-code-action` from v1.0.239 to v1.0.240 in the two review templates. (#620, #621)
+
+- **The curation safety screen could report `clean` on a scan that never ran.** A failed redirection
+  returns the same status as a grep that found nothing, and bash served the screen's here-strings from a
+  temp file above the 64 KiB pipe buffer (at every size on macOS bash 3.2): a full `/tmp` would have
+  passed every candidate under a green run. Scans now travel through pipes, and a differential control
+  flags `scan-blind` when the text holds content the scan cannot see. An unreadable `SKILL.md` — GitHub
+  serves an empty body over 1 MB — no longer falls back to `README.md` but flags `doc-unreadable`. The
+  review found the same defect one layer down, in the exec-surface count, fixed too. Two real refs
+  re-verdict identically before and after. (#579)
+
+### Fixed
+
+- **`update` skipped every unmodified skill, agent, rule and command.** The pristine-hashes table only
+  covered `scripts/hooks`, so a `.claude/` file byte-identical to an older release read as customised
+  and reached the install only through `--force`, which also discards real customisations. Measured on
+  a copy of a 5.4.0 install: `update --skills` skipped all 52 skills; with the table extended to every
+  `.claude/` file `update` refreshes, 65 skipped files became 0, with 75 refreshed as unmodified. An
+  edited copy is still skipped; the symlink and downgrade guards still hold. (#609)
+
+- **`claude-base add` and `remove` now recognise an older release's untouched copy.** `remove` deleted
+  a bundle file only when it matched the **current** foundation file, so on an install last updated at
+  an older release it reported the copy `preserved (user-modified)` and left an orphan behind; `add`
+  reported it modified instead of refreshing it. Both consult the same pristine-hashes lookup as
+  `update`. Replayed on a downstream 5.4.0 snapshot: `remove flutter --dry-run` went from 3 removed / 1
+  preserved to 4 / 0. (#622)
+
+- **Existing installs were never told their hook timeouts bound nothing.** `update` leaves
+  `settings.json` alone by default and neither it nor `doctor` reported millisecond values; 10 projects
+  in the maintainer's fleet carry 39–43 each. Security drift detection now reports one
+  `hook-timeout-ms` line with the re-sync command. (#616)
+
+- **`module add` and `module remove` erased the recommendation snapshot.** `write_foundation_manifest`
+  rebuilt `foundation.json` from a whitelist, dropping `.recommendations`, so the next `update` read
+  "first run" and said nothing about a vendor skill added, removed or re-pinned meanwhile. Any field the
+  function does not own is now kept; the snapshot is dropped only when the preset changes. (#618)
+
+- **An explicitly chosen preset is recorded, and the pivot notice then stays quiet.** `update --preset X`
+  applied X for one run and wrote nothing, so a project matching two presets (seen: `nextjs` +
+  `playwright`) refused every flagless `update -y`. A real run now records an explicit `--preset`; a
+  detected preset is still never written. With it, `presetChoice` records the set the project matched,
+  and the "may have changed stack" notice speaks again only when that set changes. (#612, #614)
+
+- **The suite gates blocked in silence.** On exit 2 Claude Code feeds back a hook's stderr and drops
+  its stdout; the three gates and the budget message printed on stdout, so every red gate blocked with
+  `No stderr output`. The reason and the failing check's output now go to stderr, pinned by tests that
+  read stderr alone — the existing ones merged the streams and could not see it. (#611)
+
+- **A deny rule that only produced a startup warning is gone.** `Bash(rm -rf /*:*)` printed a warning
+  in every session since Claude Code 2.1.260 and never produced its own denial — the built-in check
+  refused that shape first. Removed rather than widened; the command validator now covers the separator
+  forms the literal rule had caught (`;`, `/`, `//*`, `/.*`…). On 546 real agent `rm` commands no
+  real deletion changed verdict. (#591)
+
+- **Three agents preloaded skills that load nothing.** A `disable-model-invocation` skill cannot be
+  preloaded into a sub-agent; `work-explore`, `doc-onboard` and `qa-chrome` had preloaded one since
+  January. Measured in a sub-agent transcript: the model-invocable preload present, the manual-only one
+  absent. Removed with no behaviour change, and a test refuses the shape. (#590)
+
+- **63 test assertions asserted nothing.** bash exempts a negated command from `set -e`, so a bare
+  `! grep …` that is not a bats test's last line never fails it. All 63, in 16 files, now end in
+  `|| false`, and a guard refuses the bare form. One assertion woke up red: it had matched two comments
+  since #420 and its later lines had never run. (#617)
+
+- **The website did not type-check, and nothing looked.** `tsc` reported 11 errors that Docusaurus and
+  `tsx` strip silently. Fixed at the source (tsconfig `include`, a duplicate map key, a redundant
+  re-export), and CI gains a "Website typecheck" step. (#619)
+
+- **The PR size label was never applied.** `pr-check.yml` granted `pull-requests: read`, and the labeler
+  swallowed the 403 until its floating tag moved and turned Validate PR red. The labeler now runs alone
+  with write access, pinned to a commit, skipped on fork PRs. (#615)
+
+- **Monthly curation discovery judged the same alphabetical prefix every month.** Hits were sorted
+  alphabetically and cut at 40 of 301 candidates, so a Playwright skill ranked 148th was never examined;
+  three runs since June proposed one repository. The cap now takes each source's hits in turn in its own
+  ranking, and a `judged.json` ledger skips a rejected repository for `CURATION_REJUDGE_DAYS` (180) —
+  outages and deferrals stay eligible. Every rejection is named in the digest with its gate and reason,
+  model-written text escaped. (#613)
+
+- **The curation bot now records whether its digest was delivered.** Every GitHub write is fail-safe
+  and the freshness metric is written at the end of a completed run, so an expired `gh` token lost four
+  nights of digests under a green alert, and a refused `gh pr create` still printed `[OK]`. `digest.json`
+  gains `.delivery {issue, pr}`, and the deploy recipe a `CurationBotUndelivered` alert, aligned with the
+  deployed, promtool-tested rule. The journal's nightly "Broken pipe" line from scans under systemd is
+  also silenced, without touching the verdict. (#584, #585, #593)
+
+### Documentation
+
+- **Why no path deny and no sandbox ship.** A `Read` deny on a secrets directory refuses the tool and a
+  literal `cat`, but not a script that builds the path nor `ssh -i`; the Bash sandbox would close that,
+  but on Ubuntu 24.04+ it cannot start and every Bash command fails. Measured 2026-09-27 on CLI 2.1.283.
+  (#607)
+
+- Vendor pins advanced across the release in seven automated re-pin PRs — 24 entries over 10
+  repositories (`PostHog/skills` in every one of them), each re-passing the trust scorer and the
+  pin-time safety screen on the new ref, reviewed before merge. (#576, #578, #580, #582, #588, #594,
+  #599)
+
+### Upgrade notes
+
+- **Re-sync `settings.json` and the hook scripts by hand: `claude-base update --settings --hook-scripts`.**
+  A plain `update` never touches `settings.json`, so an existing install keeps its millisecond timeouts
+  (unbounded hooks), its `onFailure` fields and the removed deny rule, and does not get the Fable `ask`
+  rule nor the scratchpad hook's wiring (#583, #586, #587, #591). `update` and `doctor` now flag it as
+  `hook-timeout-ms` (#616). **`--settings` replaces `settings.json` with the foundation's and keeps only
+  `enabledPlugins`**: back up any rule or hook you added there and re-apply it afterwards.
+- **Pull the skill, agent and rule changes with `update --skills --agents --rules` (or `--all`)**: since
+  #609 an unmodified copy from any earlier release is refreshed without `--force`; a customised one is
+  still skipped and named. Likewise `claude-base add`/`remove` now refresh or remove an older release's
+  untouched copy instead of reporting it as yours (#622).
+- **A project matching several presets**: run `update --preset <name>` once; the choice is recorded and
+  later plain `update -y` runs use it (#612, #614).
+- **CI templates**: `update` does not touch `.github/workflows/`. A project that took the templates from
+  `init --ci` before this release keeps tag references and gets no seeded `dependabot.yml`; copy the
+  pinned templates from `templates/github-workflows/` if you want the pins (#621).
+- **Optional**: `CLAUDE_CODE_TMPDIR` in your **user** `~/.claude/settings.json` `env` moves session
+  scratchpads off a tmpfs — a project `settings.json` cannot set it (#586). `LESSONS_BUDGET` in `env`
+  sets the lessons prune trigger (#581). `CLAUDE_BASE_GATE_SECONDS` sets the suite gates' budget (#592).
+
 ## [5.6.0] - 2026-09-16
 
 Twenty-nine pull requests, and one question under nearly all of them: **does the thing this project
