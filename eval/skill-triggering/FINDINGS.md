@@ -285,24 +285,32 @@ open question.
 without the skill may be the right outcome; the case or the description needs a
 decision.
 
-## 2026-10-04 — `dev-prisma` fires again
+## 2026-10-04 — `dev-prisma`: judged by the outcome, the deferring design stays
 
 Both Prisma cases now run in a scaffolded Prisma 6 project (`schema.prisma` with a
-`Post` model, one migration), Write/Edit granted. With the description deferring
-to Prisma's skills ("use … only when no prisma-* skill is installed"), the
-vendor set installed: `prisma-cli` ×1, **no skill ×2** — the empty workspace was
-not the cause. Rewritten to fire on Prisma work, with a body that sends to the
-vendor skills and carries the schema-change workflow:
+`Post` model, one migration), Write/Edit granted. With Prisma's skills installed,
+the deferring description fired `prisma-cli` ×1 and **no skill ×2** — so a
+description that fires on Prisma work was tried: `dev-prisma` ×3. Firing is not
+the goal, though, and an independent review pointed out that the "no skill"
+sessions had done the work. New case `vendor-prisma-outcome` (same prompt, 30
+turns, two LLM graders: the schema has the relation on both sides and an index on
+the foreign key; exactly one new migration, no second `init`), vendor skills
+installed, 3 runs per arm:
 
-| Case | Deferring description | Firing description |
-|---|---|---|
-| `vendor-prisma-coexist` (vendor skills installed) | `prisma-cli` ×1, none ×2 | `dev-prisma` ×3 |
-| `dev-prisma-fires` (alone) | `dev-prisma` ×3 | `dev-prisma` ×3 |
+| `dev-prisma` description | Skills fired | `schema-ok` | `migration-ok` | Turns |
+|---|---|---|---|---|
+| deferring (as on `main`) | none ×3 | 3/3 | 3/3 | 7–8 |
+| firing on Prisma work | `dev-prisma` ×3 | 3/3 | 3/3 | 9–10 |
 
-The vendor skill is still not loaded second (as with `dev-react-perf`). The
-coexistence case now asserts that a Prisma skill fires — ours or the vendor's —
-instead of "the vendor fires and the pointer stays quiet", the design this
-measurement retired.
+No difference in the result on Opus, a few more turns when the pointer fires.
+Kept: the deferring description (with the body corrected — pinned install, the
+`--create-only` review step, `generate` after `migrate dev` since Prisma 7). The
+security rules load from `.claude/rules/prisma.md` whichever skill fires, or none.
+`vendor-prisma-coexist` asserts the pointer stays quiet (3/3; `prisma-cli` fired
+2/3 on that run); `dev-prisma-fires` still fires it alone (3/3).
+
+Lesson for these cases: "no skill fired" is not a failure until the outcome says
+so — the same standard as the next section.
 
 ## 2026-10-04 — `work-quick-fires` judges the outcome, not the skill
 
