@@ -30,7 +30,7 @@ skill-name/
 | `api-mocking` | API mock, MSW, test without backend | API mock configuration for tests |
 | `data-pipeline` | ETL, Airflow, dbt | Design of ETL/ELT pipelines |
 | `dev-api` | API, endpoint, REST, route | Develop and document a REST or GraphQL API |
-| `dev-auth` | login, signup, OAuth, sessions, 2FA | Modern web auth (better-auth, Lucia, NextAuth, Clerk, Supabase Auth) |
+| `dev-auth` | login, signup, OAuth, sessions, 2FA | Modern web auth (better-auth, NextAuth, Clerk, Supabase Auth; off the deprecated Lucia) |
 | `dev-debug` | bug, error, debug, not working | Debug and resolve problems |
 | `dev-document` | PDF, DOCX, XLSX, PPTX, report | Office document generation |
 | `dev-error-handling` | error handling, exceptions, error boundary | Error handling strategy |

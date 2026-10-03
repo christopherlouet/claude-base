@@ -7,7 +7,7 @@ $ARGUMENTS
 
 ## Delegate to the vendor toolkit
 
-`claude-base`'s prior `ops-vercel` content (47-line config checklist) is **superseded** by [`vercel-labs/agent-skills`](https://github.com/vercel-labs/agent-skills) — Vercel's own toolkit stays in sync with the platform (vercel.json, Edge/serverless functions, cron protection, ISR, env scopes, Speed Insights) at depth a hand-maintained checklist cannot match.
+`claude-base`'s prior `ops-vercel` content (47-line config checklist) is **superseded** by [`vercel-labs/agent-skills`](https://github.com/vercel-labs/agent-skills) — Vercel's own toolkit stays in sync with the platform (deployment, Vercel CLI with tokens, cost and performance optimization) at depth a hand-maintained checklist cannot match. It does not cover cron protection: the rule below keeps it.
 
 Install:
 

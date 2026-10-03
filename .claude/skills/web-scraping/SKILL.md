@@ -1,6 +1,6 @@
 ---
 name: web-scraping
-description: Clean LLM-ready web scraping via Firecrawl (scrape/crawl/map/extract/search). Trigger when the user wants to extract content from a page, crawl a site, collect structured data, bypass anti-bot/JS-rendering, or perform a web search with integrated extraction. Fallback to Playwright/curl if Firecrawl is unavailable.
+description: Clean LLM-ready web scraping via Firecrawl (scrape/crawl/map/agent/search). Trigger when the user wants to extract content from a page, crawl a site, collect structured data, bypass anti-bot/JS-rendering, or perform a web search with integrated extraction. Fallback to Playwright/curl if Firecrawl is unavailable.
 context: fork
 background: false
 ---
@@ -34,7 +34,7 @@ Extract LLM-ready web content without hacking around: clean markdown, structured
 
 ```bash
 export FIRECRAWL_API_KEY="fc-xxx"      # https://firecrawl.dev
-npm install -g firecrawl               # or pip install firecrawl-py
+npm install -g firecrawl-cli           # the CLI (`firecrawl`); the SDKs are firecrawl / firecrawl-py
 ```
 
 ### Option 2: Firecrawl self-hosted
@@ -53,13 +53,13 @@ If Firecrawl is missing, degrade gracefully:
 
 IMPORTANT: always announce when degrading. The user must know if the content is partial (JS not rendered).
 
-## The 5 Firecrawl operations
+## The 5 Firecrawl operations (CLI `firecrawl-cli` v1.25)
 
 ### 1. Scrape (one URL)
 
 ```bash
 firecrawl scrape https://example.com/article \
-  --formats markdown,links \
+  --format markdown,links \
   --only-main-content
 ```
 
@@ -70,9 +70,10 @@ Output: clean markdown (navigation / footers stripped), list of links, OG metada
 ```bash
 firecrawl crawl https://docs.example.com \
   --limit 100 \
-  --include-paths "/docs/**" \
-  --exclude-paths "/docs/legacy/**" \
-  --formats markdown
+  --include-paths /docs \
+  --exclude-paths /docs/legacy \
+  --scrape-options '{"formats":["markdown"]}' \
+  --wait -o crawl.json
 ```
 
 Output: one markdown per page + JSON manifest. **Ask for confirmation before crawl > 50 pages** (API costs + time).
@@ -85,22 +86,23 @@ firecrawl map https://example.com --search "pricing"
 
 Output: list of relevant URLs. Useful BEFORE a crawl to target the right sections.
 
-### 4. Extract (structured data via LLM)
+### 4. Agent (structured data via LLM)
 
 ```bash
-firecrawl extract https://example.com/pricing \
-  --prompt "Extract plans with name, price, features" \
-  --schema '{"plans":[{"name":"str","price":"num","features":["str"]}]}'
+firecrawl agent "Extract the plans with name, price and features" \
+  --urls https://example.com/pricing \
+  --schema-file plans.schema.json \
+  --max-credits 50 --wait
 ```
 
-Output: JSON conforming to the schema. Saves hours of fragile CSS selectors.
+Output: JSON conforming to the schema. Saves hours of fragile CSS selectors. An agent job takes minutes and spends credits: always set `--max-credits`. (The CLI's former `extract` command is gone; `agent` replaced it.)
 
 ### 5. Search (search + extract in one pass)
 
 ```bash
 firecrawl search "best pve proxmox backup strategies" \
   --limit 10 \
-  --scrape-options '{"formats":["markdown"]}'
+  --scrape --scrape-formats markdown
 ```
 
 Output: top N results with extracted content. Replaces `WebSearch` + N `WebFetch`.
@@ -112,7 +114,7 @@ Output: top N results with extracted content. Replaces `WebSearch` + N `WebFetch
    - 1 page               -> scrape
    - N known pages        -> scrape in a loop with `xargs -P 4`
    - Whole site           -> map (recon) -> targeted crawl
-   - Structured data      -> extract with schema
+   - Structured data      -> agent with a schema
    - Search + extract     -> search
 
 2. ESTIMATE costs
@@ -140,27 +142,27 @@ Output: top N results with extracted content. Replaces `WebSearch` + N `WebFetch
 
 ```bash
 firecrawl crawl https://docs.terraform.io/language \
-  --limit 200 --formats markdown \
-  --output-dir ./rag-corpus/terraform
+  --limit 200 --scrape-options '{"formats":["markdown"]}' \
+  --wait -o rag-corpus/terraform.json
 ```
 
 ### Compare pricings of 5 competitors
 
 ```bash
-for url in url1 url2 url3 url4 url5; do
-    firecrawl extract "$url" \
-      --prompt "Extract pricing plans" \
-      --schema pricing.schema.json >> pricing-compared.jsonl
-done
+firecrawl agent "Extract the pricing plans of each site" \
+  --urls url1,url2,url3,url4,url5 \
+  --schema-file pricing.schema.json \
+  --max-credits 100 --wait -o pricing-compared.json
 ```
 
 ### Monitor a changelog
 
 ```bash
-firecrawl scrape https://example.com/changelog \
-  --formats markdown \
-  | diff - last-changelog.md \
-  && mv <(firecrawl scrape ...) last-changelog.md
+firecrawl scrape https://example.com/changelog --format markdown -o new-changelog.md
+if ! diff -q new-changelog.md last-changelog.md >/dev/null 2>&1; then
+  diff last-changelog.md new-changelog.md   # what changed
+  mv new-changelog.md last-changelog.md
+fi
 ```
 
 ## Red Flags — STOP immediately

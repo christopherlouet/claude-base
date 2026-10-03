@@ -17,14 +17,20 @@ on:
   pull_request:
     branches: [main]
 
+# Least privilege by default; a job asks for more only where it needs it.
+permissions:
+  contents: read
+
+# Major tags keep the example readable. In a real pipeline, pin each action to a
+# full commit SHA (`uses: actions/checkout@<40-char sha> # v7.0.1`): a tag can be moved.
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - run: npm run lint
@@ -32,21 +38,32 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
       - run: npm ci
       - run: npm test -- --coverage
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   build:
     needs: [lint, test]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write   # push to ghcr.io
     steps:
-      - uses: actions/checkout@v4
-      - uses: docker/build-push-action@v5
+      - uses: actions/checkout@v7
+      - uses: docker/login-action@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v7
         with:
           push: ${{ github.ref == 'refs/heads/main' }}
           tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
@@ -58,7 +75,9 @@ jobs:
     environment: production
     steps:
       - name: Deploy
-        run: curl -X POST ${{ secrets.DEPLOY_WEBHOOK }}
+        env:
+          DEPLOY_WEBHOOK: ${{ secrets.DEPLOY_WEBHOOK }}
+        run: curl --fail -X POST "$DEPLOY_WEBHOOK"
 ```
 
 ## Recommended structure

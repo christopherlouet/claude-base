@@ -1,6 +1,6 @@
 ---
 name: dev-auth
-description: Modern web auth implementation (better-auth, Lucia, NextAuth/Auth.js, Clerk, Supabase Auth). Trigger when the user wants to add login, signup, sessions, OAuth, magic links, 2FA, or when existing auth code is detected to audit or migrate.
+description: Modern web auth implementation (better-auth, NextAuth/Auth.js, Clerk, Supabase Auth; migrating off the deprecated Lucia). Trigger when the user wants to add login, signup, sessions, OAuth, magic links, 2FA, or when existing auth code is detected to audit or migrate.
 ---
 
 # Modern Web Auth
@@ -10,7 +10,7 @@ description: Modern web auth implementation (better-auth, Lucia, NextAuth/Auth.j
 | Solution | When to choose | Avoid when |
 |----------|--------------|----------------|
 | **better-auth** | Total control, TS-first, extensible (plugins), native 2FA/passkeys | Project < 1 week MVP |
-| **Lucia v3+** | Minimalist approach, source-available code, you control everything | No time for plumbing |
+| **Own sessions** (the Lucia guide) | Minimalism, you own every line — Lucia the library was deprecated in March 2025, its author now publishes the session code as a guide | No time for plumbing |
 | **NextAuth/Auth.js** | Next.js ecosystem, easy OAuth, lots of adapters | Need fine control over sessions |
 | **Clerk** | Fast MVP, pre-built UI, paid SaaS | Limited budget, sovereign data control |
 | **Supabase Auth** | Already on Supabase, RLS for authorization | Non-Postgres stack, complex custom auth |
@@ -84,15 +84,11 @@ betterAuth({
 });
 ```
 
-## Lucia v3+ (if you need minimalism)
+## Own sessions, the Lucia way (if you need minimalism)
 
-Since v3, Lucia ships **source-available** (you copy the code, not a package). Approach similar to shadcn/ui for auth.
+The `lucia` package was deprecated in March 2025. Its author now maintains [lucia-auth.com](https://lucia-auth.com) as a guide to implementing sessions yourself, with a single-file reference implementation (`code/auth_session.ts` in the `lucia-auth/lucia` repo) to copy and adapt. There is no installer: you copy the code into your codebase and own it.
 
-```bash
-npx create-lucia@latest
-```
-
-You get `auth.ts`, `session.ts` copied into your codebase. You modify them as needed.
+An existing project on the `lucia` package keeps working but gets no fixes: plan the move to that copied code or to better-auth.
 
 ## NextAuth / Auth.js
 
@@ -164,7 +160,7 @@ const hash = await argon2.hash(password, {
 const valid = await argon2.verify(hash, password);
 ```
 
-IMPORTANT: libs like better-auth / Lucia / NextAuth already hash correctly. Only reimplement if you're doing custom auth (and you shouldn't).
+IMPORTANT: libs like better-auth / NextAuth already hash correctly. Only reimplement if you're doing custom auth (and you shouldn't).
 
 ## OAuth: correct config
 
@@ -264,7 +260,9 @@ await authClient.twoFactor.verify({ code: "123456" });
 |-----------|-----------|
 | NextAuth → better-auth | Dual-write sessions during the transition, batch user migration |
 | Supabase Auth → better-auth | Export users + password hashes if compatible, otherwise force reset |
-| Custom JWT → Lucia | Invalidate all JWTs, force re-login |
+| Custom JWT → own sessions (Lucia guide) | Invalidate all JWTs, force re-login |
+| `lucia` package → own sessions | Keep the session table and IDs, swap the library calls for the copied code: no re-login |
+| `lucia` package → better-auth | New session schema: migrate users, then force re-login |
 
 IMPORTANT: Never migrate without a prior DB backup and rollback plan.
 

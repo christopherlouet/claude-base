@@ -13,7 +13,7 @@ Create professional documents in different formats: PDF, DOCX, XLSX, PPTX.
 
 | Format | Extension | Recommended tool | Usage |
 |--------|-----------|------------------|-------|
-| **PDF** | `.pdf` | puppeteer, wkhtmltopdf, markdown-pdf | Reports, invoices, formal docs |
+| **PDF** | `.pdf` | puppeteer / Playwright, WeasyPrint, pandoc | Reports, invoices, formal docs |
 | **Word** | `.docx` | docx (npm), python-docx | Editable documents, specifications |
 | **Excel** | `.xlsx` | exceljs, openpyxl | Tabular data, numeric reports |
 | **PowerPoint** | `.pptx` | pptxgenjs, python-pptx | Presentations, pitch decks |
@@ -26,11 +26,12 @@ Create professional documents in different formats: PDF, DOCX, XLSX, PPTX.
 # Option 1: Puppeteer (Node.js)
 npm install puppeteer
 
-# Option 2: wkhtmltopdf (CLI)
-wkhtmltopdf input.html output.pdf
+# Option 2: WeasyPrint (Python, HTML/CSS -> PDF, no browser)
+pip install weasyprint
+weasyprint input.html output.pdf
 
-# Option 3: markdown-pdf (Markdown -> PDF)
-npm install markdown-pdf
+# Option 3: pandoc (Markdown -> PDF, needs a PDF engine such as weasyprint or a LaTeX install)
+pandoc input.md -o output.pdf --pdf-engine=weasyprint
 ```
 
 ```typescript
