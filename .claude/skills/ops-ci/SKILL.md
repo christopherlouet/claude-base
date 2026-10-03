@@ -66,6 +66,7 @@ jobs:
       - uses: docker/build-push-action@v7
         with:
           push: ${{ github.ref == 'refs/heads/main' }}
+          # ghcr.io wants a lowercase name: lowercase it if the owner or repo has capitals
           tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
 
   deploy:

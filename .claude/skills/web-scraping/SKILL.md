@@ -76,7 +76,7 @@ firecrawl crawl https://docs.example.com \
   --wait -o crawl.json
 ```
 
-Output: one markdown per page + JSON manifest. **Ask for confirmation before crawl > 50 pages** (API costs + time).
+Output: one JSON file holding every page (markdown in each entry). **Ask for confirmation before crawl > 50 pages** (API costs + time).
 
 ### 3. Map (URL discovery)
 

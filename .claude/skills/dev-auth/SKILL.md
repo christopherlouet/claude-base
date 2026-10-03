@@ -86,7 +86,7 @@ betterAuth({
 
 ## Own sessions, the Lucia way (if you need minimalism)
 
-The `lucia` package was deprecated in March 2025. Its author now maintains [lucia-auth.com](https://lucia-auth.com) as a guide to implementing sessions yourself, with a single-file reference implementation (`code/auth_session.ts` in the `lucia-auth/lucia` repo) to copy and adapt. There is no installer: you copy the code into your codebase and own it.
+The `lucia` package was deprecated in March 2025. Its author now maintains [lucia-auth.com](https://lucia-auth.com) as a guide to implementing sessions yourself, with a single-file reference implementation (`code/auth_session.ts` in the `lucia-auth/lucia` repo) to copy and adapt. There is no installer: you copy the code into your codebase and own it. Its sessions live in a cookie, so CSRF protection is mandatory (the file's own header says so; SvelteKit and Astro enable it by default, other stacks must add it).
 
 An existing project on the `lucia` package keeps working but gets no fixes: plan the move to that copied code or to better-auth.
 
@@ -261,7 +261,7 @@ await authClient.twoFactor.verify({ code: "123456" });
 | NextAuth → better-auth | Dual-write sessions during the transition, batch user migration |
 | Supabase Auth → better-auth | Export users + password hashes if compatible, otherwise force reset |
 | Custom JWT → own sessions (Lucia guide) | Invalidate all JWTs, force re-login |
-| `lucia` package → own sessions | Keep the session table and IDs, swap the library calls for the copied code: no re-login |
+| `lucia` package → own sessions (Lucia guide) | New session schema (`secret_hash`, `token_last_verified_at`): migrate the table, every user logs in again |
 | `lucia` package → better-auth | New session schema: migrate users, then force re-login |
 
 IMPORTANT: Never migrate without a prior DB backup and rollback plan.

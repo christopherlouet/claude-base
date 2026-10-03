@@ -1,6 +1,6 @@
 ---
 name: legal-payment
-description: Compliant payment integration (Stripe, Paddle, LemonSqueezy, PayPal). Use to implement payments in compliance with PCI-DSS and regulations.
+description: Compliant payment integration (Stripe, PayPal). Use to implement payments in compliance with PCI-DSS and regulations.
 tools: Read, Grep, Glob, Edit, Write
 model: sonnet
 permissionMode: default

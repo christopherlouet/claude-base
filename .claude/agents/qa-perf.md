@@ -33,7 +33,6 @@ Performance analysis and optimization.
 | INP | < 200ms |
 | CLS | < 0.1 |
 | TTFB | < 800ms |
-| INP | < 200ms |
 
 ## Patterns to look for
 

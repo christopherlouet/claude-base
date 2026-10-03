@@ -473,9 +473,10 @@ jobs:
         run: flutter test --coverage
 
       - name: Upload coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v7
         with:
           files: coverage/lcov.info
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   build-android:
     needs: test
