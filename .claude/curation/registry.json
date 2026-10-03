@@ -59,7 +59,8 @@
       "status": "candidate",
       "sourceAudit": "dev-skills-pilot-2026-05-05",
       "flags": [
-        "license: MIT declared in README (no LICENSE file) — recognized by the README license probe (EF-006)"
+        "license: MIT declared in README (no LICENSE file) — recognized by the README license probe (EF-006)",
+        "no-replacement-yet: at this pin the repo ships no Next.js skill (App Router, caching, ISR) — only React perf/composition/view-transitions, Vercel deploy/CLI/optimize, UI and prose review. Measured 2026-10-03 (eval/skill-triggering/FINDINGS.md): dev-nextjs fires 3/3 with all nine installed. Do NOT reduce dev-nextjs to a pointer until a Vercel Next.js skill exists."
       ]
     },
     {
