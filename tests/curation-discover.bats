@@ -44,8 +44,8 @@ EOF
     # on the 2nd+ call, to exercise borderline escalation).
     cat > "$TEST_DIR/fakebin/fakellm" <<EOF
 #!/usr/bin/env bash
-cat >/dev/null                       # consume the prompt on stdin
 n=\$(( \$(wc -l < "$TEST_DIR/llm.log" 2>/dev/null || echo 0) + 1 ))
+cat > "$TEST_DIR/prompt.\$n"         # keep the prompt it was given (stdin)
 echo "call \$n" >> "$TEST_DIR/llm.log"
 if [ "\$n" -ge 2 ] && [ -f "$TEST_DIR/llm-response-2.json" ]; then
   cat "$TEST_DIR/llm-response-2.json"
@@ -124,6 +124,15 @@ healthy_candidate() {
     gh_fixture "repos/$repo" "$(repo_meta 1200 '2026-06-10T00:00:00Z' false MIT)"
     gh_fixture "repos/$repo/releases/latest" '{"tag_name":"v1.0.0"}'
     content_fixture "$repo" v1.0.0 SKILL.md "# A helpful nextjs skill. Run npm test."
+    tree_fixture "$repo" v1.0.0 SKILL.md
+}
+
+# tree_fixture <repo> <ref> <path>... — the files the repo holds at <ref> (the
+# recursive git tree the judge reads to find the SKILL.md files it ships).
+tree_fixture() {
+    local repo="$1" ref="$2"; shift 2
+    jq -cn '{truncated:false, tree:[$ARGS.positional[] | {path:., type:"blob"}]}' --args "$@" \
+        > "$TEST_DIR/fx/$(printf '%s' "repos/$repo/git/trees/$ref?recursive=1" | tr '/' '_')"
 }
 
 # =============================================================================
@@ -246,6 +255,7 @@ healthy_candidate() {
     gh_fixture "repos/newauthor/next-skill" "$(repo_meta 1200 '2026-06-10T00:00:00Z' false MIT)"
     gh_fixture "repos/newauthor/next-skill/releases/latest" '{"tag_name":"v1.0.0"}'
     content_fixture "newauthor/next-skill" v1.0.0 SKILL.md "# clean skill"
+    tree_fixture "newauthor/next-skill" v1.0.0 SKILL.md
     llm_response '{"neutrality":"pass","fit":5,"rationale":"x","borderline":false,"tokensUsed":50}'
     run_discover
     [ "$status" -eq 0 ]
@@ -267,6 +277,7 @@ healthy_candidate() {
     gh_fixture "repos/auth/real" "$(repo_meta 1200 '2026-06-10T00:00:00Z' false MIT)"
     gh_fixture "repos/auth/real/releases/latest" '{"tag_name":"v1.0.0"}'
     content_fixture "auth/real" v1.0.0 SKILL.md "# clean"
+    tree_fixture "auth/real" v1.0.0 SKILL.md
     llm_response '{"neutrality":"pass","fit":5,"rationale":"x","borderline":false,"tokensUsed":50}'
     run_discover
     [ "$status" -eq 0 ]
@@ -298,6 +309,7 @@ healthy_candidate() {
         gh_fixture "repos/$r" "$(repo_meta 1200 '2026-06-10T00:00:00Z' false MIT)"
         gh_fixture "repos/$r/releases/latest" '{"tag_name":"v1.0.0"}'
         content_fixture "$r" v1.0.0 SKILL.md "# clean"
+        tree_fixture "$r" v1.0.0 SKILL.md
     done
     llm_response '{"neutrality":"pass","fit":5,"rationale":"x","borderline":false,"tokensUsed":50}'
     run_discover
@@ -332,7 +344,10 @@ healthy_candidate() {
     # about a point, so this is a real, if small, general loosening — recorded
     # rather than hidden.
     local f="$BATS_TEST_DIRNAME/../scripts/curation-discover.sh"
-    run grep -c 'how well it covers a domain the foundation points at' "$f"
+    # 2026-10: the line now reads "how well its skills serve ONE domain the
+    # foundation points at" (one domain in depth is enough; never lower fit for
+    # the others), so the stable part is pinned.
+    run grep -c 'domain the foundation points at' "$f"
     [ "$status" -eq 0 ]
     [ "$output" -eq 1 ]                       # the rubric line exists at all
     run grep -q 'self-hosted homelab and home automation' "$f"
@@ -490,6 +505,7 @@ healthy_candidate() {
         gh_fixture "repos/$r" "$(repo_meta 1200 '2026-06-10T00:00:00Z' false MIT)"
         gh_fixture "repos/$r/releases/latest" '{"tag_name":"v1.0.0"}'
         content_fixture "$r" v1.0.0 SKILL.md "# clean nextjs skill"
+        tree_fixture "$r" v1.0.0 SKILL.md
     done
     llm_response '{"neutrality":"pass","fit":5,"rationale":"ok","borderline":false,"tokensUsed":100}'
     run_discover --budget 100
@@ -509,6 +525,7 @@ healthy_candidate() {
         gh_fixture "repos/$r" "$(repo_meta 1200 '2026-06-10T00:00:00Z' false MIT)"
         gh_fixture "repos/$r/releases/latest" '{"tag_name":"v1.0.0"}'
         content_fixture "$r" v1.0.0 SKILL.md "# clean nextjs skill"
+        tree_fixture "$r" v1.0.0 SKILL.md
     done
     llm_response '{"neutrality":"pass","fit":5,"rationale":"ok","borderline":false,"tokensUsed":100.5}'
     run_discover --budget 100
@@ -1059,4 +1076,87 @@ unpopular() {
              exec-surface-truncated exec-surface-over-cap; do
         if printf '%s' "$r" | grep -qE "$re"; then echo "finding taken for an outage: $r" >&2; return 1; fi
     done
+}
+
+# =============================================================================
+# The judge reads the skills the repo SHIPS (2026-10). It used to read the root
+# SKILL.md, else the README: a repo that keeps its skills under skills/<x>/ was
+# judged on its README (prisma/orm: the ORM's README, not its skill — which says
+# "Do not use for Prisma ORM 7"), and a link list with no skill at all scored
+# fit 5 on its README.
+# =============================================================================
+
+# multi_skill_candidate <repo> — clears trust + safety; README at the root, two
+# skills under skills/ (one duplicated under .claude/skills, as repos do).
+multi_skill_candidate() {
+    local repo="$1"
+    search_items "$(jq -cn --arg r "$repo" '{items:[{full_name:$r}]}')"
+    gh_fixture "repos/$repo" "$(repo_meta 1200 '2026-06-10T00:00:00Z' false MIT)"
+    gh_fixture "repos/$repo/releases/latest" '{"tag_name":"v1.0.0"}'
+    content_fixture "$repo" v1.0.0 README.md "# Acme ORM - the database toolkit (PRODUCT README)"
+    content_fixture "$repo" v1.0.0 skills/acme-8/SKILL.md $'---\nname: acme-8\ndescription: Use with Acme 8. Do not use for Acme 7.\n---\n# Acme 8 SKILL BODY'
+    content_fixture "$repo" v1.0.0 skills-contrib/release/SKILL.md $'---\nname: release\ndescription: For Acme contributors cutting a release.\n---\n# CONTRIB BODY'
+    content_fixture "$repo" v1.0.0 .claude/skills/acme-8/SKILL.md $'---\nname: acme-8\ndescription: Use with Acme 8. Do not use for Acme 7.\n---\n# Acme 8 SKILL BODY'
+    tree_fixture "$repo" v1.0.0 README.md skills/acme-8/SKILL.md skills-contrib/release/SKILL.md .claude/skills/acme-8/SKILL.md
+}
+
+@test "discover: a repo that ships no SKILL.md is rejected as no-skill, without a model call" {
+    search_items '{"items":[{"full_name":"alice/awesome-list"}]}'
+    gh_fixture "repos/alice/awesome-list" "$(repo_meta 9000 '2026-06-10T00:00:00Z' false CC0-1.0)"
+    gh_fixture "repos/alice/awesome-list/releases/latest" '{"tag_name":"v1.0.0"}'
+    content_fixture alice/awesome-list v1.0.0 README.md "# Awesome list - links to many tools"
+    tree_fixture alice/awesome-list v1.0.0 README.md LICENSE
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"great","borderline":false,"tokensUsed":100}'
+    run_discover
+    [ "$status" -eq 0 ]
+    [ ! -f "$TEST_DIR/llm.log" ]
+    d=$(digest_json)
+    [ "$(printf '%s' "$d" | jq -r '.counts.proposed')" = 0 ]
+    [ "$(printf '%s' "$d" | jq -r '.rejections[0].gate')" = no-skill ]
+    [ "$(printf '%s' "$d" | jq -r '.rejections[0].recorded')" = true ]
+}
+
+@test "discover: the judge is given the shipped skills, not the README" {
+    multi_skill_candidate acme/orm
+    llm_response '{"neutrality":"pass","fit":4,"rationale":"ok","borderline":false,"tokensUsed":100}'
+    run_discover
+    [ "$status" -eq 0 ]
+    p="$TEST_DIR/prompt.1"
+    [ -f "$p" ]
+    grep -qF 'Acme 8 SKILL BODY' "$p"
+    grep -qF 'Do not use for Acme 7' "$p"
+    grep -qF 'skills/acme-8/SKILL.md' "$p"
+    grep -qF 'skills-contrib/release/SKILL.md' "$p"
+    if grep -qF 'PRODUCT README' "$p"; then echo "README reached the judge" >&2; return 1; fi
+}
+
+@test "discover: a skill duplicated under another directory is listed once" {
+    multi_skill_candidate acme/orm
+    llm_response '{"neutrality":"pass","fit":4,"rationale":"ok","borderline":false,"tokensUsed":100}'
+    run_discover
+    [ "$(grep -cE '^- .*acme-8/SKILL\.md' "$TEST_DIR/prompt.1")" -eq 1 ]
+    grep -qE '^- skills/acme-8/SKILL\.md' "$TEST_DIR/prompt.1"   # the shortest path is kept
+}
+
+@test "discover: an unreadable tree is an outage (not recorded), never a no-skill verdict" {
+    search_items '{"items":[{"full_name":"bob/skills"}]}'
+    gh_fixture "repos/bob/skills" "$(repo_meta 1200 '2026-06-10T00:00:00Z' false MIT)"
+    gh_fixture "repos/bob/skills/releases/latest" '{"tag_name":"v1.0.0"}'
+    content_fixture bob/skills v1.0.0 SKILL.md "# fine"
+    printf 'not json' > "$TEST_DIR/fx/$(printf '%s' 'repos/bob/skills/git/trees/v1.0.0?recursive=1' | tr '/' '_')"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"x","borderline":false,"tokensUsed":100}'
+    run_discover
+    [ "$status" -eq 0 ]
+    [ ! -f "$TEST_DIR/llm.log" ]
+    d=$(digest_json)
+    [ "$(printf '%s' "$d" | jq -r '.rejections[0].recorded')" = false ]
+    [[ "$(printf '%s' "$d" | jq -r '.rejections[0].reason')" == *operational* ]]
+}
+
+@test "discover: the fit rubric says one domain in depth is enough" {
+    healthy_candidate carol/skill
+    llm_response '{"neutrality":"pass","fit":4,"rationale":"ok","borderline":false,"tokensUsed":100}'
+    run_discover
+    grep -qiF 'never lower fit' "$TEST_DIR/prompt.1"
+    grep -qiF 'one domain' "$TEST_DIR/prompt.1"
 }

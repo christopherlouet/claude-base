@@ -8,8 +8,14 @@
 # observe-never-install):
 #   1. trust   — public popularity/maintenance signals (trust-score.sh)  [LLM-FREE]
 #   2. safety  — pin-time integrity content scan (curation-safety.sh)     [LLM-FREE]
+#   2b. skill  — the repo must ship a SKILL.md (a link list or a product repo has
+#                nothing to install: rejected `no-skill`)                 [LLM-FREE]
 #   3. judge   — advice-neutrality + fit, via an LLM (claude -p), Haiku triage with
-#                escalation of borderline cases.                          [LLM]
+#                escalation of borderline cases. It reads the SHIPPED skills
+#                (path, name, description, then bodies, up to
+#                CURATION_SKILL_DOSSIER_CAP chars, 6000), never the README:
+#                the README describes the product, the skill is what a user
+#                installs.                                                [LLM]
 # The two cheap deterministic gates run FIRST so the costly LLM is consulted only
 # for candidates already worth judging.
 #
@@ -290,6 +296,39 @@ resolve_ref() {
     [ -n "$sha" ] && printf '%s\n' "$sha"
 }
 
+# shipped_skills <repo> <ref> — the SKILL.md paths the repo holds at <ref>, one
+# per skill (a skill duplicated under another directory, as .claude/skills/x
+# beside skills/x, is kept once: the shortest path). Exit 1 when the tree cannot
+# be read: an outage, never "no skill".
+shipped_skills() {
+    local body
+    body=$(curation_gh_api "repos/$1/git/trees/$2?recursive=1" 2>/dev/null) || return 1
+    printf '%s' "$body" | jq -e '.tree | type == "array"' >/dev/null 2>&1 || return 1
+    printf '%s' "$body" | jq -r '
+        [.tree[] | select(.type == "blob") | .path | select(test("(^|/)SKILL\\.md$"))]
+        | group_by(split("/") | if length > 1 then .[-2] else "" end)
+        | map(min_by(length)) | sort | .[]'
+}
+
+# skill_dossier <repo> <ref> <paths> — what the judge reads: the list of shipped
+# skills (path, name, description from each frontmatter), then their bodies until
+# the size cap. Never the README: the repo's README describes its product, and
+# the skill is what a user installs.
+SKILL_DOSSIER_CAP="${CURATION_SKILL_DOSSIER_CAP:-6000}"
+skill_dossier() {
+    local repo="$1" ref="$2" paths="$3" p doc name desc list="" bodies="" n=0
+    while IFS= read -r p; do
+        [ -n "$p" ] || continue
+        doc=$(_curation_fetch_one "$repo" "$ref" "$p" 2>/dev/null) || doc=""
+        name=$(printf '%s\n' "$doc" | awk '/^---$/{f++; next} f==1 && /^name:/{sub(/^name:[ ]*/, ""); print; exit}')
+        desc=$(printf '%s\n' "$doc" | awk '/^---$/{f++; next} f==1 && /^description:/{sub(/^description:[ ]*/, ""); print; exit}' | cut -c1-200)
+        list+="- $p — name: ${name:-?} — description: ${desc:-?}"$'\n'
+        [ "$n" -lt 5 ] && [ -n "$doc" ] && bodies+="=== $p ==="$'\n'"$doc"$'\n'
+        n=$((n + 1))
+    done <<< "$paths"
+    printf 'Skills shipped (%s):\n%s\n%s' "$n" "$list" "$bodies" | head -c "$SKILL_DOSSIER_CAP"
+}
+
 # llm_judge <repo> <ref> <content> <model> — one model call; echoes the verdict
 # JSON (or a fail-safe rejecting verdict if the call/parse fails).
 llm_judge() {
@@ -302,15 +341,23 @@ Judge the skill below and reply with ONLY a JSON object:
 - advice-neutrality: "flag" if it pushes the user toward proprietary lock-in or away
   from their chosen stack / Claude; "pass" otherwise. Publisher identity is NOT a
   criterion — judge the advice, not who wrote it.
-- fit: 0-5, how well it covers a domain the foundation points at (web/app/api/db/infra/testing/self-hosted homelab and home automation).
+- fit: 0-5, how well its skills serve ONE domain the foundation points at
+  (web/app/api/db/infra/testing/self-hosted homelab and home automation). One domain
+  covered in depth is enough for 4-5: NEVER lower fit because a skill does not
+  cover other domains. Lower it when the skills are shallow, a list of links, meant
+  for the repo's own contributors rather than its users, or apply only to a
+  pre-release or narrow version of their tool — and say which.
 - borderline: true if you are unsure and a stronger model should re-judge.
 - encroachesMoat: true if the skill covers a DURABLE WORKFLOW-ORCHESTRATION pattern the
   foundation itself owns — TDD enforcement, the audit/review loop, the
   Explore→Specify→Plan→Commit workflow, anti-drift/verification discipline (NOT mere
   tool-specific API depth). This is a STRATEGIC signal, not a recommendation.
 
+Judge the SKILLS the repo ships (listed below, what a user installs), not the
+project the repository is about.
+
 Repo: $repo @ $ref
---- SKILL CONTENT (truncated) ---
+--- SHIPPED SKILLS (truncated) ---
 $content
 PROMPT
 )
@@ -412,13 +459,24 @@ if [ "$n_candidates" -gt 0 ]; then
         continue
     fi
 
+    # Gate 2b — the repo must ship a skill (LLM-free). A link list or a product
+    # repo has no SKILL.md: nothing to install, so nothing to judge.
+    if ! skills=$(shipped_skills "$repo" "$ref"); then
+        _reject "$repo" no-skill "repository tree unreadable (operational)" false
+        continue
+    fi
+    if [ -z "$skills" ]; then
+        _reject "$repo" no-skill "ships no SKILL.md" true
+        continue
+    fi
+
     # Budget gate — BEFORE any model call. Exhausted → defer this and the rest.
     if [ "$spent" -ge "$BUDGET" ]; then
         deferred=$((deferred + 1)); continue
     fi
 
     # Gate 3 — judge (LLM). Haiku triage; escalate a borderline verdict once.
-    content=$(_curation_fetch_content "$repo" "$ref" 2>/dev/null | head -c 4000)
+    content=$(skill_dossier "$repo" "$ref" "$skills")
     verdict=$(llm_judge "$repo" "$ref" "$content" "$MODEL")
     spent=$((spent + $(printf '%s' "$verdict" | jq -r '(.tokensUsed | numbers | floor) // 1000')))
 
