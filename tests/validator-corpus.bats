@@ -50,7 +50,6 @@ expected_exception() {
         "sudo|doc:templates/TROUBLESHOOTING.md")                                   return 0 ;;
         "sudo|doc:.claude/templates/opnsense/examples/orange-box-dmz/README.md")   return 0 ;;
         "curl|doc:docs/recipes/python-toolchain-options.md")                       return 0 ;;
-        "curl|doc:.claude/skills/ops-infra-code/references/security-compliance.md") return 0 ;;
         "curl|doc:README.md")                                                      return 0 ;;
     esac
     return 1

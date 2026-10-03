@@ -37,3 +37,7 @@ terraform test && terraform plan -out=tfplan
 ## Attribution
 
 Based on the best practices from [terraform-best-practices.com](https://terraform-best-practices.com)
+
+## See also
+
+[`antonbabenko/terraform-skill`](https://github.com/antonbabenko/terraform-skill) and HashiCorp's [`hashicorp/agent-skills`](https://github.com/hashicorp/agent-skills) hold the HCL depth; install their skill folders rather than HashiCorp's plugins, which also start an MCP server from an unpinned Docker image.

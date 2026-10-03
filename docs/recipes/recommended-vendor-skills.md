@@ -425,21 +425,59 @@ git clone --depth 1 https://github.com/mongodb/agent-skills ~/dev/vendor-skills/
 
 ---
 
-### Anton Babenko — `terraform-skill` (ops-infra-code companion, Terraform/OpenTofu)
+### Anton Babenko — `terraform-skill` (ops-infra-code depth, Terraform/OpenTofu)
 
-**Covers**: comprehensive Terraform/OpenTofu patterns — CI/CD workflows, code patterns, testing frameworks, security compliance, quick reference. The de-facto community Terraform skill.
+**Covers**: Terraform and OpenTofu — a failure-mode diagnosis workflow, modules, testing strategy, state management, CI/CD workflows, security scans, terraform-ls, version management. The de-facto community Terraform skill (2,397★), and a strict superset of what `ops-infra-code` used to excerpt.
 
 **When to install**: any project using Terraform or OpenTofu.
 
-**Pair with**: claude-base's `ops-infra-code` skill (foundation-workflow integration: module hierarchy, naming conventions, link to `ops-deploy`).
+**Pair with**: claude-base's `ops-infra-code` — now a pointer that keeps the foundation's discipline (state and secrets, plan review, scans, deploy gate) — and HashiCorp's skills below for the official style guide and `terraform test`.
 
-**Install** (verify on the repo):
+**Install** (pinned release; the skill lives in `skills/terraform-skill`):
 ```bash
-git clone --depth 1 https://github.com/antonbabenko/terraform-skill ~/dev/vendor-skills/terraform
-ln -s ~/dev/vendor-skills/terraform/skills/terraform ./.claude/skills/terraform
+git clone --depth 1 --branch v1.17.1 https://github.com/antonbabenko/terraform-skill ~/dev/vendor-skills/terraform-skill
+ln -s ~/dev/vendor-skills/terraform-skill/skills/terraform-skill ./.claude/skills/terraform-skill
 ```
 
-**Provenance & advice-neutrality**: community-authored (Anton Babenko, independent maintainer). HashiCorp acquired by IBM (Feb 2025) but the skill author is independent. IBM has Watson but is not a direct Anthropic/OpenAI competitor. Acceptable.
+**Provenance & advice-neutrality**: community-authored (Anton Babenko, independent maintainer), Apache-2.0 (the LICENSE preamble hides it from GitHub's detector). A root `mcp.json` serves other harnesses; linking the skill folder does not load it.
+
+---
+
+### HashiCorp — `hashicorp/agent-skills` (ops-infra-code, official Terraform)
+
+**Covers**: HashiCorp's own Terraform skills — official style guide, `terraform test`, module refactoring, Stacks, search/import, policy — plus provider development and Packer image builders. Terraform-only (no OpenTofu).
+
+**When to install**: Terraform projects that want the vendor's own conventions next to Babenko's depth.
+
+**Install** the skill folders, not the plugins:
+```bash
+npx skills add hashicorp/agent-skills/terraform/code-generation/skills/terraform-style-guide
+npx skills add hashicorp/agent-skills/terraform/code-generation/skills/terraform-test
+```
+
+**Caution**: the repo's Claude plugins (`terraform-code-generation`, `-module-generation`, `-policy-code`) also register an MCP server running the unpinned `hashicorp/terraform-mcp-server` Docker image with your `TFE_TOKEN`.
+
+**Provenance & advice-neutrality**: HashiCorp (IBM), MPL-2.0, release `v1.0.0`. Teaches Terraform, not a paid HashiCorp product; HCP-specific skills are opt-in.
+
+---
+
+### Docker — `docker/skills` (ops-docker)
+
+**Covers**: `docker-project-foundations`, `docker-build-strategies` (multi-stage, non-root, cache and secret mounts), `docker-compose-patterns` (healthchecks, `service_healthy`), `docker-destructive-guardrails` (before any deleting command). Seven more skills target Docker Agent and Docker Sandboxes.
+
+**When to install**: any project that builds images or runs Compose.
+
+**Pair with**: claude-base's `ops-docker`, now a pointer that keeps what these leave out — image vulnerability scanning and Hadolint.
+
+**Install**:
+```bash
+npx skills add docker/skills --skill docker-project-foundations --yes
+npx skills add docker/skills --skill docker-build-strategies --yes
+npx skills add docker/skills --skill docker-compose-patterns --yes
+npx skills add docker/skills --skill docker-destructive-guardrails --yes
+```
+
+**Provenance & advice-neutrality**: Docker Inc., Apache-2.0, release `v0.3.1`. The foundation's safety screen flags the repo on fixtures of Docker's own content-risk scanner and on one Dockerfile tip — both read and judged false positives (2026-10-03).
 
 ---
 

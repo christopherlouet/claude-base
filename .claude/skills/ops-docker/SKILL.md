@@ -6,26 +6,35 @@ disable-model-invocation: true
 
 # Docker Containerization (pointer)
 
-Dockerfile syntax, Compose schema and image-publish flows drift on each release and are canonical at:
+Docker Inc. publishes its own agent skills at [`docker/skills`](https://github.com/docker/skills) (Apache-2.0, pin `v0.3.1`). Four of them cover what this skill used to teach — multi-stage builds, non-root users, `.dockerignore`, `HEALTHCHECK`, BuildKit secrets and cache mounts, Compose healthchecks and `depends_on: service_healthy`:
 
-- **Docker official** — [docs.docker.com](https://docs.docker.com) (Engine + Compose + Buildx)
-- **Dockerfile best practices** — [docs.docker.com/develop/develop-images/dockerfile_best-practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
-- **Snyk Container Security** — [snyk.io/learn/container-security](https://snyk.io/learn/container-security/) (vulnerability scanning, base-image hardening)
-- **Hadolint** — [github.com/hadolint/hadolint](https://github.com/hadolint/hadolint) (Dockerfile linter, CI-integrable)
-- **Dive** — [github.com/wagoodman/dive](https://github.com/wagoodman/dive) (image layer analysis)
+| Skill | Use it when |
+|-------|-------------|
+| `docker-project-foundations` | Dockerizing a project, local dev with containers |
+| `docker-build-strategies` | Writing, slimming or hardening a Dockerfile |
+| `docker-compose-patterns` | Wiring services, adding a database, Compose debugging |
+| `docker-destructive-guardrails` | Before any `docker` command that deletes or resets state |
 
-## Foundation discipline (keep across releases)
+```bash
+npx skills add docker/skills --skill docker-project-foundations --yes
+npx skills add docker/skills --skill docker-build-strategies --yes
+npx skills add docker/skills --skill docker-compose-patterns --yes
+npx skills add docker/skills --skill docker-destructive-guardrails --yes
+```
 
-- **Multi-stage builds**: always separate build deps from runtime image. The "node:20 with full npm" image weighs 1GB+; the runtime layer should be ~100MB. Build stage produces artifacts, runtime stage copies them in.
-- **Non-root user**: `RUN addgroup -S app && adduser -S app -G app && USER app` — never run app code as root inside the container, even if "it's just a sandbox".
-- **.dockerignore mandatory**: forgotten `.git/` or `node_modules/` in the build context bloats images by hundreds of MB and leaks secrets. The `.dockerignore` rules mirror your `.gitignore` plus build artifacts.
-- **HEALTHCHECK at the Dockerfile level**: not just at the orchestrator level. Lets Docker/Compose detect unhealthy containers before the orchestrator does.
-- **Pin base image major+minor** (`node:20-alpine`, not `node:latest` or bare `node:20`): floating tags break reproducibility; SHA pinning is overkill for most apps but worth it for security-critical builds.
-- **Secret management**: never `COPY .env` or hardcode credentials in `ENV`. Use BuildKit secrets (`--mount=type=secret`) or runtime-injected env vars from the orchestrator.
+The repo's other seven skills (Docker Agent, Docker Sandboxes) are product-specific; install them only if you use those products. The three skills that ship a `scripts/verify-*.sh` only build the image and validate the Compose file.
+
+Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Docker".
+
+## Foundation discipline the vendor skills leave out
+
+- **Scan the image before it ships**: none of the four mentions vulnerability scanning. Gate the push on `trivy image <image>` (or Docker Scout, Grype) failing on HIGH/CRITICAL — the `ops-ci` skill wires it; `qa-security` owns the policy.
+- **Lint the Dockerfile in CI**: `hadolint Dockerfile` as a blocking step, also absent from the vendor skills.
+- **Never bake secrets**: no `COPY .env`, no credentials in `ENV` or build args — BuildKit `--mount=type=secret` at build time, orchestrator-injected env at run time (`.claude/rules/security.md`).
 
 ## See also
 
 - `/ops:ops-deploy` — deployment checklist consumes the built image
-- `/ops:ops-database` — Compose patterns for DB services (`depends_on: { condition: service_healthy }`)
-- `qa-security` — image scanning gate (Snyk/Trivy) before push
+- `/ops:ops-database` — Compose patterns for DB services
+- `qa-security` — image scanning gate before push
 - `ops-ci` — Hadolint + image scan as CI steps

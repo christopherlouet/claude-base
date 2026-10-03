@@ -55,3 +55,7 @@ Before any Docker deployment to production:
 - YOU MUST verify the pre-deployment checklist before any deploy to production
 
 Think hard about image size and security.
+
+## See also
+
+Docker Inc.'s own skills at [`docker/skills`](https://github.com/docker/skills) go deeper on Dockerfiles and Compose; image scanning and Hadolint stay this agent's job.

@@ -24,18 +24,11 @@
       "bar": "KubeShark crosses ~500 stars, OR a CNCF/tool-org authority skill appears"
     },
     {
-      "foundationSkill": "ops-docker",
-      "tech": "Docker",
-      "matchKeywords": ["docker", "dockerfile"],
-      "currentBest": "akin-ozer/cc-devops-skills (~236 stars, neutral, covers Docker + CI in one suite)",
-      "bar": "cc-devops-skills crosses ~500 stars (would graduate ops-docker AND ops-ci together), OR Docker Inc ships a skill"
-    },
-    {
       "foundationSkill": "ops-ci",
       "tech": "CI/CD (GitHub Actions / GitLab CI)",
       "matchKeywords": ["github-actions", "gitlab-ci", "devops", "cicd"],
-      "currentBest": "akin-ozer/cc-devops-skills (~236 stars, covers Actions + GitLab CI)",
-      "bar": "cc-devops-skills crosses ~500 stars, OR GitHub ships an Actions skill"
+      "currentBest": "github/awesome-copilot github-actions-hardening (GitHub org, MIT; hardening only, no generator, no GitLab). akin-ozer/cc-devops-skills (316 stars, 2026-10-03) is blocked by SAFETY, not stars: its github-actions-validator runs install_tools.sh, which pipes unpinned remote installers to a shell",
+      "bar": "a GitHub-authored Actions skill covering pipeline authoring, OR a community suite >= 500 stars that passes the pipe-to-shell screen (ops-docker graduated separately to docker/skills on 2026-10-03)"
     },
     {
       "foundationSkill": "dev-neovim",

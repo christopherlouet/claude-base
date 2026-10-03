@@ -47,3 +47,7 @@ YOU MUST use a remote backend for the state.
 YOU MUST version the providers.
 
 NEVER store secrets in Terraform code.
+
+## See also
+
+Depth lives upstream: [`antonbabenko/terraform-skill`](https://github.com/antonbabenko/terraform-skill) (Terraform and OpenTofu) and HashiCorp's [`hashicorp/agent-skills`](https://github.com/hashicorp/agent-skills) (official style guide, `terraform test`, refactoring, Stacks, policy). The `ops-infra-code` skill points to both and keeps the foundation's state, plan-review and deploy-gate discipline.
