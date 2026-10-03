@@ -350,6 +350,64 @@
         "triggering: installed together, dev-react-perf fires and the vendor skill does not (Opus, 3/3); a description that defers to the vendor left NO skill firing — so the pointer carries a 5-line condensed top of the vendor ranking",
         "outcome comparison (12 planted defects, blind-graded): no measurable difference between the two skills on Opus 5.5 or Haiku 4.5 — graduation rests on maintenance, not on a measured gain"
       ]
+    },
+    {
+      "foundationSkill": "ops-infra-code",
+      "vendorId": "antonbabenko/terraform-skill",
+      "vendorUrl": "https://github.com/antonbabenko/terraform-skill",
+      "pinnedRef": "v1.17.1",
+      "trustTrack": "community",
+      "trustVerdict": "pass",
+      "provenance": "Anton Babenko (independent maintainer)",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-10-03",
+      "status": "candidate",
+      "sourceAudit": "supply-audit-2026-10-03",
+      "flags": [
+        "license: Apache-2.0 — LICENSE carries a copyright/promo preamble before the Apache text, so GitHub reports NOASSERTION; SKILL.md frontmatter says Apache-2.0",
+        "community bar: 2,397 stars (>= 500)",
+        "a root mcp.json (docker run hashicorp/terraform-mcp-server:latest) serves other harnesses; the recipe links skills/terraform-skill only",
+        "reduced 2026-10-03: ops-infra-code was an excerpt of this skill; now a pointer keeping state/plan/scan/deploy-gate discipline",
+        "safety screen v1.17.1: pass — exec surface and root docs only (root record: the screen does not open skills/terraform-skill/)",
+        "read 2026-10-03: references/security-compliance.md installs Trivy with an unpinned pipe-to-shell line — a doc instruction, not executed; the foundation skill tells users to prefer a pinned release",
+        "triggering 2026-10-03 (Opus, 3/3): installed together, ops-infra-code fires and the vendor skills do not — the pointer keeps the core HCL patterns for that reason and for its agent, which preloads it"
+      ]
+    },
+    {
+      "foundationSkill": "ops-infra-code",
+      "vendorId": "hashicorp/agent-skills/terraform/code-generation/skills/terraform-style-guide+terraform/code-generation/skills/terraform-test",
+      "vendorUrl": "https://github.com/hashicorp/agent-skills",
+      "pinnedRef": "v1.0.0",
+      "trustTrack": "authority",
+      "trustVerdict": "pass",
+      "provenance": "HashiCorp (IBM)",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-10-03",
+      "status": "candidate",
+      "sourceAudit": "supply-audit-2026-10-03",
+      "flags": [
+        "Terraform-only: no OpenTofu coverage (Babenko's skill keeps that)",
+        "its Claude plugins register an MCP server running the unpinned hashicorp/terraform-mcp-server image with TFE_TOKEN: recommend the skill folders, not the plugins",
+        "scoped to the two skill dirs the foundation recommends, so the screen reads their SKILL.md bodies (the plugin dirs above them hold none)"
+      ]
+    },
+    {
+      "foundationSkill": "ops-docker",
+      "vendorId": "docker/skills/skills/docker-project-foundations+skills/docker-build-strategies+skills/docker-compose-patterns+skills/docker-destructive-guardrails",
+      "vendorUrl": "https://github.com/docker/skills",
+      "pinnedRef": "v0.3.1",
+      "trustTrack": "authority",
+      "trustVerdict": "pass",
+      "provenance": "Docker Inc.",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-10-03",
+      "status": "candidate",
+      "sourceAudit": "supply-audit-2026-10-03",
+      "flags": [
+        "safety screen flags are false positives, read 2026-10-03: whole repo -> scripts/test_content_risk.py (fixtures of Docker's own content-risk scanner); the four skill dirs -> one sentence saying a BuildKit cache mount makes the usual apt-lists cleanup unnecessary. Expect re-pins to be demoted to propose-only.",
+        "verify-*.sh scripts only run docker build / docker compose config",
+        "gap kept in the foundation: image vulnerability scanning and Hadolint (absent from all four skills)"
+      ]
     }
   ]
 }

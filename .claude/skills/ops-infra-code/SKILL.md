@@ -1,289 +1,62 @@
 ---
 name: ops-infra-code
-description: Infrastructure as Code with Terraform/OpenTofu. Trigger to create modules, configure backends, write idiomatic HCL, or audit infrastructure.
+description: Infrastructure as Code with Terraform/OpenTofu. Points to Anton Babenko's terraform-skill and HashiCorp's own Terraform skills, and keeps the foundation's discipline (state and secrets, plan review, scans, deploy gate). Trigger to create modules, configure backends, write idiomatic HCL, or audit infrastructure.
 argument-hint: "[module-name]"
 ---
 
-# Infrastructure as Code (Terraform / OpenTofu)
+# Infrastructure as Code (pointer)
 
-Complete guide for Terraform and OpenTofu covering modules, tests, CI/CD and production patterns.
-Based on [terraform-best-practices.com](https://terraform-best-practices.com) and Anton Babenko's enterprise experience.
+This skill used to be an excerpt of Anton Babenko's terraform-skill. The upstream is now a strict superset (state management, CI/CD workflows, terraform-ls, OpenTofu-specific guidance, a failure-mode diagnosis workflow), and HashiCorp publishes its own Terraform skills. Install them; this file keeps the foundation's discipline and the core patterns below.
 
-## When to use this Skill
+## Delegate to the vendor skills
 
-**Activate this skill to:**
-- Create Terraform/OpenTofu configurations or modules
-- Set up the test infrastructure for IaC
-- Choose between testing approaches (validate, plan, frameworks)
-- Structure multi-environment deployments
-- Implement CI/CD for infrastructure-as-code
-- Review or refactor existing Terraform/OpenTofu projects
-
-**Do not use for:**
-- Basic syntax questions (Claude already knows)
-- Provider-specific API reference (use the documentation)
-- Cloud questions unrelated to Terraform/OpenTofu
-
-## Core Principles
-
-### 1. Module Hierarchy
-
-| Type | When to use | Scope |
-|------|-------------|-------|
-| **Resource Module** | Logical group of connected resources | VPC + subnets, Security group + rules |
-| **Infrastructure Module** | Collection of resource modules | Several modules in a region/account |
-| **Composition** | Complete infrastructure | Spans multiple regions/accounts |
-
-**Hierarchy:** Resource -> Resource Module -> Infrastructure Module -> Composition
-
-### 2. Directory Structure
-
-```
-environments/        # Configurations per environment
-├── prod/
-├── staging/
-└── dev/
-
-modules/            # Reusable modules
-├── networking/
-├── compute/
-└── data/
-
-examples/           # Usage examples (also serve as tests)
-├── complete/
-└── minimal/
-```
-
-### 3. Naming Conventions
-
-**Resources:**
-```hcl
-# Good: Descriptive and contextual
-resource "aws_instance" "web_server" { }
-resource "aws_s3_bucket" "application_logs" { }
-
-# Good: "this" for singleton resources (only one of this type)
-resource "aws_vpc" "this" { }
-resource "aws_security_group" "this" { }
-
-# Avoid: Generic names for non-singletons
-resource "aws_instance" "main" { }
-```
-
-**Variables:**
-```hcl
-# Prefix with context
-var.vpc_cidr_block          # Not just "cidr"
-var.database_instance_class # Not just "instance_class"
-```
-
-**Files:**
-- `main.tf` - Main resources
-- `variables.tf` - Input variables
-- `outputs.tf` - Output values
-- `versions.tf` - Provider versions
-
-## Block Order
-
-### Resource Block
-
-**Strict order for consistency:**
-1. `count` or `for_each` FIRST (blank line after)
-2. Other arguments
-3. `tags` as the last real argument
-4. `depends_on` after tags (if necessary)
-5. `lifecycle` at the very end (if necessary)
-
-```hcl
-# GOOD - Correct order
-resource "aws_nat_gateway" "this" {
-  count = var.create_nat_gateway ? 1: 0
-
-  allocation_id = aws_eip.this[0].id
-  subnet_id     = aws_subnet.public[0].id
-
-  tags = {
-    Name = "${var.name}-nat"
-  }
-
-  depends_on = [aws_internet_gateway.this]
-
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-```
-
-### Variable Block
-
-1. `description` (ALWAYS required)
-2. `type`
-3. `default`
-4. `validation`
-5. `nullable` (when false)
-
-```hcl
-variable "environment" {
-  description = "Environment name for tagging"
-  type        = string
-  default     = "dev"
-
-  validation {
-    condition     = contains(["dev", "staging", "prod"], var.environment)
-    error_message = "Environment must be: dev, staging, or prod."
-  }
-
-  nullable = false
-}
-```
-
-## Count vs For_Each
-
-### Quick Decision Guide
-
-| Scenario | Use | Why |
-|----------|-----|-----|
-| Boolean condition (create or not) | `count = condition ? 1: 0` | Simple on/off toggle |
-| Simple numeric replication | `count = 3` | Fixed number of identical resources |
-| Items that may be reordered/deleted | `for_each = toset(list)` | Stable resource addresses |
-| Reference by key | `for_each = map` | Named access to resources |
-
-### Common Patterns
-
-**Boolean conditions:**
-```hcl
-# GOOD - Boolean condition
-resource "aws_nat_gateway" "this" {
-  count = var.create_nat_gateway ? 1: 0
-  # ...
-}
-```
-
-**Stable addressing with for_each:**
-```hcl
-# GOOD - Removing "us-east-1b" only affects this subnet
-resource "aws_subnet" "private" {
-  for_each = toset(var.availability_zones)
-
-  availability_zone = each.key
-  # ...
-}
-
-# BAD - Removing the middle AZ recreates all the following ones
-resource "aws_subnet" "private" {
-  count = length(var.availability_zones)
-
-  availability_zone = var.availability_zones[count.index]
-  # ...
-}
-```
-
-## Testing Strategy
-
-### Decision Matrix
-
-| Situation | Recommended Approach | Tools | Cost |
-|-----------|---------------------|-------|------|
-| **Quick syntax check** | Static analysis | `terraform validate`, `fmt` | Free |
-| **Pre-commit validation** | Static + lint | `validate`, `tflint`, `trivy` | Free |
-| **Terraform 1.6+, simple logic** | Native test framework | `terraform test` | Free-Low |
-| **Pre-1.6, or Go expertise** | Integration tests | Terratest | Low-Medium |
-| **Security/compliance focus** | Policy as code | OPA, Sentinel | Free |
-| **Cost-sensitive workflow** | Mock providers (1.7+) | Native tests + mocking | Free |
-
-### Testing Pyramid for Infrastructure
-
-```
-        /\
-       /  \          End-to-End Tests (Expensive)
-      /____\         - Full environment deployment
-     /      \        - Production-like setup
-    /________\
-   /          \      Integration Tests (Moderate)
-  /____________\     - Module testing in isolation
- /              \    - Real resources in test account
-/________________\   Static Analysis (Inexpensive)
-                     - validate, fmt, lint
-                     - Security scanning
-```
-
-## Security and Compliance
-
-### Essential Security Checks
+| Skill | Publisher | Covers | Pin |
+|-------|-----------|--------|-----|
+| [`antonbabenko/terraform-skill`](https://github.com/antonbabenko/terraform-skill) | Anton Babenko (community, Apache-2.0) | Terraform **and OpenTofu**: modules, testing strategy, state, CI/CD, security scans, version management | `v1.17.1` |
+| [`hashicorp/agent-skills`](https://github.com/hashicorp/agent-skills) `terraform/*` | HashiCorp (MPL-2.0) | Official style guide, `terraform test`, module refactoring, Stacks, search/import, policy; Packer image builders | `v1.0.0` |
 
 ```bash
-# Static security scanning
-trivy config .
-checkov -d .
+# Babenko — the depth, Terraform and OpenTofu (pinned release)
+git clone --depth 1 --branch v1.17.1 https://github.com/antonbabenko/terraform-skill ~/dev/vendor-skills/terraform-skill
+ln -s ~/dev/vendor-skills/terraform-skill/skills/terraform-skill ./.claude/skills/terraform-skill
+
+# HashiCorp — the skill folders you need, not the plugins (pinned release)
+git clone --depth 1 --branch v1.0.0 https://github.com/hashicorp/agent-skills ~/dev/vendor-skills/hashicorp
+ln -s ~/dev/vendor-skills/hashicorp/terraform/code-generation/skills/terraform-style-guide ./.claude/skills/terraform-style-guide
+ln -s ~/dev/vendor-skills/hashicorp/terraform/code-generation/skills/terraform-test ./.claude/skills/terraform-test
 ```
 
-### Common Issues to Avoid
+HashiCorp's Claude **plugins** (`terraform-code-generation`, `-module-generation`, `-policy-code`) also register an MCP server that runs the unpinned `hashicorp/terraform-mcp-server` Docker image with your `TFE_TOKEN`: install the skill folders unless you want that server.
 
-**DO NOT:**
-- Store secrets in variables
-- Use the default VPC
-- Omit encryption
-- Open security groups to 0.0.0.0/0
+HashiCorp's skills are Terraform-only; for OpenTofu, rely on Babenko's. Its security reference installs Trivy with an unpinned `curl … | sh`: prefer a pinned release or a package manager. For Pulumi, see [`pulumi/agent-skills`](https://github.com/pulumi/agent-skills).
 
-**DO:**
-- Use AWS Secrets Manager / Parameter Store
-- Create dedicated VPCs
-- Enable encryption at rest
-- Use least-privilege security groups
+Recipe entries: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Anton Babenko" and §"HashiCorp".
 
-## Version Management
+## Core HCL patterns (kept for the `ops-infra-code` agent, which preloads this skill and cannot load a vendor skill)
 
-### Constraint Syntax
+**Layout**: `modules/<name>/` (`main.tf`, `variables.tf`, `outputs.tf`, `versions.tf`) reused by `environments/{dev,staging,prod}/`; one state per environment. Hierarchy: resource → resource module (VPC + subnets) → infrastructure module (a region/account) → composition.
 
-```hcl
-version = "5.0.0"      # Exact (avoid - inflexible)
-version = "~> 5.0"     # Recommended: 5.0.x only
-version = ">= 5.0"     # Minimum (risky - breaking changes)
-```
+**Naming**: descriptive resource names (`aws_s3_bucket.application_logs`), `this` for the single resource of its type in a module, context-prefixed variables (`vpc_cidr_block`, not `cidr`).
 
-### Strategy per Component
+**Block order** — resource: `count`/`for_each` first, then arguments, `tags`, `depends_on`, `lifecycle` last. Variable: `description` (always), `type`, `default`, `validation`, `nullable = false`.
 
-| Component | Strategy | Example |
-|-----------|----------|---------|
-| **Terraform** | Pin minor version | `required_version = "~> 1.9"` |
-| **Providers** | Pin major version | `version = "~> 5.0"` |
-| **Modules (prod)** | Pin exact version | `version = "5.1.2"` |
-| **Modules (dev)** | Allow patch updates | `version = "~> 5.1"` |
+**`count` vs `for_each`**:
 
-## Modern Features (1.0+)
+| Case | Use |
+|------|-----|
+| Create or not | `count = var.enabled ? 1 : 0` |
+| Items that can be added, removed or reordered | `for_each = toset(var.items)` — removing one item touches only that item |
+| Access by name | `for_each = var.map` |
 
-| Feature | Version | Use case |
-|---------|---------|----------|
-| `try()` function | 0.13+ | Safe fallbacks, replaces `element(concat())` |
-| `nullable = false` | 1.1+ | Prevent null values in variables |
-| `moved` blocks | 1.1+ | Refactor without destroy/recreate |
-| `optional()` with defaults | 1.3+ | Optional object attributes |
-| Native tests | 1.6+ | Built-in test framework |
-| Mock providers | 1.7+ | Unit tests at no cost |
-| Cross-variable validation | 1.9+ | Validate relationships between variables |
-| Write-only arguments | 1.11+ | Secrets never stored in state |
+`count = length(var.list)` re-addresses every item after a removed one, so Terraform destroys and recreates them.
 
-## Detailed Guides
+**Testing ladder**: `terraform fmt -check` + `validate` + `tflint` + `trivy config .` on every commit → `terraform test` (1.6+, mock providers from 1.7) for module logic → real-resource tests (Terratest) in a sandbox account only where behaviour cannot be mocked → policy as code (OPA/Conftest) for compliance.
 
-This skill uses **progressive disclosure** - essential information in this file, detailed guides available via external resources:
+## Foundation discipline (keep across releases)
 
-- **Module Patterns** - Structure, variables/outputs, DO vs DON'T
-- **Code Patterns** - Modern features, refactoring, locals
-- **Testing Frameworks** - Static analysis, native tests, Terratest
-- **Security & Compliance** - Trivy/Checkov, secrets management, state file
-
-See [terraform-best-practices.com](https://terraform-best-practices.com) for the full guides.
-
-## See also
-
-This skill was originally adapted from [`antonbabenko/terraform-skill`](https://github.com/antonbabenko/terraform-skill) (1,797★, last commit 2026-04-22) — the de-facto community Terraform skill maintained by Anton Babenko. The upstream is more comprehensive than this excerpt: reference files for CI/CD workflows, code patterns, testing frameworks, security compliance.
-
-For Pulumi users, [`pulumi/agent-skills`](https://github.com/pulumi/agent-skills) (44★, last commit 2026-05-04) is the official skill from Pulumi covering authoring patterns and migration workflows (Terraform→Pulumi, CloudFormation→Pulumi).
-
-When working on a Terraform/OpenTofu/Pulumi project, install the relevant upstream alongside this skill. This skill keeps a thin foundation-workflow wrapper (module hierarchy, naming conventions, integration with `ops-deploy`); the upstream skills capture the canonical breadth of HCL / Pulumi patterns that evolves with each release.
-
-**Vendor-neutrality**: `antonbabenko/terraform-skill` is community-authored (independent maintainer, not IBM/HashiCorp). HashiCorp was acquired by IBM in February 2025; IBM has Watson but is not a direct Anthropic/OpenAI competitor. Pulumi is independent. Both pass the vendor-neutrality filter.
-
-Additional Terraform reference: [terraform-best-practices.com](https://terraform-best-practices.com), [Compliance.tf](https://compliance.tf).
-
-Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/ops-skills-pilot-2026-05-06.md`.
+- **State and secrets**: never commit `*.tfstate`, `*.tfstate.backup`, `.terraform/` or a `*.tfvars` holding secrets; use a remote backend with locking and encryption at rest. Secrets come from a secret manager or the CI's secret store, never from a committed variable — `.claude/rules/security.md`.
+- **Plan before apply, always**: review `terraform plan` (or `tofu plan`) output before any `apply`; in CI, apply the saved plan file that was reviewed, not a fresh plan.
+- **Scan in CI**: `trivy config .` or `checkov -d .` as a blocking step — the `ops-ci` skill wires it.
+- **Production goes through the deploy gate**: an apply against production follows `/ops:ops-deploy` (pre-deploy checklist, rollback plan) and `.claude/rules/deploy-safety.md`.
+- **Version constraints**: `~> 5.0` allows any 5.x (≥ 5.0, < 6.0); `~> 5.0.1` allows only 5.0.x. Pin providers to a major, production modules to an exact version, and commit `.terraform.lock.hcl`.
+- **Destructive changes**: a plan that destroys or replaces stateful resources (databases, volumes, buckets) needs an explicit human go — `prevent_destroy` on those resources, `moved` blocks for renames instead of destroy/create.
