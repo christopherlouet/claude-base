@@ -84,7 +84,7 @@ import Image from 'next/image';
 | Metric | Target | Optimization |
 |--------|--------|--------------|
 | LCP | < 2.5s | Preload hero image, SSR |
-| FID | < 100ms | Code splitting, defer JS |
+| INP | < 200ms | Break up long tasks, defer non-critical JS |
 | CLS | < 0.1 | Explicit dimensions |
 
 ## Composition Patterns

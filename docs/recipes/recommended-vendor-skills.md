@@ -199,7 +199,7 @@ git clone --depth 1 https://github.com/langchain-ai/langchain-skills ~/dev/vendo
 
 ### Vercel — `vercel-labs/agent-skills`
 
-**Covers**: `react-best-practices` (40+ rules across 8 categories from Vercel Engineering), React Composition Patterns, React View Transitions, `deploy-to-vercel`, `vercel-optimize`, Web Design Guidelines. **React + Vercel-deploy focused — no dedicated Next.js skill** (App Router / RSC / caching stay claude-base's `dev-nextjs`).
+**Covers**: `react-best-practices` (40+ rules across 8 categories from Vercel Engineering), React Composition Patterns, React View Transitions, `deploy-to-vercel`, `vercel-optimize`, Web Design Guidelines. **React + Vercel-deploy focused — no dedicated Next.js skill here.** The Next.js team ships its own in the framework repo, [`vercel/next.js/skills`](https://github.com/vercel/next.js/tree/canary/skills) (Cache Components and Partial Prefetching adoption, dev loop); App Router / RSC / Server Actions stay claude-base's `dev-nextjs`.
 
 **When to install**: any project using Next.js or modern React on Vercel — for the React layer and Vercel deploy/optimize.
 
@@ -360,13 +360,14 @@ git clone --depth 1 https://github.com/addyosmani/web-quality-skills ~/dev/vendo
 
 **Install** (verify on their repo):
 ```bash
-git clone --depth 1 https://github.com/microsoft/playwright-cli ~/dev/vendor-skills/playwright
+# v0.1.22+: earlier releases granted the skill bare npm/npx (allowed-tools)
+git clone --depth 1 --branch v0.1.22 https://github.com/microsoft/playwright-cli ~/dev/vendor-skills/playwright
 ln -s ~/dev/vendor-skills/playwright/skills/playwright-cli ./.claude/skills/playwright-cli
 ```
 
 **Provenance & advice-neutrality**:
 
-Provenance: Microsoft owns Playwright. Under the advice-neutrality policy this is **disclosed, not disqualifying** — what matters is that the skill's advice is stack-neutral: Playwright (created 2020, MIT-licensed) is the de-facto E2E standard (78,000★ on the core repo) and teaches a portable testing tool, not lock-in. The community alternative `lackeyjb/playwright-skill` exists but was 5 months stale at audit time.
+Provenance: Microsoft owns Playwright. Under the advice-neutrality policy this is **disclosed, not disqualifying** — what matters is that the skill's advice is stack-neutral: Playwright (created 2020, Apache-2.0) is the de-facto E2E standard (78,000★ on the core repo) and teaches a portable testing tool, not lock-in. The community alternative `lackeyjb/playwright-skill` exists but was 5 months stale at audit time.
 
 **Decision (2026-05-06)**: pointer to `microsoft/playwright-cli` accepted for the qa-e2e skill. Re-evaluate only if its **advice** turns lock-in-pushing or it fails the safety/maintenance bar — a change in Microsoft's commercial alignment alone is recorded as provenance, not a trigger.
 

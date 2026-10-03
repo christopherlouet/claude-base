@@ -14,7 +14,7 @@ Measure, identify bottlenecks and optimize performance following a data-driven a
 - Measure the performance baseline (time, memory, CPU)
 - Identify bottlenecks (code, frontend, backend)
 - Profile with the appropriate tools (DevTools, Lighthouse, autocannon)
-- Check Core Web Vitals (LCP, FID, CLS, TTFB, INP)
+- Check Core Web Vitals (LCP, INP, CLS, TTFB)
 - Propose optimizations by priority (algorithm > cache > lazy loading)
 - Measure after optimization to validate impact
 

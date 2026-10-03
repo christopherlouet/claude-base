@@ -15,41 +15,38 @@ description: ETL/ELT pipeline design. Trigger when the user wants to create data
 ## Airflow DAG
 
 ```python
-from airflow import DAG
-from airflow.operators.python import PythonOperator
+# Airflow 3: authoring API in airflow.sdk; the DAG takes `schedule` (its 2.x predecessor is gone)
 from datetime import datetime, timedelta
 
-default_args = {
-    'owner': 'data-team',
-    'retries': 3,
-    'retry_delay': timedelta(minutes=5),
-}
+from airflow.sdk import dag, task
 
-with DAG(
-    'daily_etl',
-    default_args=default_args,
-    schedule_interval='0 2 * * *',
+
+@dag(
+    schedule="0 2 * * *",
     start_date=datetime(2024, 1, 1),
     catchup=False,
-) as dag:
+    default_args={"owner": "data-team", "retries": 3, "retry_delay": timedelta(minutes=5)},
+)
+def daily_etl():
+    @task
+    def extract():
+        return extract_from_source()
 
-    extract = PythonOperator(
-        task_id='extract',
-        python_callable=extract_from_source,
-    )
+    @task
+    def transform(raw):
+        return transform_data(raw)
 
-    transform = PythonOperator(
-        task_id='transform',
-        python_callable=transform_data,
-    )
+    @task
+    def load(clean):
+        load_to_warehouse(clean)
 
-    load = PythonOperator(
-        task_id='load',
-        python_callable=load_to_warehouse,
-    )
+    load(transform(extract()))
 
-    extract >> transform >> load
+
+daily_etl()
 ```
+
+Classic operators moved to the `standard` provider in Airflow 3: `from airflow.providers.standard.operators.python import PythonOperator`. Passing large data between tasks goes through XCom: return a path or a table name, not the rows.
 
 ## dbt Transformation
 

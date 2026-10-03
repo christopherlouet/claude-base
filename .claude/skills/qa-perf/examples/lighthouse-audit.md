@@ -9,7 +9,7 @@ Audit a Next.js e-commerce site with poor Core Web Vitals scores.
 |--------|-------|-------|--------|
 | Performance | 42 | - | > 90 |
 | LCP | Poor | 4.8s | < 2.5s |
-| FID/INP | Needs Improvement | 280ms | < 200ms |
+| INP | Needs Improvement | 280ms | < 200ms |
 | CLS | Poor | 0.35 | < 0.1 |
 | FCP | Needs Improvement | 2.1s | < 1.8s |
 | TTFB | Poor | 1.2s | < 0.8s |

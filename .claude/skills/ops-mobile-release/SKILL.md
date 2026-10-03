@@ -56,23 +56,30 @@ jobs:
   ios:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
-      - run: bundle install
+        with:
+          bundler-cache: true   # runs bundle install, caches gems
       - run: bundle exec fastlane ios release
         env:
-          APP_STORE_CONNECT_API_KEY: ${{ secrets.ASC_KEY }}
+          # JSON {"key_id", "issuer_id", "key"}: read as `api_key` by deliver/pilot
+          # (upload_to_app_store, upload_to_testflight)
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.ASC_API_KEY_JSON }}
 
   android:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
         with:
+          distribution: 'temurin'
           java-version: '17'
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true   # fastlane runs through Bundler: Ruby + gems first
       - run: bundle exec fastlane android release
         env:
-          GOOGLE_PLAY_JSON_KEY: ${{ secrets.PLAY_KEY }}
+          SUPPLY_JSON_KEY_DATA: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}   # read by supply
 ```
 
 ## Release Checklist

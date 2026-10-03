@@ -60,7 +60,7 @@
       "sourceAudit": "dev-skills-pilot-2026-05-05",
       "flags": [
         "license: MIT declared in README (no LICENSE file) — recognized by the README license probe (EF-006)",
-        "no-replacement-yet: at this pin the repo ships no Next.js skill (App Router, caching, ISR) — only React perf/composition/view-transitions, Vercel deploy/CLI/optimize, UI and prose review. Measured 2026-10-03 (eval/skill-triggering/FINDINGS.md): dev-nextjs fires 3/3 with all nine installed. Do NOT reduce dev-nextjs to a pointer until a Vercel Next.js skill exists."
+        "partial-replacement-elsewhere: this repo (the record's vendorId) ships no Next.js skill — dev-nextjs fires 3/3 with all nine installed (eval/skill-triggering/FINDINGS.md, 2026-10-03). The Next.js team ships its own skills in vercel/next.js/skills (v16.3.8: cache-components adoption/optimizer, partial-prefetching adoption, dev-loop) — feature-adoption procedures, not the App Router / RSC / Server Actions reference dev-nextjs is. Do NOT reduce dev-nextjs to a pointer on the strength of either repo."
       ]
     },
     {

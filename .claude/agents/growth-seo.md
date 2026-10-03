@@ -15,7 +15,7 @@ Technical SEO audit and optimization recommendations.
 
 - **Meta tags**: unique title (50-60 chars), description (150-160 chars), canonical, robots.txt, sitemap.xml
 - **HTML structure**: a single H1, H1>H2>H3 hierarchy, semantic tags, Schema.org/JSON-LD, image alt
-- **Core Web Vitals**: LCP < 2.5s, FID < 100ms, CLS < 0.1
+- **Core Web Vitals**: LCP < 2.5s, INP < 200ms, CLS < 0.1
 - **Mobile-First**: responsive, viewport, touch targets >= 44px
 - **URLs**: descriptive, short, 301 redirects, no orphans
 - **Indexation**: no duplicate content, multilingual hreflang, no thin content
