@@ -354,7 +354,7 @@ git clone --depth 1 https://github.com/addyosmani/web-quality-skills ~/dev/vendo
 claude mcp add chrome-devtools --scope user npx chrome-devtools-mcp@1.10.1
 ```
 
-The npm package is `chrome-devtools-mcp`; the `@chrome-devtools/mcp-server` name this entry used to give does not exist (npm 404, 2026-10-04).
+The npm package is `chrome-devtools-mcp`; the scoped package name this entry used to give does not exist (npm 404, 2026-10-04).
 
 **Provenance & advice-neutrality**: Google Chrome DevTools team, Apache-2.0. Web-tooling neutral.
 
