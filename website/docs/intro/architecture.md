@@ -132,7 +132,7 @@ claude-base/
 "Make a commit" → work-commit skill activated
 ```
 
-### Rules (<!-- count:rules -->32<!-- /count -->)
+### Rules (<!-- count:rules -->34<!-- /count -->)
 
 **Rules** are rules applied by file path.
 

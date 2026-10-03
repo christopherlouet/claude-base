@@ -73,7 +73,7 @@ cannot drift apart.
 | `dev-shadcn` | "shadcn", "shadcn/ui", "Radix", "React components" | inline |
 | `dev-nextjs` | "Next.js", "App Router", "Server Components", "RSC", "Server Actions" | inline |
 | `dev-auth` | "auth", "login", "signup", "OAuth", "better-auth", "NextAuth", "Lucia", "2FA" | inline |
-| `dev-prisma` | "Prisma", "schema.prisma", "migrate", "ORM", "Accelerate" | inline |
+| `dev-prisma` | "Prisma", "schema.prisma", "migrate", "ORM" — only while no `prisma-*` vendor skill is installed | inline |
 | `dev-i18n` | "i18n", "l10n", "translation", "locale", "next-intl", "react-i18next", "vue-i18n", "flutter_localizations" | inline |
 | `writing-skills` | "create skill", "new skill", "write a skill" | inline |
 | `web-scraping` | "scrape", "crawl", "extract web", "Firecrawl", "structured data" | fork |

@@ -583,7 +583,7 @@ A research pass on May 4, 2026 against the official plugin docs ([code.claude.co
 
 | Gap | Impact on `claude-base` |
 |---|---|
-| **Rules (`.claude/rules/`) are not a plugin component** | The 28 path-specific rules in this foundation cannot ship via plugin. Users would need to copy them manually post-install. |
+| **Rules (`.claude/rules/`) are not a plugin component** | The 30 path-specific rules in this foundation cannot ship via plugin. Users would need to copy them manually post-install. |
 | **`settings.json` scope inside plugins is limited** to `agent` and `subagentStatusLine` | Plugins cannot configure `permissions`, `env`, or top-level `hooks` for the user's session. Foundation defaults (deny lists, env, ~15 PostToolUse hooks) cannot be auto-installed. |
 | **No first-install / setup callback** | `scripts/new-project.sh` (the foundation orchestrator) has no equivalent. A plugin user gets skills/agents/commands immediately but no workspace setup. |
 

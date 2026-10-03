@@ -144,3 +144,33 @@ Without `--extra-skills`, `run.sh` leaves these cases out.
 Limits: N=3, one prompt per tool, one model. All skills sit in one plugin here;
 in a project the vendor skills would live under `.claude/skills/`, the
 foundation's beside them — same descriptions, same competition.
+
+## 2026-10-03 — fix: rules out of the pointers, `dev-prisma` steps aside
+
+The "Foundation rules preserved" lists of `dev-prisma` and `dev-supabase` moved
+to `.claude/rules/prisma.md` and `.claude/rules/supabase.md`, scoped to the
+tool's files, so they load whichever skill fires. `dev-prisma`'s description now
+presents it as the pointer it is, for use "only when no prisma-* skill is
+installed". Same method, 3 runs per case, `claude-opus-5-5`, about 0.75 USD.
+
+| Case | Before | After |
+|---|---|---|
+| `vendor-prisma-coexist` (vendor skills installed) | `dev-prisma` ×3 | **`prisma-cli` ×3**, pointer silent |
+| `dev-prisma-fires` (no vendor skill) | `dev-prisma` ×3 | `dev-prisma` ×3 — still the switch when the vendor is absent |
+
+That the rules load from the files was proven by effect, outside this harness: a
+canary token in each rule, a throwaway project, `claude -p` reading one file per
+session. `README.md` (control) → no token; `prisma/schema.prisma` → the Prisma
+token; `lib/supabase.ts` and `supabase/migrations/001.sql` → the Supabase token.
+
+Left as measured: `dev-shadcn` also fired once in three next to the vendor's
+`shadcn`. Its kept rules are styling conventions, not security, so nothing is
+lost when it stays silent.
+
+Review follow-up: `prisma.md` also matches `**/*prisma*` (the client module,
+where the singleton and `select`-over-`include` rules apply) — canary loaded on
+`lib/prisma.ts`, not on `lib/db.ts` (control). `supabase.md` also ships to
+Flutter projects. Known limits, no glob reaches them at an acceptable cost: a
+Prisma client named `db.ts`, query code in arbitrary files, and a `service_role`
+key written into a component or a `NEXT_PUBLIC_` variable — the rule loads only
+once the session touches a Supabase or Prisma file.

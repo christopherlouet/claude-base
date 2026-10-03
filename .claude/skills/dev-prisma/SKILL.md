@@ -1,6 +1,6 @@
 ---
 name: dev-prisma
-description: Development with Prisma ORM (schema, migrations, type-safe queries, Accelerate, transactions). Trigger when the user wants to add a model, create a migration, optimize Prisma queries, or when schema.prisma is detected in the project.
+description: Pointer to Prisma's own agent skills (prisma-cli, prisma-client-api...) and how to install them. Use for Prisma ORM work (schema, migrations, queries, schema.prisma) only when no prisma-* skill is installed; when one is, use it instead.
 ---
 
 # Prisma ORM (pointer)
@@ -24,16 +24,10 @@ Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipe
 
 The vendor covers the Prisma API surface. The foundation enforces version-agnostic conventions that survive across releases:
 
-- **Security**: never `select: { passwordHash: true }` or any sensitive column without explicit need; default to `select` over `include` for security + perf — cross-ref `.claude/rules/security.md`.
+- **Security**: never fetch `passwordHash` or any sensitive column without explicit need; `select` over `include` — `.claude/rules/prisma.md` (below) and `.claude/rules/security.md`.
 - **TDD with a real DB**: integration tests hit a real test database (Docker Compose pattern), never a Prisma mock — cross-ref the `dev-tdd` skill.
 - **Postgres interop**: if the stack uses Supabase, Prisma operates against the same Postgres — cross-ref the `dev-supabase` skill (Supabase RLS coexists with Prisma queries).
 
-## Foundation rules preserved
+## Foundation rules: `.claude/rules/prisma.md`
 
-- NEVER use `prisma migrate dev` in production. Always `prisma migrate deploy`.
-- `prisma generate` MUST run after every schema change. Add it to the CI build step.
-- Singleton PrismaClient (HMR-safe `globalThis` pattern in dev) — avoid connection leaks.
-- YOU MUST add an index on every foreign key and on every column in frequent WHERE clauses.
-- YOU MUST use `select` instead of `include` when you know the fields (security + perf).
-- NEVER commit `.env` with `DATABASE_URL`. Always `.env.example` with placeholders.
-- NEVER rename a field in one migration. Two steps: add new column → backfill → remove old column (avoids prod downtime).
+The migration, secret and query rules this pointer used to carry live in `.claude/rules/prisma.md`, scoped to the Prisma files. Installed next to the vendor's skills, only one side fires (measured 2026-10-03: Supabase's own skill alone 3/3; Prisma's pointer used to win 3/3 until its description stepped aside, now `prisma-cli` fires 3/3), so a rule kept in a skill reaches the session only when that skill wins — a rule loaded by the files holds whichever skill fires.
