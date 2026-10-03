@@ -262,7 +262,7 @@ Performs a complete security audit based on OWASP Top 10...
 - Parallelization
 - Token savings (haiku)
 
-## Rules (32 available)
+## Rules (34 available)
 
 ### Definition
 Constraints and conventions automatically injected based on file paths.
@@ -273,7 +273,7 @@ Constraints and conventions automatically injected based on file paths.
 - Global or specific constraints
 - Affects Commands, Skills, Agents
 
-### File structure (<!-- count:rules -->32<!-- /count --> rules)
+### File structure (<!-- count:rules -->34<!-- /count --> rules)
 
 Cross-cutting rules (18):
 ```
@@ -298,7 +298,7 @@ Cross-cutting rules (18):
 └── base-maintenance.md   # .claude/** — sync catalog counters
 ```
 
-Rules per language/framework (14):
+Rules per language/framework/tool (16):
 ```
 ├── typescript.md  # **/*.ts, **/*.tsx, **/*.mts
 ├── python.md      # **/*.py, **/pyproject.toml
@@ -313,6 +313,8 @@ Rules per language/framework (14):
 ├── vue.md         # **/*.vue, **/composables/**
 ├── svelte.md      # **/*.svelte, **/svelte.config.*
 ├── astro.md       # **/*.astro, **/content/**
+├── prisma.md      # **/schema.prisma, **/prisma/**
+├── supabase.md    # **/supabase/**, **/*supabase*
 └── flutter.md     # **/*.dart, **/lib/**
 ```
 

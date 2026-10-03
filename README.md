@@ -96,7 +96,7 @@ Everything is plain markdown + JSON, with no daemon and no telemetry. Some hooks
 | Slash commands | <!-- count:commands -->106<!-- /count --> across 9 domains (work, dev, qa, ops, doc, biz, growth, data, legal) | Manually triggered (`/work:work-plan`) |
 | Sub-agents | <!-- count:agents -->44<!-- /count --> | Autonomous, isolated-context workers spawned by commands |
 | Skills | <!-- count:skills -->53<!-- /count --> | Auto-triggered on keywords in your prompts — except a manual-only subset listed in the [skills catalogue](docs/reference/skills-catalog.md) |
-| Path-specific rules | <!-- count:rules -->32<!-- /count --> | Auto-activated based on the file being edited (TS strict, OWASP, WCAG, YAGNI/minimal-code, ...) |
+| Path-specific rules | <!-- count:rules -->34<!-- /count --> | Auto-activated based on the file being edited (TS strict, OWASP, WCAG, YAGNI/minimal-code, ...) |
 | Presets | <!-- count:presets -->11<!-- /count --> | Stack-specific bundles ; tier breakdown in [Going deeper](#going-deeper) |
 
 **Learns across projects.** A personal, human-gated **lessons referential**: after a hard-won fix or a correction, claude-base proposes a generalized, sanitized one-line lesson and — on your confirmation — stores it in your own `~/.claude/rules/lessons.md`, which Claude Code loads into **every** project. A mistake made once stops recurring everywhere; run `/lessons --bootstrap` to seed it from what you already learned. The lessons stay yours — never committed to any repo. [How it works →](docs/recipes/personal-lessons-referential.md)
@@ -303,7 +303,7 @@ The full documentation site lives at **[https://christopherlouet.github.io/claud
 
 It covers:
 - Quick start guide
-- Catalog of <!-- count:commands -->106<!-- /count --> commands, <!-- count:agents -->44<!-- /count --> agents, <!-- count:skills -->53<!-- /count --> skills, <!-- count:rules -->32<!-- /count --> rules
+- Catalog of <!-- count:commands -->106<!-- /count --> commands, <!-- count:agents -->44<!-- /count --> agents, <!-- count:skills -->53<!-- /count --> skills, <!-- count:rules -->34<!-- /count --> rules
 - Recommended workflows (Explore → Specify → Plan → TDD → Audit → Commit)
 - Stack Recipes: relevant commands per stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, AI/LLM, Business, Growth)
 - Specific guides: Learning path, Extending, Team, Prompting, Troubleshooting

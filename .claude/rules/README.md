@@ -17,7 +17,7 @@ paths:
 
 Modular rules applied automatically based on the modified files (path-specific rules).
 
-## Available rules (32)
+## Available rules (34)
 
 | Rule | Target paths | Description |
 |------|-------------|-------------|
@@ -36,6 +36,7 @@ Modular rules applied automatically based on the modified files (path-specific r
 | `nextjs` | `**/next.config.*`, `**/app/**`, `**/pages/**` | RSC, data fetching, caching, App Router |
 | `performance` | `**/*.tsx`, `**/*.ts`, `**/pages/**` | Core Web Vitals, lazy loading, memoization |
 | `php` | `**/*.php`, `**/composer.json` | PSR-12, Laravel, type declarations |
+| `prisma` | `**/schema.prisma`, `**/prisma/**`, `**/prisma.config.*` | Migrations (`migrate deploy`, two-step rename), secrets, `select` over `include` — kept out of the `dev-prisma` pointer so they load whichever skill fires |
 | `python` | `**/*.py`, `**/pyproject.toml` | Type hints, PEP 8, async patterns |
 | `react` | `**/*.tsx`, `**/components/**`, `**/hooks/**` | Components, hooks, performance |
 | `research` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, `**/*.dart`, `**/*.rs` | Minimal-code ladder (YAGNI → reuse → stdlib → native) before custom |
@@ -45,6 +46,7 @@ Modular rules applied automatically based on the modified files (path-specific r
 | `self-improvement` | _(global)_ | Personal cross-project lessons referential — human-gated capture + sanitize, stored in `~/.claude/rules/lessons.md` |
 | `service-worker` | `**/sw.js`, `**/service-worker*` | NEVER cache HTML navigations, bump cache version |
 | `base-maintenance` | `.claude/skills/**`, `.claude/agents/**`, `.claude/commands/**`, `.claude/rules/**`, `.claude/settings.json`, `scripts/hooks/**` | Sync counters, catalog, hook message when modifying the foundation |
+| `supabase` | `**/supabase/**`, `**/*supabase*` | RLS on every public table, `service_role` key server-side only, pooler — kept out of the `dev-supabase` pointer so they load whichever skill fires |
 | `svelte` | `**/*.svelte`, `**/*.svelte.ts`, `**/svelte.config.*` | Runes (Svelte 5), SvelteKit, form actions |
 | `tdd-enforcement` | `**/*.ts`, `**/*.tsx`, `**/*.dart`, `**/*.py`, `**/*.go`, ... | Proactive TDD mandatory for all code |
 | `testing` | `**/*.test.ts`, `**/*.spec.ts`, `**/tests/**` | 80% coverage, mocks, edge cases |
@@ -64,7 +66,7 @@ When a file matches several rules (e.g., `.tsx` activates typescript + react + a
 | 2 | `verification` | Mandatory verification before completion |
 | 3 | `tdd-enforcement` | TDD mandatory for all code |
 | 4 | Language rules (`typescript`, `python`, `go`...) | Language-specific conventions |
-| 5 | Framework rules (`react`, `nextjs`, `flutter`...) | Framework-specific conventions |
+| 5 | Framework rules (`react`, `nextjs`, `flutter`, `prisma`, `supabase`...) | Framework-specific conventions |
 | 6 | `testing` | Test standards |
 | 7 | `performance`, `accessibility`, `design-style` | Optimizations and best practices |
 | 8 | `api`, `lsp` | Interface conventions |

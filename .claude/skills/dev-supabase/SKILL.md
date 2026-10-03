@@ -32,15 +32,8 @@ The vendor covers the Supabase API surface. The foundation enforces version-agno
 - **Auth**: Supabase Auth is one option among many — cross-ref the `dev-auth` skill for framework-agnostic patterns (sessions, OAuth, magic links) before deciding on Supabase-specific flows.
 - **ORM interop**: Prisma operates against the same Postgres, and Supabase RLS coexists with Prisma queries — cross-ref the `dev-prisma` skill.
 - **General Postgres**: the vendor's `supabase-postgres-best-practices` skill is useful for any Postgres project, not just Supabase-managed — cross-ref the `ops-database` skill.
-- **Security**: RLS on every public table; never disable it to "make a query work" — cross-ref `.claude/rules/security.md`.
+- **Security**: RLS on every public table, `service_role` key server-side only — `.claude/rules/supabase.md` (below) and `.claude/rules/security.md`.
 
-## Foundation rules preserved
+## Foundation rules: `.claude/rules/supabase.md`
 
-- YOU MUST enable Row Level Security on every public-schema table before exposing it via PostgREST. No exceptions.
-- YOU MUST use the Supavisor pooler (port 6543) for serverless / edge runtimes. Direct connections (5432) exhaust limits.
-- NEVER `SELECT *` in production queries — specify columns (security + perf + payload size).
-- YOU MUST store monetary amounts as `INTEGER` cents, never `FLOAT` / `NUMERIC` rounded — avoids drift footgun.
-- YOU MUST index every foreign key and every column in frequent WHERE clauses.
-- YOU MUST use cursor-based pagination (`gt('created_at', ...)`) for large tables, never `range()` / OFFSET (slow scan).
-- NEVER commit `.env` with `SUPABASE_URL` / service-role key. Always `.env.example` with placeholders.
-- NEVER expose the `service_role` key client-side — it bypasses RLS. Use it only in server-side code (Edge Functions, API routes).
+The RLS, `service_role`, secret and query rules this pointer used to carry live in [`.claude/rules/supabase.md`](../../rules/supabase.md), scoped to the Supabase files. Installed together, only one of the two skills fires (measured 2026-10-03: Supabase's own skill alone 3/3, Prisma's pointer alone 3/3), so rules kept in a skill reach the session only when that skill wins — a rule loaded by the files holds whichever skill fires.

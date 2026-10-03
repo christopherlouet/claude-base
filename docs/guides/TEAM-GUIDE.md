@@ -293,7 +293,7 @@ the same ground on every Edit/Write.
 
 Files in `.claude/rules/` are committed to git and activate automatically based on the modified files. This is the most efficient mechanism to share code conventions without putting them in CLAUDE.md.
 
-The foundation includes 32 pre-configured rules. For a team, the most important to commit are:
+The foundation includes 34 pre-configured rules. For a team, the most important to commit are:
 
 | Rule | Automatic activation | Team usefulness |
 |------|---------------------|-----------------|
