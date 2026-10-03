@@ -16,7 +16,10 @@
 # by hand, never in CI (maintainer decision 2026-09-27).
 #
 # Usage:
-#   eval/skill-triggering/run.sh [--max-cost-usd N] [extra plugin eval args]
+#   eval/skill-triggering/run.sh [--max-cost-usd N] [--extra-skills DIR]
+#                                [extra plugin eval args]
+#     --extra-skills: also install each DIR/<skill>/ (vendor skills
+#     fetched at their pinned ref), to measure foundation-vs-vendor triggering.
 #     default ceiling: 3 USD. Model: your Claude Code default (pass --model
 #     to override). Results: eval/skill-triggering/results/<timestamp>/
 # =============================================================================
@@ -29,9 +32,17 @@ ROOT="$(cd "$HERE/../.." && pwd)"
 command -v claude >/dev/null 2>&1 || { echo "run.sh: claude CLI not found" >&2; exit 2; }
 
 MAX_COST="3"
-if [ "${1:-}" = "--max-cost-usd" ]; then
-    MAX_COST="${2:?--max-cost-usd needs a value}"
-    shift 2
+EXTRA_SKILLS=""
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --max-cost-usd) MAX_COST="${2:?--max-cost-usd needs a value}"; shift 2 ;;
+        --extra-skills) EXTRA_SKILLS="${2:?--extra-skills needs a directory}"; shift 2 ;;
+        *) break ;;
+    esac
+done
+if [ -n "$EXTRA_SKILLS" ] && [ ! -d "$EXTRA_SKILLS" ]; then
+    echo "run.sh: --extra-skills: not a directory: $EXTRA_SKILLS" >&2
+    exit 2
 fi
 
 WORK="$(mktemp -d)"
@@ -42,6 +53,30 @@ printf '{ "name": "claude-base-skills", "version": "0.0.0", "description": "clau
     > "$PLUGIN/.claude-plugin/plugin.json"
 cp -R "$ROOT/.claude/skills" "$PLUGIN/skills"
 cp -R "$HERE/cases" "$PLUGIN/evals"
+
+# --extra-skills: install third-party skills next to ours (each DIR/<skill>/
+# holding a SKILL.md — one level only, so a template SKILL.md nested inside a
+# skill is not mistaken for a skill), to measure which side fires when both are
+# present. A name already taken aborts: one would shadow the other.
+if [ -n "$EXTRA_SKILLS" ]; then
+    n=0
+    while IFS= read -r skill_md; do
+        src="$(dirname "$skill_md")"
+        dest="$PLUGIN/skills/$(basename "$src")"
+        if [ -e "$dest" ]; then
+            echo "run.sh: --extra-skills: $(basename "$src") collides with an installed skill" >&2
+            exit 2
+        fi
+        cp -R "$src" "$dest"
+        n=$((n + 1))
+    done < <(find "$EXTRA_SKILLS" -mindepth 2 -maxdepth 2 -name SKILL.md | sort)
+    [ "$n" -gt 0 ] || { echo "run.sh: --extra-skills: no <skill>/SKILL.md under $EXTRA_SKILLS" >&2; exit 2; }
+    echo "run.sh: $n extra skill(s) installed next to the foundation's" >&2
+else
+    # The vendor-*-coexist cases expect a vendor skill to fire: without one
+    # installed they can only fail, so they are left out of the suite.
+    rm -rf "$PLUGIN"/evals/vendor-*-coexist
+fi
 
 OUT="$HERE/results/$(date +%Y%m%dT%H%M%S)"
 mkdir -p "$OUT"
