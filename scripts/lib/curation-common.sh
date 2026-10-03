@@ -98,6 +98,69 @@ curation_b64decode() {
     fi
 }
 
+# curation_stable_release <owner/repo> [<like-tag>] — a stable release tag (no
+# draft, no prerelease), never the repo's "Latest" badge, which is its
+# maintainer's choice (prisma/orm set it on another product line: v0.17.0 beside
+# 7.10.0). Read only when the release list is unavailable.
+#   no <like-tag> (discovery): the most recently PUBLISHED stable release.
+#   with <like-tag> (watch): releases of the same SHAPE compete. The shape of a
+#     package tag (`pkg@1.0.0`, `@scope/pkg@0.2.0`) is everything before its last
+#     "@" (a digit in the name, vue2-lib@ vs vue3-lib@, never merges families);
+#     of any other tag, the prefix before the first digit ("", "v"...).
+#     - <like-tag> in the list: those published since it compete on VERSION
+#       (ties: the more recently published) — a later backport (6.19.3 after
+#       7.10.0) is not newer, an old mis-numbered v0.180.0 is out of the race.
+#     - <like-tag> not in the list (older than the first page, or a bare git
+#       tag): the most recently published of the shape — never "highest
+#       version", which an old mis-numbered release would win.
+#     - no release of the shape since the pin, but a newer one of another shape:
+#       the repo changed its tag style (v1.0.0, then 2.0.0); that newer release
+#       is returned so the change surfaces as drift. A repo still publishing in
+#       the pin's shape (two product lines) never crosses, and package tags
+#       (`pkg@`) never do: another family is another package, not a new style.
+# Echoes the tag, or nothing.
+curation_stable_release() {
+    local repo="$1" like="${2:-}" shape="" list tag
+    if [ -n "$like" ]; then
+        if [[ "$like" == *@* ]]; then shape="${like%@*}@"; else shape="${like%%[0-9]*}"; fi
+    fi
+    if list=$(curation_gh_api "repos/$repo/releases?per_page=100" 2>/dev/null) \
+        && printf '%s' "$list" | jq -e 'type == "array"' >/dev/null 2>&1; then
+        printf '%s' "$list" | jq -r --arg like "$like" --arg s "$shape" '
+            def shape: if test("@") then sub("@[^@]*$"; "") + "@" else sub("[0-9].*$"; "") end;
+            def ver: (if test("@") then sub("^.*@"; "") else . end)
+                     | sub("^[^0-9]*"; "") | [scan("[0-9]+") | tonumber];
+            [ .[] | select(.draft == false and .prerelease == false and (.tag_name | type == "string"))
+                  | .published_at |= (. // "") ] as $st
+            | if $like == "" then
+                ($st | max_by(.published_at) | .tag_name) // empty
+              else
+                [ $st[] | select(.tag_name | shape == $s) ] as $same
+                | (first($same[] | select(.tag_name == $like) | .published_at) // null) as $since
+                | if $since == null then
+                    ($same | max_by(.published_at) | .tag_name) // empty
+                  else
+                    [ $same[] | select(.published_at >= $since) ] as $cand
+                    | [ $st[] | select(($s | test("@") | not) and (.tag_name | test("@") | not)
+                                       and (.tag_name | shape) != $s and .published_at > $since) ] as $other
+                    | if ($cand | map(select(.tag_name != $like)) | length) == 0 and ($other | length) > 0
+                      then ($other | max_by(.published_at) | .tag_name)
+                      else ($cand | max_by([(.tag_name | ver), .published_at]) | .tag_name) // empty
+                      end
+                  end
+              end'
+        return 0
+    fi
+    tag=$(curation_gh_api "repos/$repo/releases/latest" 2>/dev/null | jq -r '.tag_name // empty' 2>/dev/null)
+    [ -n "$tag" ] || return 0
+    if [ -n "$like" ]; then
+        local tshape
+        if [[ "$tag" == *@* ]]; then tshape="${tag%@*}@"; else tshape="${tag%%[0-9]*}"; fi
+        [ "$tshape" = "$shape" ] || return 0
+    fi
+    printf '%s\n' "$tag"
+}
+
 # curation_finding_json — emit one normalized finding object for a digest
 # (Slice 3 consumes these). Args: subject type evidence action.
 curation_finding_json() {
