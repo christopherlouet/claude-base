@@ -10,7 +10,7 @@ $ARGUMENTS
 Define and manage infrastructure declaratively, reproducibly and version-controlled,
 with reusable modules and a CI/CD pipeline.
 
-Use the `ops-infra-code` skill for detailed Terraform patterns.
+Use the `ops-infra-code` skill for the core patterns and the foundation's discipline; it points to Babenko's and HashiCorp's skills for depth.
 
 ## Workflow
 

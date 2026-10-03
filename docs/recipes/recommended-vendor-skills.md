@@ -439,7 +439,7 @@ git clone --depth 1 --branch v1.17.1 https://github.com/antonbabenko/terraform-s
 ln -s ~/dev/vendor-skills/terraform-skill/skills/terraform-skill ./.claude/skills/terraform-skill
 ```
 
-**Provenance & advice-neutrality**: community-authored (Anton Babenko, independent maintainer), Apache-2.0 (the LICENSE preamble hides it from GitHub's detector). A root `mcp.json` serves other harnesses; linking the skill folder does not load it.
+**Provenance & advice-neutrality**: community-authored (Anton Babenko, independent maintainer), Apache-2.0 (the LICENSE preamble hides it from GitHub's detector). A root `mcp.json` serves other harnesses; linking the skill folder does not load it. Its security reference installs Trivy with an unpinned `curl … | sh` — prefer a pinned release.
 
 ---
 
@@ -449,15 +449,16 @@ ln -s ~/dev/vendor-skills/terraform-skill/skills/terraform-skill ./.claude/skill
 
 **When to install**: Terraform projects that want the vendor's own conventions next to Babenko's depth.
 
-**Install** the skill folders, not the plugins:
+**Install** the skill folders, not the plugins (pinned release):
 ```bash
-npx skills add hashicorp/agent-skills/terraform/code-generation/skills/terraform-style-guide
-npx skills add hashicorp/agent-skills/terraform/code-generation/skills/terraform-test
+git clone --depth 1 --branch v1.0.0 https://github.com/hashicorp/agent-skills ~/dev/vendor-skills/hashicorp
+ln -s ~/dev/vendor-skills/hashicorp/terraform/code-generation/skills/terraform-style-guide ./.claude/skills/terraform-style-guide
+ln -s ~/dev/vendor-skills/hashicorp/terraform/code-generation/skills/terraform-test ./.claude/skills/terraform-test
 ```
 
 **Caution**: the repo's Claude plugins (`terraform-code-generation`, `-module-generation`, `-policy-code`) also register an MCP server running the unpinned `hashicorp/terraform-mcp-server` Docker image with your `TFE_TOKEN`.
 
-**Provenance & advice-neutrality**: HashiCorp (IBM), MPL-2.0, release `v1.0.0`. Teaches Terraform, not a paid HashiCorp product; HCP-specific skills are opt-in.
+**Provenance & advice-neutrality**: HashiCorp (IBM), MPL-2.0, release `v1.0.0`. The two recommended skills teach Terraform itself; its Stacks and policy skills lean on HCP Terraform / Terraform Enterprise (paid) — opt-in.
 
 ---
 
@@ -471,10 +472,10 @@ npx skills add hashicorp/agent-skills/terraform/code-generation/skills/terraform
 
 **Install**:
 ```bash
-npx skills add docker/skills --skill docker-project-foundations --yes
-npx skills add docker/skills --skill docker-build-strategies --yes
-npx skills add docker/skills --skill docker-compose-patterns --yes
-npx skills add docker/skills --skill docker-destructive-guardrails --yes
+npx skills add https://github.com/docker/skills/tree/v0.3.1 --skill docker-project-foundations --yes
+npx skills add https://github.com/docker/skills/tree/v0.3.1 --skill docker-build-strategies --yes
+npx skills add https://github.com/docker/skills/tree/v0.3.1 --skill docker-compose-patterns --yes
+npx skills add https://github.com/docker/skills/tree/v0.3.1 --skill docker-destructive-guardrails --yes
 ```
 
 **Provenance & advice-neutrality**: Docker Inc., Apache-2.0, release `v0.3.1`. The foundation's safety screen flags the repo on fixtures of Docker's own content-risk scanner and on one Dockerfile tip — both read and judged false positives (2026-10-03).

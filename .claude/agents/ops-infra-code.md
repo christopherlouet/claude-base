@@ -10,7 +10,7 @@ skills:
 
 # Agent OPS-INFRA-CODE
 
-Infrastructure as Code with Terraform/OpenTofu. The `ops-infra-code` skill provides the detailed patterns.
+Infrastructure as Code with Terraform/OpenTofu. The preloaded `ops-infra-code` skill provides the core patterns and the foundation's discipline; the HCL depth lives in Babenko's and HashiCorp's skills (see the end of this file).
 
 ## Workflow
 

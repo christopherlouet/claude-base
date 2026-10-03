@@ -16,7 +16,7 @@ Docker containerization optimized for production.
 2. **Docker Compose**: app + db + redis, healthchecks, depends_on, persistent volumes
 3. **.dockerignore**: node_modules, .git, .env*, tests, coverage
 4. **Size optimization**: Alpine (-70%), multi-stage (-50%), --no-cache-dir
-5. **Security**: official images, non-root user, no secrets in the image, docker scan
+5. **Security**: official images, non-root user, no secrets in the image, image scan (`docker scout cves` or `trivy image`)
 
 ## Supported stacks
 

@@ -16,10 +16,11 @@ Docker Inc. publishes its own agent skills at [`docker/skills`](https://github.c
 | `docker-destructive-guardrails` | Before any `docker` command that deletes or resets state |
 
 ```bash
-npx skills add docker/skills --skill docker-project-foundations --yes
-npx skills add docker/skills --skill docker-build-strategies --yes
-npx skills add docker/skills --skill docker-compose-patterns --yes
-npx skills add docker/skills --skill docker-destructive-guardrails --yes
+# pinned release (Docker's README documents the tree/<tag> form)
+npx skills add https://github.com/docker/skills/tree/v0.3.1 --skill docker-project-foundations --yes
+npx skills add https://github.com/docker/skills/tree/v0.3.1 --skill docker-build-strategies --yes
+npx skills add https://github.com/docker/skills/tree/v0.3.1 --skill docker-compose-patterns --yes
+npx skills add https://github.com/docker/skills/tree/v0.3.1 --skill docker-destructive-guardrails --yes
 ```
 
 The repo's other seven skills (Docker Agent, Docker Sandboxes) are product-specific; install them only if you use those products. The three skills that ship a `scripts/verify-*.sh` only build the image and validate the Compose file.

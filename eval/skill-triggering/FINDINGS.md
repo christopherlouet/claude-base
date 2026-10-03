@@ -215,3 +215,14 @@ A blind outcome comparison (12 planted defects in a React dashboard, Opus grader
 with a run-to-run spread larger than any gap between arms (vendor 7.0 mean over
 5 runs, pointer 7.25 over 4, no skill 6.3 over 3). An early "vendor 8 vs 6–7"
 from two runs per arm did not survive more runs.
+
+## 2026-10-03 — `ops-infra-code` next to Babenko's and HashiCorp's skills
+
+`ops-infra-code-fires` ("Write a Terraform module for an S3 bucket… state stored
+remotely in S3"), 3 runs, `claude-opus-5-5`, with `terraform-skill` (Babenko
+v1.17.1), `terraform-style-guide` and `terraform-test` (HashiCorp v1.0.0)
+installed: `ops-infra-code` ×3, the vendor skills never fire; alone, also ×3.
+Same pattern as `dev-react-perf`: the foundation pointer wins the trigger, so it
+keeps the core HCL patterns (layout, naming, block order, `count` vs
+`for_each`, testing ladder) next to its discipline — the `ops-infra-code` agent
+preloads it and has no Skill tool to load the vendor skills either.

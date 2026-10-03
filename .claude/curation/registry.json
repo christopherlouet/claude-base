@@ -366,14 +366,16 @@
       "flags": [
         "license: Apache-2.0 — LICENSE carries a copyright/promo preamble before the Apache text, so GitHub reports NOASSERTION; SKILL.md frontmatter says Apache-2.0",
         "community bar: 2,397 stars (>= 500)",
-        "safety screen v1.17.1: pass",
         "a root mcp.json (docker run hashicorp/terraform-mcp-server:latest) serves other harnesses; the recipe links skills/terraform-skill only",
-        "reduced 2026-10-03: ops-infra-code was an excerpt of this skill; now a pointer keeping state/plan/scan/deploy-gate discipline"
+        "reduced 2026-10-03: ops-infra-code was an excerpt of this skill; now a pointer keeping state/plan/scan/deploy-gate discipline",
+        "safety screen v1.17.1: pass — exec surface and root docs only (root record: the screen does not open skills/terraform-skill/)",
+        "read 2026-10-03: references/security-compliance.md installs Trivy with an unpinned pipe-to-shell line — a doc instruction, not executed; the foundation skill tells users to prefer a pinned release",
+        "triggering 2026-10-03 (Opus, 3/3): installed together, ops-infra-code fires and the vendor skills do not — the pointer keeps the core HCL patterns for that reason and for its agent, which preloads it"
       ]
     },
     {
       "foundationSkill": "ops-infra-code",
-      "vendorId": "hashicorp/agent-skills/terraform/code-generation+terraform/module-generation+terraform/policy",
+      "vendorId": "hashicorp/agent-skills/terraform/code-generation/skills/terraform-style-guide+terraform/code-generation/skills/terraform-test",
       "vendorUrl": "https://github.com/hashicorp/agent-skills",
       "pinnedRef": "v1.0.0",
       "trustTrack": "authority",
@@ -386,7 +388,7 @@
       "flags": [
         "Terraform-only: no OpenTofu coverage (Babenko's skill keeps that)",
         "its Claude plugins register an MCP server running the unpinned hashicorp/terraform-mcp-server image with TFE_TOKEN: recommend the skill folders, not the plugins",
-        "safety screen v1.0.0: pass"
+        "scoped to the two skill dirs the foundation recommends, so the screen reads their SKILL.md bodies (the plugin dirs above them hold none)"
       ]
     },
     {
