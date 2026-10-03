@@ -258,3 +258,29 @@ The official architecture skill (MVVM + `ChangeNotifier`) never fires in the BLo
 project, so it cannot contradict `dev-flutter`'s layering. Without the scaffold
 (`dev-flutter-fires`, empty workspace, no write grant) two of three runs used no
 skill and asked where the project was.
+
+**Replay of the 2026-10-03 coexistence cases with Write/Edit granted** (Opus,
+3 runs, same vendor sets, skills as on `main` after #630–#633):
+
+| Case | 2026-10-03 (no write) | 2026-10-04 (write granted) |
+|---|---|---|
+| `vendor-prisma-coexist` | `prisma-cli` ×3 (after #630) | **`prisma-cli` ×1, no skill ×2** |
+| `vendor-supabase-coexist` | `supabase` ×3 | `supabase` ×3 |
+| `vendor-shadcn-coexist` | `shadcn` ×3, `dev-shadcn` also ×1 | `shadcn` ×3 alone |
+| `vendor-graphql-coexist` | `apollo-server` ×3 | `apollo-server` ×3 |
+| `vendor-nextjs-coexist` | `dev-nextjs` ×3 | `dev-nextjs` ×3 |
+| `vendor-document-app-coexist` | `dev-document` ×3 | `dev-document` ×3 |
+| `vendor-document-author-coexist` | `docx` ×3 | `docx` ×3 |
+| `dev-react-perf-fires` (Vercel installed) | `dev-react-perf` ×3 | `dev-react-perf` ×3 |
+| `ops-infra-code-fires` (Babenko + HashiCorp installed) | `ops-infra-code` ×3 | `ops-infra-code` ×3 |
+
+The decisions of #632 and #633 hold. Prisma does not: able to write, Opus edits
+`schema.prisma` itself in two runs of three, and `dev-prisma` — told to step
+aside when a `prisma-*` skill is installed — leaves the session with no skill,
+as the deferring `dev-react-perf` description did. The safety rules still load
+from `.claude/rules/prisma.md` (path-scoped); the pointer's description is an
+open question.
+
+**Open**: `work-quick-fires` now fails its 1.0 threshold (1/3). A typo fixed
+without the skill may be the right outcome; the case or the description needs a
+decision.

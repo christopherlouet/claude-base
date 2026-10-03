@@ -43,8 +43,19 @@ class AuthFailure extends AuthState { AuthFailure(this.error); final String erro
 
 // BLoC
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc(): super(AuthInitial()) {
+  final AuthRepository _repository;
+
+  AuthBloc(this._repository) : super(AuthInitial()) {
     on<LoginRequested>(_onLogin);
+  }
+
+  Future<void> _onLogin(LoginRequested event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    try {
+      emit(AuthSuccess(await _repository.login(event.email, event.password)));
+    } catch (e) {
+      emit(AuthFailure(e.toString()));
+    }
   }
 }
 ```
@@ -68,9 +79,10 @@ testWidgets('shows button', (tester) async {
 // BLoC test
 blocTest<AuthBloc, AuthState>(
   'emits [Loading, Success] on login',
-  build: () => AuthBloc(),
+  build: () => AuthBloc(FakeAuthRepository()),
   act: (bloc) => bloc.add(LoginRequested('email', 'pass')),
-  expect: () => [AuthLoading(), isA<AuthSuccess>()],
+  // states have no == (no Equatable): match them by type
+  expect: () => [isA<AuthLoading>(), isA<AuthSuccess>()],
 );
 ```
 
@@ -78,7 +90,6 @@ blocTest<AuthBloc, AuthState>(
 
 This skill holds the foundation's architecture opinion (Clean Architecture + BLoC). For the framework itself, the Flutter team publishes its own skills at [`flutter/agent-plugins`](https://github.com/flutter/agent-plugins) (BSD-3-Clause): layouts and layout fixes, declarative routing, HTTP, JSON serialization, widget and integration tests, localization, plus 15 Dart skills. Its plugin also starts the Dart SDK's own MCP server (`dart mcp-server`, local).
 
-- **Architecture differs**: the official `flutter-apply-architecture-best-practices` teaches MVVM with `ChangeNotifier`. In a BLoC project, this skill's layering wins (`.claude/rules/vendor-precedence.md`: structure is the foundation's call; framework APIs are the vendor's).
-- **Deeper BLoC**: [`HoangNguyen0403/agent-skills-standard`](https://github.com/HoangNguyen0403/agent-skills-standard) — `skills/flutter/flutter-bloc-state-management` and `flutter-feature-based-clean-architecture` (MIT, community, 569★). Link those two folders only: the repo's own hooks and MCP server are for its development.
+- **Architecture differs**: the official `flutter-apply-architecture-best-practices` teaches MVVM with `ChangeNotifier`. A project that already chose BLoC keeps it: follow the project's established pattern, use the official skills for the framework APIs (layout, routing, HTTP, JSON, tests).
+- **Deeper BLoC**: [`HoangNguyen0403/agent-skills-standard`](https://github.com/HoangNguyen0403/agent-skills-standard) — `skills/flutter/flutter-bloc-state-management` and `flutter-feature-based-clean-architecture` (MIT, community, 569★), pinned at commit `1fb0537c339c`. Link those two folders only: they hold nothing but their `references/`; the repo's hooks, agents and MCP config are for its own development.
 
-Measured 2026-10-04 (Opus, 3 runs, a BLoC project): with all 25 official skills and the two BLoC skills installed, this skill fires and the vendor skills do not — so no MVVM advice reaches a BLoC project uninvited.

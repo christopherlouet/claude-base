@@ -345,9 +345,10 @@ git clone --depth 1 https://github.com/addyosmani/web-quality-skills ~/dev/vendo
 
 **Pair with**: claude-base's `qa-chrome` skill (manual review checklist with `--chrome`).
 
-**Install** (pinned):
+**Install**:
 ```bash
-# skills + MCP server; the plugin pins chrome-devtools-mcp@1.10.1 at release v1.10.1
+# skills + MCP server; the marketplace follows the default branch (it pinned
+# chrome-devtools-mcp@1.10.1 on 2026-10-04) — only the line below is pinned by us
 /plugin marketplace add ChromeDevTools/chrome-devtools-mcp
 /plugin install chrome-devtools-mcp@chrome-devtools-plugins
 # or the MCP server alone
@@ -366,7 +367,7 @@ The npm package is `chrome-devtools-mcp`; the scoped package name this entry use
 
 **When to install**: any Flutter project.
 
-**Pair with**: claude-base's `dev-flutter` for the architecture: the official guide teaches MVVM with `ChangeNotifier`, `dev-flutter` Clean Architecture + BLoC. For deeper BLoC, `HoangNguyen0403/agent-skills-standard` (`skills/flutter/flutter-bloc-state-management`, `flutter-feature-based-clean-architecture`; MIT, 569★) — link those folders only.
+**Pair with**: claude-base's `dev-flutter` for the architecture: the official guide teaches MVVM with `ChangeNotifier`, `dev-flutter` Clean Architecture + BLoC. For deeper BLoC, `HoangNguyen0403/agent-skills-standard` (`skills/flutter/flutter-bloc-state-management`, `flutter-feature-based-clean-architecture`; MIT, 569★) at commit `1fb0537c339c` — link those two folders only.
 
 **Install** (no skills release yet: pin the commit):
 ```bash
