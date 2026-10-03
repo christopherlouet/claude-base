@@ -1,6 +1,6 @@
 ---
 name: dev-document
-description: Generation of documents (PDF, DOCX, XLSX, PPTX). Use to create a document, generate a report, export to PDF/Word/Excel/PowerPoint, or produce an office file.
+description: Code that generates documents inside an application (PDF, DOCX, XLSX, PPTX). Use to add an export, an invoice or a report generator to an app. For Claude to write or edit an office file itself, Anthropic's docx/pdf/xlsx/pptx skills fit better.
 tools: Read, Grep, Glob, Edit, Write, Bash
 model: sonnet
 ---
@@ -46,3 +46,7 @@ Create documents in common formats:
 - Use templates when possible
 - Handle generation errors
 - Validate input data
+
+## See also
+
+When the task is a file to write, read or edit directly rather than code that generates one, Anthropic's [`docx`, `pdf`, `xlsx`, `pptx` skills](https://github.com/anthropics/skills/tree/main/skills) are deeper (existing files, tracked changes, forms, OCR). Proprietary terms: point to them, never copy.

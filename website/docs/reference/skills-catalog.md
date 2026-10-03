@@ -62,7 +62,7 @@ cannot drift apart.
 | `qa-design` | "design audit", "UI/UX", "user interface" | fork |
 | `api-mocking` | "mock API", "MSW", "test without backend" | inline |
 | `state-management` | "state", "Redux", "Zustand", "store" | inline |
-| `dev-document` | "PDF", "DOCX", "XLSX", "PPTX", "document", "report" | inline |
+| `dev-document` | "PDF export", "invoice", "report job", "generate DOCX/XLSX/PPTX" from app code | inline |
 | `growth-cro` | "conversion", "CRO", "signup flow", "onboarding", "paywall" | inline |
 | `parallel-agents` | "parallel", "concurrent", "fan-out", "multi-agents" | inline |
 | `agent-teams` | "agent team", "swarm", "agent team", "parallel agents" | inline |

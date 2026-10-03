@@ -44,3 +44,7 @@ YOU MUST prioritize CRITICAL > HIGH > MEDIUM > LOW.
 NEVER optimize prematurely - profile first, optimize later.
 
 Think hard about the effort/gain ratio of each optimization.
+
+## See also
+
+The rule set behind this workflow's priorities is Vercel's [`react-best-practices`](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices) (70 rules ranked by impact, MIT). Install it next to the foundation: the `dev-react-perf` skill points to it and keeps only what it leaves out (list virtualization, state colocation, profiling tools, Core Web Vitals targets).

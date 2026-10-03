@@ -331,6 +331,25 @@
       "flags": [
         "reduce-planned"
       ]
+    },
+    {
+      "foundationSkill": "dev-react-perf",
+      "vendorId": "vercel-labs/agent-skills/skills/react-best-practices+skills/composition-patterns",
+      "vendorUrl": "https://github.com/vercel-labs/agent-skills",
+      "pinnedRef": "063bee94c3f4df8453406c830b0a7df0f2860278",
+      "trustTrack": "authority",
+      "trustVerdict": "pass",
+      "provenance": "Vercel",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-10-03",
+      "status": "candidate",
+      "sourceAudit": "supply-audit-2026-10-03",
+      "flags": [
+        "license: MIT in each SKILL.md frontmatter (no LICENSE file at the root)",
+        "reduced 2026-10-03: dev-react-perf is a pointer keeping list virtualization, state colocation, profiling tools and Core Web Vitals targets (absent from the vendor's 72 files)",
+        "triggering: installed together, dev-react-perf fires and the vendor skill does not (Opus, 3/3); a description that defers to the vendor left NO skill firing — so the pointer carries a 5-line condensed top of the vendor ranking",
+        "outcome comparison (12 planted defects, blind-graded): no measurable difference between the two skills on Opus 5.5 or Haiku 4.5 — graduation rests on maintenance, not on a measured gain"
+      ]
     }
   ]
 }
