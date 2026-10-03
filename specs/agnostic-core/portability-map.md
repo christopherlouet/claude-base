@@ -40,6 +40,7 @@ Classification values:
 | `setup-deps.sh` | assistant-only | install plumbing (deps; delegates the git wiring to `git-hooks-wire.sh`) |
 | `git-hooks-wire.sh` | **portable** | pure git/shell: repairs a broken `core.hooksPath` so the committed `.husky/` runs. No harness envelope, no stdin, no exit-2 — any transport can call it verbatim, or a plain shell can |
 | `_gate-budget.sh` | **portable** | sourced helper, pure shell: one time budget per blocking gate (`timeout`/`gtimeout` when present); no harness envelope, no stdin |
+| `_node-runtime.sh` | **portable** | sourced helper, pure shell: runs a gate's npm checks on the project's own Node (`mise exec` when a mise config is present; skips them, with the reason, below `engines.node`); no harness envelope, no stdin |
 | `scratchpad-check.sh` | assistant-only | reads the SessionStart payload (`scratchpad_dir`) to locate Claude Code's temp tree; the size/ownership scan itself is plain shell. Reports only, exit 0 always |
 
 Content categories (context for a future emitter; measured 2026-07-17):

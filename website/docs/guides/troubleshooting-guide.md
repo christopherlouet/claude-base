@@ -91,9 +91,12 @@ flutter test
 **If the tests fail legitimately** (known technical debt, work in progress):
 
 ```bash
-# Disable pre-commit tests for this commit only
-SKIP_PRE_COMMIT_TESTS=1 git commit -m "wip: ..."
+# Launch Claude Code with the pre-commit tests disabled (the hook reads Claude
+# Code's environment; a prefix on the git command does not reach it)
+SKIP_PRE_COMMIT_TESTS=1 claude
 ```
+
+Or run that one commit yourself in your terminal: it does not go through Claude Code's hooks.
 
 **If the hook is faulty** (missing Husky, script not found):
 
@@ -182,10 +185,11 @@ The `Command validator` hook analyzes 9 risk categories. Some valid commands may
 tail -10 ~/.local/state/claude-base/permissions.log
 ```
 
-**Bypass for a specific command:**
+**Bypass for one launch** (the validator reads Claude Code's environment; a prefix on the
+command Claude runs does not reach it):
 
 ```bash
-SKIP_COMMAND_VALIDATOR=1 <command>
+SKIP_COMMAND_VALIDATOR=1 claude
 ```
 
 **Bypass permanently for a session:**
@@ -383,16 +387,12 @@ git stash pop
 
 ### Disable hooks temporarily
 
-If a hook persistently blocks the work, disable it via environment variables. Several methods:
+If a hook persistently blocks the work, disable it via environment variables. These hooks run
+in Claude Code's own process and read **its** environment: a variable written in front of the
+command (`SKIP_PRE_PUSH_CI=1 git push` typed by Claude) never reaches them. Set it where Claude
+Code gets its environment instead:
 
-**For a single command:**
-
-```bash
-SKIP_PRE_COMMIT_TESTS=1 git commit -m "..."
-SKIP_PRE_PUSH_CI=1 git push
-SKIP_COMMAND_VALIDATOR=1 <command>
-SKIP_DESTRUCTIVE_CHECK=1 <command>
-```
+**For one launch:** `SKIP_PRE_PUSH_CI=1 claude` (or `export` it in the shell before `claude`).
 
 **For an entire session (in `.claude/settings.local.json`, not committed):**
 
@@ -404,6 +404,9 @@ SKIP_DESTRUCTIVE_CHECK=1 <command>
   }
 }
 ```
+
+A command you run yourself in your terminal (or with `!` in the prompt) does not go through
+these hooks at all.
 
 Available variables:
 
