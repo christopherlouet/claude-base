@@ -31,7 +31,7 @@
 | `/dev:dev-tdd` | TDD cycle + generate tests for existing code + test infra setup |
 | `/dev:dev-debug` | Debug an issue (4-phase methodology) |
 | `/dev:dev-refactor` | Guided refactoring + entropy reduction |
-| `/dev:dev-document` | Document generation (PDF, DOCX, XLSX, PPTX) |
+| `/dev:dev-document` | Code that generates documents in your app (PDF, DOCX, XLSX, PPTX) |
 | `/dev:dev-api` | Create/document a REST, GraphQL, or tRPC API + versioning |
 | `/dev:dev-component` | Create a complete UI component (or custom hook) |
 | `/dev:dev-error-handling` | Error handling strategy |

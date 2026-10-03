@@ -11,8 +11,8 @@ Generation of office documents and reports.
 
 ## Goal
 
-Create documents in common formats:
-- PDF (via Puppeteer/html-pdf)
+Write the code that makes the application generate documents in common formats:
+- PDF (via Puppeteer or Playwright, WeasyPrint for Python)
 - DOCX (via docx)
 - XLSX (via exceljs)
 - PPTX (via pptxgenjs)
@@ -29,15 +29,15 @@ Create documents in common formats:
 
 | Format | Library | Install |
 |--------|-----------|---------|
-| PDF | puppeteer / html-pdf | `npm i puppeteer` |
+| PDF | puppeteer / playwright | `npm i puppeteer` |
 | DOCX | docx | `npm i docx` |
 | XLSX | exceljs | `npm i exceljs` |
 | PPTX | pptxgenjs | `npm i pptxgenjs` |
 
 ## Expected output
 
-- Document generated in the requested format
-- Reusable generation code
+- Generation code wired into the project (endpoint, job or script)
+- A sample document produced by that code, to check the output
 - Usage instructions
 
 ## Constraints

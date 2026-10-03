@@ -5,19 +5,19 @@ description: React/Next.js performance optimization. Points to Vercel's react-be
 
 # React Performance (pointer + gaps)
 
-**If the `vercel-react-best-practices` skill is installed, invoke it now** (Skill tool) and apply its rules first. Either way, check the top of its ranking before anything else:
+**If the `vercel-react-best-practices` skill is installed, invoke it now** (Skill tool) and apply its rules first. Either way, check these before anything else — the first two are the vendor's CRITICAL categories, the last three the re-render traps this foundation sees most:
 
-1. **Request waterfalls (CRITICAL)** — independent requests awaited one after another: start them together (`Promise.all`), await late, stream with Suspense.
-2. **Bundle size (CRITICAL)** — whole-library or barrel imports (`import { x } from 'lodash'`): import the path; load rarely used heavy UI (modals, charts, editors) with `lazy()` / `next/dynamic`.
-3. **Derived state** — never copy props into state through `useEffect` + `setState`: compute during render, `useMemo` if expensive.
-4. **Memo that cannot work** — a `memo` child receiving inline arrows or inline objects re-renders anyway: pass stable callbacks and hoisted constants.
-5. **Context values** — a provider `value={{ ... }}` built on every render re-renders every consumer: memoize it or split the context.
+1. **Request waterfalls** (vendor, CRITICAL) — independent requests awaited one after another: start them together (`Promise.all`), await late, stream with Suspense.
+2. **Bundle size** (vendor, CRITICAL) — whole-library or barrel imports (`import { x } from 'lodash'`): import the path; load rarely used heavy UI (modals, charts, editors) with `lazy()` / `next/dynamic`.
+3. **Derived state** (vendor, re-render category) — never copy props into state through `useEffect` + `setState`: compute during render, `useMemo` if expensive.
+4. **Memo that cannot work** (foundation) — a `memo` child receiving inline arrows or inline objects re-renders anyway: pass stable callbacks and hoisted constants.
+5. **Context values** (foundation) — a provider `value={{ ... }}` built on every render re-renders every consumer: memoize it or split the context.
 
-(Condensed from Vercel's ranking, MIT; the vendor skill holds the reasoning and the other 65 rules.)
+With the React Compiler enabled, items 4 and 5 are handled for you: it memoizes components and values itself (the vendor skill says the same of `memo`/`useMemo`).
 
 Vercel Engineering publishes the canonical rule set at [`vercel-labs/agent-skills/skills/react-best-practices`](https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices) (MIT): 70 rules in 8 categories ranked by impact, starting with the two CRITICAL ones — eliminating request waterfalls and bundle size — then server/client data fetching, re-renders, rendering and JS micro-optimizations. Its companion [`composition-patterns`](https://github.com/vercel-labs/agent-skills/tree/main/skills/composition-patterns) covers compound components and boolean-prop explosion.
 
-Why a pointer: the vendor maintains its rules with each React and Next.js release, while this skill's former 211-line version had gone stale (it still cited FID, retired in 2024, and a react-window API removed in v2). A blind outcome comparison on 2026-10-03 (12 planted defects) found no measurable difference between the two skills: 11/12 for both, and for no skill at all, on Opus 5.5; on Haiku 4.5 the run-to-run spread (5 to 9 out of 12) was larger than any gap between arms.
+Why a pointer: the vendor maintains its rules with each React and Next.js release; this skill's former 211-line version had gone stale (FID, retired in 2024; a react-window API removed in v2). Measurements behind this change: `eval/skill-triggering/FINDINGS.md`.
 
 ## Delegate to the vendor skill
 
@@ -31,7 +31,7 @@ Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipe
 
 ## What the vendor skill leaves out
 
-Virtualization, state colocation and the profiling tools below appear in none of its 72 files. In the 2026-10-03 run on Opus, every arm — vendor skill included — left the 5,000-row table fully mounted.
+Virtualization, state colocation and the profiling tools below appear in none of its 72 files (it does cover `content-visibility` for long lists, a lighter alternative).
 
 ### Long lists: virtualize
 
@@ -96,6 +96,8 @@ function Page() {
 
 Typical case: a clock, a timer or a search input whose state sits at the app root re-renders the whole tree on every tick or keystroke. Move that state into the small component that displays it.
 
+When the state cannot move down (a provider, a layout that owns it), lift the expensive content up instead: pass it as `children`. Elements created by the parent are not re-created when the wrapper's state changes, so they do not re-render.
+
 ## Core Web Vitals targets
 
 | Metric | Good | Needs work | Poor |
@@ -110,7 +112,7 @@ Measure before and after a change; the `qa-perf` skill holds the measurement wor
 
 ```bash
 npx lighthouse https://example.com --view     # lab LCP / INP proxy (TBT) / CLS
-npm run build -- --analyze                     # bundle composition (Next.js: @next/bundle-analyzer)
+ANALYZE=true npm run build                     # bundle composition (Next.js, with @next/bundle-analyzer wired in next.config)
 ```
 
 - **React DevTools Profiler** — which components rendered, why, and for how long.

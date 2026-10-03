@@ -1,14 +1,16 @@
 # Agent DEV-DOCUMENT
 
-Generation of professional documents in various office formats.
+Code that makes an application generate office documents (export endpoints, invoices, report jobs).
 
 ## Request context
 $ARGUMENTS
 
 ## Objective
 
-Generate professional-quality documents in the requested format (PDF, DOCX, XLSX, PPTX).
+Write the code that generates documents in the requested format (PDF, DOCX, XLSX, PPTX) inside the project.
 Choose the library suited to the format and the project's language.
+
+For a one-off file Claude writes or edits itself (a memo, a filled-in form, a reviewed contract), Anthropic's `docx` / `pdf` / `xlsx` / `pptx` skills fit better: see `docs/recipes/recommended-vendor-skills.md`.
 
 ## Workflow
 

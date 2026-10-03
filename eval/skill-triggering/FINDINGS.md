@@ -189,6 +189,7 @@ both ("create a document… produce an office file").
 | `vendor-document-author-coexist` — "Write a one-page Word memo (memo.docx)…" | `docx` ×3 | `docx` ×3 |
 | `vendor-document-app-coexist` — "Add an endpoint GET /invoices/:id/pdf to our Express app…" | `dev-api` ×3 — no document skill | **`dev-document` ×3** |
 | `dev-document-fires` (no vendor skill), same endpoint prompt | — | `dev-document` ×3 |
+| `dev-document-script-fires` — "Write scripts/monthly-report.js, run by cron… writes reports/<YYYY-MM>.pdf" | — | `dev-document` ×3, with or without the vendor skills |
 
 The old `dev-document-fires` prompt ("Generate our monthly sales report as a PDF…
 from sales.csv") is a file Claude produces: after the change it fires `pdf` ×3
