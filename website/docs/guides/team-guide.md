@@ -138,8 +138,9 @@ SessionStart: Verify .env in .gitignore
 To disable a hook on the fly without modifying the shared config:
 
 ```bash
-# Skip pre-commit tests once
-SKIP_PRE_COMMIT_TESTS=1 git commit -m "fix: typo correction"
+# Skip pre-commit tests for one Claude Code launch (hooks read Claude Code's
+# environment: a prefix on the git command does not reach them)
+SKIP_PRE_COMMIT_TESTS=1 claude
 
 # Allow a direct modification on main (exceptional case)
 ALLOW_MAIN_EDIT=1 claude
