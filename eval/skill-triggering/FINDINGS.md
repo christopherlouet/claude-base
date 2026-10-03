@@ -226,3 +226,35 @@ Same pattern as `dev-react-perf`: the foundation pointer wins the trigger, so it
 keeps the core HCL patterns (layout, naming, block order, `count` vs
 `for_each`, testing ladder) next to its discipline — the `ops-infra-code` agent
 preloads it and has no Skill tool to load the vendor skills either.
+
+## 2026-10-04 — the harness never granted Write/Edit; `dev-flutter` next to the Flutter team's skills
+
+**Harness defect.** A case's `allowed_tools` lists what the model may use, but
+`claude plugin eval` withholds Write and Edit unless the run grants them with
+`--allow-tools`. `run.sh` did not, so every session since 2026-09-27 chose its
+skill unable to write a file (one `dev-flutter-fires` run said so). Fixed:
+`run.sh` passes `--allow-tools Write,Edit`. Three earlier cases replayed with the
+grant (Opus, 3 runs):
+
+| Case | Before (no write) | With Write/Edit |
+|---|---|---|
+| `dev-tdd-fires` | `dev-tdd` ×3 | `dev-tdd` ×3 |
+| `dev-debug-hard-fires` | `dev-debug` ×3 | `dev-debug` ×3 |
+| `work-quick-fires` — "Fix the typo in README.md" | `work-quick` ×3 | **`work-quick` ×1**, no skill ×2 — able to write, Opus fixes the typo directly |
+
+The other results of the earlier campaigns were not replayed.
+
+**`dev-flutter`.** New case `vendor-flutter-coexist`: the same prompt as
+`dev-flutter-fires` ("Create a Flutter screen that lists products from our
+API…") in a scaffolded BLoC project (`flutter_bloc` in `pubspec.yaml`, an
+existing bloc), Write/Edit granted.
+
+| Installed next to the foundation | Fired |
+|---|---|
+| the 25 skills of `flutter/agent-plugins` | `dev-flutter` ×3 |
+| those + two community BLoC skills (HoangNguyen0403) | `dev-flutter` ×3 |
+
+The official architecture skill (MVVM + `ChangeNotifier`) never fires in the BLoC
+project, so it cannot contradict `dev-flutter`'s layering. Without the scaffold
+(`dev-flutter-fires`, empty workspace, no write grant) two of three runs used no
+skill and asked where the project was.

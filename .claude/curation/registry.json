@@ -408,6 +408,43 @@
         "verify-*.sh scripts only run docker build / docker compose config",
         "gap kept in the foundation: image vulnerability scanning and Hadolint (absent from all four skills)"
       ]
+    },
+    {
+      "foundationSkill": "dev-flutter",
+      "vendorId": "flutter/agent-plugins/skills",
+      "vendorUrl": "https://github.com/flutter/agent-plugins",
+      "pinnedRef": "0ef3972f93e2baa4156ba1cbb1e515cd53079c68",
+      "trustTrack": "authority",
+      "trustVerdict": "pass",
+      "provenance": "Google (Flutter team)",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-10-04",
+      "status": "candidate",
+      "sourceAudit": "supply-audit-2026-10-03",
+      "flags": [
+        "POINT, not REDUCE: the official architecture skill teaches MVVM + ChangeNotifier; dev-flutter keeps the Clean Architecture + BLoC opinion",
+        "no release for the skills (the repo's releases tag a lint tool): pinned to a commit",
+        "safety screen (skills/): pass; the Claude plugin starts the Dart SDK's local MCP server",
+        "triggering 2026-10-04 (Opus, 3/3, BLoC project): with the 25 official skills and two community BLoC skills installed, dev-flutter fires and the vendor skills do not"
+      ]
+    },
+    {
+      "foundationSkill": "qa-chrome",
+      "vendorId": "ChromeDevTools/chrome-devtools-mcp/skills",
+      "vendorUrl": "https://github.com/ChromeDevTools/chrome-devtools-mcp",
+      "pinnedRef": "chrome-devtools-mcp-v1.10.1",
+      "trustTrack": "authority",
+      "trustVerdict": "pass",
+      "provenance": "Google (Chrome DevTools team)",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-10-04",
+      "status": "candidate",
+      "sourceAudit": "supply-audit-2026-10-03",
+      "flags": [
+        "qa-chrome was already a pointer; it keeps the manual review checklist for --chrome sessions",
+        "seven skills ship next to the MCP server; the plugin pins chrome-devtools-mcp@1.10.1",
+        "safety screen (skills/): pass"
+      ]
     }
   ]
 }

@@ -7,9 +7,15 @@ argument-hint: "[url-or-page]"
 
 # Visual Tests and Chrome Debugging (pointer)
 
-DevTools features (network inspection, profiling, accessibility tree, console replay) are canonical at the Chrome team's MCP server:
+DevTools features (network inspection, profiling, accessibility tree, console replay) are canonical at the Chrome team's [`ChromeDevTools/chrome-devtools-mcp`](https://github.com/ChromeDevTools/chrome-devtools-mcp) (Apache-2.0). Since 2026 it ships **seven skills** next to its MCP server: `chrome-devtools`, `chrome-devtools-cli`, `a11y-debugging`, `debug-optimize-lcp`, `memory-leak-debugging`, `cookie-debugging`, `troubleshooting`.
 
-- **`ChromeDevTools/chrome-devtools-mcp`** — [github.com/ChromeDevTools/chrome-devtools-mcp](https://github.com/ChromeDevTools/chrome-devtools-mcp) (Apache-2.0, maintained by the Google Chrome DevTools team). Configure in `.mcp.json` to give Claude Code direct programmatic access during a session.
+```bash
+# The plugin bundles the skills and the MCP server, pinned (chrome-devtools-mcp@1.10.1 in v1.10.1)
+/plugin marketplace add ChromeDevTools/chrome-devtools-mcp
+/plugin install chrome-devtools-mcp@chrome-devtools-plugins
+# MCP server only, pinned (the vendor's docs show @latest)
+claude mcp add chrome-devtools --scope user npx chrome-devtools-mcp@1.10.1
+```
 
 This skill scopes to the **manual-review checklist** when using Claude Code's `--chrome` flag — *what to look for*, not *how the API works*.
 

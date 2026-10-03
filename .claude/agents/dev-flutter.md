@@ -34,3 +34,7 @@ Flutter development with Clean Architecture and BLoC.
 - NEVER import data from domain (one-way dependency direction)
 
 Think hard about the separation of layers.
+
+## See also
+
+The Flutter team's own skills ([`flutter/agent-plugins`](https://github.com/flutter/agent-plugins)) cover framework APIs (layout, routing, HTTP, JSON, tests, localization); their architecture skill teaches MVVM, so keep this agent's Clean Architecture + BLoC layering in a BLoC project.
