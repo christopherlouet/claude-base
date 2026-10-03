@@ -284,3 +284,33 @@ open question.
 **Open**: `work-quick-fires` now fails its 1.0 threshold (1/3). A typo fixed
 without the skill may be the right outcome; the case or the description needs a
 decision.
+
+## 2026-10-04 — `dev-prisma` fires again
+
+Both Prisma cases now run in a scaffolded Prisma 6 project (`schema.prisma` with a
+`Post` model, one migration), Write/Edit granted. With the description deferring
+to Prisma's skills ("use … only when no prisma-* skill is installed"), the
+vendor set installed: `prisma-cli` ×1, **no skill ×2** — the empty workspace was
+not the cause. Rewritten to fire on Prisma work, with a body that sends to the
+vendor skills and carries the schema-change workflow:
+
+| Case | Deferring description | Firing description |
+|---|---|---|
+| `vendor-prisma-coexist` (vendor skills installed) | `prisma-cli` ×1, none ×2 | `dev-prisma` ×3 |
+| `dev-prisma-fires` (alone) | `dev-prisma` ×3 | `dev-prisma` ×3 |
+
+The vendor skill is still not loaded second (as with `dev-react-perf`). The
+coexistence case now asserts that a Prisma skill fires — ours or the vendor's —
+instead of "the vendor fires and the pointer stays quiet", the design this
+measurement retired.
+
+## 2026-10-04 — `work-quick-fires` judges the outcome, not the skill
+
+With Write granted, "Fix the typo in README.md" fired `work-quick` ×1 then, on a
+later run, ×3: Opus fixes a typo correctly with or without the skill. The skill
+exists so a trivial edit does not drag in the full cycle (explore, TDD, audit);
+it has nothing to add when nothing heavy fires. The case therefore no longer
+requires `work-quick`: it fails if **any other** skill fires (`no-other-skill`,
+unchanged) or if the typo is not fixed (`typo-fixed`, an LLM grader reading
+`README.md`). The new grader was shown able to fail: on a variant asking only to
+name the misspelt word, `typo-fixed` = false.

@@ -72,11 +72,12 @@
       "trustVerdict": "pass",
       "provenance": "Prisma",
       "adviceNeutrality": "pass",
-      "lastVerified": "2026-09-09",
+      "lastVerified": "2026-10-04",
       "status": "candidate",
       "sourceAudit": "dev-skills-pilot-2026-05-05",
       "flags": [
-        "command-side graduated to pointer-command 2026-06-21 (specs/dev-command-vendor-graduation)"
+        "command-side graduated to pointer-command 2026-06-21 (specs/dev-command-vendor-graduation)",
+        "triggering 2026-10-04 (Opus, 3/3, Prisma project, write granted): a description deferring to prisma-* left 2 of 3 sessions with no skill; dev-prisma now fires and carries the schema-change workflow (vendor skills not loaded second)"
       ]
     },
     {

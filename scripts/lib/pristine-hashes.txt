@@ -552,7 +552,6 @@
 46131f3f388947c309f2329bc3f609447a0d5fea86b19d1808859c3b594a426b .claude/skills/growth-cro/SKILL.md
 464558725156d5c0e67d2eb0ae4633c1d14759e8503f60ad99d97c5cf8ed1ca0 .claude/commands/growth-landing.md
 4667ab9904fb3db0f883aca7e5500b731f0b0a4a7ab1acc927584497bb711af9 .claude/skills/git-worktrees/SKILL.md
-46f8790793f3624047865c480212e698be8fcd48e792f6b32f87a8380aad3cd7 .claude/skills/qa-chrome/SKILL.md
 471030f003d195bee21008941890f3e6ec666b3d98c3d7aebfb3cfd9b7cc6327 .claude/skills/dev-auth/SKILL.md
 47487cad5c842474fbb81cd682dd5bb73e4c694f210fb8685b57e24896f70877 .claude/agents/work-batch.md
 47a56536c88f775e97d23c6ff7ccb2950ccc4492e060d64b956ec19530579c8d .claude/skills/dev-document/SKILL.md
@@ -920,7 +919,6 @@
 7620261a2547802405e47fa154c1cf6eb84066fbbb8d19e68de65b1a8010a9f7 .claude/skills/qa-e2e/examples/login-flow.md
 762b1725cc248c67b5b5bdf6e85a4eb403d6a5faccd9f3aa0b295909f077e89b .claude/skills/qa-tech-debt/SKILL.md
 7671af548fa47c42a56f1ec96370b8d310bfeabb0b836b099154c3f1721de4f4 .claude/commands/work/work-flow-launch.md
-769e093cd87f1a1a7bf205a010c1fa6fa3113b5d63052fa51ae8f0530b744427 .claude/skills/dev-flutter/SKILL.md
 7701f8a22578296589fabd276d7424fac03b475f320c63f7afa2fe6a8e0de14c .claude/skills/dev-prisma/SKILL.md
 7721aac80d526abc1721a07fceae96bfdf56a124a46b50deeb49f0b385bc7045 .claude/skills/api-mocking/SKILL.md
 7742708e5d37548d06fc37b155474150ab6c8aa386fe88c8444df32a58cf8cc0 .claude/skills/ops-proxmox/SKILL.md
@@ -980,6 +978,7 @@
 7f4d49b3dc0a4e049cfbd0d961854258aa0572510c39084c576cdec260cc1f92 .claude/skills/ops-proxmox/SKILL.md
 7f4f457f69e939bcbde5c0af8fe3a4af0c46c42fb6e950b6cb716531d96dc6e3 scripts/hooks/destructive-ops.sh
 7f6b89fad7d66de75cda9446f5fba48634610b6c3acd39bdad29b059dfa3e6ab .claude/skills/dev-tdd/examples/calculate-price.md
+7f8b2cf2a1f0ed7739dd11739923467c8868afa54f3fd0a488b24138afecb256 .claude/skills/dev-prisma/SKILL.md
 7fa04b7557f48b0da9f5b3a84eb276aa4894f9504ccd17ac259fceda86829914 .claude/commands/ops/ops-serverless.md
 7fa4b93f2242d40794fc63e6cf2a90d576c1e39b255ea60a08668d64604ec9ec .claude/skills/ops-opnsense/SKILL.md
 7fa5c057977f61f2069a339598678d76d66017edf2c8cdfefaf1f47b9abc965b .claude/agents/qa-perf.md
