@@ -98,3 +98,49 @@ The other two:
 Across all three campaigns: 34 auto-triggerable inline skills measured, 2
 descriptions fixed (`work-quick`, `dev-debug`), 1 skill found redundant on
 Opus (`parallel-agents`).
+
+## 2026-10-03 — foundation skill and vendor skill installed together
+
+Question: when a project installs the vendor skill the foundation points to,
+which one fires? Same prompts as the `*-fires` cases, run with
+`--extra-skills DIR`, DIR holding every skill of the five vendor repos at the
+ref pinned in `.claude/curation/registry.json` (36 skills: `prisma/skills`,
+`supabase/agent-skills`, `shadcn-ui/ui`, `apollographql/skills`,
+`vercel-labs/agent-skills`). Cases `vendor-*-coexist`: pass = a vendor skill
+fires and the foundation skill does not. 3 runs per case, `claude-opus-5-5`,
+about 3 USD at list price.
+
+| Case | Skills fired, per run |
+|---|---|
+| prisma — "Add a Comment model… create the migration" | `dev-prisma` · `dev-prisma` · `dev-prisma` — **the vendor never fires** |
+| shadcn — "Install shadcn/ui… add a Dialog and a DataTable" | `dev-shadcn` + `shadcn` · `shadcn` · `shadcn` |
+| supabase — "Store user avatars in Supabase Storage… RLS" | `supabase` ×3 |
+| graphql — "Add a resolver… Apollo GraphQL server" | `apollo-server` ×3 |
+| nextjs — "…statically generated and revalidated every hour" | `dev-nextjs` ×3 |
+
+Three readings:
+
+1. **Prisma: the pointer shadows the vendor.** `dev-prisma`'s description names
+   the prompt's exact gestures ("add a model, create a migration,
+   schema.prisma"); no vendor description does. The pointer then tells the
+   model to install a skill that is already installed.
+2. **Where the vendor wins, the pointer's safety rules are lost.** Supabase
+   fires alone 3/3, so "RLS on every public table" and "never expose the
+   `service_role` key client-side" — kept in `dev-supabase` under "Foundation
+   rules preserved" — never reach the session. `vendor-precedence` (tier 1)
+   says a vendor skill must never relax a foundation security rule; installed
+   together, it does, silently. A rule that must survive the vendor cannot live
+   in a skill the vendor out-triggers.
+3. **Next.js has no vendor counterpart at this pin.** `vercel-labs/agent-skills`
+   ships React performance, composition, deployment and view-transition skills,
+   none on App Router caching or ISR; `dev-nextjs` fires because nothing else
+   covers the prompt. Its registry record treats the repo as its replacement.
+
+To replay: fetch each repo at its `pinnedRef`, copy every `<skill>/` dir holding
+a `SKILL.md` into one flat DIR, then
+`run.sh --extra-skills DIR --case vendor-<tool>-coexist` (one call per case).
+Without `--extra-skills`, `run.sh` leaves these cases out.
+
+Limits: N=3, one prompt per tool, one model. All skills sit in one plugin here;
+in a project the vendor skills would live under `.claude/skills/`, the
+foundation's beside them — same descriptions, same competition.
