@@ -36,7 +36,7 @@ Modular rules applied automatically based on the modified files (path-specific r
 | `nextjs` | `**/next.config.*`, `**/app/**`, `**/pages/**` | RSC, data fetching, caching, App Router |
 | `performance` | `**/*.tsx`, `**/*.ts`, `**/pages/**` | Core Web Vitals, lazy loading, memoization |
 | `php` | `**/*.php`, `**/composer.json` | PSR-12, Laravel, type declarations |
-| `prisma` | `**/schema.prisma`, `**/prisma/**`, `**/prisma.config.*` | Migrations (`migrate deploy`, two-step rename), secrets, `select` over `include` — kept out of the `dev-prisma` pointer so they load whichever skill fires |
+| `prisma` | `**/schema.prisma`, `**/prisma/**`, `**/prisma.config.*`, `**/*prisma*` | Migrations (`migrate deploy`, two-step rename), secrets, `select` over `include` — kept out of the `dev-prisma` pointer so they load whichever skill fires |
 | `python` | `**/*.py`, `**/pyproject.toml` | Type hints, PEP 8, async patterns |
 | `react` | `**/*.tsx`, `**/components/**`, `**/hooks/**` | Components, hooks, performance |
 | `research` | `**/*.ts`, `**/*.tsx`, `**/*.py`, `**/*.go`, `**/*.dart`, `**/*.rs` | Minimal-code ladder (YAGNI → reuse → stdlib → native) before custom |

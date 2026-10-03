@@ -313,7 +313,7 @@ Rules per language/framework/tool (16):
 ├── vue.md         # **/*.vue, **/composables/**
 ├── svelte.md      # **/*.svelte, **/svelte.config.*
 ├── astro.md       # **/*.astro, **/content/**
-├── prisma.md      # **/schema.prisma, **/prisma/**
+├── prisma.md      # **/schema.prisma, **/prisma/**, **/*prisma*
 ├── supabase.md    # **/supabase/**, **/*supabase*
 └── flutter.md     # **/*.dart, **/lib/**
 ```

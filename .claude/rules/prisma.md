@@ -3,6 +3,7 @@ paths:
   - "**/schema.prisma"
   - "**/prisma/**"
   - "**/prisma.config.*"
+  - "**/*prisma*"
 ---
 
 # Prisma Rules

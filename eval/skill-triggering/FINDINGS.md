@@ -166,3 +166,11 @@ token; `lib/supabase.ts` and `supabase/migrations/001.sql` → the Supabase toke
 Left as measured: `dev-shadcn` also fired once in three next to the vendor's
 `shadcn`. Its kept rules are styling conventions, not security, so nothing is
 lost when it stays silent.
+
+Review follow-up: `prisma.md` also matches `**/*prisma*` (the client module,
+where the singleton and `select`-over-`include` rules apply) — canary loaded on
+`lib/prisma.ts`, not on `lib/db.ts` (control). `supabase.md` also ships to
+Flutter projects. Known limits, no glob reaches them at an acceptable cost: a
+Prisma client named `db.ts`, query code in arbitrary files, and a `service_role`
+key written into a component or a `NEXT_PUBLIC_` variable — the rule loads only
+once the session touches a Supabase or Prisma file.

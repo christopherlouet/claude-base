@@ -72,7 +72,8 @@ get_rules_for_type() {
             rules+=("${web_rules[@]}")
             ;;
         flutter)
-            rules+=("flutter.md" "design-style.md")
+            # supabase_flutter: dev-flutter points Flutter backends at Supabase.
+            rules+=("flutter.md" "design-style.md" "supabase.md")
             ;;
         python)
             # Supabase serves Python backends too (the fastapi preset keeps dev-supabase).

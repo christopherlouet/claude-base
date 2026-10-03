@@ -90,7 +90,7 @@ Two recent CLI behaviors worth knowing when running `claude plugin install` agai
 
 **When to install**: any project using Supabase as a backend.
 
-**Pair with**: claude-base's `dev-supabase` skill (workflow / TDD / security patterns).
+**Pair with**: claude-base's `.claude/rules/supabase.md` (RLS, `service_role` key, pooler), which loads on Supabase files whichever skill fires; the `dev-supabase` pointer only matters while this vendor skill is absent.
 
 **Install** (vendor's preferred path; verify on their README):
 ```bash
@@ -114,7 +114,7 @@ ln -s ~/dev/vendor-skills/supabase/skills/supabase-postgres-best-practices \
 
 **When to install**: any project using Prisma, especially if migrating to v7.
 
-**Pair with**: claude-base's `dev-prisma` skill (schema design, migration discipline, anti-patterns).
+**Pair with**: claude-base's `.claude/rules/prisma.md` (migration discipline, secrets, `select` over `include`), which loads on Prisma files whichever skill fires; the `dev-prisma` pointer steps aside once a `prisma-*` skill is installed.
 
 **Install** (verify on their README):
 ```bash

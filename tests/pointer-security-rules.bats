@@ -29,8 +29,11 @@ _paths() {
     local f="$RULES_DIR/prisma.md"
     [ -f "$f" ]
     run _paths "$f"
-    [[ "$output" == *"**/schema.prisma"* ]]
-    [[ "$output" == *"**/prisma/**"* ]]
+    [[ "$output" == *"**/schema.prisma"* ]] || false
+    [[ "$output" == *"**/prisma/**"* ]] || false
+    # The client module (lib/prisma.ts, server/prisma.ts): where the singleton
+    # and the select-over-include rules apply, outside schema and migrations.
+    [[ "$output" == *"**/*prisma*"* ]] || false
     grep -q 'prisma migrate deploy' "$f"
     grep -qi 'rename' "$f"
     grep -q 'DATABASE_URL' "$f"
@@ -41,8 +44,8 @@ _paths() {
     local f="$RULES_DIR/supabase.md"
     [ -f "$f" ]
     run _paths "$f"
-    [[ "$output" == *"**/supabase/**"* ]]
-    [[ "$output" == *"**/*supabase*"* ]]
+    [[ "$output" == *"**/supabase/**"* ]] || false
+    [[ "$output" == *"**/*supabase*"* ]] || false
     grep -qi 'row level security' "$f"
     grep -q 'service_role' "$f"
     grep -qi 'client-side' "$f"
@@ -57,8 +60,12 @@ _paths() {
         ! grep -q '^## Foundation rules preserved' "$f" \
             || { echo "dev-$s still carries its own copy of the rules" >&2; false; }
     done
-    ! grep -q 'service_role' "$SKILLS_DIR/dev-supabase/SKILL.md"
-    ! grep -q 'prisma migrate deploy' "$SKILLS_DIR/dev-prisma/SKILL.md"
+    # `run` + status, not a bare `! grep`: a negated command never trips bats'
+    # errexit, so anywhere but the last line it asserts nothing.
+    run grep -q 'NEVER expose the' "$SKILLS_DIR/dev-supabase/SKILL.md"
+    [ "$status" -ne 0 ]
+    run grep -q 'prisma migrate deploy' "$SKILLS_DIR/dev-prisma/SKILL.md"
+    [ "$status" -ne 0 ]
 }
 
 @test "selection: every JS/TS type ships both rules" {
@@ -71,9 +78,14 @@ _paths() {
     done
 }
 
-@test "selection: python ships the Supabase rule, not the Prisma one" {
-    run bash -c ". '$LIB'; get_rules_for_type python"
-    [ "$status" -eq 0 ]
-    [[ "$output" == *"supabase.md"* ]]
-    [[ "$output" != *"prisma.md"* ]]
+@test "selection: python and flutter ship the Supabase rule, not the Prisma one" {
+    # Supabase backs Python APIs (the fastapi preset) and Flutter apps
+    # (supabase_flutter; dev-flutter points at dev-supabase). Prisma is JS/TS only.
+    local t
+    for t in python flutter; do
+        run bash -c ". '$LIB'; get_rules_for_type $t"
+        [ "$status" -eq 0 ]
+        [[ "$output" == *"supabase.md"* ]] || { echo "type '$t' lacks supabase.md" >&2; false; }
+        [[ "$output" != *"prisma.md"* ]] || { echo "type '$t' ships prisma.md" >&2; false; }
+    done
 }
