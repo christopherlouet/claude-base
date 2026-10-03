@@ -345,13 +345,17 @@ _frontmatter_field() {
 # user installs. Only the first SKILL_DOSSIER_MAX are read — the same set the
 # safety screen scans.
 skill_dossier() {
-    local repo="$1" ref="$2" paths="$3" p doc name desc list="" bodies="" n=0 read=0 share i
+    local repo="$1" ref="$2" paths="$3" p doc name desc list="" bodies="" n=0 read=0 share i unlisted=0
     local -a docs=() read_paths=()
     while IFS= read -r p; do
         [ -n "$p" ] || continue
         n=$((n + 1))
         if [ "$n" -gt "$SKILL_DOSSIER_MAX" ]; then
-            list+="- $p (not read)"$'\n'
+            if [ "$n" -le $((SKILL_DOSSIER_MAX + 20)) ]; then
+                list+="- $p (not read)"$'\n'
+            else
+                unlisted=$((unlisted + 1))
+            fi
             continue
         fi
         doc=$(_curation_fetch_one "$repo" "$ref" "$p" 2>/dev/null) || doc=""
@@ -360,6 +364,7 @@ skill_dossier() {
         list+="- $p — name: ${name:-?} — description: ${desc:-?}"$'\n'
         [ -n "$doc" ] && { docs+=("$doc"); read_paths+=("$p"); read=$((read + 1)); }
     done <<< "$paths"
+    [ "$unlisted" -gt 0 ] && list+="- … and $unlisted more, not listed"$'\n'
     # Every skill read gets an equal share of what is left after the list: the
     # first ones by path are not the important ones (skills-contrib/ sorts
     # before skills/), so none may crowd the others out.
@@ -418,18 +423,20 @@ PROMPT
     # despite the "raw JSON only" instruction. Strip fence lines defensively so a
     # well-formed-but-fenced verdict is NOT discarded as unparseable.
     out=$(printf '%s' "$out" | sed -e '/^[[:space:]]*```/d')
-    # Prose around the object ("Here is my verdict: {...} Hope this helps")
-    # would discard a well-formed verdict: keep the span from the first line
-    # opening an object to the last line closing one.
-    if ! printf '%s' "$out" | jq -e . >/dev/null 2>&1; then
-        out=$(printf '%s\n' "$out" | awk '/^[[:space:]]*\{/{f=1} f{buf = buf $0 "\n"; if ($0 ~ /\}[[:space:]]*$/) keep = buf} END{printf "%s", keep}')
+    # Prose around the object ("Here is my verdict: {...} Hope this helps", on
+    # one line or several) would discard a well-formed verdict: keep the span
+    # from the first "{" to the last "}". The answer must then be EXACTLY ONE
+    # object: two objects parse as a jq stream, the last one passed the check,
+    # and two tokensUsed broke the budget arithmetic, ending the run in silence.
+    if ! printf '%s' "$out" | jq -s -e 'length == 1 and (.[0] | type == "object")' >/dev/null 2>&1; then
+        out=$(printf '%s' "$out" | tr '\n' '\036' | sed -E 's/^[^{]*//; s/[^}]*$//' | tr '\036' '\n')
     fi
     # The contract, not merely "parses": a fit sent as a string would floor to 0
     # and read as a verdict (recorded, hidden 180 days). Outside it = unanswered.
-    if printf '%s' "$out" | jq -e '(.neutrality == "pass" or .neutrality == "flag") and (.fit | type == "number")' >/dev/null 2>&1; then
-        printf '%s' "$out"
+    if printf '%s' "$out" | jq -s -e 'length == 1 and (.[0] | (.neutrality == "pass" or .neutrality == "flag") and (.fit | type == "number"))' >/dev/null 2>&1; then
+        printf '%s' "$out" | jq -c '.'
     else
-        curation_warn "llm judge failed/unparseable for $repo: $(printf '%s' "$raw" | tr '\r\n\t' '   ' | cut -c1-160)"
+        curation_warn "llm judge failed/unparseable for $repo: $(printf '%s' "$raw" | tr '\r\n\t' '   ' | tr -d '\000-\037\177' | cut -c1-160)"
         # `unavailable` is what stops the caller reporting this as a VERDICT. The
         # rejecting shape is kept so any reader of the object still fails safe.
         jq -cn '{neutrality:"flag", fit:0, rationale:"llm-unavailable", borderline:false, tokensUsed:0, unavailable:true}'

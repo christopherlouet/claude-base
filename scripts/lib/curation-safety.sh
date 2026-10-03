@@ -454,6 +454,14 @@ _curation_list_exec_surface() {
 # to nothing; 1 = tree unfetchable (the exec-surface scan already fails safe, so
 # the caller does not double-flag). A valid collection root (e.g. phaser's
 # `skills`) matches many child paths and resolves cleanly.
+# _curation_tree_has <repo> <ref> <path> — 0 iff the recursive tree at <ref>
+# lists <path> as a file. Any failure answers no (the caller only uses it to
+# tell "not scanned" from "nothing there").
+_curation_tree_has() {
+    curation_gh_api "repos/$1/git/trees/$2?recursive=1" 2>/dev/null \
+        | jq -e --arg p "$3" '[.tree[]? | select(.type == "blob" and .path == $p)] | length > 0' >/dev/null 2>&1
+}
+
 _curation_subpaths_resolve() {
     local repo="$1" ref="$2" subpaths="$3" body paths sp sps=() missing=0
     body=$(curation_gh_api "repos/$repo/git/trees/$ref?recursive=1" 2>/dev/null) || return 1
@@ -532,19 +540,31 @@ curation_safety_screen() {
     else
         local sp sps=()
         IFS='+' read -ra sps < <(printf '%s' "$subpaths") || true
+        local sp_got
         for sp in "${sps[@]}"; do
             [ -n "$sp" ] || continue
+            sp_got=1
             for doc in "$sp/SKILL.md" "$sp/README.md"; do
                 text=$(_curation_fetch_one "$repo" "$ref" "$doc"); frc=$?
                 if [ "$frc" -eq 2 ]; then
                     reasons+=("doc-unreadable")
+                    sp_got=0
                     break
                 fi
                 if [ "$frc" -eq 0 ]; then
                     _curation_screen_scan "$doc" < <(printf '%s\n' "$text")
+                    sp_got=0
                     break
                 fi
             done
+            # Neither doc could be fetched although the tree lists the skill's
+            # SKILL.md: the skill was not scanned. Silence here let a later
+            # successful fetch (discovery's dossier) hand the judge a skill body
+            # no screen had read. An outage, not a finding. (A collection root
+            # such as `skills`, with no SKILL.md of its own, is not this case.)
+            if [ "$sp_got" -ne 0 ] && _curation_tree_has "$repo" "$ref" "$sp/SKILL.md"; then
+                reasons+=("content-unfetchable")
+            fi
         done
     fi
 

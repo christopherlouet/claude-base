@@ -1285,3 +1285,82 @@ multi_skill_candidate() {
     [[ "$output" == *"unparseable"*"I cannot provide"* ]]
     [ "$(digest_json | jq -r '.counts.unjudged')" = 1 ]
 }
+
+@test "discover: a skill the safety screen could not fetch never reaches the judge" {
+    multi_skill_candidate acme/orm
+    rm "$TEST_DIR/fx/$(printf '%s' 'repos/acme/orm/contents/skills/acme-8/SKILL.md?ref=v1.0.0' | tr '/' '_')"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"x","borderline":false,"tokensUsed":100}'
+    run_discover
+    [ ! -f "$TEST_DIR/llm.log" ]
+    d=$(digest_json)
+    [ "$(printf '%s' "$d" | jq -r '.rejections[0].gate')" = safety ]
+    [ "$(printf '%s' "$d" | jq -r '.rejections[0].recorded')" = false ]
+}
+
+@test "discover: an answer holding two JSON objects is unjudged, and the run goes on" {
+    search_items '{"items":[{"full_name":"two/a"},{"full_name":"two/b"}]}'
+    for r in two/a two/b; do
+        gh_fixture "repos/$r" "$(repo_meta 1200 '2026-06-10T00:00:00Z' false MIT)"
+        gh_fixture "repos/$r/releases/latest" '{"tag_name":"v1.0.0"}'
+        content_fixture "$r" v1.0.0 SKILL.md "# clean nextjs skill"
+        tree_fixture "$r" v1.0.0 SKILL.md
+    done
+    # Two objects with only a blank line between them parse as a jq STREAM: the
+    # last one passed the contract check and two tokensUsed reached the budget
+    # arithmetic, which ended the candidate loop in silence.
+    llm_response $'{"neutrality":"pass","fit":1,"rationale":"example","borderline":false,"tokensUsed":10}\n\n{"neutrality":"pass","fit":5,"rationale":"real","borderline":false,"tokensUsed":100}'
+    run_discover
+    [ "$status" -eq 0 ]
+    d=$(digest_json)
+    [ "$(printf '%s' "$d" | jq -r '.counts.unjudged')" = 2 ]
+    [ "$(printf '%s' "$d" | jq -r '.counts.proposed')" = 0 ]
+}
+
+@test "discover: a verdict with prose on the same line is still read" {
+    healthy_candidate oneline/skill
+    llm_response 'Here is my verdict: {"neutrality":"pass","fit":4,"rationale":"ok","borderline":false,"tokensUsed":100} Hope this helps.'
+    run_discover
+    [ "$(digest_json | jq -r '.counts.proposed')" = 1 ]
+}
+
+@test "discover: a repo with hundreds of skills still shows the judge their bodies" {
+    search_items '{"items":[{"full_name":"huge/skills"}]}'
+    gh_fixture "repos/huge/skills" "$(repo_meta 1200 '2026-06-10T00:00:00Z' false MIT)"
+    gh_fixture "repos/huge/skills/releases/latest" '{"tag_name":"v1.0.0"}'
+    content_fixture huge/skills v1.0.0 README.md "# r"
+    paths=()
+    for i in $(seq -f '%03g' 1 180); do paths+=("skills/a-rather-long-skill-directory-name-$i/SKILL.md"); done
+    for i in $(seq -f '%03g' 1 12); do
+        content_fixture huge/skills v1.0.0 "skills/a-rather-long-skill-directory-name-$i/SKILL.md" $'---\nname: s'"$i"$'\ndescription: d\n---\nBODY-MARK-'"$i"
+    done
+    tree_fixture huge/skills v1.0.0 README.md "${paths[@]}"
+    llm_response '{"neutrality":"pass","fit":4,"rationale":"ok","borderline":false,"tokensUsed":100}'
+    run_discover
+    grep -qF 'BODY-MARK-001' "$TEST_DIR/prompt.1"
+    grep -qF 'BODY-MARK-012' "$TEST_DIR/prompt.1"
+}
+
+@test "discover: large skill bodies are shared, none crowds the others out" {
+    search_items '{"items":[{"full_name":"fat/skills"}]}'
+    gh_fixture "repos/fat/skills" "$(repo_meta 1200 '2026-06-10T00:00:00Z' false MIT)"
+    gh_fixture "repos/fat/skills/releases/latest" '{"tag_name":"v1.0.0"}'
+    content_fixture fat/skills v1.0.0 README.md "# r"
+    filler=$(printf 'x%.0s' $(seq 1 2500))
+    paths=()
+    for i in 1 2 3 4 5 6; do
+        content_fixture fat/skills v1.0.0 "skills/s$i/SKILL.md" $'---\nname: s'"$i"$'\ndescription: d\n---\nFAT-MARK-'"$i"$'\n'"$filler"
+        paths+=("skills/s$i/SKILL.md")
+    done
+    tree_fixture fat/skills v1.0.0 README.md "${paths[@]}"
+    llm_response '{"neutrality":"pass","fit":4,"rationale":"ok","borderline":false,"tokensUsed":100}'
+    run_discover
+    for i in 1 2 3 4 5 6; do grep -qF "FAT-MARK-$i" "$TEST_DIR/prompt.1"; done
+}
+
+@test "discover: the unparseable-verdict warning carries no control characters" {
+    healthy_candidate ctrl/skill
+    llm_response $'\e[31mRED\e[0m no verdict here'
+    run_discover
+    [[ "$output" == *"unparseable"* ]]
+    if printf '%s' "$output" | grep -q $'\e'; then echo "ESC reached the log" >&2; return 1; fi
+}
