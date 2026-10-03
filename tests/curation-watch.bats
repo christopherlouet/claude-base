@@ -1849,3 +1849,47 @@ delivery() { jq -r ".delivery.$1 // \"absent\"" "$TEST_DIR/digest/digest.json"; 
     run_watch
     [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "v0.1.22" ]]
 }
+
+# --- review follow-ups (2026-10) ---------------------------------------------
+
+@test "watch: a digit in a package name never makes two families one (vue2-lib@ vs vue3-lib@)" {
+    registry_one "acme/mono" "vue2-lib@1.0.0" authority
+    gh_fixture "repos/acme/mono" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/mono/releases?per_page=100" '[
+        {"tag_name":"vue3-lib@9.0.0","draft":false,"prerelease":false,"published_at":"2026-09-10T00:00:00Z"},
+        {"tag_name":"vue2-lib@1.1.0","draft":false,"prerelease":false,"published_at":"2026-09-01T00:00:00Z"},
+        {"tag_name":"vue2-lib@1.0.0","draft":false,"prerelease":false,"published_at":"2026-08-01T00:00:00Z"}]'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "vue2-lib@1.1.0" ]]
+}
+
+@test "watch: a repo that switched tag style (v1.0.0, then 2.0.0) is reported as drift" {
+    registry_one "acme/lib" "v1.0.0" authority
+    gh_fixture "repos/acme/lib" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/lib/releases?per_page=100" '[
+        {"tag_name":"2.0.0","draft":false,"prerelease":false,"published_at":"2026-09-10T00:00:00Z"},
+        {"tag_name":"v1.0.0","draft":false,"prerelease":false,"published_at":"2026-05-01T00:00:00Z"}]'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "2.0.0" ]]
+}
+
+@test "watch: a pin missing from the release list never lets an old mis-numbered release win" {
+    registry_one "acme/cli" "v0.1.5" authority
+    gh_fixture "repos/acme/cli" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/cli/releases?per_page=100" '[
+        {"tag_name":"v0.1.22","draft":false,"prerelease":false,"published_at":"2026-09-28T00:00:00Z"},
+        {"tag_name":"v0.180.0","draft":false,"prerelease":false,"published_at":"2026-01-31T00:00:00Z"}]'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "v0.1.22" ]]
+}
+
+@test "watch: of two equal versions, the more recently published is taken" {
+    registry_one "acme/lib" "v1.2.3" authority
+    gh_fixture "repos/acme/lib" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/lib/releases?per_page=100" '[
+        {"tag_name":"v1.2.3-hotfix","draft":false,"prerelease":false,"published_at":"2026-09-10T00:00:00Z"},
+        {"tag_name":"v1.2.3","draft":false,"prerelease":false,"published_at":"2026-08-01T00:00:00Z"}]'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "v1.2.3-hotfix" ]]
+}

@@ -1429,3 +1429,29 @@ multi_skill_candidate() {
     [ -f "$TEST_DIR/llm.log" ]
     [ "$(digest_json | jq -r '.counts.proposed')" = 1 ]
 }
+
+@test "discover: a proposal stays listed as pending on a second run the same day" {
+    healthy_candidate good/skill
+    llm_response '{"neutrality":"pass","fit":4,"rationale":"solid","borderline":false,"tokensUsed":100}'
+    CURATION_NOW=2026-10-01 run_discover --digest-dir "$TEST_DIR/digest"
+    CURATION_NOW=2026-10-01 run_discover --digest-dir "$TEST_DIR/digest"
+    [ "$(digest_json | jq -r '.pendingProposals[0].repo')" = good/skill ]
+}
+
+@test "discover: a pending proposal later declined drops out of pending" {
+    healthy_candidate good/skill
+    llm_response '{"neutrality":"pass","fit":4,"rationale":"solid","borderline":false,"tokensUsed":100}'
+    CURATION_NOW=2026-10-01 run_discover --digest-dir "$TEST_DIR/digest"
+    declined_one good/skill "off-stack"
+    CURATION_NOW=2026-11-01 run_discover --digest-dir "$TEST_DIR/digest"
+    [ "$(digest_json | jq -r '.pendingProposals | length')" = 0 ]
+}
+
+@test "discover: --emit-issue updates the digest issue when only pending proposals remain" {
+    healthy_candidate good/skill
+    llm_response '{"neutrality":"pass","fit":4,"rationale":"solid","borderline":false,"tokensUsed":100}'
+    CURATION_NOW=2026-10-01 run_discover --digest-dir "$TEST_DIR/digest"
+    : > "$TEST_DIR/gh.log"
+    CURATION_NOW=2026-11-01 run_discover --digest-dir "$TEST_DIR/digest" --emit-issue
+    grep -qE '^gh issue' "$TEST_DIR/gh.log"
+}

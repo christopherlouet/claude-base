@@ -626,9 +626,11 @@ pending_proposals() {
     [ -n "$LEDGER" ] && [ -f "$LEDGER" ] || { echo '[]'; return 0; }
     local decided
     decided=$(printf '%s\n%s\n' "$(known_set)" "$(declined_set)" | awk 'NF' | jq -R 'ascii_downcase' | jq -s '.')
-    jq -c --arg now "$NOW" --argjson days "$REJUDGE_DAYS" --argjson decided "$decided" "$_LEDGER_DEFS"'
+    local thisrun
+    thisrun=$(printf '%s' "$proposals" | jq -c '[.[].repo | ascii_downcase]' 2>/dev/null) || thisrun='[]'
+    jq -c --arg now "$NOW" --argjson days "$REJUDGE_DAYS" --argjson decided "$decided" --argjson thisrun "$thisrun" "$_LEDGER_DEFS"'
         [.entries[]? | select(type == "object" and .gate == "proposed" and fresh($now; $days))
-         | select(.judgedAt < $now)
+         | select((.repo | ascii_downcase) as $r | $thisrun | index($r) | not)
          | select((.repo | ascii_downcase) as $r | $decided | index($r) | not)
          | {repo, proposedAt:.judgedAt, pinnedRef, fit, reason}]' "$LEDGER" 2>/dev/null || echo '[]'
 }
@@ -754,7 +756,10 @@ fi
 # --emit-issue: surface the proposals as ONE propose-only GitHub issue (mirrors
 # the watch). No-noise: only when there is something to review (proposed / moat /
 # graduation > 0). Reuses emit_issue (CWD-independent -R, fail-safe). Never auto-adds.
-if [ "$EMIT_ISSUE" = true ] && [ "$DRY_RUN" = false ] && [ $((proposed + moat + graduation)) -gt 0 ]; then
+n_pending=$(printf '%s' "$pending" | jq 'length' 2>/dev/null || echo 0)
+# Pending proposals count too: a month with nothing new but undecided proposals
+# still updates the digest issue, or they would only live in proposals.md.
+if [ "$EMIT_ISSUE" = true ] && [ "$DRY_RUN" = false ] && [ $((proposed + moat + graduation + n_pending)) -gt 0 ]; then
     _disco_body=$(mktemp 2>/dev/null)
     if [ -n "$DIGEST_DIR" ] && [ -f "$DIGEST_DIR/proposals.md" ]; then
         cp "$DIGEST_DIR/proposals.md" "$_disco_body"
