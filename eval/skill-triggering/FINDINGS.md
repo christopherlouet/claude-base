@@ -174,3 +174,44 @@ Flutter projects. Known limits, no glob reaches them at an acceptable cost: a
 Prisma client named `db.ts`, query code in arbitrary files, and a `service_role`
 key written into a component or a `NEXT_PUBLIC_` variable — the rule loads only
 once the session touches a Supabase or Prisma file.
+
+## 2026-10-03 — `dev-react-perf` and `dev-document` next to their vendor skills
+
+Same method (`--extra-skills`, 3 runs, `claude-opus-5-5`).
+
+**`dev-document` vs Anthropic's `docx`/`pdf`/`xlsx`/`pptx`.** The two do different
+jobs: Anthropic's skills make Claude write or edit a file itself; `dev-document`
+teaches the code an application uses to generate one. Its description claimed
+both ("create a document… produce an office file").
+
+| Case | Before (old description) | After (scoped to application code) |
+|---|---|---|
+| `vendor-document-author-coexist` — "Write a one-page Word memo (memo.docx)…" | `docx` ×3 | `docx` ×3 |
+| `vendor-document-app-coexist` — "Add an endpoint GET /invoices/:id/pdf to our Express app…" | `dev-api` ×3 — no document skill | **`dev-document` ×3** |
+| `dev-document-fires` (no vendor skill), same endpoint prompt | — | `dev-document` ×3 |
+| `dev-document-script-fires` — "Write scripts/monthly-report.js, run by cron… writes reports/<YYYY-MM>.pdf" | — | `dev-document` ×3, with or without the vendor skills |
+
+The old `dev-document-fires` prompt ("Generate our monthly sales report as a PDF…
+from sales.csv") is a file Claude produces: after the change it fires `pdf` ×3
+with the vendor skills installed, `dataviz` ×3 without. The case now carries the
+endpoint prompt, which is what the skill is for.
+
+**`dev-react-perf` vs Vercel's `react-best-practices`** (`dev-react-perf-fires`):
+
+| Pointer description | Vendor installed | Fired |
+|---|---|---|
+| fires on React perf work (reduced to pointer + gaps) | no | `dev-react-perf` ×3 |
+| same | yes | `dev-react-perf` ×3 — vendor never fires |
+| defers to the vendor when installed | yes | **nothing ×3** |
+| fires, body says "invoke the vendor skill now" | yes | `dev-react-perf` ×3, vendor still not loaded |
+
+The vendor skill does not fire on this prompt by itself, so a pointer that steps
+aside leaves the session with no skill. Kept: the pointer fires and carries a
+five-line condensed top of the vendor's ranking (MIT, attributed).
+
+A blind outcome comparison (12 planted defects in a React dashboard, Opus grader,
+`tsc` on every result) found no measurable difference between the two skills:
+11/12 for both, and for no skill, on Opus 5.5; on Haiku 4.5, 5 to 9 out of 12
+with a run-to-run spread larger than any gap between arms (vendor 7.0 mean over
+5 runs, pointer 7.25 over 4, no skill 6.3 over 3). An early "vendor 8 vs 6–7"
+from two runs per arm did not survive more runs.

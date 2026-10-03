@@ -1499,6 +1499,34 @@ EOF
     [ -z "$output" ]
 }
 
+@test "_subpaths_for_repo: a root record widens the scope to the whole repo" {
+    # A repo watched at its root (a record, or a preset installing the whole
+    # repo) ships every skill dir in it. A sibling record scoped to a subpath
+    # must not narrow the pin-time safety screen to that subpath: a new
+    # exec-bit script in another skill dir would pass unscreened.
+    cat > "$TEST_DIR/registry.json" <<'EOF'
+{ "records": [
+  {"vendorId":"acme/mono"},
+  {"vendorId":"acme/mono/skills/a+skills/b"}
+] }
+EOF
+    run bash -c "source '$EMIT_LIB'; _subpaths_for_repo acme/mono '$TEST_DIR/registry.json' '$TEST_DIR/presets'"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "_subpaths_for_repo: a preset installing the repo root widens the scope too" {
+    cat > "$TEST_DIR/registry.json" <<'EOF'
+{ "records": [ {"vendorId":"acme/mono/skills/a"} ] }
+EOF
+    cat > "$TEST_DIR/presets/p.json" <<'EOF'
+{ "recommendedVendorSkills": [ {"id":"acme/mono","url":"https://github.com/acme/mono"} ] }
+EOF
+    run bash -c "source '$EMIT_LIB'; _subpaths_for_repo acme/mono '$TEST_DIR/registry.json' '$TEST_DIR/presets'"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
 @test "_subpaths_for_repo: only matches the requested repo-root" {
     cat > "$TEST_DIR/registry.json" <<'EOF'
 { "records": [

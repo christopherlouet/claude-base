@@ -167,6 +167,20 @@ npx skills add anthropics/skills
 
 ---
 
+### Anthropic — `docx`, `pdf`, `xlsx`, `pptx` (dev-document companion)
+
+**Covers**: Claude writing, reading and editing office files itself — Word documents with tracked changes and comments, PDF forms, extraction and OCR, spreadsheets with formulas, slide decks.
+
+**When to install**: when the deliverable is a file Claude produces or edits (a memo, a filled-in form, a reviewed contract). Measured 2026-10-03: installed next to `dev-document`, `docx` fires alone on "write a Word memo" and `dev-document` alone on "add a PDF export endpoint to our app" — the two do not overlap once `dev-document` is scoped to application code.
+
+**Pair with**: claude-base's `dev-document` for the other job — code inside an application that generates documents (library choice, export endpoints, report jobs).
+
+**Install**: available in Claude apps as built-in skills; for Claude Code, from [`anthropics/skills`](https://github.com/anthropics/skills/tree/main/skills).
+
+**Provenance & licence**: Anthropic. **Proprietary** (`LICENSE.txt`: use governed by your agreement with Anthropic) — point to them or install them, never copy them into a repository.
+
+---
+
 ### Anthropic — `claude-api` (dev-ai-integration companion)
 
 **Covers**: Claude API integration depth — single call vs tool-use loop vs managed agents, streaming, prompt caching, token counting, model migration, across 8 languages.
@@ -203,7 +217,7 @@ git clone --depth 1 https://github.com/langchain-ai/langchain-skills ~/dev/vendo
 
 **When to install**: any project using Next.js or modern React on Vercel — for the React layer and Vercel deploy/optimize.
 
-**Pair with**: claude-base's `dev-nextjs` (the primary App Router / Server Components / caching reference) and `dev-react-perf` skills (workflow patterns, deploy-safety, anti-patterns).
+**Pair with**: claude-base's `dev-nextjs` (the primary App Router / Server Components / caching reference) and `dev-react-perf`, now a pointer to `react-best-practices` that keeps only what it leaves out (list virtualization, state colocation, profiling tools, Core Web Vitals targets).
 
 **Install** (verify on their README):
 ```bash
