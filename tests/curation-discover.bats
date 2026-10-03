@@ -894,14 +894,12 @@ unpopular() {
     [ ! -f "$TEST_DIR/llm.log" ]
 }
 
-@test "discover: proposals and unjudged candidates are not recorded (they stay eligible)" {
+# Proposals ARE recorded since 2026-10 (they used to be re-proposed every month;
+# see "a proposal is recorded in the judged ledger"). An unjudged candidate is
+# still never recorded: no verdict came back, so it stays eligible.
+@test "discover: unjudged candidates are not recorded (they stay eligible)" {
     healthy_candidate "newauthor/next-skill"
-    llm_response '{"neutrality":"pass","fit":5,"rationale":"strong","borderline":false,"tokensUsed":50}'
-    run_discover --digest-dir "$TEST_DIR/digest"
-    [ "$(jq -r '.entries | length' "$TEST_DIR/digest/judged.json")" -eq 0 ]
-
     printf 'not json' > "$TEST_DIR/llm-response.json"
-    rm -f "$TEST_DIR/llm.log"
     run_discover --digest-dir "$TEST_DIR/digest"
     [ "$(digest_json | jq -r '.counts.unjudged')" -eq 1 ]
     [ "$(jq -r '.entries | length' "$TEST_DIR/digest/judged.json")" -eq 0 ]
@@ -1363,4 +1361,71 @@ multi_skill_candidate() {
     run_discover
     [[ "$output" == *"unparseable"* ]]
     if printf '%s' "$output" | grep -q $'\e'; then echo "ESC reached the log" >&2; return 1; fi
+}
+
+@test "discover: the proposal pins the newest stable release, not the Latest badge" {
+    search_items '{"items":[{"full_name":"acme/orm"}]}'
+    gh_fixture "repos/acme/orm" "$(repo_meta 1200 '2026-06-10T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/orm/releases/latest" '{"tag_name":"v0.17.0"}'
+    gh_fixture "repos/acme/orm/releases?per_page=100" '[
+        {"tag_name":"v8.0.0-rc.14","draft":false,"prerelease":true,"published_at":"2026-09-30T00:00:00Z"},
+        {"tag_name":"7.10.0","draft":false,"prerelease":false,"published_at":"2026-08-25T00:00:00Z"},
+        {"tag_name":"v0.17.0","draft":false,"prerelease":false,"published_at":"2026-08-04T00:00:00Z"},
+        {"tag_name":"v0.180.0","draft":false,"prerelease":false,"published_at":"2026-01-31T00:00:00Z"},
+        {"tag_name":"v9.0.0","draft":false,"prerelease":false,"published_at":"2025-03-01T00:00:00Z"}]'
+    # v9.0.0 has the highest version but is the oldest: discovery takes the most
+    # recently published stable release.
+    content_fixture acme/orm 7.10.0 SKILL.md "# clean skill"
+    tree_fixture acme/orm 7.10.0 SKILL.md
+    llm_response '{"neutrality":"pass","fit":4,"rationale":"ok","borderline":false,"tokensUsed":100}'
+    run_discover
+    [ "$(digest_json | jq -r '.proposals[0].pinnedRef')" = "7.10.0" ]
+}
+
+# =============================================================================
+# Proposals are recorded (2026-10): an unanswered proposal was judged again and
+# re-proposed every month. It is now kept in the judged ledger like a rejection,
+# so the repo is not re-judged within the window, and the digest lists it as
+# pending until it is added to the registry or declined.
+# =============================================================================
+
+@test "discover: a proposal is recorded in the judged ledger" {
+    healthy_candidate good/skill
+    llm_response '{"neutrality":"pass","fit":4,"rationale":"solid nextjs skill","borderline":false,"tokensUsed":100}'
+    CURATION_NOW=2026-10-01 run_discover --digest-dir "$TEST_DIR/digest"
+    [ "$(jq -r '.entries[] | select(.repo == "good/skill") | .gate' "$TEST_DIR/digest/judged.json")" = proposed ]
+    [ "$(jq -r '.entries[] | select(.repo == "good/skill") | .pinnedRef' "$TEST_DIR/digest/judged.json")" = v1.0.0 ]
+}
+
+@test "discover: a pending proposal is not judged again next month, and is listed as pending" {
+    healthy_candidate good/skill
+    llm_response '{"neutrality":"pass","fit":4,"rationale":"solid nextjs skill","borderline":false,"tokensUsed":100}'
+    CURATION_NOW=2026-10-01 run_discover --digest-dir "$TEST_DIR/digest"
+    rm -f "$TEST_DIR/llm.log"
+    CURATION_NOW=2026-11-01 run_discover --digest-dir "$TEST_DIR/digest"
+    [ ! -f "$TEST_DIR/llm.log" ]
+    d=$(digest_json)
+    [ "$(printf '%s' "$d" | jq -r '.counts.proposed')" = 0 ]
+    [ "$(printf '%s' "$d" | jq -r '.pendingProposals[0].repo')" = good/skill ]
+    [ "$(printf '%s' "$d" | jq -r '.pendingProposals[0].proposedAt')" = 2026-10-01 ]
+    grep -qF 'good/skill' "$TEST_DIR/digest/proposals.md"
+}
+
+@test "discover: a proposal since added to the registry is no longer pending" {
+    healthy_candidate good/skill
+    llm_response '{"neutrality":"pass","fit":4,"rationale":"solid","borderline":false,"tokensUsed":100}'
+    CURATION_NOW=2026-10-01 run_discover --digest-dir "$TEST_DIR/digest"
+    jq -cn '{version:"1.0.0", records:[{vendorId:"good/skill", pinnedRef:"v1.0.0", status:"candidate"}]}' > "$TEST_DIR/registry.json"
+    CURATION_NOW=2026-11-01 run_discover --digest-dir "$TEST_DIR/digest"
+    [ "$(digest_json | jq -r '.pendingProposals | length')" = 0 ]
+}
+
+@test "discover: a proposal past the re-judge window is judged again" {
+    healthy_candidate good/skill
+    llm_response '{"neutrality":"pass","fit":4,"rationale":"solid","borderline":false,"tokensUsed":100}'
+    CURATION_NOW=2026-01-01 run_discover --digest-dir "$TEST_DIR/digest"
+    rm -f "$TEST_DIR/llm.log"
+    CURATION_NOW=2026-10-01 run_discover --digest-dir "$TEST_DIR/digest"
+    [ -f "$TEST_DIR/llm.log" ]
+    [ "$(digest_json | jq -r '.counts.proposed')" = 1 ]
 }

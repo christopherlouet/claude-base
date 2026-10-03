@@ -1784,3 +1784,68 @@ delivery() { jq -r ".delivery.$1 // \"absent\"" "$TEST_DIR/digest/digest.json"; 
     run_watch_env FAKE_NOTHING_TO_COMMIT=1 -- --emit-pr --draft
     [ "$(delivery pr)" = "failed" ]
 }
+
+# =============================================================================
+# Newest stable release, compared like with like (2026-10). The "Latest" badge is
+# set by the repo's maintainer and need not be the newest stable: prisma/orm put
+# it on its Prisma Next line (v0.17.0) while the ORM line was at 7.10.0. A tag pin
+# now resolves to the highest-VERSION stable release of the same tag shape (the
+# prefix before the first digit: "", "v", "pkg@"...). Version, not date: a
+# backport published later (6.19.3) is not newer than 7.10.0.
+# =============================================================================
+
+@test "watch: a tag pin drifts to the newest stable of its own line, not the Latest badge" {
+    registry_one "acme/orm" "7.9.0" authority
+    gh_fixture "repos/acme/orm" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/orm/releases/latest" '{"tag_name":"v0.17.0"}'
+    gh_fixture "repos/acme/orm/releases?per_page=100" '[
+        {"tag_name":"v8.0.0-rc.14","draft":false,"prerelease":true,"published_at":"2026-09-30T00:00:00Z"},
+        {"tag_name":"6.19.3","draft":false,"prerelease":false,"published_at":"2026-09-01T00:00:00Z"},
+        {"tag_name":"7.10.0","draft":false,"prerelease":false,"published_at":"2026-08-25T00:00:00Z"},
+        {"tag_name":"v0.17.0","draft":false,"prerelease":false,"published_at":"2026-08-04T00:00:00Z"},
+        {"tag_name":"v9.1.0","draft":false,"prerelease":false,"published_at":"2026-09-15T00:00:00Z"},
+        {"tag_name":"7.9.0","draft":false,"prerelease":false,"published_at":"2026-07-20T00:00:00Z"}]'
+    # v9.1.0 belongs to another line ("v" shape): higher version, newer, and still
+    # not the pin's line.
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "7.10.0" ]]
+}
+
+@test "watch: a backport published after the pin is not drift" {
+    registry_one "acme/orm" "7.10.0" authority
+    gh_fixture "repos/acme/orm" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/orm/releases/latest" '{"tag_name":"6.19.3"}'
+    gh_fixture "repos/acme/orm/releases?per_page=100" '[
+        {"tag_name":"6.19.3","draft":false,"prerelease":false,"published_at":"2026-09-01T00:00:00Z"},
+        {"tag_name":"7.10.0","draft":false,"prerelease":false,"published_at":"2026-08-25T00:00:00Z"}]'
+    run_watch
+    [[ "$status" -eq 0 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findingCount')" -eq 0 ]]
+}
+
+@test "watch: a v-prefixed pin compares versions numerically (v1.10.0 is newer than v1.9.0)" {
+    registry_one "acme/lib" "v1.9.0" authority
+    gh_fixture "repos/acme/lib" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/lib/releases/latest" '{"tag_name":"v1.9.0"}'
+    gh_fixture "repos/acme/lib/releases?per_page=100" '[
+        {"tag_name":"v1.9.0","draft":false,"prerelease":false,"published_at":"2026-08-01T00:00:00Z"},
+        {"tag_name":"v1.10.0","draft":false,"prerelease":false,"published_at":"2026-09-01T00:00:00Z"}]'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "v1.10.0" ]]
+}
+
+@test "watch: an old mis-numbered release (v0.180.0 before the pin) is never taken as newer" {
+    # microsoft/playwright-cli: a January release tagged v0.180.0 (named v0.0.62)
+    # sits beside the current v0.1.x line. Only releases published since the pin
+    # compete on version.
+    registry_one "acme/cli" "v0.1.21" authority
+    gh_fixture "repos/acme/cli" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/cli/releases/latest" '{"tag_name":"v0.1.22"}'
+    gh_fixture "repos/acme/cli/releases?per_page=100" '[
+        {"tag_name":"v0.1.22","draft":false,"prerelease":false,"published_at":"2026-09-28T00:00:00Z"},
+        {"tag_name":"v0.1.21","draft":false,"prerelease":false,"published_at":"2026-09-18T00:00:00Z"},
+        {"tag_name":"v0.180.0","draft":false,"prerelease":false,"published_at":"2026-01-31T00:00:00Z"}]'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "v0.1.22" ]]
+}

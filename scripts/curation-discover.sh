@@ -289,10 +289,11 @@ judged_recent_set() {
         .entries[]? | select(fresh($now; $days)) | .repo | ascii_downcase' "$LEDGER" 2>/dev/null || true
 }
 
-# resolve_ref <repo> — a pinnable current ref: latest release tag, else HEAD sha.
+# resolve_ref <repo> — a pinnable current ref: the most recently published
+# stable release (not the "Latest" badge — curation_stable_release), else HEAD.
 resolve_ref() {
     local repo="$1" tag sha
-    tag=$(curation_gh_api "repos/$repo/releases/latest" 2>/dev/null | jq -r '.tag_name // empty')
+    tag=$(curation_stable_release "$repo")
     if [ -n "$tag" ]; then printf '%s\n' "$tag"; return; fi
     sha=$(curation_gh_api "repos/$repo/commits/HEAD" 2>/dev/null | jq -r '.sha // empty')
     [ -n "$sha" ] && printf '%s\n' "$sha"
@@ -617,6 +618,23 @@ else
     moat_signals='[]'
 fi
 
+# pending_proposals — proposals from EARLIER runs still in the ledger window and
+# not yet decided (not in the registry/presets, not declined). They are not
+# judged again (judged_recent_set skips them), so the digest keeps naming them
+# instead of letting them vanish or re-proposing them every month.
+pending_proposals() {
+    [ -n "$LEDGER" ] && [ -f "$LEDGER" ] || { echo '[]'; return 0; }
+    local decided
+    decided=$(printf '%s\n%s\n' "$(known_set)" "$(declined_set)" | awk 'NF' | jq -R 'ascii_downcase' | jq -s '.')
+    jq -c --arg now "$NOW" --argjson days "$REJUDGE_DAYS" --argjson decided "$decided" "$_LEDGER_DEFS"'
+        [.entries[]? | select(type == "object" and .gate == "proposed" and fresh($now; $days))
+         | select(.judgedAt < $now)
+         | select((.repo | ascii_downcase) as $r | $decided | index($r) | not)
+         | {repo, proposedAt:.judgedAt, pinnedRef, fit, reason}]' "$LEDGER" 2>/dev/null || echo '[]'
+}
+pending=$(pending_proposals)
+printf '%s' "$pending" | jq -e 'type == "array"' >/dev/null 2>&1 || pending='[]'
+
 exhausted=$([ "$deferred" -gt 0 ] && echo true || echo false)
 if [ "${#unjudged_arr[@]}" -gt 0 ]; then
     unjudged_repos=$(printf '%s\n' "${unjudged_arr[@]}" | jq -R . | jq -s '.')
@@ -631,13 +649,13 @@ digest=$(jq -cn \
     --argjson moat "$moat" --argjson graduation "$graduation" \
     --argjson limit "$BUDGET" --argjson spent "$spent" --argjson exhausted "$exhausted" \
     --argjson proposals "$proposals" --argjson moatSignals "$moat_signals" \
-    --argjson rejections "$rejections" \
+    --argjson rejections "$rejections" --argjson pending "$pending" \
     '{generatedAt:$now, scope:{candidates:$cand},
       sourcesFailed:$srcFailed, sourceFailures:$srcFailures,
       counts:{proposed:$proposed, rejected:$rejected, deferred:$deferred, unjudged:$unjudged, moat:$moat, graduation:$graduation},
       unjudgedRepos:$unjudgedRepos,
       budget:{limit:$limit, spent:$spent, exhausted:$exhausted},
-      proposals:$proposals, moatSignals:$moatSignals, rejections:$rejections}')
+      proposals:$proposals, pendingProposals:$pending, moatSignals:$moatSignals, rejections:$rejections}')
 
 # _MD_DEFS — jq helpers for the digest tables. Reasons and rationales are written
 # by a model reading third-party SKILL.md content and end up in a GitHub issue
@@ -668,6 +686,14 @@ render_markdown() {
         printf '| Repo | Provenance | Pin | Fit | Rationale |\n|---|---|---|---|---|\n'
         printf '%s' "$proposals" | jq -r "$_MD_DEFS"'
             .[] | "| \(.repo|link) | \(.provenance|esc) | \(.pinnedRef|esc) | \(.fit|esc) | \(.rationale|esc) |"'
+        printf '\n'
+    fi
+    if [ "$(printf '%s' "$pending" | jq 'length')" -gt 0 ]; then
+        printf '## ⏳ Pending proposals (earlier runs, not yet added or declined)\n\n'
+        printf 'Not judged again while pending. Add to the registry, or record a decline, to clear one.\n\n'
+        printf '| Repo | Proposed | Pin | Fit | Rationale |\n|---|---|---|---|---|\n'
+        printf '%s' "$pending" | jq -r "$_MD_DEFS"'
+            .[] | "| \(.repo|link) | \(.proposedAt|esc) | \(.pinnedRef|esc) | \(.fit|esc) | \(.reason|esc) |"'
         printf '\n'
     fi
     if [ "$graduation" -gt 0 ]; then
@@ -704,13 +730,14 @@ if [ -n "$DIGEST_DIR" ] && [ "$DRY_RUN" = false ]; then
     mkdir -p "$DIGEST_DIR"
     printf '%s\n' "$digest" > "$DIGEST_DIR/proposals.json"
     render_markdown > "$DIGEST_DIR/proposals.md"
-    # Judged ledger: this run's rejections replace any older entry for the same
+    # Judged ledger: this run's rejections AND proposals replace any older entry for the same
     # repo; entries past the re-judge window are dropped (they are eligible
     # again anyway). A corrupted ledger is started afresh, never fatal.
     _prev='{"entries":[]}'
     if [ -f "$LEDGER" ] && jq -e '.entries | arrays' "$LEDGER" >/dev/null 2>&1; then _prev=$(cat "$LEDGER"); fi
-    if printf '%s' "$_prev" | jq --arg now "$NOW" --argjson days "$REJUDGE_DAYS" --argjson new "$rejections" "$_LEDGER_DEFS"'
-        ($new | map(select(.recorded) | {repo, gate, reason, judgedAt:$now})) as $add
+    if printf '%s' "$_prev" | jq --arg now "$NOW" --argjson days "$REJUDGE_DAYS" --argjson new "$rejections" --argjson props "$proposals" "$_LEDGER_DEFS"'
+        (($new | map(select(.recorded) | {repo, gate, reason, judgedAt:$now}))
+         + ($props | map({repo, gate:"proposed", reason:.rationale, judgedAt:$now, pinnedRef, fit}))) as $add
         | ($add | map(.repo | ascii_downcase)) as $renewed
         | {version:"1.0.0",
            entries: ([.entries[] | select(fresh($now; $days))

@@ -98,6 +98,42 @@ curation_b64decode() {
     fi
 }
 
+# curation_stable_release <owner/repo> [<like-tag>] — a stable release tag (no
+# draft, no prerelease), never the repo's "Latest" badge, which is its
+# maintainer's choice (prisma/orm set it on another product line: v0.17.0 beside
+# 7.10.0). Read only when the release list is unavailable.
+#   no <like-tag> (discovery):  the most recently PUBLISHED stable release.
+#   with <like-tag> (watch):    releases of the same SHAPE (prefix before the
+#     first digit: "", "v", "pkg@", "@scope/pkg@"), published since <like-tag>
+#     was, compete on VERSION: a backport published later (6.19.3 after 7.10.0)
+#     is not newer, and an old mis-numbered release (v0.180.0, January, beside
+#     the v0.1.x line) is out of the race. <like-tag> absent from the list: every
+#     same-shape release competes on version.
+# Echoes the tag, or nothing.
+curation_stable_release() {
+    local repo="$1" like="${2:-}" shape="" list tag
+    [ -n "$like" ] && shape="${like%%[0-9]*}"
+    if list=$(curation_gh_api "repos/$repo/releases?per_page=100" 2>/dev/null) \
+        && printf '%s' "$list" | jq -e 'type == "array"' >/dev/null 2>&1; then
+        printf '%s' "$list" | jq -r --arg like "$like" --arg s "$shape" '
+            def ver: sub("^[^0-9]*"; "") | [scan("[0-9]+") | tonumber];
+            [ .[] | select(.draft == false and .prerelease == false and (.tag_name | type == "string")) ] as $st
+            | if $like == "" then
+                ($st | max_by(.published_at // "") | .tag_name) // empty
+              else
+                ([ $st[] | select(.tag_name | sub("[0-9].*$"; "") == $s) ]) as $same
+                | (first($same[] | select(.tag_name == $like) | .published_at) // null) as $since
+                | [ $same[] | select($since == null or (.published_at // "") >= $since) ]
+                | (max_by(.tag_name | ver) | .tag_name) // empty
+              end'
+        return 0
+    fi
+    tag=$(curation_gh_api "repos/$repo/releases/latest" 2>/dev/null | jq -r '.tag_name // empty' 2>/dev/null)
+    [ -n "$tag" ] || return 0
+    if [ -n "$like" ] && [ "${tag%%[0-9]*}" != "$shape" ]; then return 0; fi
+    printf '%s\n' "$tag"
+}
+
 # curation_finding_json — emit one normalized finding object for a digest
 # (Slice 3 consumes these). Args: subject type evidence action.
 curation_finding_json() {
