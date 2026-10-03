@@ -408,6 +408,64 @@
         "verify-*.sh scripts only run docker build / docker compose config",
         "gap kept in the foundation: image vulnerability scanning and Hadolint (absent from all four skills)"
       ]
+    },
+    {
+      "foundationSkill": "dev-flutter",
+      "vendorId": "flutter/agent-plugins/skills",
+      "vendorUrl": "https://github.com/flutter/agent-plugins",
+      "pinnedRef": "0ef3972f93e2baa4156ba1cbb1e515cd53079c68",
+      "trustTrack": "authority",
+      "trustVerdict": "pass",
+      "provenance": "Google (Flutter team)",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-10-04",
+      "status": "candidate",
+      "sourceAudit": "supply-audit-2026-10-03",
+      "flags": [
+        "POINT, not REDUCE: the official architecture skill teaches MVVM + ChangeNotifier; dev-flutter keeps the Clean Architecture + BLoC opinion",
+        "no release for the skills (the repo's releases tag a lint tool): pinned to a commit",
+        "safety screen (skills/): pass; the Claude plugin starts the Dart SDK's local MCP server",
+        "triggering 2026-10-04 (Opus, 3/3, BLoC project): with the 25 official skills and two community BLoC skills installed, dev-flutter fires and the vendor skills do not"
+      ]
+    },
+    {
+      "foundationSkill": "qa-chrome",
+      "vendorId": "ChromeDevTools/chrome-devtools-mcp/skills",
+      "vendorUrl": "https://github.com/ChromeDevTools/chrome-devtools-mcp",
+      "pinnedRef": "chrome-devtools-mcp-v1.10.1",
+      "trustTrack": "authority",
+      "trustVerdict": "pass",
+      "provenance": "Google (Chrome DevTools team)",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-10-04",
+      "status": "candidate",
+      "sourceAudit": "supply-audit-2026-10-03",
+      "flags": [
+        "qa-chrome was already a pointer; it keeps the manual review checklist for --chrome sessions",
+        "seven skills ship next to the MCP server; the plugin pins chrome-devtools-mcp@1.10.1",
+        "safety screen (skills/): pass",
+        "the plugin route follows the default branch's plugin.json (npx server); only `claude mcp add … chrome-devtools-mcp@1.10.1` is pinned by the foundation"
+      ]
+    },
+    {
+      "foundationSkill": "dev-flutter",
+      "vendorId": "HoangNguyen0403/agent-skills-standard/skills/flutter/flutter-bloc-state-management+skills/flutter/flutter-feature-based-clean-architecture",
+      "vendorUrl": "https://github.com/HoangNguyen0403/agent-skills-standard",
+      "pinnedRef": "1fb0537c339c1e135167f4c15ba603b8849da5bc",
+      "trustTrack": "community",
+      "trustVerdict": "pass",
+      "provenance": "HoangNguyen0403 (independent maintainer)",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-10-04",
+      "status": "candidate",
+      "sourceAudit": "supply-audit-2026-10-03",
+      "flags": [
+        "community bar: 569 stars (>= 500), MIT",
+        "BLoC depth for the foundation's own architecture opinion; authority (flutter/agent-plugins) preferred for framework APIs — vendor-precedence vendor-vs-vendor step 2",
+        "safety screen (the two folders): pass; they hold only references/ and evals/",
+        "the repo is a multi-domain mega-collection with its own hooks, agents and MCP config: link the two folders only",
+        "default branch is develop; pinned to the commit of tag skillspector-verified-v20261002"
+      ]
     }
   ]
 }

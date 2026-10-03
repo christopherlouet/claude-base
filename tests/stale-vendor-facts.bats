@@ -32,7 +32,8 @@ firecrawl extract	the Firecrawl CLI has no extract command (agent replaced it)
 no vendor-published Cypress skill	cypress-io/ai-toolkit ships Cypress skills (v1.4.0)
 Playwright remains MIT	microsoft/playwright is Apache-2.0
 Playwright (created 2020, MIT	microsoft/playwright is Apache-2.0
-GOOGLE_PLAY_JSON_KEY	fastlane supply reads SUPPLY_JSON_KEY_DATA"
+GOOGLE_PLAY_JSON_KEY	fastlane supply reads SUPPLY_JSON_KEY_DATA
+@chrome-devtools/mcp-server	npm 404; the package is chrome-devtools-mcp"
 
 # _scan DIR... — print every dead fact found under the dirs, with its reason.
 _scan() {

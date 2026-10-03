@@ -226,3 +226,61 @@ Same pattern as `dev-react-perf`: the foundation pointer wins the trigger, so it
 keeps the core HCL patterns (layout, naming, block order, `count` vs
 `for_each`, testing ladder) next to its discipline — the `ops-infra-code` agent
 preloads it and has no Skill tool to load the vendor skills either.
+
+## 2026-10-04 — the harness never granted Write/Edit; `dev-flutter` next to the Flutter team's skills
+
+**Harness defect.** A case's `allowed_tools` lists what the model may use, but
+`claude plugin eval` withholds Write and Edit unless the run grants them with
+`--allow-tools`. `run.sh` did not, so every session since 2026-09-27 chose its
+skill unable to write a file (one `dev-flutter-fires` run said so). Fixed:
+`run.sh` passes `--allow-tools Write,Edit`. Three earlier cases replayed with the
+grant (Opus, 3 runs):
+
+| Case | Before (no write) | With Write/Edit |
+|---|---|---|
+| `dev-tdd-fires` | `dev-tdd` ×3 | `dev-tdd` ×3 |
+| `dev-debug-hard-fires` | `dev-debug` ×3 | `dev-debug` ×3 |
+| `work-quick-fires` — "Fix the typo in README.md" | `work-quick` ×3 | **`work-quick` ×1**, no skill ×2 — able to write, Opus fixes the typo directly |
+
+The other results of the earlier campaigns were not replayed.
+
+**`dev-flutter`.** New case `vendor-flutter-coexist`: the same prompt as
+`dev-flutter-fires` ("Create a Flutter screen that lists products from our
+API…") in a scaffolded BLoC project (`flutter_bloc` in `pubspec.yaml`, an
+existing bloc), Write/Edit granted.
+
+| Installed next to the foundation | Fired |
+|---|---|
+| the 25 skills of `flutter/agent-plugins` | `dev-flutter` ×3 |
+| those + two community BLoC skills (HoangNguyen0403) | `dev-flutter` ×3 |
+
+The official architecture skill (MVVM + `ChangeNotifier`) never fires in the BLoC
+project, so it cannot contradict `dev-flutter`'s layering. Without the scaffold
+(`dev-flutter-fires`, empty workspace, no write grant) two of three runs used no
+skill and asked where the project was.
+
+**Replay of the 2026-10-03 coexistence cases with Write/Edit granted** (Opus,
+3 runs, same vendor sets, skills as on `main` after #630–#633):
+
+| Case | 2026-10-03 (no write) | 2026-10-04 (write granted) |
+|---|---|---|
+| `vendor-prisma-coexist` | `prisma-cli` ×3 (after #630) | **`prisma-cli` ×1, no skill ×2** |
+| `vendor-supabase-coexist` | `supabase` ×3 | `supabase` ×3 |
+| `vendor-shadcn-coexist` | `shadcn` ×3, `dev-shadcn` also ×1 | `shadcn` ×3 alone |
+| `vendor-graphql-coexist` | `apollo-server` ×3 | `apollo-server` ×3 |
+| `vendor-nextjs-coexist` | `dev-nextjs` ×3 | `dev-nextjs` ×3 |
+| `vendor-document-app-coexist` | `dev-document` ×3 | `dev-document` ×3 |
+| `vendor-document-author-coexist` | `docx` ×3 | `docx` ×3 |
+| `dev-react-perf-fires` (Vercel installed) | `dev-react-perf` ×3 | `dev-react-perf` ×3 |
+| `ops-infra-code-fires` (Babenko + HashiCorp installed) | `ops-infra-code` ×3 | `ops-infra-code` ×3 |
+
+The decisions of #632 and #633 hold. Prisma does not: able to write, Opus edits
+`schema.prisma` itself in two runs of three, and `dev-prisma` — told to step
+aside when a `prisma-*` skill is installed — leaves the session with no skill,
+as the deferring `dev-react-perf` description did. The safety rules still load
+from `.claude/rules/prisma.md` (path-scoped); the pointer's description is an
+open question.
+
+**Open**: `work-quick-fires` now fails its 1.0 threshold (1/3). A typo fixed
+without the skill may be the right outcome; the case or the description needs a
+decision.

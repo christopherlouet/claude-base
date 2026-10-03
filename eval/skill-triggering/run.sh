@@ -93,7 +93,12 @@ claude plugin eval "$PLUGIN" \
     --json "$OUT/result.json" \
     --keep-temp \
     --scaffold \
+    --allow-tools Write,Edit \
     "$@"
+# --allow-tools: a case's allowed_tools only lists what the model may use;
+# `plugin eval` withholds Write and Edit unless the run also grants them. Until
+# 2026-10-03 this harness did not, so every session chose its skill knowing it
+# could not write a file (one run said so) — measured on dev-flutter-fires.
 # --scaffold: runs each case's scaffold_script (fixture files) as you. Only the
 # cases under cases/, written in this repository, are copied into the suite.
 # --keep-temp: the traces (the only record of which model ran and what Claude

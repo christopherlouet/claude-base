@@ -339,28 +339,44 @@ git clone --depth 1 https://github.com/addyosmani/web-quality-skills ~/dev/vendo
 
 ### Google Chrome DevTools — `chrome-devtools-mcp` (qa-chrome companion)
 
-**Covers**: Programmatic access to Chrome DevTools (network inspection, profiling, accessibility tree) as MCP tools that Claude Code can invoke directly during a session.
+**Covers**: programmatic access to Chrome DevTools (network, performance traces, accessibility tree, console) as an MCP server, and **seven skills** that drive it: `chrome-devtools`, `chrome-devtools-cli`, `a11y-debugging`, `debug-optimize-lcp`, `memory-leak-debugging`, `cookie-debugging`, `troubleshooting`.
 
-**Format note**: This is an **MCP server**, NOT a SKILL.md skill. Configuration mechanism is different.
+**When to install**: any project where Claude Code should inspect a page programmatically.
 
-**When to install**: any project where Claude Code needs direct programmatic access to Chrome DevTools.
+**Pair with**: claude-base's `qa-chrome` skill (manual review checklist with `--chrome`).
 
-**Pair with**: claude-base's `qa-chrome` skill (manual review checklist).
-
-**Install** (verify on their repo's README):
+**Install**:
 ```bash
-# Configure in your project's .mcp.json:
-# {
-#   "mcpServers": {
-#     "chrome-devtools": {
-#       "command": "npx",
-#       "args": ["@chrome-devtools/mcp-server"]
-#     }
-#   }
-# }
+# skills + MCP server; the marketplace follows the default branch (it pinned
+# chrome-devtools-mcp@1.10.1 on 2026-10-04) — only the line below is pinned by us
+/plugin marketplace add ChromeDevTools/chrome-devtools-mcp
+/plugin install chrome-devtools-mcp@chrome-devtools-plugins
+# or the MCP server alone
+claude mcp add chrome-devtools --scope user npx chrome-devtools-mcp@1.10.1
 ```
 
-**Provenance & advice-neutrality**: Google. Web-tooling neutral.
+The npm package is `chrome-devtools-mcp`; the scoped package name this entry used to give does not exist (npm 404, 2026-10-04).
+
+**Provenance & advice-neutrality**: Google Chrome DevTools team, Apache-2.0. Web-tooling neutral.
+
+---
+
+### Flutter — `flutter/agent-plugins` (dev-flutter companion)
+
+**Covers**: the Flutter team's own skills — responsive layouts and layout fixes, declarative routing, `http`, JSON serialization, widget / integration tests and widget previews, localization, an architecture guide — plus 15 Dart skills (testing, FFI, static analysis, pattern matching…).
+
+**When to install**: any Flutter project.
+
+**Pair with**: claude-base's `dev-flutter` for the architecture: the official guide teaches MVVM with `ChangeNotifier`, `dev-flutter` Clean Architecture + BLoC. For deeper BLoC, `HoangNguyen0403/agent-skills-standard` (`skills/flutter/flutter-bloc-state-management`, `flutter-feature-based-clean-architecture`; MIT, 569★) at commit `1fb0537c339c` — link those two folders only.
+
+**Install** (no skills release yet: pin the commit):
+```bash
+git clone https://github.com/flutter/agent-plugins ~/dev/vendor-skills/flutter
+git -C ~/dev/vendor-skills/flutter checkout 0ef3972f93e2baa4156ba1cbb1e515cd53079c68
+ln -s ~/dev/vendor-skills/flutter/skills/flutter-build-responsive-layout ./.claude/skills/   # repeat per skill you need
+```
+
+**Provenance & advice-neutrality**: Google (Flutter team), BSD-3-Clause. The plugin also starts the Dart SDK's MCP server (`dart mcp-server`), local.
 
 ---
 
