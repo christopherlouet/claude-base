@@ -7,13 +7,15 @@
 # through three gates before PROPOSING them (proposal only — never auto-added,
 # observe-never-install):
 #   1. trust   — public popularity/maintenance signals (trust-score.sh)  [LLM-FREE]
-#   2. safety  — pin-time integrity content scan (curation-safety.sh)     [LLM-FREE]
-#   2b. skill  — the repo must ship a SKILL.md (a link list or a product repo has
+#   2. skill   — the repo must ship a SKILL.md (a link list or a product repo has
 #                nothing to install: rejected `no-skill`)                 [LLM-FREE]
-#   3. judge   — advice-neutrality + fit, via an LLM (claude -p), Haiku triage with
+#   3. safety  — pin-time integrity content scan (curation-safety.sh), at the
+#                root AND over the skill directories the judge reads      [LLM-FREE]
+#   4. judge   — advice-neutrality + fit, via an LLM (claude -p), Haiku triage with
 #                escalation of borderline cases. It reads the SHIPPED skills
 #                (path, name, description, then bodies, up to
-#                CURATION_SKILL_DOSSIER_CAP chars, 6000), never the README:
+#                CURATION_SKILL_DOSSIER_CAP chars, 6000; at most
+#                CURATION_SKILL_DOSSIER_MAX skills read, 12), never the README:
 #                the README describes the product, the skill is what a user
 #                installs.                                                [LLM]
 # The two cheap deterministic gates run FIRST so the costly LLM is consulted only
@@ -297,36 +299,85 @@ resolve_ref() {
 }
 
 # shipped_skills <repo> <ref> — the SKILL.md paths the repo holds at <ref>, one
-# per skill (a skill duplicated under another directory, as .claude/skills/x
-# beside skills/x, is kept once: the shortest path). Exit 1 when the tree cannot
-# be read: an outage, never "no skill".
+# per skill: identical copies (one blob sha, e.g. .claude/skills/x beside
+# skills/x) are kept once, at the shortest path; paths under a hidden directory
+# come last (often the repo's own tooling). Exit 1 when the tree cannot be read,
+# or is truncated with no SKILL.md in view: an outage, never "no skill".
 shipped_skills() {
-    local body
+    local body paths
     body=$(curation_gh_api "repos/$1/git/trees/$2?recursive=1" 2>/dev/null) || return 1
     printf '%s' "$body" | jq -e '.tree | type == "array"' >/dev/null 2>&1 || return 1
-    printf '%s' "$body" | jq -r '
-        [.tree[] | select(.type == "blob") | .path | select(test("(^|/)SKILL\\.md$"))]
-        | group_by(split("/") | if length > 1 then .[-2] else "" end)
-        | map(min_by(length)) | sort | .[]'
+    paths=$(printf '%s' "$body" | jq -r '
+        [.tree[] | select(.type == "blob") | select(.path | test("(^|/)SKILL\\.md$"))]
+        | group_by(.sha // .path) | map(min_by(.path | length))
+        | sort_by([(.path | test("(^|/)\\.")), .path]) | .[].path')
+    if [ -z "$paths" ] && printf '%s' "$body" | jq -e '.truncated == true' >/dev/null 2>&1; then
+        return 1
+    fi
+    printf '%s\n' "$paths" | awk 'NF'
+}
+
+# The skills actually read (dossier AND safety scan): the first SKILL_DOSSIER_MAX
+# of shipped_skills. The rest are listed by path only, so a repo of 200 skills
+# costs a bounded number of API calls.
+SKILL_DOSSIER_MAX="${CURATION_SKILL_DOSSIER_MAX:-12}"
+SKILL_DOSSIER_CAP="${CURATION_SKILL_DOSSIER_CAP:-6000}"
+
+# _frontmatter_field <field> — read <field> from the YAML frontmatter on stdin:
+# CRLF tolerated, a folded/literal block (`>-`, `|`) joined into one line.
+_frontmatter_field() {
+    tr -d '\r' | awk -v k="$1" '
+        /^---$/ { fm++; if (fm > 1) exit; next }
+        fm != 1 { next }
+        blk && /^[ \t]+/ { sub(/^[ \t]+/, ""); out = out (out == "" ? "" : " ") $0; next }
+        blk { exit }
+        index($0, k ":") == 1 {
+            v = substr($0, length(k) + 2); sub(/^[ \t]+/, "", v)
+            if (v ~ /^[>|][-+]?$/) { blk = 1; next }
+            out = v; exit
+        }
+        END { print out }'
 }
 
 # skill_dossier <repo> <ref> <paths> — what the judge reads: the list of shipped
-# skills (path, name, description from each frontmatter), then their bodies until
-# the size cap. Never the README: the repo's README describes its product, and
-# the skill is what a user installs.
-SKILL_DOSSIER_CAP="${CURATION_SKILL_DOSSIER_CAP:-6000}"
+# skills (path, name, description), then their bodies until the size cap. Never
+# the README: the repo's README describes its product, and the skill is what a
+# user installs. Only the first SKILL_DOSSIER_MAX are read — the same set the
+# safety screen scans.
 skill_dossier() {
-    local repo="$1" ref="$2" paths="$3" p doc name desc list="" bodies="" n=0
+    local repo="$1" ref="$2" paths="$3" p doc name desc list="" bodies="" n=0 read=0 share i
+    local -a docs=() read_paths=()
     while IFS= read -r p; do
         [ -n "$p" ] || continue
-        doc=$(_curation_fetch_one "$repo" "$ref" "$p" 2>/dev/null) || doc=""
-        name=$(printf '%s\n' "$doc" | awk '/^---$/{f++; next} f==1 && /^name:/{sub(/^name:[ ]*/, ""); print; exit}')
-        desc=$(printf '%s\n' "$doc" | awk '/^---$/{f++; next} f==1 && /^description:/{sub(/^description:[ ]*/, ""); print; exit}' | cut -c1-200)
-        list+="- $p — name: ${name:-?} — description: ${desc:-?}"$'\n'
-        [ "$n" -lt 5 ] && [ -n "$doc" ] && bodies+="=== $p ==="$'\n'"$doc"$'\n'
         n=$((n + 1))
+        if [ "$n" -gt "$SKILL_DOSSIER_MAX" ]; then
+            list+="- $p (not read)"$'\n'
+            continue
+        fi
+        doc=$(_curation_fetch_one "$repo" "$ref" "$p" 2>/dev/null) || doc=""
+        name=$(printf '%s\n' "$doc" | _frontmatter_field name)
+        desc=$(printf '%s\n' "$doc" | _frontmatter_field description | cut -c1-200)
+        list+="- $p — name: ${name:-?} — description: ${desc:-?}"$'\n'
+        [ -n "$doc" ] && { docs+=("$doc"); read_paths+=("$p"); read=$((read + 1)); }
     done <<< "$paths"
+    # Every skill read gets an equal share of what is left after the list: the
+    # first ones by path are not the important ones (skills-contrib/ sorts
+    # before skills/), so none may crowd the others out.
+    if [ "$read" -gt 0 ]; then
+        share=$(( (SKILL_DOSSIER_CAP - ${#list} - 64) / read ))
+        [ "$share" -lt 300 ] && share=300
+        for ((i = 0; i < read; i++)); do
+            bodies+="=== ${read_paths[$i]} ==="$'\n'"$(printf '%s' "${docs[$i]}" | head -c "$share")"$'\n'
+        done
+    fi
     printf 'Skills shipped (%s):\n%s\n%s' "$n" "$list" "$bodies" | head -c "$SKILL_DOSSIER_CAP"
+}
+
+# skill_subpaths <paths> — the '+'-joined directories of the skills the dossier
+# reads, for the safety screen (a root SKILL.md is the root screen's job).
+skill_subpaths() {
+    printf '%s\n' "$1" | awk 'NF' | head -n "$SKILL_DOSSIER_MAX" \
+        | awk '{ d = $0; sub(/\/?SKILL\.md$/, "", d); if (d != "") print d }' | paste -sd+ -
 }
 
 # llm_judge <repo> <ref> <content> <model> — one model call; echoes the verdict
@@ -362,16 +413,23 @@ $content
 PROMPT
 )
     out=$(printf '%s' "$prompt" | "${_LLM[@]}" --model "$model" 2>/dev/null)
+    local raw="$out"
     # Models routinely wrap the JSON in ```json fences (or add stray blank lines)
     # despite the "raw JSON only" instruction. Strip fence lines defensively so a
     # well-formed-but-fenced verdict is NOT discarded as unparseable.
     out=$(printf '%s' "$out" | sed -e '/^[[:space:]]*```/d')
+    # Prose around the object ("Here is my verdict: {...} Hope this helps")
+    # would discard a well-formed verdict: keep the span from the first line
+    # opening an object to the last line closing one.
+    if ! printf '%s' "$out" | jq -e . >/dev/null 2>&1; then
+        out=$(printf '%s\n' "$out" | awk '/^[[:space:]]*\{/{f=1} f{buf = buf $0 "\n"; if ($0 ~ /\}[[:space:]]*$/) keep = buf} END{printf "%s", keep}')
+    fi
     # The contract, not merely "parses": a fit sent as a string would floor to 0
     # and read as a verdict (recorded, hidden 180 days). Outside it = unanswered.
     if printf '%s' "$out" | jq -e '(.neutrality == "pass" or .neutrality == "flag") and (.fit | type == "number")' >/dev/null 2>&1; then
         printf '%s' "$out"
     else
-        curation_warn "llm judge failed/unparseable for $repo"
+        curation_warn "llm judge failed/unparseable for $repo: $(printf '%s' "$raw" | tr '\r\n\t' '   ' | cut -c1-160)"
         # `unavailable` is what stops the caller reporting this as a VERDICT. The
         # rejecting shape is kept so any reader of the object still fails safe.
         jq -cn '{neutrality:"flag", fit:0, rationale:"llm-unavailable", borderline:false, tokensUsed:0, unavailable:true}'
@@ -447,22 +505,10 @@ if [ "$n_candidates" -gt 0 ]; then
     ref=$(resolve_ref "$repo")
     [ -n "$ref" ] || { _reject "$repo" ref "could not resolve a release tag or HEAD (operational)" false; continue; }
 
-    # Gate 2 — safety (LLM-free).
-    screen=$(curation_safety_screen "$repo" "$ref")
-    if [ "$(printf '%s' "$screen" | jq -r '.verdict')" != "pass" ]; then
-        sreasons=$(printf '%s' "$screen" | jq -r '(.reasons // []) | join(", ")' 2>/dev/null || true)
-        if [ -z "$sreasons" ] || printf '%s' "$sreasons" | grep -qE "$_SAFETY_OUTAGE"; then
-            _reject "$repo" safety "${sreasons:-no screen verdict} (operational)" false
-        else
-            _reject "$repo" safety "$sreasons" true
-        fi
-        continue
-    fi
-
-    # Gate 2b — the repo must ship a skill (LLM-free). A link list or a product
+    # Gate 2 — the repo must ship a skill (LLM-free). A link list or a product
     # repo has no SKILL.md: nothing to install, so nothing to judge.
     if ! skills=$(shipped_skills "$repo" "$ref"); then
-        _reject "$repo" no-skill "repository tree unreadable (operational)" false
+        _reject "$repo" no-skill "repository tree unreadable or truncated (operational)" false
         continue
     fi
     if [ -z "$skills" ]; then
@@ -470,12 +516,31 @@ if [ "$n_candidates" -gt 0 ]; then
         continue
     fi
 
+    # Gate 3 — safety (LLM-free): the root screen, then the skill directories the
+    # judge will read. The root screen scans the root SKILL.md / README; without
+    # the second pass a skill under skills/<x>/ reached the judge unscanned.
+    subs=$(skill_subpaths "$skills")
+    screen_failed=0
+    for scope in "" ${subs:+"$subs"}; do
+        screen=$(curation_safety_screen "$repo" "$ref" "$scope")
+        [ "$(printf '%s' "$screen" | jq -r '.verdict')" = "pass" ] && continue
+        sreasons=$(printf '%s' "$screen" | jq -r '(.reasons // []) | join(", ")' 2>/dev/null || true)
+        if [ -z "$sreasons" ] || printf '%s' "$sreasons" | grep -qE "$_SAFETY_OUTAGE"; then
+            _reject "$repo" safety "${sreasons:-no screen verdict} (operational)" false
+        else
+            _reject "$repo" safety "$sreasons" true
+        fi
+        screen_failed=1
+        break
+    done
+    [ "$screen_failed" -eq 0 ] || continue
+
     # Budget gate — BEFORE any model call. Exhausted → defer this and the rest.
     if [ "$spent" -ge "$BUDGET" ]; then
         deferred=$((deferred + 1)); continue
     fi
 
-    # Gate 3 — judge (LLM). Haiku triage; escalate a borderline verdict once.
+    # Gate 4 — judge (LLM). Haiku triage; escalate a borderline verdict once.
     content=$(skill_dossier "$repo" "$ref" "$skills")
     verdict=$(llm_judge "$repo" "$ref" "$content" "$MODEL")
     spent=$((spent + $(printf '%s' "$verdict" | jq -r '(.tokensUsed | numbers | floor) // 1000')))
