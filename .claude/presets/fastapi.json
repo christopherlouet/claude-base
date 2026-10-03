@@ -41,10 +41,10 @@
       "url": "https://github.com/supabase/agent-skills",
       "rationale": "Postgres best practices (30 rules) + Supabase Python SDK patterns",
       "condition": "if using Postgres or Supabase",
-      "pinnedRef": "v0.1.8",
+      "pinnedRef": "v0.1.9",
       "trustTrack": "authority",
       "provenance": "Supabase",
-      "lastVerified": "2026-08-26"
+      "lastVerified": "2026-10-03"
     },
     {
       "id": "mongodb/agent-skills",

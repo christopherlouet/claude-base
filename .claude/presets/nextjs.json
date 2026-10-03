@@ -60,20 +60,20 @@
       "url": "https://github.com/supabase/agent-skills",
       "rationale": "Auth, DB, Edge Functions, Realtime, Storage patterns + Postgres best practices",
       "condition": "if using Supabase",
-      "pinnedRef": "v0.1.8",
+      "pinnedRef": "v0.1.9",
       "trustTrack": "authority",
       "provenance": "Supabase",
-      "lastVerified": "2026-08-26"
+      "lastVerified": "2026-10-03"
     },
     {
       "id": "prisma/skills",
       "url": "https://github.com/prisma/skills",
       "rationale": "Prisma ORM patterns, especially v7 (ESM-only, driver adapters)",
       "condition": "if using Prisma",
-      "pinnedRef": "1123817e60d15ca0f3af91878923241dee7e3b09",
+      "pinnedRef": "be16a8740d01363d13552b317042431ee8dfc581",
       "trustTrack": "authority",
       "provenance": "Prisma",
-      "lastVerified": "2026-09-09"
+      "lastVerified": "2026-10-03"
     },
     {
       "id": "shadcn-ui/ui (skills/shadcn)",
@@ -90,10 +90,10 @@
       "url": "https://github.com/apollographql/skills",
       "rationale": "Apollo Client, Apollo Server 5, Federation 2",
       "condition": "if using Apollo GraphQL",
-      "pinnedRef": "v1.2.10",
+      "pinnedRef": "v1.2.12",
       "trustTrack": "authority",
       "provenance": "Apollo GraphQL",
-      "lastVerified": "2026-09-25"
+      "lastVerified": "2026-10-03"
     }
   ],
   "defaults": {
