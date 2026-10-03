@@ -588,6 +588,7 @@
 4baad706312bf5cfd330b5fba3ef8386e94b68b238f78127a2ab04147522d844 .claude/skills/ops-monitoring/SKILL.md
 4badbb75661a2f4b6ae5812a6022b9871239460865b641bb9a740cc274622fec .claude/skills/ops-infra-code/SKILL.md
 4bd2cb7892d7222a391e37376c640cc145586b60cee9aa7a9af09f93729166c9 .claude/commands/dev/dev-neovim.md
+4bde45281a901272adfb5ee2ac35b3413e0fee0ae22f85281a6ab4c91a911be1 .claude/skills/dev-prisma/SKILL.md
 4be0e9519a17b3605c1d38e2844b086276f8e4006325c46987fba374ae4e57a1 .claude/output-styles/review.md
 4beeba8afa92f5e46ecb6e17da11841da32fd23290be0e5e6797bd501ec3a611 .claude/commands/qa-a11y.md
 4beeba8afa92f5e46ecb6e17da11841da32fd23290be0e5e6797bd501ec3a611 .claude/commands/qa/qa-a11y.md
@@ -913,6 +914,7 @@
 77fff14e0630b4ee1bd3e91e8d53a5ea390ab872dcb7386b2ecd6536967a5755 .claude/commands/doc-i18n.md
 7813d36ae3db4203eb374b058968c42262123cc068c7c37d637a945fccf36f87 .claude/commands/ops-hotfix.md
 7813d36ae3db4203eb374b058968c42262123cc068c7c37d637a945fccf36f87 .claude/commands/ops/ops-hotfix.md
+784b1bc8c35acdbdd3d518e5c71b426c4cb0a6e605571d984004f1f5feeb8138 .claude/skills/dev-supabase/SKILL.md
 7872e57afc01ad7043d21a987354601f42ac9eee6c0d027d0b49c6d2bb6b1535 .claude/commands/doc/doc-fix-issue.md
 789fd68bc1f3300ac130edb550f9c444fdf28286198729ad208940999cd213b9 .claude/skills/ops-ci-fix/SKILL.md
 78f08e67b190ff8a84a9aa25f26cfaa09d0d17dbbe175b991bdb8bbf37e0a51d scripts/substance-check.sh

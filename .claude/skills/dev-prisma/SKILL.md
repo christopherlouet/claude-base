@@ -30,4 +30,4 @@ The vendor covers the Prisma API surface. The foundation enforces version-agnost
 
 ## Foundation rules: `.claude/rules/prisma.md`
 
-The migration, secret and query rules this pointer used to carry live in [`.claude/rules/prisma.md`](../../rules/prisma.md), scoped to the Prisma files. Installed next to the vendor's skills, only one side fires (measured 2026-10-03: Supabase's own skill alone 3/3; Prisma's pointer used to win 3/3 until its description stepped aside, now `prisma-cli` fires 3/3), so a rule kept in a skill reaches the session only when that skill wins — a rule loaded by the files holds whichever skill fires.
+The migration, secret and query rules this pointer used to carry live in `.claude/rules/prisma.md`, scoped to the Prisma files. Installed next to the vendor's skills, only one side fires (measured 2026-10-03: Supabase's own skill alone 3/3; Prisma's pointer used to win 3/3 until its description stepped aside, now `prisma-cli` fires 3/3), so a rule kept in a skill reaches the session only when that skill wins — a rule loaded by the files holds whichever skill fires.

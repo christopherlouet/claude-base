@@ -57,8 +57,8 @@ _paths() {
         local f="$SKILLS_DIR/dev-$s/SKILL.md"
         grep -q "\.claude/rules/$s\.md" "$f" \
             || { echo "dev-$s does not point at .claude/rules/$s.md" >&2; false; }
-        ! grep -q '^## Foundation rules preserved' "$f" \
-            || { echo "dev-$s still carries its own copy of the rules" >&2; false; }
+        run grep -q '^## Foundation rules preserved' "$f"
+        [ "$status" -ne 0 ] || { echo "dev-$s still carries its own copy of the rules" >&2; false; }
     done
     # `run` + status, not a bare `! grep`: a negated command never trips bats'
     # errexit, so anywhere but the last line it asserts nothing.
