@@ -67,10 +67,10 @@
       "url": "https://github.com/lingui/skills",
       "rationale": "Lingui i18n patterns for React (sourced from specs/marketplace-audit/dev-skills-pilot)",
       "condition": "if using Lingui for i18n",
-      "pinnedRef": "a623188295f03f59ef3c70ed433058c04c34bc44",
+      "pinnedRef": "2be6e699bb0d107dfa3790d0c7c551b34e306a1b",
       "trustTrack": "authority",
       "provenance": "Lingui",
-      "lastVerified": "2026-09-25"
+      "lastVerified": "2026-10-03"
     }
   ],
   "defaults": {
