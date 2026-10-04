@@ -1904,7 +1904,7 @@ wk_fixture() { printf '%s' "$2" > "$TEST_DIR/fx/wk_$1"; }
     run_discover --dry-run
     [ "$status" -eq 0 ]
     grep -q 'ok.example' "$TEST_DIR/curl.log"
-    ! grep -q 'evil.example\|b.example' "$TEST_DIR/curl.log"
+    ! grep -q 'evil.example\|b.example' "$TEST_DIR/curl.log" || false
 }
 
 @test "discover: well-known raw URLs with a refs/heads ref, a repo-root SKILL.md, and a bad entry" {
