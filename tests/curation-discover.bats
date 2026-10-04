@@ -1869,3 +1869,13 @@ wk_fixture() { printf '%s' "$2" > "$TEST_DIR/fx/wk_$1"; }
     run jq -r '[.sources[] | select(.kind == "well-known") | .hosts[]] | join(" ")' "$f"
     [[ "$output" == *"formatjs.github.io"* ]]
 }
+
+@test "discover: a well-known host that is not a bare hostname is never fetched" {
+    npm_curl
+    jq -cn '{version:"1.0.0", sources:[{domain:"wk", kind:"well-known", hosts:["evil.example/x?", "a b.example", "ok.example"]}]}' > "$TEST_DIR/sources.json"
+    wk_fixture ok.example '{"skills":[]}'
+    run_discover --dry-run
+    [ "$status" -eq 0 ]
+    grep -q 'ok.example' "$TEST_DIR/curl.log"
+    ! grep -q 'evil.example\|b.example' "$TEST_DIR/curl.log"
+}
