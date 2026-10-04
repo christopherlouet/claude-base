@@ -655,6 +655,122 @@ ln -s ~/dev/vendor-skills/marketingskills/skills/onboarding ./.claude/skills/onb
 
 ---
 
+### Stripe — `stripe/ai` `stripe-best-practices` (legal-payment, if Stripe)
+
+**Covers**: Checkout Sessions vs PaymentIntents, billing, Stripe Tax, Connect, key handling, deprecated-API migrations. Stripe-scoped by design (new usage-based billing goes to Metronome, a Stripe product); `/legal:legal-payment` keeps the provider choice. It tells users to `npm i -g @stripe/cli` unpinned.
+
+**Install only if**: the project uses Stripe.
+
+```bash
+git clone https://github.com/stripe/ai ~/dev/vendor-skills/stripe-ai
+git -C ~/dev/vendor-skills/stripe-ai checkout 9a33771f666e
+ln -s ~/dev/vendor-skills/stripe-ai/providers/claude/plugin/skills/stripe-best-practices ./.claude/skills/
+```
+
+**Provenance**: Stripe, MIT, no releases. Safety screen: pass.
+
+---
+
+### Astronomer — `astronomer/agents` (data-pipeline, if Airflow)
+
+**Covers**: `airflow` (entry point), `authoring-dags`, `testing-dags`, `debugging-dags`, `migrating-airflow-2-to-3`. They use Astronomer's `af` CLI (`astro-airflow-mcp`, an unpinned `uv tool install`) and the Astro CLI; Astro is Astronomer's paid platform.
+
+**Install only if**: the project runs Airflow.
+
+```bash
+git clone https://github.com/astronomer/agents ~/dev/vendor-skills/astronomer
+git -C ~/dev/vendor-skills/astronomer checkout 1ec1a1fa00ef
+for s in airflow authoring-dags testing-dags debugging-dags migrating-airflow-2-to-3; do
+  ln -s ~/dev/vendor-skills/astronomer/skills/$s ./.claude/skills/
+done
+```
+
+**Provenance**: Astronomer, Apache-2.0. Safety screen of these five: pass (the repo's `analyzing-data` scripts print an unpinned pipe-to-shell install hint — not recommended).
+
+---
+
+### Dagster — `dagster-io/skills` (data-pipeline, if Dagster)
+
+**Covers**: `plugins/dagster/skills/dagster-expert` — projects, definitions, assets, the `dg` CLI. Its description claims every "data pipelines" task, so install it only in Dagster projects. The plugin also registers the remote Dagster+ MCP server (paid); the skill folder alone does not.
+
+**Install only if**: the project runs Dagster.
+
+```bash
+git clone https://github.com/dagster-io/skills ~/dev/vendor-skills/dagster
+git -C ~/dev/vendor-skills/dagster checkout b08dd8e6dac65829c829f2a185ff9b6eb2c11ab3   # = v1.13.25
+ln -s ~/dev/vendor-skills/dagster/plugins/dagster/skills/dagster-expert ./.claude/skills/
+```
+
+**Provenance**: Dagster Labs, Apache-2.0. Safety screen: pass.
+
+---
+
+### dbt Labs — `dbt-labs/dbt-agent-skills` (data-pipeline / data-modeling, if dbt)
+
+**Covers**: `skills/dbt/skills/*` — models, tests and unit tests, documentation, semantic layer, mesh. **Not** `skills/dbt-migration/`: its upgrade script runs `uvx --from git+https://github.com/dbt-labs/dbt-autofix.git…` against an unpinned branch.
+
+**Install only if**: the project uses dbt.
+
+```bash
+git clone https://github.com/dbt-labs/dbt-agent-skills ~/dev/vendor-skills/dbt
+git -C ~/dev/vendor-skills/dbt checkout 168a2b0b92da
+ln -s ~/dev/vendor-skills/dbt/skills/dbt/skills/* ./.claude/skills/
+```
+
+**Provenance**: dbt Labs, Apache-2.0, no releases. Safety screen of `skills/dbt/`: pass.
+
+---
+
+### AWS — `awslabs/agent-plugins` `aws-serverless` (ops-serverless, if AWS Lambda)
+
+**Covers**: `plugins/aws-serverless/skills/*` — Lambda, SAM/CDK deployment, API Gateway, Step Functions, durable functions. Plugin version `1.3.0` at the pin (the repo's `1.0.0` release is seven months older).
+
+**Install only if**: the project deploys to AWS Lambda. Choose: the plugin adds a PostToolUse hook on Edit/Write (`sam validate --lint`) and an MCP server run as `uvx awslabs.aws-serverless-mcp-server@latest --allow-write`; the skill folders alone avoid both, and the skills then ask before working without their MCP tools.
+
+```bash
+git clone https://github.com/awslabs/agent-plugins ~/dev/vendor-skills/aws
+git -C ~/dev/vendor-skills/aws checkout e32b05b5973d
+ln -s ~/dev/vendor-skills/aws/plugins/aws-serverless/skills/* ./.claude/skills/
+```
+
+**Provenance**: AWS, Apache-2.0. Safety screen (skills): pass.
+
+---
+
+### Cloudflare — `cloudflare/skills` (ops-serverless, if Workers)
+
+**Covers**: `skills/workers-best-practices`, `skills/wrangler`.
+
+**Install only if**: the project runs on Cloudflare Workers.
+
+```bash
+git clone https://github.com/cloudflare/skills ~/dev/vendor-skills/cloudflare
+git -C ~/dev/vendor-skills/cloudflare checkout 41e0d1985894
+ln -s ~/dev/vendor-skills/cloudflare/skills/workers-best-practices ~/dev/vendor-skills/cloudflare/skills/wrangler ./.claude/skills/
+```
+
+**Provenance**: Cloudflare, Apache-2.0, no releases. Safety screen: pass.
+
+---
+
+### Expo — `expo/skills` `eas-app-stores` (ops-mobile-release, if Expo/EAS)
+
+**Covers**: EAS builds, signing, versions, TestFlight / App Store / Google Play submission. EAS has a free tier and paid plans (the skill states the limits).
+
+**Install only if**: the app ships with Expo / EAS.
+
+```bash
+git clone https://github.com/expo/skills ~/dev/vendor-skills/expo
+git -C ~/dev/vendor-skills/expo checkout 13ad8e058741
+ln -s ~/dev/vendor-skills/expo/plugins/expo/skills/eas-app-stores ./.claude/skills/
+```
+
+**Provenance**: Expo, MIT, no releases. Safety screen: pass.
+
+In a repository that versions `.claude/`, copy these folders instead of linking them.
+
+---
+
 ## Vendors evaluated and NOT recommended
 
 This list is part of the curation work. Naming what we rejected matters as much as naming what we approve.

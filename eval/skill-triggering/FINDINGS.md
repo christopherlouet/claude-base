@@ -322,3 +322,13 @@ requires `work-quick`: it fails if **any other** skill fires (`no-other-skill`,
 unchanged) or if the typo is not fixed (`typo-fixed`, an LLM grader reading
 `README.md`). The new grader was shown able to fail: on a variant asking only to
 name the misspelt word, `typo-fixed` = false.
+
+## 2026-10-04 — `data-pipeline` next to the Airflow, Dagster and dbt skills
+
+`data-pipeline-fires` ("Build a nightly job that pulls orders from Postgres,
+aggregates revenue per day and loads the result into BigQuery" — no tool named),
+Write/Edit granted, 3 runs: alone `data-pipeline` ×3; with 18 vendor skills
+installed (Astronomer's `airflow`, `authoring-dags`, `testing-dags`,
+`debugging-dags`, `migrating-airflow-2-to-3`; Dagster's `dagster-expert`, whose
+description claims every "data pipelines" task; dbt Labs' `skills/dbt/skills/*`)
+also `data-pipeline` ×3 — no vendor skill took the tool-neutral request.

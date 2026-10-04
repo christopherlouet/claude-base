@@ -97,3 +97,7 @@ jobs:
 - [ ] Play Store screenshots
 - [ ] Description up to date
 - [ ] Internal testing OK
+
+## See also
+
+If the app ships with **Expo / EAS**, Expo's own [`eas-app-stores`](https://github.com/expo/skills/tree/main/plugins/expo/skills/eas-app-stores) skill (`expo/skills`, MIT, pin `13ad8e05`) covers `eas.json`, signing, versions and store submission. EAS has a free tier and paid plans; the skill states their limits. Fastlane publishes no skill: the fastlane path stays here.

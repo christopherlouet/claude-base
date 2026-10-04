@@ -13,7 +13,7 @@ Secure and compliant payment integration.
 ## Workflow
 
 1. **PCI-DSS compliance**: client-side tokenization, Stripe Elements/PayPal JS SDK, HTTPS mandatory
-2. **Stripe integration**: client setup, checkout sessions, webhooks (checkout.session.completed, invoice.paid, subscription.deleted)
+2. **Stripe integration**: client setup, checkout sessions, webhooks (checkout.session.completed, checkout.session.async_payment_succeeded, invoice.paid, customer.subscription.deleted)
 3. **Subscriptions**: creation, cancel_at_period_end, update payment method
 4. **Billing**: mandatory fields (number, date, SIRET, VAT, pre-tax/incl. tax)
 5. **Refunds**: full and partial refunds via Stripe API
@@ -41,3 +41,7 @@ Secure and compliant payment integration.
 - IMPORTANT: Handle payment failure cases (retry, notification)
 
 Think hard about transaction security.
+
+## See also
+
+If the project uses **Stripe**, Stripe's own [`stripe-best-practices`](https://github.com/stripe/ai/tree/main/providers/claude/plugin/skills/stripe-best-practices) skill (`stripe/ai`, MIT, pin `9a33771f`) goes deeper on API choice, billing, Stripe Tax, Connect and key handling. The choice between providers belongs to `/legal:legal-payment`.
