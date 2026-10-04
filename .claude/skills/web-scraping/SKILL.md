@@ -204,3 +204,13 @@ YOU MUST respect robots.txt and the target site's ToS.
 YOU MUST save outputs in `./scraped/<date>/` with timestamp for traceability.
 
 NEVER bypass an anti-bot system without documented legitimate justification.
+
+## See also
+
+Firecrawl publishes its own skills in [`firecrawl/cli`](https://github.com/firecrawl/cli/tree/main/skills) (13 skills, CLI v1.25.3). **Not recommended next to this skill** (checked 2026-10-04):
+
+- `firecrawl-search` claims "web research" and `firecrawl-scrape` "read a known webpage" — the same claim as the `firecrawl` router: installed, they route ordinary lookups to the paid API.
+- `firecrawl-search` sends search feedback after every search, including text derived from the query (opt-out: `FIRECRAWL_NO_SEARCH_FEEDBACK=1`, separate from `FIRECRAWL_NO_TELEMETRY=1`).
+- They contradict this skill's own rules: output to `.firecrawl/` instead of `./scraped/<date>/`, `agent` examples without `--max-credits`, pricing "not an extra confirmation gate".
+
+This skill's decision tree, free fallbacks, cost gates and legal rules only hold if it is the one that runs.

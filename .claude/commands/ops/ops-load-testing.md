@@ -44,3 +44,7 @@ YOU MUST define acceptable performance thresholds before the tests.
 NEVER run load tests without active monitoring.
 
 Think hard about realistic scenarios before creating the tests.
+
+## See also
+
+For **k6**, Grafana's own skills — [`grafana/skills`](https://github.com/grafana/skills) `skills/grafana-k6/*` (Apache-2.0, pin `1ccacf29`, already the `ops-monitoring` vendor) — go far deeper: script authoring, maintenance, trend analysis, cloud runs. The `k6` skill validates every script it writes by running it — a full `k6 run` for named executors, otherwise one VU and one iteration — against the target in the script, and nothing in it gates on authorisation (`k6-perf-test-website` asks whether you own the backend but does not stop when you do not). The rule above still applies: an isolated environment, never production, only systems you own or are authorised to test.

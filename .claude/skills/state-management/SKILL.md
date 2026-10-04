@@ -37,3 +37,4 @@ Need shared state?
 
 - `dev-react-perf` skill — re-render diagnosis when selectors are too broad
 - `dev-tdd` — store reducers/selectors test well in isolation (no DOM needed)
+- **Redux Toolkit** — from v2.12 the `@reduxjs/toolkit` npm package ships eight skills of its own (modern Redux, slices and selectors, state ownership, side effects, RTK Query, debugging, migration) under `node_modules/@reduxjs/toolkit/skills/`, versioned with the library you installed. Link the ones you need into `.claude/skills/` with what they declare in `requires:` (`modern-redux` needs `redux-dataflow`); in a repository that versions `.claude/`, copy them instead. Screened: the 2.13.0 contents. Zustand, Jotai and TanStack Query ship none (2026-10-04).
