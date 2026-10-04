@@ -23,6 +23,8 @@
 
     { "domain": "list-composio",   "kind": "list", "repo": "ComposioHQ/awesome-claude-skills" },
     { "domain": "list-hesreallyhim", "kind": "list", "repo": "hesreallyhim/awesome-claude-code", "path": "THE_RESOURCES_TABLE_NEW.csv" },
-    { "domain": "list-travisvn",   "kind": "list", "repo": "travisvn/awesome-claude-skills" }
+    { "domain": "list-travisvn",   "kind": "list", "repo": "travisvn/awesome-claude-skills" },
+
+    { "domain": "npm-intent", "kind": "npm", "query": "keywords:tanstack-intent" }
   ]
 }
