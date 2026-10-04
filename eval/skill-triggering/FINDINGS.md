@@ -284,3 +284,41 @@ open question.
 **Open**: `work-quick-fires` now fails its 1.0 threshold (1/3). A typo fixed
 without the skill may be the right outcome; the case or the description needs a
 decision.
+
+## 2026-10-04 — `dev-prisma`: judged by the outcome, the deferring design stays
+
+Both Prisma cases now run in a scaffolded Prisma 6 project (`schema.prisma` with a
+`Post` model, one migration), Write/Edit granted. With Prisma's skills installed,
+the deferring description fired `prisma-cli` ×1 and **no skill ×2** — so a
+description that fires on Prisma work was tried: `dev-prisma` ×3. Firing is not
+the goal, though, and an independent review pointed out that the "no skill"
+sessions had done the work. New case `vendor-prisma-outcome` (same prompt, 30
+turns, two LLM graders: the schema has the relation on both sides and an index on
+the foreign key; exactly one new migration, no second `init`), vendor skills
+installed, 3 runs per arm:
+
+| `dev-prisma` description | Skills fired | `schema-ok` | `migration-ok` | Turns |
+|---|---|---|---|---|
+| deferring (as on `main`) | none ×3 | 3/3 | 3/3 | 7–8 |
+| firing on Prisma work | `dev-prisma` ×3 | 3/3 | 3/3 | 9–10 |
+
+No difference in the result on Opus, a few more turns when the pointer fires.
+Kept: the deferring description (with the body corrected — pinned install, the
+`--create-only` review step, `generate` after `migrate dev` since Prisma 7). The
+security rules load from `.claude/rules/prisma.md` whichever skill fires, or none.
+`vendor-prisma-coexist` asserts the pointer stays quiet (3/3; `prisma-cli` fired
+2/3 on that run); `dev-prisma-fires` still fires it alone (3/3).
+
+Lesson for these cases: "no skill fired" is not a failure until the outcome says
+so — the same standard as the next section.
+
+## 2026-10-04 — `work-quick-fires` judges the outcome, not the skill
+
+With Write granted, "Fix the typo in README.md" fired `work-quick` ×1 then, on a
+later run, ×3: Opus fixes a typo correctly with or without the skill. The skill
+exists so a trivial edit does not drag in the full cycle (explore, TDD, audit);
+it has nothing to add when nothing heavy fires. The case therefore no longer
+requires `work-quick`: it fails if **any other** skill fires (`no-other-skill`,
+unchanged) or if the typo is not fixed (`typo-fixed`, an LLM grader reading
+`README.md`). The new grader was shown able to fail: on a variant asking only to
+name the misspelt word, `typo-fixed` = false.

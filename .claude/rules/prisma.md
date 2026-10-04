@@ -10,7 +10,8 @@ paths:
 
 Prisma's own skills ([`prisma/skills`](https://github.com/prisma/skills)) own the API; these rules
 own what must hold whichever skill is loaded — they live here, not in the `dev-prisma` pointer,
-because with the vendor skills installed the pointer does not fire.
+because a session may load the pointer, a vendor skill, or no skill at all (measured,
+`eval/skill-triggering/FINDINGS.md`); a rule loaded by the files holds in every case.
 
 ## Migrations
 

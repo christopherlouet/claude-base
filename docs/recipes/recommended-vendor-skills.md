@@ -110,21 +110,21 @@ ln -s ~/dev/vendor-skills/supabase/skills/supabase-postgres-best-practices \
 
 ### Prisma — `prisma/skills`
 
-**Covers**: Prisma ORM patterns, especially v7 (ESM-only, driver adapters, `prisma.config.ts`).
+**Covers**: nine skills — CLI, Client API, database setup, Prisma Postgres, the v6 → v7 upgrade (ESM-only, driver adapters, `prisma.config.ts`), driver adapters, MongoDB, Compute.
 
 **When to install**: any project using Prisma, especially if migrating to v7.
 
-**Pair with**: claude-base's `.claude/rules/prisma.md` (migration discipline, secrets, `select` over `include`), which loads on Prisma files whichever skill fires; the `dev-prisma` pointer steps aside once a `prisma-*` skill is installed.
+**Pair with**: claude-base's `.claude/rules/prisma.md` (migration discipline, secrets, `select` over `include`), which loads on Prisma files whichever skill fires, and the `dev-prisma` pointer (install instructions + schema-change workflow).
 
-**Install** (verify on their README):
+**Install** (pinned to the registry ref; each skill is a folder at the repo root):
 ```bash
-# Prisma's blog post mentioned: npx skills add prisma/skills
-# (verify this command in their current README before relying on it)
-
-# Fallback: git clone
-git clone --depth 1 https://github.com/prisma/skills ~/dev/vendor-skills/prisma
-# Skill content lives in CLAUDE.md / AGENTS.md — copy or symlink as needed
+git clone https://github.com/prisma/skills ~/dev/vendor-skills/prisma
+git -C ~/dev/vendor-skills/prisma checkout 1123817e60d15ca0f3af91878923241dee7e3b09
+ln -s ~/dev/vendor-skills/prisma/prisma-cli ./.claude/skills/prisma-cli
+ln -s ~/dev/vendor-skills/prisma/prisma-client-api ./.claude/skills/prisma-client-api
 ```
+
+In a repository that versions `.claude/`, copy the folders instead of linking them: a symlink to a path under your home directory dangles for teammates and CI.
 
 **Provenance & advice-neutrality**: Prisma is independent, not acquired.
 

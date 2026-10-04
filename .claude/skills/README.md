@@ -39,7 +39,7 @@ skill-name/
 | `dev-graphql` | GraphQL, resolver, schema | GraphQL API development |
 | `dev-i18n` | i18n, translation, locale, multiple languages | Internationalization (next-intl, react-i18next, vue-i18n, ARB) |
 | `dev-nextjs` | Next.js, App Router, RSC, Server Actions | Next.js development (caching, streaming, middleware) |
-| `dev-prisma` | Prisma, schema.prisma, migration, type-safe queries | Pointer to Prisma's own skills; steps aside once a `prisma-*` skill is installed |
+| `dev-prisma` | Prisma, schema.prisma, migration, type-safe queries | Pointer to Prisma's own skills + the schema-change workflow |
 | `dev-react-perf` | React perf, re-render, memo | Pointer to Vercel's react-best-practices + virtualization, colocation, profiling |
 | `dev-refactor` | refactor, clean code, restructure | Code refactoring |
 | `dev-shadcn` | shadcn, shadcn/ui, Radix, copy-paste components | Integration and customization of shadcn/ui |
