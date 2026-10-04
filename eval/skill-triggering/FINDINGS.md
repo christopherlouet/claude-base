@@ -332,3 +332,13 @@ installed (Astronomer's `airflow`, `authoring-dags`, `testing-dags`,
 `debugging-dags`, `migrating-airflow-2-to-3`; Dagster's `dagster-expert`, whose
 description claims every "data pipelines" task; dbt Labs' `skills/dbt/skills/*`)
 also `data-pipeline` ×3 — no vendor skill took the tool-neutral request.
+
+## 2026-10-04 — `dev-i18n` next to FormatJS's and Flutter's localization skills
+
+`dev-i18n-fires` ("Our React app is English-only. Make it available in French
+and German, including plurals and date formats"), Write/Edit granted, 3 runs:
+alone `dev-i18n` ×3; with FormatJS's `localization-review` and `translate` and
+Flutter's `flutter-setup-localization` installed, also `dev-i18n` ×3 — their
+broad descriptions ("translation requests", "changed user-facing text") did not
+take a setup request. Not measured: an explicit "translate these strings"
+request, which `translate` may well take (without `dev-i18n`'s native-review rule).

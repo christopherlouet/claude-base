@@ -639,7 +639,7 @@ ln -s ~/dev/vendor-skills/marketingskills/skills/onboarding ./.claude/skills/onb
 
 **Covers**: Lingui-specific i18n patterns (announced alongside Lingui 6.0, April 2026).
 
-**Install only if**: your project uses Lingui specifically. For other i18n libraries (next-intl, react-i18next, vue-i18n, formatjs, flutter_localizations), claude-base's framework-agnostic `dev-i18n` skill is sufficient.
+**Install only if**: your project uses Lingui specifically. For other i18n libraries (next-intl, react-i18next, vue-i18n, flutter_localizations), claude-base's framework-agnostic `dev-i18n` skill covers the setup; FormatJS has its own review and translation skills (entry below).
 
 **Provenance & advice-neutrality**: Lingui is community-maintained.
 
@@ -775,11 +775,12 @@ In a repository that versions `.claude/`, copy these folders instead of linking 
 
 **Covers**: eight skills — modern Redux, data flow, slices and selectors, state ownership, side effects, RTK Query, debugging, migration to modern Redux.
 
-**Install only if**: the project uses Redux Toolkit ≥ 2.13. They ship in the npm package (TanStack Intent), versioned with the installed library — nothing to fetch:
+**Install only if**: the project uses Redux Toolkit ≥ 2.12 (screened: 2.13.0). They ship in the npm package (TanStack Intent), versioned with the installed library — nothing to fetch. Link a skill with what its `requires:` names; in a repository that versions `.claude/`, copy instead of linking:
 
 ```bash
 ls node_modules/@reduxjs/toolkit/skills/*/*/SKILL.md
-ln -s "$PWD/node_modules/@reduxjs/toolkit/skills/build-modern-redux-apps/modern-redux" ./.claude/skills/
+ln -s "$PWD/node_modules/@reduxjs/toolkit/skills/build-modern-redux-apps/modern-redux" \
+      "$PWD/node_modules/@reduxjs/toolkit/skills/build-modern-redux-apps/redux-dataflow" ./.claude/skills/
 ```
 
 **Provenance**: Redux maintainers, MIT. Safety screen (`packages/toolkit/skills` at `e7a8b318`): pass.
@@ -790,7 +791,7 @@ ln -s "$PWD/node_modules/@reduxjs/toolkit/skills/build-modern-redux-apps/modern-
 
 **Covers**: ICU message review and translation. Published under `.agents/skills/` and indexed at `.well-known/agent-skills`.
 
-**Install only if**: the project uses ICU messages (FormatJS, react-intl).
+**Install only if**: the project uses ICU messages (FormatJS, react-intl). Their descriptions are broad ("translation requests", "changed user-facing text") and neither repeats `dev-i18n`'s rule: never ship machine translations without a native review.
 
 ```bash
 git clone https://github.com/formatjs/formatjs ~/dev/vendor-skills/formatjs
@@ -806,7 +807,7 @@ ln -s ~/dev/vendor-skills/formatjs/.agents/skills/localization-review ~/dev/vend
 
 **Covers**: a WCAG 2.2 checklist with fixes (the repo also has performance, SEO and Core Web Vitals skills).
 
-**Install only if**: you want a fix-oriented companion to `/qa:wcag-audit`.
+**Install only if**: you want a fix-oriented companion to `/qa:wcag-audit`. It fires on "a11y audit" and "WCAG compliance", taking over from the audit's own format — run `/qa:wcag-audit` explicitly for an audit.
 
 ```bash
 git clone https://github.com/addyosmani/web-quality-skills ~/dev/vendor-skills/web-quality
@@ -820,32 +821,19 @@ ln -s ~/dev/vendor-skills/web-quality/skills/accessibility ./.claude/skills/
 
 ### Grafana — `grafana/skills` `grafana-k6` (ops-load-testing, if k6)
 
-**Covers**: k6 script authoring, docs, maintenance, trend analysis, cloud runs, a website test suite. Same repo and pin as the `ops-monitoring` entry.
+**Covers**: k6 script authoring, docs, maintenance, trend analysis, cloud runs, a website test suite. Same repo as the `ops-monitoring` entry.
 
-**Install only if**: the project load-tests with k6. Keep `/ops:ops-load-testing`'s rule: `k6-perf-test-website` does not ask whether the user owns the target.
+**Install only if**: the project load-tests with k6. The `k6` skill validates each script by running it against its target and does not gate on authorisation: keep `/ops:ops-load-testing`'s rule (isolated environment, never production, only systems you own or may test).
 
 ```bash
-git clone https://github.com/grafana/skills ~/dev/vendor-skills/grafana
-git -C ~/dev/vendor-skills/grafana checkout 1ccacf29049f
+# reuses the clone of the ops-monitoring entry if it exists
+[ -d ~/dev/vendor-skills/grafana ] || git clone https://github.com/grafana/skills ~/dev/vendor-skills/grafana
+git -C ~/dev/vendor-skills/grafana fetch origin 1ccacf29049fde66637fe01ab93a83a772da323b
+git -C ~/dev/vendor-skills/grafana checkout FETCH_HEAD
 ln -s ~/dev/vendor-skills/grafana/skills/grafana-k6/k6 ./.claude/skills/
 ```
 
 **Provenance**: Grafana Labs, Apache-2.0. Safety screen (`skills/grafana-k6`): pass.
-
----
-
-### Firecrawl — `firecrawl/cli` skills (web-scraping, if Firecrawl)
-
-**Covers**: one skill per CLI operation (scrape, crawl, map, search, agent, interact, monitor, parse, download…) plus a `firecrawl` router.
-
-**Install only if**: the user wants Firecrawl. Link the operation skills, **not the router**: it claims "any live-web task — including ordinary web research", routing every lookup to a paid API.
-
-```bash
-git clone --branch v1.25.3 https://github.com/firecrawl/cli ~/dev/vendor-skills/firecrawl
-for s in scrape crawl map search agent; do ln -s ~/dev/vendor-skills/firecrawl/skills/firecrawl-$s ./.claude/skills/; done
-```
-
-**Provenance**: Firecrawl, ISC (package.json; no LICENSE file). Safety screen (`skills/`): pass. The CLI sends telemetry by default (`export FIRECRAWL_NO_TELEMETRY=1` turns it off).
 
 ---
 
@@ -866,6 +854,10 @@ ln -s ~/dev/vendor-skills/awesome-copilot/skills/github-actions-hardening ./.cla
 ---
 
 ## Vendors evaluated and NOT recommended
+
+### Firecrawl — `firecrawl/cli` skills (evaluated 2026-10-04)
+
+Thirteen skills, CLI v1.25.3, ISC. Not recommended next to `web-scraping`: the `firecrawl` router claims "any live-web task via the Firecrawl CLI — including ordinary web research", and `firecrawl-search` / `firecrawl-scrape` make the same claim for search and page reading — installed, they route ordinary lookups to the paid API. `firecrawl-search` also sends search feedback with query-derived text after every search (opt-out `FIRECRAWL_NO_SEARCH_FEEDBACK=1`, separate from `FIRECRAWL_NO_TELEMETRY=1`), and the skills contradict `web-scraping`'s rules (output directory, `--max-credits`, cost confirmation). Use the CLI through `web-scraping`.
 
 This list is part of the curation work. Naming what we rejected matters as much as naming what we approve.
 
