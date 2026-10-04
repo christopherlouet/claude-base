@@ -245,8 +245,12 @@ _source_hits() {
         # A known directory of skills inside a (often big) repo: one candidate,
         # "owner/repo/sub/path" — the registry's vendorId notation.
         repo=$(printf '%s' "$src" | jq -r '.repo // empty')
-        lpath=$(printf '%s' "$src" | jq -r '.path // empty')
-        [ -n "$repo" ] && [ -n "$lpath" ] && printf '%s/%s\n' "$repo" "${lpath%/}"
+        # Normalised: no leading/trailing or doubled slash; a . or .. segment is
+        # refused (a source file typo would otherwise be judged "no skill" and
+        # recorded for months).
+        lpath=$(printf '%s' "$src" | jq -r '.path // empty' | tr -s '/' | sed 's#^/##; s#/$##')
+        case "/$lpath/" in */../*|*/./*) lpath="" ;; esac
+        [ -n "$repo" ] && [ -n "$lpath" ] && printf '%s/%s\n' "$repo" "$lpath"
         return 0
     fi
     if [ "$kind" = "list" ]; then
@@ -574,11 +578,14 @@ if [ "$n_candidates" -gt 0 ]; then
     # Gate 3 — safety (LLM-free): the root screen, then the skill directories the
     # judge will read. The root screen scans the root SKILL.md / README; without
     # the second pass a skill under skills/<x>/ reached the judge unscanned.
-    # A path candidate skips the root pass: a monorepo's own scripts would put a
-    # whole-repo screen over its cap, and they are not what the user installs.
+    # A path candidate skips the whole-repo pass (a monorepo's own scripts would
+    # put it over its cap, and they are not what the user installs) and screens
+    # the PATH itself instead: every script, hook or MCP config under it — the
+    # user installs the whole directory, not only the skills the judge reads —
+    # plus each read skill's own SKILL.md.
     subs=$(skill_subpaths "$skills")
     screen_failed=0
-    if [ -n "$sub" ]; then scopes=("$subs"); else scopes=("" ${subs:+"$subs"}); fi
+    if [ -n "$sub" ]; then scopes=("$sub${subs:++$subs}"); else scopes=("" ${subs:+"$subs"}); fi
     for scope in "${scopes[@]}"; do
         screen=$(curation_safety_screen "$root" "$ref" "$scope")
         [ "$(printf '%s' "$screen" | jq -r '.verdict')" = "pass" ] && continue
