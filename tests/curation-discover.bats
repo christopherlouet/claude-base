@@ -1666,14 +1666,17 @@ head_tree() {
     jq -cn '{version:"1.0.0", perPage:15, sources:[{domain:"npm", kind:"npm", query:"keywords:tanstack-intent"}]}' > "$TEST_DIR/sources.json"
     npm_fixture "keywords:tanstack-intent" "@acme/core=acme/mono" "@acme/react=acme/mono" "solo=solo/lib"
     head_tree acme/mono packages/core/skills/a/SKILL.md packages/core/skills/b/SKILL.md \
-        packages/react/skills/c/SKILL.md docs/agent-skills/d/SKILL.md src/index.ts
+        packages/react/skills/c/SKILL.md docs/agent-skills/d/SKILL.md src/index.ts \
+        packages/core/skills/group/e/SKILL.md tools/f/SKILL.md
     head_tree solo/lib SKILL.md README.md
     run_discover --dry-run
     [ "$status" -eq 0 ]
     # No repo metadata fixture: each candidate stops at the trust gate, and the
-    # rejection names its full id.
+    # rejection names its full id. A skill nested deeper under a skills directory
+    # (group/e) stays in that directory's candidate; one under no skills directory
+    # (tools/f) makes its parent the candidate.
     local c; c=$(digest_json | jq -r '[.rejections[].repo] | sort | join(",")')
-    [ "$c" = "acme/mono/docs/agent-skills,acme/mono/packages/core/skills,acme/mono/packages/react/skills,solo/lib" ]
+    [ "$c" = "acme/mono/docs/agent-skills,acme/mono/packages/core/skills,acme/mono/packages/react/skills,acme/mono/tools,solo/lib" ]
 }
 
 @test "discover: an npm package whose repo is not on GitHub, or has no skill, yields nothing" {
@@ -1682,6 +1685,7 @@ head_tree() {
     printf '%s' '{"objects":[{"package":{"name":"x","links":{"repository":"https://gitlab.com/x/x"}}},{"package":{"name":"y","links":{}}},{"package":{"name":"z","links":{"repository":"https://github.com/z/z"}}}],"total":3}' \
         > "$TEST_DIR/fx/npm-search_keywords_tanstack_intent"
     head_tree z/z src/index.ts
+    head_tree x/x SKILL.md   # skills, but npm points to GitLab: never followed
     run_discover --dry-run
     [ "$status" -eq 0 ]
     [ "$(digest_json | jq -r '.scope.candidates')" -eq 0 ]

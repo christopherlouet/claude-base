@@ -265,6 +265,7 @@ _skills_roots() {
             for (i = n - 2; i >= 1; i--) if (tolower(seg[i]) ~ /skills$/) { root = seg[1]; for (j = 2; j <= i; j++) root = root "/" seg[j]; break }
             if (root == "" && n >= 3) { root = seg[1]; for (j = 2; j <= n - 2; j++) root = root "/" seg[j] }
             id = (root == "") ? r : r "/" root
+            # One line per root, not per SKILL.md: hits are ranked by line number.
             if (!seen[id]++) print id
         }'
 }
