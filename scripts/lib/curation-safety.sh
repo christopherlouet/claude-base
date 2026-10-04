@@ -154,7 +154,10 @@ _curation_fetch_content() {
 # test the same expressions. Shared by the doc scan AND the exec-surface scan;
 # high-signal, deterministic, case-insensitive, line-based:
 #   remote-exec      — a downloaded payload reaching an interpreter (curl|sh,
-#                      curl|node, bash <(curl), eval "$(curl …)")
+#                      curl|node, bash <(curl), eval "$(curl …)"), or an
+#                      unpinned git source: a git+ URL (any scheme) with no @ref,
+#                      or with @main/master/HEAD/develop/trunk/refs/… (uvx --from,
+#                      pip install, a script constant). A SHA or a tag is a pin.
 #   obfuscated-exec  — decode (base64/xxd) then execute / eval "$(base64 …)"
 #   destructive-rm   — recursive+force delete of a root/home path (either flag order)
 #   prompt-injection — overriding the operator's / system instructions
@@ -166,10 +169,21 @@ _curation_fetch_content() {
 # executed in a SEPARATE statement (`curl -o p …` then `sh p`) is not correlated
 # across lines, nor is a hook command that references a script file outside the
 # scanned surface. These need filename correlation; until then they evade the
-# grep. The screen fails toward human review (a clean verdict only enables an
+# grep. Nor is a package runner at @latest (`npx x@latest`, an .mcp.json running
+# `uvx server@latest`): measured 2026-10-04 on the 27 pinned repos, the pattern
+# flagged only vendors running their OWN CLI in their docs (prisma/skills
+# `npx create-db@latest`, shadcn `npx shadcn@latest`) — separating that from an
+# auto-started server needs a per-file-type rule the table does not have.
+# Also unseen, as of 2026-10-04: other fetch-and-run forms — `npx github:user/repo`,
+# `npm i user/repo`, `go run …@latest`, `cargo install --git`, a branch archive
+# (`…/archive/main.zip`, `…/refs/heads/main.tar.gz`) — and a moving branch with a
+# name outside main/master/HEAD/develop/dev/trunk/latest/refs/.
+# The screen fails toward human review (a clean verdict only enables an
 # auto-DRAFT, still human-merged), so this is a coverage gap, never a silent risk.
 _INTERP='sh|bash|zsh|node|deno|bun|python[0-9.]*|perl|ruby|php|env'
 _SAFETY_CATEGORIES=(
+    remote-exec
+    remote-exec
     remote-exec
     remote-exec
     remote-exec
@@ -182,6 +196,12 @@ _SAFETY_PATTERNS=(
     "(curl|wget).*\|[[:space:]]*(sudo[[:space:]]+)?($_INTERP)\b"
     "($_INTERP)[[:space:]]+(-[a-z]+[[:space:]]+)*(-c[[:space:]]+)?[\"']?[[:space:]]*[\$<]\(?(curl|wget)"
     'eval[^=]*\$\([^)]*(curl|wget)'
+    # an unpinned git source — no @ref after the path (login details before the
+    # host, as in git+ssh://git@… or a token@, are not a ref): uvx --from / pip
+    # install / a script constant
+    "git\\+[a-z]+://([^/[:space:]\"'@]+@)?[^[:space:]\"'@#]+([#[:space:]\"']|$)"
+    # a git source "pinned" to a moving branch
+    "git\\+[a-z]+://([^/[:space:]\"'@]+@)?[^[:space:]\"'@#]+@(main|master|head|develop|dev|trunk|latest|refs/)"
     "(base64|xxd)[^|]*(--decode|-d|-D|-r)?[^|]*\|.*\b(sudo[[:space:]]+)?($_INTERP|eval)\b"
     'eval[^=]*\$\([^)]*(base64|xxd)'
     'rm[[:space:]]+(-[a-z]*(rf|fr)[a-z]*|-[rf][[:space:]]+-[rf]|--recursive[[:space:]]+--force|--force[[:space:]]+--recursive)[[:space:]]+(/|~|\$\{?HOME)'
