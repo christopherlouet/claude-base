@@ -320,11 +320,12 @@ tree_fixture() {
     [ "$(printf '%s' "$output" | jq -r '.scope.candidates')" -eq 2 ]
 }
 
-@test "discovery-sources.json (shipped): list sources carry repo, search sources carry query" {
+@test "discovery-sources.json (shipped): list/path sources carry repo, search sources carry query" {
     local f="$BATS_TEST_DIRNAME/../.claude/curation/discovery-sources.json"
     run jq -e '(.sources | length) as $n
         | [.sources[] | select(
             ((.kind // "search") == "list" and (.repo | type == "string"))
+            or ((.kind // "search") == "path" and (.repo | type == "string") and (.path | type == "string"))
             or ((.kind // "search") == "search" and (.query | type == "string"))
           )] | length == $n' "$f"
     [ "$status" -eq 0 ]
@@ -1454,4 +1455,135 @@ multi_skill_candidate() {
     : > "$TEST_DIR/gh.log"
     CURATION_NOW=2026-11-01 run_discover --digest-dir "$TEST_DIR/digest" --emit-issue
     grep -qE '^gh issue' "$TEST_DIR/gh.log"
+}
+
+# =============================================================================
+# subpath candidates (point 4, 2026-10-04): a vendor's skills often live in a
+# directory of a big repo (vercel/next.js skills/, reduxjs/redux-toolkit
+# packages/toolkit/skills). The candidate is "owner/repo/sub/path" (the
+# registry's vendorId notation); trust, the skill list, the safety screen and
+# the judge stay inside sub/path, and the records keep the full id.
+# =============================================================================
+
+# subpath_candidate <owner/repo> <path> [n-outside-exec-files] — a big repo with
+# two skills under <path>, one SKILL.md and optional scripts outside it.
+subpath_candidate() {
+    local repo="$1" sub="$2" n="${3:-0}" i extra=()
+    jq -cn --arg r "$repo" --arg p "$sub" '{version:"1.0.0", sources:[{domain:"tools", kind:"path", repo:$r, path:$p}]}' \
+        > "$TEST_DIR/sources.json"
+    gh_fixture "repos/$repo" "$(repo_meta 50000 '2026-09-30T00:00:00Z' false MIT)"
+    gh_fixture "repos/$repo/releases?per_page=100" '[{"tag_name":"v2.0.0","draft":false,"prerelease":false,"published_at":"2026-09-01T00:00:00Z"}]'
+    for ((i = 1; i <= n; i++)); do extra+=("scripts/s$i.sh"); done
+    tree_fixture "$repo" v2.0.0 "$sub/a/SKILL.md" "$sub/b/SKILL.md" "other/SKILL.md" "${extra[@]}"
+    content_fixture "$repo" v2.0.0 "$sub/a/SKILL.md" "---
+name: a
+description: Skill A for the tool.
+---
+Use the tool's API carefully."
+    content_fixture "$repo" v2.0.0 "$sub/b/SKILL.md" "---
+name: b
+description: Skill B.
+---
+More guidance."
+}
+
+@test "discover: a path source proposes owner/repo/sub and judges only that subtree" {
+    subpath_candidate "bigco/tool" "skills"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"deep","borderline":false,"tokensUsed":50}'
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.proposals[0].repo')" = "bigco/tool/skills" ]
+    [ "$(digest_json | jq -r '.proposals[0].provenance')" = "bigco" ]
+    grep -q 'skills/a/SKILL.md' "$TEST_DIR/prompt.1"
+    run grep -q 'other/SKILL.md' "$TEST_DIR/prompt.1"
+    [ "$status" -ne 0 ]
+    grep -q 'Path: skills' "$TEST_DIR/prompt.1"
+}
+
+@test "discover: a monorepo's files outside the path never reach the safety screen" {
+    # 300 scripts outside skills/ would put a whole-repo screen over its cap
+    # (a recorded reject); scoped to the path, the candidate is screened clean.
+    subpath_candidate "bigco/tool" "skills" 300
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"deep","borderline":false,"tokensUsed":50}'
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.proposals | length')" -eq 1 ]
+    refute_called "repos/bigco/tool/contents/README.md"
+    refute_called "repos/bigco/tool/contents/scripts/s1.sh"
+}
+
+@test "discover: a registry record of another path of the repo does not exclude this one" {
+    subpath_candidate "bigco/tool" "skills"
+    echo '{"version":"1.0.0","records":[{"vendorId":"bigco/tool/other"}]}' > "$TEST_DIR/registry.json"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"deep","borderline":false,"tokensUsed":50}'
+    run_discover
+    [ "$(digest_json | jq -r '.proposals[0].repo')" = "bigco/tool/skills" ]
+}
+
+@test "discover: a registry record of the same path, or of the whole repo, excludes it" {
+    subpath_candidate "bigco/tool" "skills"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"deep","borderline":false,"tokensUsed":50}'
+    echo '{"version":"1.0.0","records":[{"vendorId":"bigco/tool/skills+other"}]}' > "$TEST_DIR/registry.json"
+    run_discover
+    [ "$(digest_json | jq -r '.scope.candidates')" -eq 0 ]
+    echo '{"version":"1.0.0","records":[{"vendorId":"bigco/tool"}]}' > "$TEST_DIR/registry.json"
+    run_discover
+    [ "$(digest_json | jq -r '.scope.candidates')" -eq 0 ]
+}
+
+@test "discover: declining another path of the repo does not decline this one" {
+    subpath_candidate "bigco/tool" "skills"
+    declined_one "bigco/tool/other" "off-stack"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"deep","borderline":false,"tokensUsed":50}'
+    run_discover
+    [ "$(digest_json | jq -r '.proposals[0].repo')" = "bigco/tool/skills" ]
+}
+
+@test "discover: the judged ledger keys on the full id, path included" {
+    # A whole-repo reject (e.g. over the screen's cap) must not hide a path of
+    # that repo; a judged path is skipped like any judged repo.
+    subpath_candidate "bigco/tool" "skills"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"deep","borderline":false,"tokensUsed":50}'
+    mkdir -p "$TEST_DIR/out"
+    jq -cn --arg d "$(date -u +%Y-%m-%d)" '{version:1, entries:[{repo:"bigco/tool", gate:"safety", reason:"exec-surface-over-cap", judgedAt:$d}]}' \
+        > "$TEST_DIR/out/judged.json"
+    run_discover --digest-dir "$TEST_DIR/out"
+    [ "$(digest_json | jq -r '.proposals[0].repo')" = "bigco/tool/skills" ]
+    run_discover --digest-dir "$TEST_DIR/out"
+    [ "$(digest_json | jq -r '.scope.candidates')" -eq 0 ]
+}
+
+@test "discover: the markdown links a path candidate to its directory" {
+    subpath_candidate "bigco/tool" "skills"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"deep","borderline":false,"tokensUsed":50}'
+    run_discover --digest-dir "$TEST_DIR/out"
+    grep -qF 'https://github.com/bigco/tool/tree/HEAD/skills' "$TEST_DIR/out/proposals.md"
+}
+
+@test "discovery-sources.json (shipped): path sources carry repo and path" {
+    local f="$BATS_TEST_DIRNAME/../.claude/curation/discovery-sources.json"
+    run jq -e '[.sources[] | select(.kind == "path") | select((.repo | type) != "string" or (.path | type) != "string")] | length == 0' "$f"
+    [ "$status" -eq 0 ]
+}
+
+@test "discover: a repo named like its owner (acme/acme) is a valid candidate" {
+    # _repo_root rejected owner == repo (it compared the two segments to detect a
+    # missing slash), so such a repo got an empty API path.
+    healthy_candidate "acme/acme"
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"x","borderline":false,"tokensUsed":50}'
+    run_discover
+    [ "$(digest_json | jq -r '.proposals[0].repo')" = "acme/acme" ]
+}
+
+@test "discover: a pending path proposal is cleared by its own record, not by a sibling's" {
+    subpath_candidate "bigco/tool" "skills"
+    mkdir -p "$TEST_DIR/out"
+    jq -cn --arg d "$(date -u +%Y-%m-%d)" '{version:1, entries:[{repo:"bigco/tool/skills", gate:"proposed", reason:"deep", judgedAt:$d, pinnedRef:"v2.0.0", fit:5}]}' \
+        > "$TEST_DIR/out/judged.json"
+    echo '{"version":"1.0.0","records":[{"vendorId":"bigco/tool/other"}]}' > "$TEST_DIR/registry.json"
+    run_discover --digest-dir "$TEST_DIR/out"
+    [ "$(digest_json | jq -r '[.pendingProposals[].repo] | join(",")')" = "bigco/tool/skills" ]
+    echo '{"version":"1.0.0","records":[{"vendorId":"bigco/tool/skills"}]}' > "$TEST_DIR/registry.json"
+    run_discover --digest-dir "$TEST_DIR/out"
+    [ "$(digest_json | jq -r '.pendingProposals | length')" -eq 0 ]
 }
