@@ -123,14 +123,16 @@ select_shard() {
     table="${TEST_DURATIONS:-$SCRIPT_DIR/test-durations.tsv}"
     # Weight = measured milliseconds from the duration table; a file missing from
     # it gets its line count scaled to the table's ms-per-line (a new file is
-    # estimated, never dropped); no table at all = plain line count.
+    # estimated, never dropped); no table at all = plain line count. LC_ALL=C:
+    # mawk follows LC_NUMERIC ("348.7" reads as 348 under fr_FR), and the
+    # tie-break sort must not depend on the runner's collation.
     sorted=$(
         for f in "$@"; do
             c=$(wc -l < "$f" 2>/dev/null || true)
             c=$(printf '%s' "$c" | tr -d '[:space:]')
             [[ -z "$c" ]] && c=0
             printf '%s\t%s\n' "$c" "$f"
-        done | awk -F'\t' -v table="$table" '
+        done | LC_ALL=C awk -F'\t' -v table="$table" '
             BEGIN { while ((getline l < table) > 0) { split(l, a, "\t"); ms[a[1]] = int(a[2] * 1000) } }
             {
                 n = split($2, p, "/"); base = p[n]
@@ -143,8 +145,10 @@ select_shard() {
                     w = (key[i] in ms) ? ms[key[i]] : int(lines[i] * ratio)
                     printf "%d\t%s\n", w, file[i]
                 }
-            }' | sort -t "$tab" -k1,1rn -k2,2
+            }' | LC_ALL=C sort -t "$tab" -k1,1rn -k2,2
     )
+    # TEST_SHARD_DEBUG=1 prints the weights (ms, file) to stderr.
+    [[ -n "${TEST_SHARD_DEBUG:-}" ]] && printf '%s\n' "$sorted" >&2
 
     local i
     local loads=()
