@@ -151,8 +151,11 @@ _ids_of() {
 #   A root — the repo has SOME record (registry, preset or declined): its
 #            whole-repo candidate is not proposed again (as before);
 #   R root — a record of the WHOLE repo: every candidate of the repo is skipped;
-#   E id   — this exact id (a recorded path, or a repo/path judged recently).
-# A record of one path therefore no longer hides the repo's other paths.
+#   E id   — this exact id (a recorded path, or a repo/path judged recently);
+#   P id   — a recorded path: the collect filter also skips a candidate that
+#            contains it or lies inside it (a vendor's skills directory is
+#            curated once, not proposed again per nested or enclosing path).
+# A record of one path therefore no longer hides the repo's SIBLING paths.
 _record_keys() {
     local v id root
     {
@@ -170,7 +173,7 @@ _record_keys() {
             id=$(printf '%s' "$id" | tr '[:upper:]' '[:lower:]')
             root=$(_repo_root "$id")
             printf 'A\t%s\n' "$root"
-            if [ "$id" = "$root" ]; then printf 'R\t%s\n' "$root"; else printf 'E\t%s\n' "$id"; fi
+            if [ "$id" = "$root" ]; then printf 'R\t%s\n' "$root"; else printf 'E\t%s\nP\t%s\n' "$id" "$id"; fi
         done < <(_ids_of "$v")
     done
 }
@@ -235,12 +238,12 @@ _list_candidates() {
         | grep -vixF "$repo"
 }
 
-# _npm_get <path?query> — GET the npm registry (https://registry.npmjs.org/…),
-# retried like the GitHub calls. Non-zero on failure.
-_npm_get() {
+# _web_get <https-url> — GET a public URL (the npm registry, a vendor's
+# .well-known index), retried like the GitHub calls. Non-zero on failure.
+_web_get() {
     local tries="${CURATION_GH_RETRIES:-3}" i out
     for ((i = 1; i <= tries; i++)); do
-        if out=$(curl -fsSL --max-time 20 "https://registry.npmjs.org/$1" 2>/dev/null); then
+        if out=$(curl -fsSL --max-time 20 "$1" 2>/dev/null); then
             printf '%s' "$out"; return 0
         fi
         [ "$i" -lt "$tries" ] && sleep "${CURATION_GH_BACKOFF:-2}"
@@ -262,31 +265,65 @@ _gh_url_repo() {
     _repo_root "$u"
 }
 
-# _skills_roots <owner/repo> — the candidate ids for the skills a repo ships, read
-# at the ref the gates will judge (resolve_ref): each directory named *skills
-# (skills/, packages/x/skills/, docs/agent-skills/) that holds SKILL.md files is
-# one id, owner/repo/<dir>; a SKILL.md under no such directory makes its parent
-# the candidate, one at the repo root the whole repo. Skipped: SKILL.md under a
-# hidden or examples/ directory (the repo's own tooling and demos, not what the
-# package ships), and any path a candidate id cannot carry safely (a . or ..
-# segment, an empty segment, '+' — the id's path separator — or a control
-# character). Prints "<owner/repo>\t<id>"; non-zero when the tree is unreadable.
+# _skills_roots <owner/repo> [declared] — the candidate ids for the skills a repo
+# ships, read at the ref the gates will judge (resolve_ref): each directory named
+# *skills (skills/, packages/x/skills/, docs/agent-skills/) that holds SKILL.md
+# files is one id, owner/repo/<dir>; a SKILL.md under no such directory makes its
+# parent the candidate, one at the repo root the whole repo. By default a SKILL.md
+# under a hidden or examples/ directory is skipped (the repo's own tooling and
+# demos, not what it ships). [declared] — '+'-joined SKILL.md paths a vendor
+# published (.well-known): only their roots are emitted, hidden ones included; a
+# '*' in it also emits the default roots. Always skipped: any path a candidate id
+# cannot carry safely (a . or .. segment, an empty segment, '+' — the id's path
+# separator — '%', or a control character). Prints "<owner/repo>\t<id>";
+# non-zero when the tree is unreadable.
 _skills_roots() {
     local repo="$1" ref paths
     ref=$(resolve_ref "$repo") && [ -n "$ref" ] || return 1
     paths=$(shipped_skills "$repo" "$ref") || return 1
-    printf '%s\n' "$paths" | LC_ALL=C awk -v r="$repo" '
-        /[[:cntrl:]+]/ { next }
-        {
-            n = split($0, seg, "/"); if (seg[n] != "SKILL.md") next
-            for (i = 1; i < n; i++) if (seg[i] == "" || seg[i] ~ /^\./ || tolower(seg[i]) ~ /^examples?$/) next
-            root = ""
-            # seg[n-1] is the skill own directory: look above it.
+    printf '%s\n' "$paths" | DECLARED="${2:-*}" LC_ALL=C awk -v r="$repo" '
+        function safe(p,    n, s, i) {
+            if (p ~ /[[:cntrl:]+%]/) return 0
+            n = split(p, s, "/"); if (s[n] != "SKILL.md") return 0
+            for (i = 1; i < n; i++) if (s[i] == "" || s[i] == "." || s[i] == "..") return 0
+            return 1
+        }
+        function plain(p,    n, s, i) {
+            n = split(p, s, "/")
+            for (i = 1; i < n; i++) if (s[i] ~ /^\./ || tolower(s[i]) ~ /^examples?$/) return 0
+            return 1
+        }
+        # root_of — seg[n-1] is the skill own directory: look above it.
+        function root_of(p,    n, seg, i, j, root) {
+            n = split(p, seg, "/"); root = ""
             for (i = n - 2; i >= 1; i--) if (tolower(seg[i]) ~ /skills$/) { root = seg[1]; for (j = 2; j <= i; j++) root = root "/" seg[j]; break }
             if (root == "" && n >= 3) { root = seg[1]; for (j = 2; j <= n - 2; j++) root = root "/" seg[j] }
+            return root
+        }
+        BEGIN {
+            # DECLARED is split on "\n" too: a raw "+" never reaches it (refused upstream).
+            m = split(ENVIRON["DECLARED"], d, /[+\n]/)
+            for (i = 1; i <= m; i++) if (d[i] == "*") all = 1; else if (safe(d[i])) want[root_of(d[i])] = 1
+        }
+        safe($0) {
+            root = root_of($0)
+            if (!((root in want) || (all && plain($0)))) next
             id = (root == "") ? r : r "/" root
             if (!seen[id]++) print r "\t" id
         }'
+}
+
+# _roots_breadth_first <label> — stdin "<owner/repo>[\t<declared>]" lines, one
+# per repo; stdout the repos' skills roots (_skills_roots), breadth-first: every
+# repo's first root, then every second one — so a monorepo of 18 adapters cannot
+# take all of a source's slots under the candidate cap (hits are ranked by line
+# number). An unreadable tree is reported as "<label> <repo> (tree unreadable)".
+_roots_breadth_first() {
+    local label="$1" r decl
+    while IFS=$'\t' read -r r decl; do
+        [ -n "$r" ] || continue
+        _skills_roots "$r" "${decl:-*}" || { [ -n "${SOURCE_FAIL_LOG:-}" ] && printf '%s %s (tree unreadable)\n' "$label" "$r" >> "$SOURCE_FAIL_LOG"; }
+    done | awk -F '\t' '{ print k[$1]++ "\t" NR "\t" $2 }' | sort -n -k1,1 -k2,2 | cut -f3
 }
 
 # _source_hits <source-json> <per-page> — one source's hits (owner/repo), in the
@@ -299,21 +336,55 @@ _source_hits() {
         # Libraries that ship their own skills in the published package: npm
         # names each package's GitHub repo, the repo's tree says where the
         # skills are (_skills_roots). Packages of one repo collapse to its roots,
-        # emitted breadth-first — every repo's first root, then every second
-        # one — so a monorepo of 18 adapters cannot take all of this source's
-        # slots under the candidate cap (hits are ranked by line number).
+        # emitted breadth-first (_roots_breadth_first).
         query=$(printf '%s' "$src" | jq -r '.query // empty')
         [ -n "$query" ] || return 0
-        if ! items=$(_npm_get "-/v1/search?text=$(printf '%s' "$query" | jq -sRr @uri)&size=${per}"); then
+        if ! items=$(_web_get "https://registry.npmjs.org/-/v1/search?text=$(printf '%s' "$query" | jq -sRr @uri)&size=${per}"); then
             [ -n "${SOURCE_FAIL_LOG:-}" ] && printf 'npm %s (unreachable)\n' "$(printf '%s' "$src" | jq -r '.domain // .query // "?"')" >> "$SOURCE_FAIL_LOG"
             return 0
         fi
         printf '%s' "$items" | jq -r '.objects[]?.package.links.repository // empty' 2>/dev/null \
             | while IFS= read -r url; do _gh_url_repo "$url"; done | awk '!seen[tolower($0)]++' \
-            | while IFS= read -r r; do
-                _skills_roots "$r" || { [ -n "${SOURCE_FAIL_LOG:-}" ] && printf 'npm %s (tree unreadable)\n' "$r" >> "$SOURCE_FAIL_LOG"; }
-              done \
-            | awk -F '\t' '{ print k[$1]++ "\t" NR "\t" $2 }' | sort -n -k1,1 -k2,2 | cut -f3
+            | _roots_breadth_first npm
+        return 0
+    fi
+    if [ "$kind" = "repos" ]; then
+        # A tool's own repository (vercel/next.js, cypress-io/ai-toolkit): its
+        # skills sit beside the code, where no skill search looks.
+        printf '%s' "$src" | jq -r '.repos[]? | strings' | while IFS= read -r r; do _repo_root "$r"; done \
+            | awk '!seen[tolower($0)]++' | _roots_breadth_first repos
+        return 0
+    fi
+    if [ "$kind" = "well-known" ]; then
+        # A vendor's site declares its skills at /.well-known/agent-skills/
+        # index.json (agentskills.io discovery schema). Only skills published on
+        # GitHub can go through the gates: a raw/blob URL of a SKILL.md names its
+        # directory (hidden ones included — the vendor declared them), any other
+        # github.com URL (a release archive) names the repo ('*': its default
+        # roots). A skill hosted elsewhere is skipped.
+        local host idx
+        while IFS= read -r host; do
+            case "$host" in ''|*/*|*[!A-Za-z0-9.-]*) continue ;; esac
+            if ! idx=$(_web_get "https://$host/.well-known/agent-skills/index.json"); then
+                [ -n "${SOURCE_FAIL_LOG:-}" ] && printf 'well-known %s (unreachable)\n' "$host" >> "$SOURCE_FAIL_LOG"
+                continue
+            fi
+            if ! printf '%s' "$idx" | jq -e '.skills | type == "array"' >/dev/null 2>&1; then
+                [ -n "${SOURCE_FAIL_LOG:-}" ] && printf 'well-known %s (malformed index)\n' "$host" >> "$SOURCE_FAIL_LOG"
+                continue
+            fi
+            printf '%s' "$idx" | jq -r '
+                .skills[]? | .url | strings
+                | (capture("^https://raw\\.githubusercontent\\.com/(?<o>[^/]+)/(?<r>[^/]+)/[^/]+/(?<p>.+/SKILL\\.md)$"; "i")
+                   // capture("^https://github\\.com/(?<o>[^/]+)/(?<r>[^/]+)/(blob|raw)/[^/]+/(?<p>.+/SKILL\\.md)$"; "i")
+                   // (capture("^https://github\\.com/(?<o>[^/]+)/(?<r>[^/?#]+)"; "i") | .p = "*")
+                   // empty)
+                | "\(.o)/\(.r)\t\(.p)"'
+        done < <(printf '%s' "$src" | jq -r '.hosts[]? | strings') \
+            | awk -F '\t' '{ r = $1; sub(/\.git$/, "", r); k = tolower(r)
+                              if (!(k in d)) { order[++n] = k; repo[k] = r; d[k] = $2 } else d[k] = d[k] "+" $2 }
+                            END { for (i = 1; i <= n; i++) print repo[order[i]] "\t" d[order[i]] }' \
+            | _roots_breadth_first well-known
         return 0
     fi
     if [ "$kind" = "path" ]; then
@@ -379,11 +450,12 @@ collect_candidates() {
             _source_hits "$src" "$per" | awk -v s="$src_n" 'NF { print NR "\t" s "\t" $0 }'
         done < <(jq -c '.sources[]?' "$SOURCES")
     } | LC_ALL=C sort -t "$(printf '\t')" -k1,1n -k2,2n \
-      | awk -F '\t' 'NR == FNR { if (NF == 2) key[$1 SUBSEP $2] = 1; next }
+      | awk -F '\t' 'NR == FNR { if (NF == 2) { key[$1 SUBSEP $2] = 1; if ($1 == "P") path[$2] = 1 }; next }
             {
                 k = tolower($3); n = split(k, seg, "/"); root = seg[1] "/" seg[2]
                 if (key["E", k] || key["R", root]) next
                 if (n == 2 && key["A", root]) next
+                if (n > 2) for (q in path) if (index(k "/", q "/") == 1 || index(q "/", k "/") == 1) next
                 if (!seen[k]++) print $3
             }' \
             <(printf '#\tknown\n%s\n' "$known") - \
