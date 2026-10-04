@@ -1707,13 +1707,14 @@ head_tree() {
 @test "discover: an npm package whose repo is not on GitHub, or has no skill, yields nothing" {
     npm_curl
     jq -cn '{version:"1.0.0", sources:[{domain:"npm", kind:"npm", query:"keywords:tanstack-intent"}]}' > "$TEST_DIR/sources.json"
-    printf '%s' '{"objects":[{"package":{"name":"x","links":{"repository":"https://gitlab.com/x/x"}}},{"package":{"name":"y","links":{}}},{"package":{"name":"z","links":{"repository":"https://github.com/z/z"}}}],"total":3}' \
+    printf '%s' '{"objects":[{"package":{"name":"x","links":{"repository":"https://gitlab.com/x/x"}}},{"package":{"name":"y","links":{}}},{"package":{"name":"z","links":{"repository":"https://github.com/z/z"}}},{"package":{"name":"w","links":{"repository":"https://github.com/../r"}}}],"total":4}' \
         > "$TEST_DIR/fx/npm-search_keywords_tanstack_intent"
     head_tree z/z src/index.ts
     head_tree x/x SKILL.md   # skills, but npm points to GitLab: never followed
     run_discover --dry-run
     [ "$status" -eq 0 ]
     [ "$(digest_json | jq -r '.scope.candidates')" -eq 0 ]
+    refute_called 'repos/../r'
 }
 
 @test "discover: an npm source that cannot be reached is reported, not silent" {
@@ -1926,8 +1927,9 @@ wk_fixture() { printf '%s' "$2" > "$TEST_DIR/fx/wk_$1"; }
       {"url":"https://raw.githubusercontent.com/o/r?x=1/main/skills/a/SKILL.md"},
       {"url":"https://raw.githubusercontent.com/../r/main/skills/a/SKILL.md"},
       {"url":"https://raw.githubusercontent.com/p/q/main/skills/a+b/SKILL.md"}]}'
-    # Were "skills/a+b" split on '+', the undeclared b/skills root would appear.
-    head_tree p/q b/skills/y/SKILL.md
+    # Were "skills/a+b/SKILL.md" split on '+', its "b/SKILL.md" half would
+    # declare the repo root, and the undeclared b/SKILL.md would make p/q one.
+    head_tree p/q b/skills/y/SKILL.md b/SKILL.md
     run_discover --dry-run
     [ "$status" -eq 0 ]
     [ "$(digest_json | jq -r '.scope.candidates')" -eq 0 ]
