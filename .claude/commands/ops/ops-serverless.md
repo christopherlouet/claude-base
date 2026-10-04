@@ -49,7 +49,7 @@ NEVER store state in memory - functions are ephemeral.
 
 Vendor skills for depth, by platform (recipe: `docs/recipes/recommended-vendor-skills.md` §"Stack-specific"):
 
-- **AWS Lambda** — [`awslabs/agent-plugins`](https://github.com/awslabs/agent-plugins) `plugins/aws-serverless/skills/*` (Apache-2.0, release `1.0.0`, pin `e32b05b5`): Lambda, SAM/CDK deployment, API Gateway, Step Functions, durable functions. Install the skill folders, not the plugin: it adds a hook after every Edit/Write and an MCP server run as `uvx awslabs.aws-serverless-mcp-server@latest --allow-write` (unpinned, write access).
+- **AWS Lambda** — [`awslabs/agent-plugins`](https://github.com/awslabs/agent-plugins) `plugins/aws-serverless/skills/*` (Apache-2.0, plugin `1.3.0` at pin `e32b05b5`): Lambda, SAM/CDK deployment, API Gateway, Step Functions, durable functions. Choose between: the **plugin** adds a hook after every Edit/Write (it runs `sam validate --lint` on SAM templates) and an MCP server run as `uvx awslabs.aws-serverless-mcp-server@latest --allow-write` (unpinned, write access); the **skill folders alone** avoid both, and the skills then ask before working without their MCP tools.
 - **Cloudflare Workers** — [`cloudflare/skills`](https://github.com/cloudflare/skills) `skills/workers-best-practices` and `skills/wrangler` (Apache-2.0, pin `41e0d198`).
 
 The platform choice stays with this command.
