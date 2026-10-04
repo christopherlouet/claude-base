@@ -320,13 +320,14 @@ tree_fixture() {
     [ "$(printf '%s' "$output" | jq -r '.scope.candidates')" -eq 2 ]
 }
 
-@test "discovery-sources.json (shipped): list/path sources carry repo, search sources carry query" {
+@test "discovery-sources.json (shipped): list/path sources carry repo, search and npm sources carry query" {
     local f="$BATS_TEST_DIRNAME/../.claude/curation/discovery-sources.json"
     run jq -e '(.sources | length) as $n
         | [.sources[] | select(
             ((.kind // "search") == "list" and (.repo | type == "string"))
             or ((.kind // "search") == "path" and (.repo | type == "string") and (.path | type == "string"))
             or ((.kind // "search") == "search" and (.query | type == "string"))
+            or (.kind == "npm" and (.query | type == "string"))
           )] | length == $n' "$f"
     [ "$status" -eq 0 ]
 }
@@ -1621,4 +1622,82 @@ More guidance."
     run_discover
     [ "$(digest_json | jq -r '.scope.candidates')" -eq 1 ]
     [ "$(digest_json | jq -r '.proposals[0].repo')" = "bigco/tool/skills" ]
+}
+
+# =============================================================================
+# npm source (point 4, PR 2): libraries that ship their own skills in the
+# published package (TanStack Intent: keyword "tanstack-intent" — Redux Toolkit,
+# tRPC, TanStack, Electric…). npm names the package's repo; the repo's tree says
+# where the skills are: each directory named *skills holding SKILL.md files is one
+# candidate (owner/repo/<dir>), judged like any path candidate.
+# =============================================================================
+
+# npm_fixture <query> <name=owner/repo>... — the npm search result for <query>.
+npm_fixture() {
+    local q="$1"; shift
+    printf '%s\n' "$@" | jq -R 'split("=") | {package:{name:.[0], links:{repository:("https://github.com/" + .[1])}}}' \
+        | jq -s '{objects:., total:length}' > "$TEST_DIR/fx/npm-search_$(printf '%s' "$q" | tr -c 'A-Za-z0-9' '_')"
+}
+# fake curl: npm search URLs map to npm_fixture files; anything else fails.
+npm_curl() {
+    cat > "$TEST_DIR/fakebin/curl" <<EOF
+#!/usr/bin/env bash
+echo "curl \$*" >> "$TEST_DIR/curl.log"
+url=""; for a in "\$@"; do case "\$a" in https://*) url="\$a" ;; esac; done
+case "\$url" in
+  https://registry.npmjs.org/-/v1/search\?text=*)
+     q="\${url#*text=}"; q="\${q%%&*}"; q=\$(printf '%s' "\$q" | sed 's/%3A/:/g')
+     f="$TEST_DIR/fx/npm-search_\$(printf '%s' "\$q" | tr -c 'A-Za-z0-9' '_')"
+     [ -f "\$f" ] && cat "\$f" || { echo "fake curl: 404 \$url" >&2; exit 22; } ;;
+  *) echo "fake curl: unexpected \$url" >&2; exit 22 ;;
+esac
+EOF
+    chmod +x "$TEST_DIR/fakebin/curl"
+}
+# head_tree <owner/repo> <path>... — the default-branch tree the roots are read from.
+head_tree() {
+    local repo="$1"; shift
+    gh_fixture "repos/$repo/commits/HEAD" '{"sha":"head0"}'
+    tree_fixture "$repo" head0 "$@"
+}
+
+@test "discover: an npm source turns each package's skills directories into candidates" {
+    npm_curl
+    jq -cn '{version:"1.0.0", perPage:15, sources:[{domain:"npm", kind:"npm", query:"keywords:tanstack-intent"}]}' > "$TEST_DIR/sources.json"
+    npm_fixture "keywords:tanstack-intent" "@acme/core=acme/mono" "@acme/react=acme/mono" "solo=solo/lib"
+    head_tree acme/mono packages/core/skills/a/SKILL.md packages/core/skills/b/SKILL.md \
+        packages/react/skills/c/SKILL.md docs/agent-skills/d/SKILL.md src/index.ts
+    head_tree solo/lib SKILL.md README.md
+    run_discover --dry-run
+    [ "$status" -eq 0 ]
+    # No repo metadata fixture: each candidate stops at the trust gate, and the
+    # rejection names its full id.
+    local c; c=$(digest_json | jq -r '[.rejections[].repo] | sort | join(",")')
+    [ "$c" = "acme/mono/docs/agent-skills,acme/mono/packages/core/skills,acme/mono/packages/react/skills,solo/lib" ]
+}
+
+@test "discover: an npm package whose repo is not on GitHub, or has no skill, yields nothing" {
+    npm_curl
+    jq -cn '{version:"1.0.0", sources:[{domain:"npm", kind:"npm", query:"keywords:tanstack-intent"}]}' > "$TEST_DIR/sources.json"
+    printf '%s' '{"objects":[{"package":{"name":"x","links":{"repository":"https://gitlab.com/x/x"}}},{"package":{"name":"y","links":{}}},{"package":{"name":"z","links":{"repository":"https://github.com/z/z"}}}],"total":3}' \
+        > "$TEST_DIR/fx/npm-search_keywords_tanstack_intent"
+    head_tree z/z src/index.ts
+    run_discover --dry-run
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.scope.candidates')" -eq 0 ]
+}
+
+@test "discover: an npm source that cannot be reached is reported, not silent" {
+    npm_curl
+    jq -cn '{version:"1.0.0", sources:[{domain:"npm", kind:"npm", query:"keywords:nothing-here"}]}' > "$TEST_DIR/sources.json"
+    run_discover --dry-run
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.sourcesFailed')" -eq 1 ]
+    [[ "$(digest_json | jq -r '.sourceFailures | join(" ")')" == *"npm"* ]]
+}
+
+@test "discovery-sources.json (shipped): an npm source watches TanStack Intent packages" {
+    local f="$BATS_TEST_DIRNAME/../.claude/curation/discovery-sources.json"
+    run jq -r '.sources[] | select(.kind == "npm") | .query' "$f"
+    [[ "$output" == *"keywords:tanstack-intent"* ]]
 }
