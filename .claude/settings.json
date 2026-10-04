@@ -214,6 +214,17 @@
         ]
       },
       {
+        "description": "Blocks reading PIPESTATUS when the Bash tool runs under zsh, where it silently expands to empty (disable with SKIP_ZSH_PIPESTATUS_GUARD=1)",
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/zsh-pipestatus-guard.sh\"",
+            "timeout": 30
+          }
+        ]
+      },
+      {
         "description": "Blocks editing an existing linter/formatter config (fix the code, not the rule; disable with SKIP_CONFIG_PROTECTION=1)",
         "matcher": "Edit|Write|MultiEdit|NotebookEdit",
         "hooks": [
