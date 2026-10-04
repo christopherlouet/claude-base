@@ -43,3 +43,7 @@ YOU MUST document every table and column.
 NEVER create a model without understanding the use cases.
 
 Think hard about the model's scalability and maintainability.
+
+## See also
+
+For the dbt implementation of a model, dbt Labs' own skills — [`dbt-labs/dbt-agent-skills`](https://github.com/dbt-labs/dbt-agent-skills) `skills/dbt/skills/*` (Apache-2.0, pin `168a2b0b`) — cover models, tests, documentation and mesh versioning. The modelling itself (3NF, star schema, Data Vault, SCD, ERD, data dictionary) stays here: no vendor covers it tool-agnostically.

@@ -655,6 +655,34 @@ ln -s ~/dev/vendor-skills/marketingskills/skills/onboarding ./.claude/skills/onb
 
 ---
 
+### Stripe — `stripe/ai` `stripe-best-practices` (legal-payment, if Stripe)
+
+Stripe's integration guidance: Checkout Sessions vs PaymentIntents, billing, Stripe Tax, Connect, key handling, deprecated-API migrations. MIT, pin `9a33771f` (no releases). Stripe-scoped by design; `/legal:legal-payment` keeps the provider choice. Safety screen: pass.
+
+### Astronomer — `astronomer/agents` (data-pipeline, if Airflow)
+
+`skills/authoring-dags`, `testing-dags`, `debugging-dags`, `migrating-airflow-2-to-3`. Apache-2.0, pin `1ec1a1fa`. Its `analyzing-data` skill's scripts print an unpinned pipe-to-shell `uv` install hint — not among the four recommended; screened subset: pass. Some other skills target Astro (paid).
+
+### Dagster — `dagster-io/skills` (data-pipeline, if Dagster)
+
+`plugins/dagster/skills/dagster-expert`, Apache-2.0, release `v1.13.25`. Its description claims every "data pipelines" task: install it only in Dagster projects. Safety screen: pass.
+
+### dbt Labs — `dbt-labs/dbt-agent-skills` (data-pipeline / data-modeling, if dbt)
+
+`skills/dbt/skills/*` (models, tests, unit tests, docs, semantic layer, mesh) and `skills/dbt-migration/skills/*`. Apache-2.0, pin `168a2b0b` (no releases). Safety screen: pass.
+
+### AWS — `awslabs/agent-plugins` `aws-serverless` (ops-serverless, if AWS Lambda)
+
+`plugins/aws-serverless/skills/*`: Lambda, SAM/CDK deployment, API Gateway, Step Functions, durable functions. Apache-2.0, release `1.0.0`, pin `e32b05b5`. **Install the skill folders, not the plugin**: the plugin adds a PostToolUse hook on every Edit/Write and an MCP server run as `uvx awslabs.aws-serverless-mcp-server@latest --allow-write`. Safety screen (skills): pass.
+
+### Cloudflare — `cloudflare/skills` (ops-serverless, if Workers)
+
+`skills/workers-best-practices`, `skills/wrangler`. Apache-2.0, pin `41e0d198` (no releases). Safety screen: pass.
+
+### Expo — `expo/skills` `eas-app-stores` (ops-mobile-release, if Expo/EAS)
+
+EAS builds, signing, versions, TestFlight / App Store / Google Play submission. MIT, pin `13ad8e05` (no releases). EAS is paid (disclosed by the skill). Safety screen: pass.
+
 ## Vendors evaluated and NOT recommended
 
 This list is part of the curation work. Naming what we rejected matters as much as naming what we approve.

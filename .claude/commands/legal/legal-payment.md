@@ -47,3 +47,7 @@ YOU MUST verify the webhook signature.
 NEVER store card numbers - use Stripe.js/Elements.
 
 Think hard about edge cases (failed payment, downgrade, refund).
+
+## See also
+
+If the project uses **Stripe**, Stripe's own [`stripe-best-practices`](https://github.com/stripe/ai/tree/main/providers/claude/plugin/skills/stripe-best-practices) skill (`stripe/ai`, MIT, pin `9a33771f`) goes deeper: Checkout Sessions vs PaymentIntents, billing and subscriptions, Stripe Tax, Connect, deprecated-API migrations, API key handling. It is Stripe-scoped by nature (it routes usage billing to Stripe's own products); provider choice stays here. Recipe: `docs/recipes/recommended-vendor-skills.md` §"Stack-specific".
