@@ -96,7 +96,7 @@ Everything is plain markdown + JSON, with no daemon and no telemetry. Some hooks
 | Slash commands | <!-- count:commands -->106<!-- /count --> across 9 domains (work, dev, qa, ops, doc, biz, growth, data, legal) | Manually triggered (`/work:work-plan`) |
 | Sub-agents | <!-- count:agents -->44<!-- /count --> | Autonomous, isolated-context workers spawned by commands |
 | Skills | <!-- count:skills -->53<!-- /count --> | Auto-triggered on keywords in your prompts — except a manual-only subset listed in the [skills catalogue](docs/reference/skills-catalog.md) |
-| Path-specific rules | <!-- count:rules -->32<!-- /count --> | Auto-activated based on the file being edited (TS strict, OWASP, WCAG, YAGNI/minimal-code, ...) |
+| Path-specific rules | <!-- count:rules -->34<!-- /count --> | Auto-activated based on the file being edited (TS strict, OWASP, WCAG, YAGNI/minimal-code, ...) |
 | Presets | <!-- count:presets -->11<!-- /count --> | Stack-specific bundles ; tier breakdown in [Going deeper](#going-deeper) |
 
 **Learns across projects.** A personal, human-gated **lessons referential**: after a hard-won fix or a correction, claude-base proposes a generalized, sanitized one-line lesson and — on your confirmation — stores it in your own `~/.claude/rules/lessons.md`, which Claude Code loads into **every** project. A mistake made once stops recurring everywhere; run `/lessons --bootstrap` to seed it from what you already learned. The lessons stay yours — never committed to any repo. [How it works →](docs/recipes/personal-lessons-referential.md)
@@ -164,7 +164,7 @@ The one-liner above tracks the moving `main` tip. To install a specific, tested
 release instead, pass `--ref <tag>` — still a single line:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash -s -- --ref v5.7.0
+curl -fsSL https://raw.githubusercontent.com/christopherlouet/claude-base/main/install.sh | bash -s -- --ref v5.7.1
 ```
 
 A pinned install **stays pinned** across `--update` (it never silently jumps to
@@ -179,7 +179,7 @@ execute*, and a hook in this repo blocks `curl … | sh` in agent sessions. Each
 tagged release publishes a `SHA256SUMS` asset, so you can honor that on install:
 
 ```bash
-TAG=v5.7.0
+TAG=v5.7.1
 curl -fsSL "https://raw.githubusercontent.com/christopherlouet/claude-base/$TAG/install.sh" -o install.sh
 curl -fsSL "https://github.com/christopherlouet/claude-base/releases/download/$TAG/SHA256SUMS" -o SHA256SUMS
 sha256sum --check --ignore-missing SHA256SUMS   # must print: install.sh: OK
@@ -303,7 +303,7 @@ The full documentation site lives at **[https://christopherlouet.github.io/claud
 
 It covers:
 - Quick start guide
-- Catalog of <!-- count:commands -->106<!-- /count --> commands, <!-- count:agents -->44<!-- /count --> agents, <!-- count:skills -->53<!-- /count --> skills, <!-- count:rules -->32<!-- /count --> rules
+- Catalog of <!-- count:commands -->106<!-- /count --> commands, <!-- count:agents -->44<!-- /count --> agents, <!-- count:skills -->53<!-- /count --> skills, <!-- count:rules -->34<!-- /count --> rules
 - Recommended workflows (Explore → Specify → Plan → TDD → Audit → Commit)
 - Stack Recipes: relevant commands per stack (Web, Mobile, API, Auth, Database, Infra, Observability, Testing, Data, AI/LLM, Business, Growth)
 - Specific guides: Learning path, Extending, Team, Prompting, Troubleshooting
@@ -374,7 +374,7 @@ Concrete signals rather than a self-assessment score :
 - Six GitHub Actions workflows (CI, security, docs, PR check, release, dependabot auto-merge) gating merges
 - Doc drift firewall (`scripts/audit-docs.sh`) catches syntactic doc drift before merge — see [PR #201](https://github.com/christopherlouet/claude-base/pull/201)
 - Counter anti-drift gate (`scripts/validate-counts.sh`) regenerated from `counts.json`
-- Pinned versions via git tags (current : v<!-- version -->5.7.0<!-- /version -->) with full `CHANGELOG.md` in Keep-a-Changelog format
+- Pinned versions via git tags (current : v<!-- version -->5.7.1<!-- /version -->) with full `CHANGELOG.md` in Keep-a-Changelog format
 
 ### Security measures
 

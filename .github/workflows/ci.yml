@@ -103,7 +103,9 @@ jobs:
           fi
 
   # Bats suite, sharded across parallel runners. Each shard runs a balanced
-  # subset (scripts/test.sh --shard I/N, weighted by file line count) and still
+  # subset (scripts/test.sh --shard I/N, weighted by each file's measured duration
+  # in scripts/test-durations.tsv — line count left the slowest shard ~2x the
+  # others; regenerate with scripts/measure-test-durations.sh) and still
   # parallelizes within itself via bats --jobs. N is `strategy.job-total`, so it
   # auto-syncs with the matrix array — bump the array to add/remove shards.
   # This is the main CI-time lever: the single-runner suite (~6-7 min) drops to

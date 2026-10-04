@@ -15,7 +15,7 @@ subscription management and legal compliance.
 - Analyze the needs (one-shot, subscription, usage-based, B2B/B2C)
 - Choose the right provider (Stripe, Paddle, LemonSqueezy)
 - Implement the checkout (session, redirection, success/cancel)
-- Configure essential webhooks (checkout.completed, invoice.paid, subscription.updated/deleted)
+- Configure essential webhooks (checkout.session.completed, checkout.session.async_payment_succeeded for delayed methods, invoice.paid, customer.subscription.updated/deleted)
 - Handle subscription states and feature access logic
 - Configure the Customer Portal (invoices, payment, plan change, cancellation)
 - Test with test cards and Stripe CLI
@@ -47,3 +47,7 @@ YOU MUST verify the webhook signature.
 NEVER store card numbers - use Stripe.js/Elements.
 
 Think hard about edge cases (failed payment, downgrade, refund).
+
+## See also
+
+If the project uses **Stripe**, Stripe's own [`stripe-best-practices`](https://github.com/stripe/ai/tree/main/providers/claude/plugin/skills/stripe-best-practices) skill (`stripe/ai`, MIT, pin `9a33771f`) goes deeper: Checkout Sessions vs PaymentIntents, billing and subscriptions, Stripe Tax, Connect, deprecated-API migrations, API key handling. It is Stripe-scoped by nature (it routes new usage-based billing to Metronome, a Stripe product); the provider choice stays in this command. Recipe: `docs/recipes/recommended-vendor-skills.md` §"Stack-specific".

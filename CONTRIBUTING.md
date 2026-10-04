@@ -37,7 +37,7 @@ cd website && npm install && cd ..
   commands/    # 106 commands (source of truth)
   agents/      # 44 sub-agents
   skills/      # 53 skills
-  rules/       # 32 contextual rules
+  rules/       # 34 contextual rules
   templates/   # Specification templates
   settings.json # Hooks and permissions
 website/       # Docusaurus site (generated docs)

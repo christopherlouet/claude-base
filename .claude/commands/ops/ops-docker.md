@@ -44,3 +44,7 @@ YOU MUST scan the image for vulnerabilities before deployment.
 NEVER include secrets or credentials in the Docker image.
 
 NEVER use root in production.
+
+## See also
+
+Docker Inc.'s own skills — [`docker/skills`](https://github.com/docker/skills) (`docker-project-foundations`, `docker-build-strategies`, `docker-compose-patterns`, `docker-destructive-guardrails`) — hold the Dockerfile and Compose depth; the `ops-docker` skill points to them and keeps image scanning and Hadolint, which they leave out.

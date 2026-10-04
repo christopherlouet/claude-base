@@ -90,7 +90,7 @@ Two recent CLI behaviors worth knowing when running `claude plugin install` agai
 
 **When to install**: any project using Supabase as a backend.
 
-**Pair with**: claude-base's `dev-supabase` skill (workflow / TDD / security patterns).
+**Pair with**: claude-base's `.claude/rules/supabase.md` (RLS, `service_role` key, pooler), which loads on Supabase files whichever skill fires; the `dev-supabase` pointer only matters while this vendor skill is absent.
 
 **Install** (vendor's preferred path; verify on their README):
 ```bash
@@ -110,21 +110,21 @@ ln -s ~/dev/vendor-skills/supabase/skills/supabase-postgres-best-practices \
 
 ### Prisma — `prisma/skills`
 
-**Covers**: Prisma ORM patterns, especially v7 (ESM-only, driver adapters, `prisma.config.ts`).
+**Covers**: nine skills — CLI, Client API, database setup, Prisma Postgres, the v6 → v7 upgrade (ESM-only, driver adapters, `prisma.config.ts`), driver adapters, MongoDB, Compute.
 
 **When to install**: any project using Prisma, especially if migrating to v7.
 
-**Pair with**: claude-base's `dev-prisma` skill (schema design, migration discipline, anti-patterns).
+**Pair with**: claude-base's `.claude/rules/prisma.md` (migration discipline, secrets, `select` over `include`), which loads on Prisma files whichever skill fires, and the `dev-prisma` pointer (install instructions + schema-change workflow).
 
-**Install** (verify on their README):
+**Install** (pinned to the registry ref; each skill is a folder at the repo root):
 ```bash
-# Prisma's blog post mentioned: npx skills add prisma/skills
-# (verify this command in their current README before relying on it)
-
-# Fallback: git clone
-git clone --depth 1 https://github.com/prisma/skills ~/dev/vendor-skills/prisma
-# Skill content lives in CLAUDE.md / AGENTS.md — copy or symlink as needed
+git clone https://github.com/prisma/skills ~/dev/vendor-skills/prisma
+git -C ~/dev/vendor-skills/prisma checkout 1123817e60d15ca0f3af91878923241dee7e3b09
+ln -s ~/dev/vendor-skills/prisma/prisma-cli ./.claude/skills/prisma-cli
+ln -s ~/dev/vendor-skills/prisma/prisma-client-api ./.claude/skills/prisma-client-api
 ```
+
+In a repository that versions `.claude/`, copy the folders instead of linking them: a symlink to a path under your home directory dangles for teammates and CI.
 
 **Provenance & advice-neutrality**: Prisma is independent, not acquired.
 
@@ -167,6 +167,20 @@ npx skills add anthropics/skills
 
 ---
 
+### Anthropic — `docx`, `pdf`, `xlsx`, `pptx` (dev-document companion)
+
+**Covers**: Claude writing, reading and editing office files itself — Word documents with tracked changes and comments, PDF forms, extraction and OCR, spreadsheets with formulas, slide decks.
+
+**When to install**: when the deliverable is a file Claude produces or edits (a memo, a filled-in form, a reviewed contract). Measured 2026-10-03: installed next to `dev-document`, `docx` fires alone on "write a Word memo" and `dev-document` alone on "add a PDF export endpoint to our app" — the two do not overlap once `dev-document` is scoped to application code.
+
+**Pair with**: claude-base's `dev-document` for the other job — code inside an application that generates documents (library choice, export endpoints, report jobs).
+
+**Install**: available in Claude apps as built-in skills; for Claude Code, from [`anthropics/skills`](https://github.com/anthropics/skills/tree/main/skills).
+
+**Provenance & licence**: Anthropic. **Proprietary** (`LICENSE.txt`: use governed by your agreement with Anthropic) — point to them or install them, never copy them into a repository.
+
+---
+
 ### Anthropic — `claude-api` (dev-ai-integration companion)
 
 **Covers**: Claude API integration depth — single call vs tool-use loop vs managed agents, streaming, prompt caching, token counting, model migration, across 8 languages.
@@ -199,11 +213,11 @@ git clone --depth 1 https://github.com/langchain-ai/langchain-skills ~/dev/vendo
 
 ### Vercel — `vercel-labs/agent-skills`
 
-**Covers**: `react-best-practices` (40+ rules across 8 categories from Vercel Engineering), React Composition Patterns, React View Transitions, `deploy-to-vercel`, `vercel-optimize`, Web Design Guidelines. **React + Vercel-deploy focused — no dedicated Next.js skill** (App Router / RSC / caching stay claude-base's `dev-nextjs`).
+**Covers**: `react-best-practices` (40+ rules across 8 categories from Vercel Engineering), React Composition Patterns, React View Transitions, `deploy-to-vercel`, `vercel-optimize`, Web Design Guidelines. **React + Vercel-deploy focused — no dedicated Next.js skill here.** The Next.js team ships its own in the framework repo, [`vercel/next.js/skills`](https://github.com/vercel/next.js/tree/canary/skills) (Cache Components and Partial Prefetching adoption, dev loop); App Router / RSC / Server Actions stay claude-base's `dev-nextjs`.
 
 **When to install**: any project using Next.js or modern React on Vercel — for the React layer and Vercel deploy/optimize.
 
-**Pair with**: claude-base's `dev-nextjs` (the primary App Router / Server Components / caching reference) and `dev-react-perf` skills (workflow patterns, deploy-safety, anti-patterns).
+**Pair with**: claude-base's `dev-nextjs` (the primary App Router / Server Components / caching reference) and `dev-react-perf`, now a pointer to `react-best-practices` that keeps only what it leaves out (list virtualization, state colocation, profiling tools, Core Web Vitals targets).
 
 **Install** (verify on their README):
 ```bash
@@ -325,28 +339,44 @@ git clone --depth 1 https://github.com/addyosmani/web-quality-skills ~/dev/vendo
 
 ### Google Chrome DevTools — `chrome-devtools-mcp` (qa-chrome companion)
 
-**Covers**: Programmatic access to Chrome DevTools (network inspection, profiling, accessibility tree) as MCP tools that Claude Code can invoke directly during a session.
+**Covers**: programmatic access to Chrome DevTools (network, performance traces, accessibility tree, console) as an MCP server, and **seven skills** that drive it: `chrome-devtools`, `chrome-devtools-cli`, `a11y-debugging`, `debug-optimize-lcp`, `memory-leak-debugging`, `cookie-debugging`, `troubleshooting`.
 
-**Format note**: This is an **MCP server**, NOT a SKILL.md skill. Configuration mechanism is different.
+**When to install**: any project where Claude Code should inspect a page programmatically.
 
-**When to install**: any project where Claude Code needs direct programmatic access to Chrome DevTools.
+**Pair with**: claude-base's `qa-chrome` skill (manual review checklist with `--chrome`).
 
-**Pair with**: claude-base's `qa-chrome` skill (manual review checklist).
-
-**Install** (verify on their repo's README):
+**Install**:
 ```bash
-# Configure in your project's .mcp.json:
-# {
-#   "mcpServers": {
-#     "chrome-devtools": {
-#       "command": "npx",
-#       "args": ["@chrome-devtools/mcp-server"]
-#     }
-#   }
-# }
+# skills + MCP server; the marketplace follows the default branch (it pinned
+# chrome-devtools-mcp@1.10.1 on 2026-10-04) — only the line below is pinned by us
+/plugin marketplace add ChromeDevTools/chrome-devtools-mcp
+/plugin install chrome-devtools-mcp@chrome-devtools-plugins
+# or the MCP server alone
+claude mcp add chrome-devtools --scope user npx chrome-devtools-mcp@1.10.1
 ```
 
-**Provenance & advice-neutrality**: Google. Web-tooling neutral.
+The npm package is `chrome-devtools-mcp`; the scoped package name this entry used to give does not exist (npm 404, 2026-10-04).
+
+**Provenance & advice-neutrality**: Google Chrome DevTools team, Apache-2.0. Web-tooling neutral.
+
+---
+
+### Flutter — `flutter/agent-plugins` (dev-flutter companion)
+
+**Covers**: the Flutter team's own skills — responsive layouts and layout fixes, declarative routing, `http`, JSON serialization, widget / integration tests and widget previews, localization, an architecture guide — plus 15 Dart skills (testing, FFI, static analysis, pattern matching…).
+
+**When to install**: any Flutter project.
+
+**Pair with**: claude-base's `dev-flutter` for the architecture: the official guide teaches MVVM with `ChangeNotifier`, `dev-flutter` Clean Architecture + BLoC. For deeper BLoC, `HoangNguyen0403/agent-skills-standard` (`skills/flutter/flutter-bloc-state-management`, `flutter-feature-based-clean-architecture`; MIT, 569★) at commit `1fb0537c339c` — link those two folders only.
+
+**Install** (no skills release yet: pin the commit):
+```bash
+git clone https://github.com/flutter/agent-plugins ~/dev/vendor-skills/flutter
+git -C ~/dev/vendor-skills/flutter checkout 0ef3972f93e2baa4156ba1cbb1e515cd53079c68
+ln -s ~/dev/vendor-skills/flutter/skills/flutter-build-responsive-layout ./.claude/skills/   # repeat per skill you need
+```
+
+**Provenance & advice-neutrality**: Google (Flutter team), BSD-3-Clause. The plugin also starts the Dart SDK's MCP server (`dart mcp-server`), local.
 
 ---
 
@@ -360,13 +390,14 @@ git clone --depth 1 https://github.com/addyosmani/web-quality-skills ~/dev/vendo
 
 **Install** (verify on their repo):
 ```bash
-git clone --depth 1 https://github.com/microsoft/playwright-cli ~/dev/vendor-skills/playwright
+# v0.1.22+: earlier releases granted the skill bare npm/npx (allowed-tools)
+git clone --depth 1 --branch v0.1.22 https://github.com/microsoft/playwright-cli ~/dev/vendor-skills/playwright
 ln -s ~/dev/vendor-skills/playwright/skills/playwright-cli ./.claude/skills/playwright-cli
 ```
 
 **Provenance & advice-neutrality**:
 
-Provenance: Microsoft owns Playwright. Under the advice-neutrality policy this is **disclosed, not disqualifying** — what matters is that the skill's advice is stack-neutral: Playwright (created 2020, MIT-licensed) is the de-facto E2E standard (78,000★ on the core repo) and teaches a portable testing tool, not lock-in. The community alternative `lackeyjb/playwright-skill` exists but was 5 months stale at audit time.
+Provenance: Microsoft owns Playwright. Under the advice-neutrality policy this is **disclosed, not disqualifying** — what matters is that the skill's advice is stack-neutral: Playwright (created 2020, Apache-2.0) is the de-facto E2E standard (78,000★ on the core repo) and teaches a portable testing tool, not lock-in. The community alternative `lackeyjb/playwright-skill` exists but was 5 months stale at audit time.
 
 **Decision (2026-05-06)**: pointer to `microsoft/playwright-cli` accepted for the qa-e2e skill. Re-evaluate only if its **advice** turns lock-in-pushing or it fails the safety/maintenance bar — a change in Microsoft's commercial alignment alone is recorded as provenance, not a trigger.
 
@@ -410,21 +441,60 @@ git clone --depth 1 https://github.com/mongodb/agent-skills ~/dev/vendor-skills/
 
 ---
 
-### Anton Babenko — `terraform-skill` (ops-infra-code companion, Terraform/OpenTofu)
+### Anton Babenko — `terraform-skill` (ops-infra-code depth, Terraform/OpenTofu)
 
-**Covers**: comprehensive Terraform/OpenTofu patterns — CI/CD workflows, code patterns, testing frameworks, security compliance, quick reference. The de-facto community Terraform skill.
+**Covers**: Terraform and OpenTofu — a failure-mode diagnosis workflow, modules, testing strategy, state management, CI/CD workflows, security scans, terraform-ls, version management. The de-facto community Terraform skill (2,397★), and a strict superset of what `ops-infra-code` used to excerpt.
 
 **When to install**: any project using Terraform or OpenTofu.
 
-**Pair with**: claude-base's `ops-infra-code` skill (foundation-workflow integration: module hierarchy, naming conventions, link to `ops-deploy`).
+**Pair with**: claude-base's `ops-infra-code` — now a pointer that keeps the foundation's discipline (state and secrets, plan review, scans, deploy gate) — and HashiCorp's skills below for the official style guide and `terraform test`.
 
-**Install** (verify on the repo):
+**Install** (pinned release; the skill lives in `skills/terraform-skill`):
 ```bash
-git clone --depth 1 https://github.com/antonbabenko/terraform-skill ~/dev/vendor-skills/terraform
-ln -s ~/dev/vendor-skills/terraform/skills/terraform ./.claude/skills/terraform
+git clone --depth 1 --branch v1.17.1 https://github.com/antonbabenko/terraform-skill ~/dev/vendor-skills/terraform-skill
+ln -s ~/dev/vendor-skills/terraform-skill/skills/terraform-skill ./.claude/skills/terraform-skill
 ```
 
-**Provenance & advice-neutrality**: community-authored (Anton Babenko, independent maintainer). HashiCorp acquired by IBM (Feb 2025) but the skill author is independent. IBM has Watson but is not a direct Anthropic/OpenAI competitor. Acceptable.
+**Provenance & advice-neutrality**: community-authored (Anton Babenko, independent maintainer), Apache-2.0 (the LICENSE preamble hides it from GitHub's detector). A root `mcp.json` serves other harnesses; linking the skill folder does not load it. Its security reference installs Trivy with an unpinned `curl … | sh` — prefer a pinned release.
+
+---
+
+### HashiCorp — `hashicorp/agent-skills` (ops-infra-code, official Terraform)
+
+**Covers**: HashiCorp's own Terraform skills — official style guide, `terraform test`, module refactoring, Stacks, search/import, policy — plus provider development and Packer image builders. Terraform-only (no OpenTofu).
+
+**When to install**: Terraform projects that want the vendor's own conventions next to Babenko's depth.
+
+**Install** the skill folders, not the plugins (pinned release):
+```bash
+git clone --depth 1 --branch v1.0.0 https://github.com/hashicorp/agent-skills ~/dev/vendor-skills/hashicorp
+ln -s ~/dev/vendor-skills/hashicorp/terraform/code-generation/skills/terraform-style-guide ./.claude/skills/terraform-style-guide
+ln -s ~/dev/vendor-skills/hashicorp/terraform/code-generation/skills/terraform-test ./.claude/skills/terraform-test
+```
+
+**Caution**: the repo's Claude plugins (`terraform-code-generation`, `-module-generation`, `-policy-code`) also register an MCP server running the unpinned `hashicorp/terraform-mcp-server` Docker image with your `TFE_TOKEN`.
+
+**Provenance & advice-neutrality**: HashiCorp (IBM), MPL-2.0, release `v1.0.0`. The two recommended skills teach Terraform itself; its Stacks and policy skills lean on HCP Terraform / Terraform Enterprise (paid) — opt-in.
+
+---
+
+### Docker — `docker/skills` (ops-docker)
+
+**Covers**: `docker-project-foundations`, `docker-build-strategies` (multi-stage, non-root, cache and secret mounts), `docker-compose-patterns` (healthchecks, `service_healthy`), `docker-destructive-guardrails` (before any deleting command). Seven more skills target Docker Agent and Docker Sandboxes.
+
+**When to install**: any project that builds images or runs Compose.
+
+**Pair with**: claude-base's `ops-docker`, now a pointer that keeps what these leave out — image vulnerability scanning and Hadolint.
+
+**Install**:
+```bash
+npx skills add https://github.com/docker/skills/tree/v0.3.1 --skill docker-project-foundations --yes
+npx skills add https://github.com/docker/skills/tree/v0.3.1 --skill docker-build-strategies --yes
+npx skills add https://github.com/docker/skills/tree/v0.3.1 --skill docker-compose-patterns --yes
+npx skills add https://github.com/docker/skills/tree/v0.3.1 --skill docker-destructive-guardrails --yes
+```
+
+**Provenance & advice-neutrality**: Docker Inc., Apache-2.0, release `v0.3.1`. The foundation's safety screen flags the repo on fixtures of Docker's own content-risk scanner and on one Dockerfile tip — both read and judged false positives (2026-10-03).
 
 ---
 
@@ -569,7 +639,7 @@ ln -s ~/dev/vendor-skills/marketingskills/skills/onboarding ./.claude/skills/onb
 
 **Covers**: Lingui-specific i18n patterns (announced alongside Lingui 6.0, April 2026).
 
-**Install only if**: your project uses Lingui specifically. For other i18n libraries (next-intl, react-i18next, vue-i18n, formatjs, flutter_localizations), claude-base's framework-agnostic `dev-i18n` skill is sufficient.
+**Install only if**: your project uses Lingui specifically. For other i18n libraries (next-intl, react-i18next, vue-i18n, flutter_localizations), claude-base's framework-agnostic `dev-i18n` skill covers the setup; FormatJS has its own review and translation skills (entry below).
 
 **Provenance & advice-neutrality**: Lingui is community-maintained.
 
@@ -585,7 +655,209 @@ ln -s ~/dev/vendor-skills/marketingskills/skills/onboarding ./.claude/skills/onb
 
 ---
 
+### Stripe — `stripe/ai` `stripe-best-practices` (legal-payment, if Stripe)
+
+**Covers**: Checkout Sessions vs PaymentIntents, billing, Stripe Tax, Connect, key handling, deprecated-API migrations. Stripe-scoped by design (new usage-based billing goes to Metronome, a Stripe product); `/legal:legal-payment` keeps the provider choice. It tells users to `npm i -g @stripe/cli` unpinned.
+
+**Install only if**: the project uses Stripe.
+
+```bash
+git clone https://github.com/stripe/ai ~/dev/vendor-skills/stripe-ai
+git -C ~/dev/vendor-skills/stripe-ai checkout 9a33771f666e
+ln -s ~/dev/vendor-skills/stripe-ai/providers/claude/plugin/skills/stripe-best-practices ./.claude/skills/
+```
+
+**Provenance**: Stripe, MIT, no releases. Safety screen: pass.
+
+---
+
+### Astronomer — `astronomer/agents` (data-pipeline, if Airflow)
+
+**Covers**: `airflow` (entry point), `authoring-dags`, `testing-dags`, `debugging-dags`, `migrating-airflow-2-to-3`. They use Astronomer's `af` CLI (`astro-airflow-mcp`, an unpinned `uv tool install`) and the Astro CLI; Astro is Astronomer's paid platform.
+
+**Install only if**: the project runs Airflow.
+
+```bash
+git clone https://github.com/astronomer/agents ~/dev/vendor-skills/astronomer
+git -C ~/dev/vendor-skills/astronomer checkout 1ec1a1fa00ef
+for s in airflow authoring-dags testing-dags debugging-dags migrating-airflow-2-to-3; do
+  ln -s ~/dev/vendor-skills/astronomer/skills/$s ./.claude/skills/
+done
+```
+
+**Provenance**: Astronomer, Apache-2.0. Safety screen of these five: pass (the repo's `analyzing-data` scripts print an unpinned pipe-to-shell install hint — not recommended).
+
+---
+
+### Dagster — `dagster-io/skills` (data-pipeline, if Dagster)
+
+**Covers**: `plugins/dagster/skills/dagster-expert` — projects, definitions, assets, the `dg` CLI. Its description claims every "data pipelines" task, so install it only in Dagster projects. The plugin also registers the remote Dagster+ MCP server (paid); the skill folder alone does not.
+
+**Install only if**: the project runs Dagster.
+
+```bash
+git clone https://github.com/dagster-io/skills ~/dev/vendor-skills/dagster
+git -C ~/dev/vendor-skills/dagster checkout b08dd8e6dac65829c829f2a185ff9b6eb2c11ab3   # = v1.13.25
+ln -s ~/dev/vendor-skills/dagster/plugins/dagster/skills/dagster-expert ./.claude/skills/
+```
+
+**Provenance**: Dagster Labs, Apache-2.0. Safety screen: pass.
+
+---
+
+### dbt Labs — `dbt-labs/dbt-agent-skills` (data-pipeline / data-modeling, if dbt)
+
+**Covers**: `skills/dbt/skills/*` — models, tests and unit tests, documentation, semantic layer, mesh. **Not** `skills/dbt-migration/`: its upgrade script runs `uvx --from git+https://github.com/dbt-labs/dbt-autofix.git…` against an unpinned branch.
+
+**Install only if**: the project uses dbt.
+
+```bash
+git clone https://github.com/dbt-labs/dbt-agent-skills ~/dev/vendor-skills/dbt
+git -C ~/dev/vendor-skills/dbt checkout 168a2b0b92da
+ln -s ~/dev/vendor-skills/dbt/skills/dbt/skills/* ./.claude/skills/
+```
+
+**Provenance**: dbt Labs, Apache-2.0, no releases. Safety screen of `skills/dbt/`: pass.
+
+---
+
+### AWS — `awslabs/agent-plugins` `aws-serverless` (ops-serverless, if AWS Lambda)
+
+**Covers**: `plugins/aws-serverless/skills/*` — Lambda, SAM/CDK deployment, API Gateway, Step Functions, durable functions. Plugin version `1.3.0` at the pin (the repo's `1.0.0` release is seven months older).
+
+**Install only if**: the project deploys to AWS Lambda. Choose: the plugin adds a PostToolUse hook on Edit/Write (`sam validate --lint`) and an MCP server run as `uvx awslabs.aws-serverless-mcp-server@latest --allow-write`; the skill folders alone avoid both, and the skills then ask before working without their MCP tools.
+
+```bash
+git clone https://github.com/awslabs/agent-plugins ~/dev/vendor-skills/aws
+git -C ~/dev/vendor-skills/aws checkout e32b05b5973d
+ln -s ~/dev/vendor-skills/aws/plugins/aws-serverless/skills/* ./.claude/skills/
+```
+
+**Provenance**: AWS, Apache-2.0. Safety screen (skills): pass.
+
+---
+
+### Cloudflare — `cloudflare/skills` (ops-serverless, if Workers)
+
+**Covers**: `skills/workers-best-practices`, `skills/wrangler`.
+
+**Install only if**: the project runs on Cloudflare Workers.
+
+```bash
+git clone https://github.com/cloudflare/skills ~/dev/vendor-skills/cloudflare
+git -C ~/dev/vendor-skills/cloudflare checkout 41e0d1985894
+ln -s ~/dev/vendor-skills/cloudflare/skills/workers-best-practices ~/dev/vendor-skills/cloudflare/skills/wrangler ./.claude/skills/
+```
+
+**Provenance**: Cloudflare, Apache-2.0, no releases. Safety screen: pass.
+
+---
+
+### Expo — `expo/skills` `eas-app-stores` (ops-mobile-release, if Expo/EAS)
+
+**Covers**: EAS builds, signing, versions, TestFlight / App Store / Google Play submission. EAS has a free tier and paid plans (the skill states the limits).
+
+**Install only if**: the app ships with Expo / EAS.
+
+```bash
+git clone https://github.com/expo/skills ~/dev/vendor-skills/expo
+git -C ~/dev/vendor-skills/expo checkout 13ad8e058741
+ln -s ~/dev/vendor-skills/expo/plugins/expo/skills/eas-app-stores ./.claude/skills/
+```
+
+**Provenance**: Expo, MIT, no releases. Safety screen: pass.
+
+In a repository that versions `.claude/`, copy these folders instead of linking them.
+
+---
+
+### Redux Toolkit — skills inside `@reduxjs/toolkit` (state-management, if Redux)
+
+**Covers**: eight skills — modern Redux, data flow, slices and selectors, state ownership, side effects, RTK Query, debugging, migration to modern Redux.
+
+**Install only if**: the project uses Redux Toolkit ≥ 2.12 (screened: 2.13.0). They ship in the npm package (TanStack Intent), versioned with the installed library — nothing to fetch. Link a skill with what its `requires:` names; in a repository that versions `.claude/`, copy instead of linking:
+
+```bash
+ls node_modules/@reduxjs/toolkit/skills/*/*/SKILL.md
+ln -s "$PWD/node_modules/@reduxjs/toolkit/skills/build-modern-redux-apps/modern-redux" \
+      "$PWD/node_modules/@reduxjs/toolkit/skills/build-modern-redux-apps/redux-dataflow" ./.claude/skills/
+```
+
+**Provenance**: Redux maintainers, MIT. Safety screen (`packages/toolkit/skills` at `e7a8b318`): pass.
+
+---
+
+### FormatJS — `localization-review`, `translate` (dev-i18n, if ICU/FormatJS)
+
+**Covers**: ICU message review and translation. Published under `.agents/skills/` and indexed at `.well-known/agent-skills`.
+
+**Install only if**: the project uses ICU messages (FormatJS, react-intl). Their descriptions are broad ("translation requests", "changed user-facing text") and neither repeats `dev-i18n`'s rule: never ship machine translations without a native review.
+
+```bash
+git clone https://github.com/formatjs/formatjs ~/dev/vendor-skills/formatjs
+git -C ~/dev/vendor-skills/formatjs checkout bc0fd2253f6b
+ln -s ~/dev/vendor-skills/formatjs/.agents/skills/localization-review ~/dev/vendor-skills/formatjs/.agents/skills/translate ./.claude/skills/
+```
+
+**Provenance**: FormatJS maintainers, MIT per package (no root LICENSE). Safety screen: pass.
+
+---
+
+### Addy Osmani — `web-quality-skills` `accessibility` (wcag-audit companion)
+
+**Covers**: a WCAG 2.2 checklist with fixes (the repo also has performance, SEO and Core Web Vitals skills).
+
+**Install only if**: you want a fix-oriented companion to `/qa:wcag-audit`. It fires on "a11y audit" and "WCAG compliance", taking over from the audit's own format — run `/qa:wcag-audit` explicitly for an audit.
+
+```bash
+git clone https://github.com/addyosmani/web-quality-skills ~/dev/vendor-skills/web-quality
+git -C ~/dev/vendor-skills/web-quality checkout afa8da942115
+ln -s ~/dev/vendor-skills/web-quality/skills/accessibility ./.claude/skills/
+```
+
+**Provenance**: community (Addy Osmani), MIT, 2.9k★, no releases. Safety screen: pass.
+
+---
+
+### Grafana — `grafana/skills` `grafana-k6` (ops-load-testing, if k6)
+
+**Covers**: k6 script authoring, docs, maintenance, trend analysis, cloud runs, a website test suite. Same repo as the `ops-monitoring` entry.
+
+**Install only if**: the project load-tests with k6. The `k6` skill validates each script by running it against its target and does not gate on authorisation: keep `/ops:ops-load-testing`'s rule (isolated environment, never production, only systems you own or may test).
+
+```bash
+# reuses the clone of the ops-monitoring entry if it exists
+[ -d ~/dev/vendor-skills/grafana ] || git clone https://github.com/grafana/skills ~/dev/vendor-skills/grafana
+git -C ~/dev/vendor-skills/grafana fetch origin 1ccacf29049fde66637fe01ab93a83a772da323b
+git -C ~/dev/vendor-skills/grafana checkout FETCH_HEAD
+ln -s ~/dev/vendor-skills/grafana/skills/grafana-k6/k6 ./.claude/skills/
+```
+
+**Provenance**: Grafana Labs, Apache-2.0. Safety screen (`skills/grafana-k6`): pass.
+
+---
+
+### GitHub — `github-actions-hardening` (ops-ci, workflow security)
+
+**Covers**: GitHub Actions hardening — token permissions, SHA-pinned actions, untrusted input, `pull_request_target`. No pipeline authoring, no GitLab.
+
+**Install only if**: the project runs GitHub Actions.
+
+```bash
+git clone https://github.com/github/awesome-copilot ~/dev/vendor-skills/awesome-copilot
+git -C ~/dev/vendor-skills/awesome-copilot checkout 143a3d976b3c
+ln -s ~/dev/vendor-skills/awesome-copilot/skills/github-actions-hardening ./.claude/skills/
+```
+
+**Provenance**: GitHub org (community-written collection), MIT, no releases. Safety screen: pass.
+
+---
+
 ## Vendors evaluated and NOT recommended
+
+### Firecrawl — `firecrawl/cli` skills (evaluated 2026-10-04)
+
+Thirteen skills, CLI v1.25.3, ISC. Not recommended next to `web-scraping`: the `firecrawl` router claims "any live-web task via the Firecrawl CLI — including ordinary web research", and `firecrawl-search` / `firecrawl-scrape` make the same claim for search and page reading — installed, they route ordinary lookups to the paid API. `firecrawl-search` also sends search feedback with query-derived text after every search (opt-out `FIRECRAWL_NO_SEARCH_FEEDBACK=1`, separate from `FIRECRAWL_NO_TELEMETRY=1`), and the skills contradict `web-scraping`'s rules (output directory, `--max-credits`, cost confirmation). Use the CLI through `web-scraping`.
 
 This list is part of the curation work. Naming what we rejected matters as much as naming what we approve.
 

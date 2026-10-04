@@ -9,6 +9,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 > Earlier entries (v1.30.x and before) remain in their original French
 > as a historical record of the project's pre-i18n era.
 
+## [5.7.1] - 2026-10-03
+
+One fix, found the morning after 5.7.0 while updating the fleet: the two test gates blocked a green
+project because they ran its suite on the wrong Node.
+
+### Fixed
+
+- **The test gates run on the project's own Node.** `pre-commit-tests` and `pre-push-ci` inherit
+  Claude Code's environment, so they ran a project's npm lint, type-check and tests on Claude Code's
+  Node. On a project pinned to Node 24 (`mise.toml`, `engines: ">=24"`) from a Node 20 shell, 105
+  vitest workers crashed and every commit and push of a green project (1,212 tests) was blocked. A
+  shared helper, `scripts/hooks/_node-runtime.sh`, now runs the npm checks through `mise exec` when
+  mise and a `mise.toml` / `.mise.toml` / `.tool-versions` are present, with **auto-install off**: a
+  `.tool-versions` is not trust-gated, and without it the first commit downloaded every listed tool
+  outside the gate budget. If mise refuses, the gate says so and falls back to the inherited Node. If
+  the Node it can reach is still below `engines.node`, the npm checks are skipped with the reason
+  rather than run on the wrong runtime; a range with `||` is never guessed. Replayed on the real
+  project: the new gate passes its 1,212 tests, the 5.7.0 one blocks with 105 errors. (#625)
+
+- **The bypass hints said something that does not work.** The gates printed `(Bypass once:
+  SKIP_PRE_PUSH_CI=1.)`, and four places in the guides taught `SKIP_PRE_PUSH_CI=1 git push`: a
+  prefix on the command Claude runs never reaches a PreToolUse hook. The hints and
+  `TROUBLESHOOTING-GUIDE`, `TEAM-GUIDE` and `hooks-reference` now say where the variable belongs: the
+  environment Claude Code runs in (`SKIP_PRE_PUSH_CI=1 claude`, or `env` in
+  `.claude/settings.local.json`). (#625)
+
+### Upgrade notes
+
+- **Pull the new hook scripts: `claude-base update --hook-scripts`.** The helper is a new file under
+  `scripts/hooks/`, and both gates changed; until then a project pinned to a newer Node than the shell
+  that launches Claude Code keeps being blocked.
+
 ## [5.7.0] - 2026-10-03
 
 Forty-five pull requests — thirty-eight written by hand, seven opened by the curation bot — and the

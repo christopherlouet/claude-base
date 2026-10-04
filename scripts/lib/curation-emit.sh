@@ -190,8 +190,11 @@ _repin_pr_body() {
 # and preset recommendation whose repo-root matches. Empty when the skill sits at
 # the repo root. Lets the pin-time safety screen scope to the skill's subpath
 # instead of scanning the whole monorepo (#384 false-truncation fix).
+# Also empty as soon as ONE record or preset watches the repo at its root: the
+# whole repo then ships, and a sibling subpath record must not narrow the screen
+# to its own dirs (a new exec-bit script elsewhere would pass unscreened).
 _subpaths_for_repo() {
-    local want="$1" registry="$2" presets_dir="$3" id owner rest repo sub acc="" f
+    local want="$1" registry="$2" presets_dir="$3" id owner rest repo sub acc="" root=0 f
     {
         [ -f "$registry" ] && jq -r '.records[].vendorId // empty' "$registry" 2>/dev/null
         for f in "$presets_dir"/*.json; do
@@ -212,10 +215,11 @@ _subpaths_for_repo() {
             repo="${rest%%/*}"
             [ "$owner/$repo" = "$want" ] || continue
             sub="${rest#*/}"
-            [ "$sub" = "$rest" ] && continue           # no subpath (root skill)
+            if [ "$sub" = "$rest" ]; then root=1; continue; fi   # root record: whole repo
             case "$sub" in tree/*) sub="${sub#tree/*/}" ;; esac   # drop /tree/<branch>/
             [ -n "$sub" ] && acc+="${sub}+"
         done
+        [ "$root" -eq 0 ] || return 0
         # split on '+', dedup segments, re-join with '+'
         printf '%s' "$acc" | tr '+' '\n' | grep . | sort -u | paste -sd'+' - || true
     }

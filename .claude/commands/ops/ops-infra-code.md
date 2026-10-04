@@ -10,7 +10,7 @@ $ARGUMENTS
 Define and manage infrastructure declaratively, reproducibly and version-controlled,
 with reusable modules and a CI/CD pipeline.
 
-Use the `ops-infra-code` skill for detailed Terraform patterns.
+Use the `ops-infra-code` skill for the core patterns and the foundation's discipline; it points to Babenko's and HashiCorp's skills for depth.
 
 ## Workflow
 
@@ -47,3 +47,7 @@ YOU MUST use a remote backend for the state.
 YOU MUST version the providers.
 
 NEVER store secrets in Terraform code.
+
+## See also
+
+Depth lives upstream: [`antonbabenko/terraform-skill`](https://github.com/antonbabenko/terraform-skill) (Terraform and OpenTofu) and HashiCorp's [`hashicorp/agent-skills`](https://github.com/hashicorp/agent-skills) (official style guide, `terraform test`, refactoring, Stacks, policy). The `ops-infra-code` skill points to both and keeps the foundation's state, plan-review and deploy-gate discipline.

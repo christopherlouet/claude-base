@@ -7,9 +7,17 @@
 # through three gates before PROPOSING them (proposal only — never auto-added,
 # observe-never-install):
 #   1. trust   — public popularity/maintenance signals (trust-score.sh)  [LLM-FREE]
-#   2. safety  — pin-time integrity content scan (curation-safety.sh)     [LLM-FREE]
-#   3. judge   — advice-neutrality + fit, via an LLM (claude -p), Haiku triage with
-#                escalation of borderline cases.                          [LLM]
+#   2. skill   — the repo must ship a SKILL.md (a link list or a product repo has
+#                nothing to install: rejected `no-skill`)                 [LLM-FREE]
+#   3. safety  — pin-time integrity content scan (curation-safety.sh), at the
+#                root AND over the skill directories the judge reads      [LLM-FREE]
+#   4. judge   — advice-neutrality + fit, via an LLM (claude -p), Haiku triage with
+#                escalation of borderline cases. It reads the SHIPPED skills
+#                (path, name, description, then bodies, up to
+#                CURATION_SKILL_DOSSIER_CAP chars, 6000; at most
+#                CURATION_SKILL_DOSSIER_MAX skills read, 12), never the README:
+#                the README describes the product, the skill is what a user
+#                installs.                                                [LLM]
 # The two cheap deterministic gates run FIRST so the costly LLM is consulted only
 # for candidates already worth judging.
 #
@@ -118,9 +126,64 @@ read -ra _LLM <<< "$LLM_CMD"
 # _repo_root <owner/repo[/...]> — first two path segments.
 _repo_root() {
     local s="${1#https://github.com/}"; s="${s#http://github.com/}"; s="${s%%[?#]*}"
+    case "$s" in */*) ;; *) return 1 ;; esac
     local owner="${s%%/*}" rest="${s#*/}" repo
     repo="${rest%%/*}"
-    [ -n "$owner" ] && [ -n "$repo" ] && [ "$owner" != "$rest" ] && printf '%s/%s\n' "$owner" "$repo"
+    [ -n "$owner" ] && [ -n "$repo" ] && printf '%s/%s\n' "$owner" "$repo"
+}
+
+# _ids_of <vendorId-or-url> — the candidate ids a registry/preset/declined entry
+# covers, lowercased: "owner/repo" for a whole repo, "owner/repo/sub" for each
+# '+'-joined subpath (owner/repo/a+b → owner/repo/a and owner/repo/b). A GitHub
+# URL's /tree/<branch>/ infix is dropped.
+_ids_of() {
+    local s="${1#https://github.com/}"; s="${s#http://github.com/}"; s="${s%%[?#]*}"; s="${s%/}"
+    local root; root=$(_repo_root "$s") || return 0
+    [ -n "$root" ] || return 0
+    local rest="${s#"$root"}"; rest="${rest#/}"
+    case "$rest" in tree/*/*) rest="${rest#tree/*/}" ;; tree/*) rest="" ;; esac
+    if [ -z "$rest" ]; then printf '%s\n' "$root"; return 0; fi
+    printf '%s\n' "$rest" | tr '+' '\n' | awk -v r="$root" 'NF { sub(/\/$/, ""); print r "/" $0 }'
+}
+
+# _record_keys — what the registry, the presets and the declined ledger cover,
+# one "<kind>\t<key>" per line:
+#   A root — the repo has SOME record (registry, preset or declined): its
+#            whole-repo candidate is not proposed again (as before);
+#   R root — a record of the WHOLE repo: every candidate of the repo is skipped;
+#   E id   — this exact id (a recorded path, or a repo/path judged recently);
+#   P id   — a recorded path: a candidate lying inside it is skipped too (a
+#            vendor's skills directory is curated once, not again per nested
+#            root). A candidate ENCLOSING it is not: a root holding one
+#            recorded skill may hold unrecorded ones.
+# A record of one path therefore no longer hides the repo's SIBLING paths.
+_record_keys() {
+    local v id root
+    {
+        [ -f "$REGISTRY" ] && jq -r '.records[]?.vendorId // empty' "$REGISTRY" 2>/dev/null
+        local f
+        for f in "$PRESETS_DIR"/*.json; do
+            [ -f "$f" ] || continue
+            jq -r '.recommendedVendorSkills[]? | (.url // .id) // empty' "$f" 2>/dev/null
+        done
+        [ -f "$DECLINED" ] && jq -r '.entries[]?.repo // empty' "$DECLINED" 2>/dev/null
+    } | while IFS= read -r v; do
+        [ -n "$v" ] || continue
+        while IFS= read -r id; do
+            [ -n "$id" ] || continue
+            id=$(printf '%s' "$id" | tr '[:upper:]' '[:lower:]')
+            root=$(_repo_root "$id")
+            printf 'A\t%s\n' "$root"
+            if [ "$id" = "$root" ]; then printf 'R\t%s\n' "$root"; else printf 'E\t%s\nP\t%s\n' "$id" "$id"; fi
+        done < <(_ids_of "$v")
+    done
+}
+
+# _exclusion_keys — the candidate filter's keys: the records, plus every id
+# judged within the re-judge window (exact id, path included).
+_exclusion_keys() {
+    _record_keys
+    judged_recent_set | awk 'NF { print "E\t" $0 }'
 }
 
 # _graduation_for <repo> — graduation veille (specs/curation-graduation-veille).
@@ -139,30 +202,6 @@ _graduation_for() {
             case "$repo_lc" in *"$kw"*) printf '%s' "$fskill"; return 0 ;; esac
         done
     done < <(jq -r '.entries[]? | "\(.foundationSkill)\t\(.matchKeywords | join(" "))"' "$AWAITING" 2>/dev/null)
-}
-
-# known_set — repo-roots already tracked (registry records + preset recs); these
-# are never re-proposed.
-known_set() {
-    {
-        [ -f "$REGISTRY" ] && jq -r '.records[]?.vendorId' "$REGISTRY" 2>/dev/null
-        local f
-        for f in "$PRESETS_DIR"/*.json; do
-            [ -f "$f" ] || continue
-            jq -r '.recommendedVendorSkills[]? | (.url // .id)' "$f" 2>/dev/null
-        done
-    } | while IFS= read -r v; do [ -n "$v" ] && _repo_root "$v"; done | sort -u
-}
-
-# declined_set — repo-roots a human REVIEWED and chose NOT to adopt (DECLINED
-# ledger): e.g. a moat-encroachment whose idea was absorbed into the foundation,
-# or an off-stack skill. Excluded from candidates exactly like known_set so a
-# standing decision is never re-surfaced (as a proposal OR a moat signal) every
-# run. Missing/empty file ⟹ nothing excluded (fail-safe, like _graduation_for).
-declined_set() {
-    [ -f "$DECLINED" ] || return 0
-    jq -r '.entries[]?.repo // empty' "$DECLINED" 2>/dev/null \
-        | while IFS= read -r v; do [ -n "$v" ] && _repo_root "$v"; done | sort -u
 }
 
 # _LIST_RESERVED — github.com path roots that are NOT user/org repos (so a link
@@ -200,12 +239,187 @@ _list_candidates() {
         | grep -vixF "$repo"
 }
 
+# _web_get <https-url> — GET a public URL (the npm registry, a vendor's
+# .well-known index), retried like the GitHub calls. Non-zero on failure.
+_web_get() {
+    local tries="${CURATION_GH_RETRIES:-3}" i out
+    for ((i = 1; i <= tries; i++)); do
+        if out=$(curl -fsSL --proto =https --proto-redir =https --max-filesize 2000000 --max-time 20 "$1" 2>/dev/null); then
+            printf '%s' "$out"; return 0
+        fi
+        [ "$i" -lt "$tries" ] && sleep "${CURATION_GH_BACKOFF:-2}"
+    done
+    return 1
+}
+
+# _gh_url_repo <url> — owner/repo of a GitHub repository URL in any form npm
+# records (https://, git+https://, git://, git+ssh://git@, git@github.com:,
+# with or without .git, #fragment or ?query). Non-zero for any other host.
+_gh_url_repo() {
+    local u="${1#git+}"
+    u="${u%%[?#]*}"; u="${u%/}"; u="${u%.git}"
+    case "$(printf '%s' "$u" | tr '[:upper:]' '[:lower:]')" in
+        https://github.com/*|http://github.com/*|git://github.com/*|ssh://git@github.com/*|https://www.github.com/*) u="${u#*://}"; u="${u#*@}"; u="${u#*/}" ;;
+        git@github.com:*) u="${u#*:}" ;;
+        *) return 1 ;;
+    esac
+    u=$(_repo_root "$u") || return 1
+    _valid_repo "$u" && printf '%s\n' "$u"
+}
+
+# _valid_repo <owner/repo> — a GitHub owner/repo name, nothing an API path or a
+# candidate id could be steered by ('?', '#', '%', spaces, '.', '..').
+_valid_repo() {
+    [[ "$1" =~ ^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$ ]] || return 1
+    case "/$1/" in */./*|*/../*) return 1 ;; esac
+}
+
+# _skills_roots <owner/repo> [declared] — the candidate ids for the skills a repo
+# ships, read at the ref the gates will judge (resolve_ref): each directory named
+# *skills (skills/, packages/x/skills/, docs/agent-skills/) that holds SKILL.md
+# files is one id, owner/repo/<dir>; a SKILL.md under no such directory makes its
+# parent the candidate, one at the repo root the whole repo. By default a SKILL.md
+# under a hidden or examples/ directory is skipped (the repo's own tooling and
+# demos, not what it ships). [declared] — '+'-joined SKILL.md paths a vendor
+# published (.well-known): only their roots are emitted, hidden ones included; a
+# '*' in it also emits the default roots. Always skipped: any path a candidate id
+# cannot carry safely (a . or .. segment, an empty segment, '+' — the id's path
+# separator — '%', or a control character). Prints "<owner/repo>\t<id>";
+# non-zero when the tree is unreadable.
+_skills_roots() {
+    local repo="$1" ref paths
+    ref=$(resolve_ref "$repo") && [ -n "$ref" ] || return 1
+    paths=$(shipped_skills "$repo" "$ref") || return 1
+    printf '%s\n' "$paths" | DECLARED="${2:-*}" LC_ALL=C awk -v r="$repo" '
+        function safe(p,    n, s, i) {
+            if (p ~ /[[:cntrl:]+%]/) return 0
+            n = split(p, s, "/"); if (s[n] != "SKILL.md") return 0
+            for (i = 1; i < n; i++) if (s[i] == "" || s[i] == "." || s[i] == "..") return 0
+            return 1
+        }
+        function plain(p,    n, s, i) {
+            n = split(p, s, "/")
+            for (i = 1; i < n; i++) if (s[i] ~ /^\./ || tolower(s[i]) ~ /^examples?$/) return 0
+            return 1
+        }
+        # root_of — seg[n-1] is the skill own directory: look above it.
+        function root_of(p,    n, seg, i, j, root) {
+            n = split(p, seg, "/"); root = ""
+            for (i = n - 2; i >= 1; i--) if (tolower(seg[i]) ~ /skills$/) { root = seg[1]; for (j = 2; j <= i; j++) root = root "/" seg[j]; break }
+            if (root == "" && n >= 3) { root = seg[1]; for (j = 2; j <= n - 2; j++) root = root "/" seg[j] }
+            return root
+        }
+        BEGIN {
+            # DECLARED is "+"-joined; a declared path holding "+" is dropped upstream.
+            m = split(ENVIRON["DECLARED"], d, /[+\n]/)
+            for (i = 1; i <= m; i++) if (d[i] == "*") all = 1; else if (safe(d[i])) want[root_of(d[i])] = 1
+        }
+        safe($0) {
+            root = root_of($0)
+            if (!((root in want) || (all && plain($0)))) next
+            id = (root == "") ? r : r "/" root
+            if (!seen[id]++) print r "\t" id
+        }'
+}
+
+# _roots_breadth_first <label> — stdin "<owner/repo>[\t<declared>]" lines, one
+# per repo; stdout the repos' skills roots (_skills_roots), breadth-first: every
+# repo's first root, then every second one — so a monorepo of 18 adapters cannot
+# take all of a source's slots under the candidate cap (hits are ranked by line
+# number). An unreadable tree is reported as "<label> <repo> (tree unreadable)".
+_roots_breadth_first() {
+    local label="$1" r decl out
+    while IFS=$'\t' read -r r decl; do
+        [ -n "$r" ] || continue
+        if ! out=$(_skills_roots "$r" "${decl:-*}"); then
+            [ -n "${SOURCE_FAIL_LOG:-}" ] && printf '%s %s (tree unreadable)\n' "$label" "$r" >> "$SOURCE_FAIL_LOG"
+            continue
+        fi
+        # Declared skills (well-known) absent from the tree the gates judge — a
+        # skill newer than the release, or a URL form not understood: say so.
+        if [ -z "$out" ] && [ -n "$decl" ] && [ "$decl" != "*" ] && [ -n "${SOURCE_FAIL_LOG:-}" ]; then
+            printf '%s %s (declared skills not found at its release)\n' "$label" "$r" >> "$SOURCE_FAIL_LOG"
+        fi
+        [ -n "$out" ] && printf '%s\n' "$out"
+    done | awk -F '\t' '{ print k[$1]++ "\t" NR "\t" $2 }' | sort -n -k1,1 -k2,2 | cut -f3
+}
+
 # _source_hits <source-json> <per-page> — one source's hits (owner/repo), in the
 # source's own ranking: a search by stars, a list in document order. A fetch
 # failure is appended to $SOURCE_FAIL_LOG and yields nothing.
 _source_hits() {
     local src="$1" per="$2" kind repo lpath rc query path items
     kind=$(printf '%s' "$src" | jq -r '.kind // "search"')
+    if [ "$kind" = "npm" ]; then
+        # Libraries that ship their own skills in the published package: npm
+        # names each package's GitHub repo, the repo's tree says where the
+        # skills are (_skills_roots). Packages of one repo collapse to its roots,
+        # emitted breadth-first (_roots_breadth_first).
+        query=$(printf '%s' "$src" | jq -r '.query // empty')
+        [ -n "$query" ] || return 0
+        if ! items=$(_web_get "https://registry.npmjs.org/-/v1/search?text=$(printf '%s' "$query" | jq -sRr @uri)&size=${per}"); then
+            [ -n "${SOURCE_FAIL_LOG:-}" ] && printf 'npm %s (unreachable)\n' "$(printf '%s' "$src" | jq -r '.domain // .query // "?"')" >> "$SOURCE_FAIL_LOG"
+            return 0
+        fi
+        printf '%s' "$items" | jq -r '.objects[]?.package.links.repository // empty' 2>/dev/null \
+            | while IFS= read -r url; do _gh_url_repo "$url"; done | awk '!seen[tolower($0)]++' \
+            | _roots_breadth_first npm
+        return 0
+    fi
+    if [ "$kind" = "repos" ]; then
+        # A tool's own repository (vercel/next.js, cypress-io/ai-toolkit): its
+        # skills sit beside the code, where no skill search looks.
+        printf '%s' "$src" | jq -r '.repos[]? | strings' | while IFS= read -r r; do _repo_root "$r"; done \
+            | awk '!seen[tolower($0)]++' | _roots_breadth_first repos
+        return 0
+    fi
+    if [ "$kind" = "well-known" ]; then
+        # A vendor's site declares its skills at /.well-known/agent-skills/
+        # index.json (agentskills.io discovery schema). Only skills published on
+        # GitHub can go through the gates: a raw/blob URL of a SKILL.md names its
+        # directory (hidden ones included — the vendor declared them), any other
+        # github.com URL (a release archive) names the repo ('*': its default
+        # roots). A skill hosted elsewhere is skipped.
+        local host idx
+        while IFS= read -r host; do
+            case "$host" in ''|*/*|*[!A-Za-z0-9.-]*) continue ;; esac
+            if ! idx=$(_web_get "https://$host/.well-known/agent-skills/index.json"); then
+                [ -n "${SOURCE_FAIL_LOG:-}" ] && printf 'well-known %s (unreachable)\n' "$host" >> "$SOURCE_FAIL_LOG"
+                continue
+            fi
+            if ! printf '%s' "$idx" | jq -e '.skills | type == "array"' >/dev/null 2>&1; then
+                [ -n "${SOURCE_FAIL_LOG:-}" ] && printf 'well-known %s (malformed index)\n' "$host" >> "$SOURCE_FAIL_LOG"
+                continue
+            fi
+            printf '%s' "$idx" | jq -r '
+                def name: test("^[A-Za-z0-9._-]+$") and . != "." and . != "..";
+                .skills[]? | objects | .url | strings
+                | (capture("^https://raw\\.githubusercontent\\.com/(?<o>[^/]+)/(?<r>[^/]+)/(refs/(heads|tags)/)?[^/]+/(?<p>(.+/)?SKILL\\.md)$"; "i")
+                   // capture("^https://github\\.com/(?<o>[^/]+)/(?<r>[^/]+)/(blob|raw)/[^/]+/(?<p>(.+/)?SKILL\\.md)$"; "i")
+                   // (capture("^https://github\\.com/(?<o>[^/]+)/(?<r>[^/?#]+)"; "i") | .p = "*")
+                   // empty)
+                | .r |= sub("\\.git$"; "")
+                | select((.o | name) and (.r | name) and (.p | test("[+%[:cntrl:]]") | not))
+                | "\(.o)/\(.r)\t\(.p)"'
+        done < <(printf '%s' "$src" | jq -r '.hosts[]? | strings') \
+            | awk -F '\t' '{ r = $1; k = tolower(r)
+                              if (!(k in d)) { order[++n] = k; repo[k] = r; d[k] = $2 } else d[k] = d[k] "+" $2 }
+                            END { for (i = 1; i <= n; i++) print repo[order[i]] "\t" d[order[i]] }' \
+            | _roots_breadth_first well-known
+        return 0
+    fi
+    if [ "$kind" = "path" ]; then
+        # A known directory of skills inside a (often big) repo: one candidate,
+        # "owner/repo/sub/path" — the registry's vendorId notation.
+        repo=$(printf '%s' "$src" | jq -r '.repo // empty')
+        # Normalised: no leading/trailing or doubled slash; a . or .. segment is
+        # refused (a source file typo would otherwise be judged "no skill" and
+        # recorded for months).
+        lpath=$(printf '%s' "$src" | jq -r '.path // empty' | tr -s '/' | sed 's#^/##; s#/$##')
+        case "/$lpath/" in */../*|*/./*) lpath="" ;; esac
+        [ -n "$repo" ] && [ -n "$lpath" ] && printf '%s/%s\n' "$repo" "$lpath"
+        return 0
+    fi
     if [ "$kind" = "list" ]; then
         repo=$(printf '%s' "$src" | jq -r '.repo // empty')
         [ -n "$repo" ] || return 0
@@ -245,8 +459,9 @@ _source_hits() {
 # $SOURCE_FAIL_LOG (a file the caller reads) so the run SURFACES it in the digest
 # rather than presenting a shrunken candidate set as if it were complete.
 collect_candidates() {
-    # Exclude both already-tracked repos AND reviewed-and-declined ones.
-    local known; known=$(printf '%s\n%s\n%s\n' "$(known_set)" "$(declined_set)" "$(judged_recent_set)" | awk 'NF' | sort -u)
+    # Exclude tracked, declined and recently judged candidates — path-aware
+    # (_exclusion_keys).
+    local known; known=$(_exclusion_keys | awk 'NF' | sort -u)
     local per src src_n=0
     per=$(jq -r '(.perPage | numbers) // 15' "$SOURCES")
     {
@@ -256,9 +471,15 @@ collect_candidates() {
             _source_hits "$src" "$per" | awk -v s="$src_n" 'NF { print NR "\t" s "\t" $0 }'
         done < <(jq -c '.sources[]?' "$SOURCES")
     } | LC_ALL=C sort -t "$(printf '\t')" -k1,1n -k2,2n \
-      | awk -F '\t' 'NR == FNR { skip[tolower($0)] = 1; next }
-            { k = tolower($3) } !(k in skip) && !seen[k]++ { print $3 }' \
-            <(printf '#known\n%s\n' "$known") - \
+      | awk -F '\t' 'NR == FNR { if (NF == 2) { key[$1 SUBSEP $2] = 1; if ($1 == "P") path[$2] = 1 }; next }
+            {
+                k = tolower($3); n = split(k, seg, "/"); root = seg[1] "/" seg[2]
+                if (key["E", k] || key["R", root]) next
+                if (n == 2 && key["A", root]) next
+                if (n > 2) for (q in path) if (index(k "/", q "/") == 1) next
+                if (!seen[k]++) print $3
+            }' \
+            <(printf '#\tknown\n%s\n' "$known") - \
       | head -n "$MAX_CANDIDATES"
 }
 
@@ -281,13 +502,101 @@ judged_recent_set() {
         .entries[]? | select(fresh($now; $days)) | .repo | ascii_downcase' "$LEDGER" 2>/dev/null || true
 }
 
-# resolve_ref <repo> — a pinnable current ref: latest release tag, else HEAD sha.
+# resolve_ref <repo> — a pinnable current ref: the most recently published
+# stable release (not the "Latest" badge — curation_stable_release), else HEAD.
 resolve_ref() {
     local repo="$1" tag sha
-    tag=$(curation_gh_api "repos/$repo/releases/latest" 2>/dev/null | jq -r '.tag_name // empty')
+    tag=$(curation_stable_release "$repo")
     if [ -n "$tag" ]; then printf '%s\n' "$tag"; return; fi
     sha=$(curation_gh_api "repos/$repo/commits/HEAD" 2>/dev/null | jq -r '.sha // empty')
     [ -n "$sha" ] && printf '%s\n' "$sha"
+}
+
+# shipped_skills <repo> <ref> — the SKILL.md paths the repo holds at <ref>, one
+# per skill: identical copies (one blob sha, e.g. .claude/skills/x beside
+# skills/x) are kept once, at the shortest path; paths under a hidden directory
+# come last (often the repo's own tooling). Exit 1 when the tree cannot be read,
+# or is truncated with no SKILL.md in view: an outage, never "no skill".
+shipped_skills() {
+    local body paths
+    body=$(curation_gh_api "repos/$1/git/trees/$2?recursive=1" 2>/dev/null) || return 1
+    printf '%s' "$body" | jq -e '.tree | type == "array"' >/dev/null 2>&1 || return 1
+    paths=$(printf '%s' "$body" | jq -r '
+        [.tree[] | select(.type == "blob") | select(.path | test("(^|/)SKILL\\.md$"))]
+        | group_by(.sha // .path) | map(min_by(.path | length))
+        | sort_by([(.path | test("(^|/)\\.")), .path]) | .[].path')
+    if [ -z "$paths" ] && printf '%s' "$body" | jq -e '.truncated == true' >/dev/null 2>&1; then
+        return 1
+    fi
+    printf '%s\n' "$paths" | awk 'NF'
+}
+
+# The skills actually read (dossier AND safety scan): the first SKILL_DOSSIER_MAX
+# of shipped_skills. The rest are listed by path only, so a repo of 200 skills
+# costs a bounded number of API calls.
+SKILL_DOSSIER_MAX="${CURATION_SKILL_DOSSIER_MAX:-12}"
+SKILL_DOSSIER_CAP="${CURATION_SKILL_DOSSIER_CAP:-6000}"
+
+# _frontmatter_field <field> — read <field> from the YAML frontmatter on stdin:
+# CRLF tolerated, a folded/literal block (`>-`, `|`) joined into one line.
+_frontmatter_field() {
+    tr -d '\r' | awk -v k="$1" '
+        /^---$/ { fm++; if (fm > 1) exit; next }
+        fm != 1 { next }
+        blk && /^[ \t]+/ { sub(/^[ \t]+/, ""); out = out (out == "" ? "" : " ") $0; next }
+        blk { exit }
+        index($0, k ":") == 1 {
+            v = substr($0, length(k) + 2); sub(/^[ \t]+/, "", v)
+            if (v ~ /^[>|][-+]?$/) { blk = 1; next }
+            out = v; exit
+        }
+        END { print out }'
+}
+
+# skill_dossier <repo> <ref> <paths> — what the judge reads: the list of shipped
+# skills (path, name, description), then their bodies until the size cap. Never
+# the README: the repo's README describes its product, and the skill is what a
+# user installs. Only the first SKILL_DOSSIER_MAX are read — the same set the
+# safety screen scans.
+skill_dossier() {
+    local repo="$1" ref="$2" paths="$3" p doc name desc list="" bodies="" n=0 read=0 share i unlisted=0
+    local -a docs=() read_paths=()
+    while IFS= read -r p; do
+        [ -n "$p" ] || continue
+        n=$((n + 1))
+        if [ "$n" -gt "$SKILL_DOSSIER_MAX" ]; then
+            if [ "$n" -le $((SKILL_DOSSIER_MAX + 20)) ]; then
+                list+="- $p (not read)"$'\n'
+            else
+                unlisted=$((unlisted + 1))
+            fi
+            continue
+        fi
+        doc=$(_curation_fetch_one "$repo" "$ref" "$p" 2>/dev/null) || doc=""
+        name=$(printf '%s\n' "$doc" | _frontmatter_field name)
+        desc=$(printf '%s\n' "$doc" | _frontmatter_field description | cut -c1-200)
+        list+="- $p — name: ${name:-?} — description: ${desc:-?}"$'\n'
+        [ -n "$doc" ] && { docs+=("$doc"); read_paths+=("$p"); read=$((read + 1)); }
+    done <<< "$paths"
+    [ "$unlisted" -gt 0 ] && list+="- … and $unlisted more, not listed"$'\n'
+    # Every skill read gets an equal share of what is left after the list: the
+    # first ones by path are not the important ones (skills-contrib/ sorts
+    # before skills/), so none may crowd the others out.
+    if [ "$read" -gt 0 ]; then
+        share=$(( (SKILL_DOSSIER_CAP - ${#list} - 64) / read ))
+        [ "$share" -lt 300 ] && share=300
+        for ((i = 0; i < read; i++)); do
+            bodies+="=== ${read_paths[$i]} ==="$'\n'"$(printf '%s' "${docs[$i]}" | head -c "$share")"$'\n'
+        done
+    fi
+    printf 'Skills shipped (%s):\n%s\n%s' "$n" "$list" "$bodies" | head -c "$SKILL_DOSSIER_CAP"
+}
+
+# skill_subpaths <paths> — the '+'-joined directories of the skills the dossier
+# reads, for the safety screen (a root SKILL.md is the root screen's job).
+skill_subpaths() {
+    printf '%s\n' "$1" | awk 'NF' | head -n "$SKILL_DOSSIER_MAX" \
+        | awk '{ d = $0; sub(/\/?SKILL\.md$/, "", d); if (d != "") print d }' | paste -sd+ -
 }
 
 # llm_judge <repo> <ref> <content> <model> — one model call; echoes the verdict
@@ -302,29 +611,46 @@ Judge the skill below and reply with ONLY a JSON object:
 - advice-neutrality: "flag" if it pushes the user toward proprietary lock-in or away
   from their chosen stack / Claude; "pass" otherwise. Publisher identity is NOT a
   criterion — judge the advice, not who wrote it.
-- fit: 0-5, how well it covers a domain the foundation points at (web/app/api/db/infra/testing/self-hosted homelab and home automation).
+- fit: 0-5, how well its skills serve ONE domain the foundation points at
+  (web/app/api/db/infra/testing/self-hosted homelab and home automation). One domain
+  covered in depth is enough for 4-5: NEVER lower fit because a skill does not
+  cover other domains. Lower it when the skills are shallow, a list of links, meant
+  for the repo's own contributors rather than its users, or apply only to a
+  pre-release or narrow version of their tool — and say which.
 - borderline: true if you are unsure and a stronger model should re-judge.
 - encroachesMoat: true if the skill covers a DURABLE WORKFLOW-ORCHESTRATION pattern the
   foundation itself owns — TDD enforcement, the audit/review loop, the
   Explore→Specify→Plan→Commit workflow, anti-drift/verification discipline (NOT mere
   tool-specific API depth). This is a STRATEGIC signal, not a recommendation.
 
-Repo: $repo @ $ref
---- SKILL CONTENT (truncated) ---
+Judge the SKILLS the repo ships (listed below, what a user installs), not the
+project the repository is about.
+
+Repo: ${repo%%/*}/$(printf '%s' "$repo" | cut -d/ -f2) @ $ref$( [ "$(printf '%s' "$repo" | tr -cd / | wc -c)" -gt 1 ] && printf '\nPath: %s (the skills under this directory are the candidate)' "$(printf '%s' "$repo" | cut -d/ -f3-)")
+--- SHIPPED SKILLS (truncated) ---
 $content
 PROMPT
 )
     out=$(printf '%s' "$prompt" | "${_LLM[@]}" --model "$model" 2>/dev/null)
+    local raw="$out"
     # Models routinely wrap the JSON in ```json fences (or add stray blank lines)
     # despite the "raw JSON only" instruction. Strip fence lines defensively so a
     # well-formed-but-fenced verdict is NOT discarded as unparseable.
     out=$(printf '%s' "$out" | sed -e '/^[[:space:]]*```/d')
+    # Prose around the object ("Here is my verdict: {...} Hope this helps", on
+    # one line or several) would discard a well-formed verdict: keep the span
+    # from the first "{" to the last "}". The answer must then be EXACTLY ONE
+    # object: two objects parse as a jq stream, the last one passed the check,
+    # and two tokensUsed broke the budget arithmetic, ending the run in silence.
+    if ! printf '%s' "$out" | jq -s -e 'length == 1 and (.[0] | type == "object")' >/dev/null 2>&1; then
+        out=$(printf '%s' "$out" | tr '\n' '\036' | sed -E 's/^[^{]*//; s/[^}]*$//' | tr '\036' '\n')
+    fi
     # The contract, not merely "parses": a fit sent as a string would floor to 0
     # and read as a verdict (recorded, hidden 180 days). Outside it = unanswered.
-    if printf '%s' "$out" | jq -e '(.neutrality == "pass" or .neutrality == "flag") and (.fit | type == "number")' >/dev/null 2>&1; then
-        printf '%s' "$out"
+    if printf '%s' "$out" | jq -s -e 'length == 1 and (.[0] | (.neutrality == "pass" or .neutrality == "flag") and (.fit | type == "number"))' >/dev/null 2>&1; then
+        printf '%s' "$out" | jq -c '.'
     else
-        curation_warn "llm judge failed/unparseable for $repo"
+        curation_warn "llm judge failed/unparseable for $repo: $(printf '%s' "$raw" | tr '\r\n\t' '   ' | tr -d '\000-\037\177' | cut -c1-160)"
         # `unavailable` is what stops the caller reporting this as a VERDICT. The
         # rejecting shape is kept so any reader of the object still fails safe.
         jq -cn '{neutrality:"flag", fit:0, rationale:"llm-unavailable", borderline:false, tokensUsed:0, unavailable:true}'
@@ -381,9 +707,12 @@ moat_arr=()
 if [ "$n_candidates" -gt 0 ]; then
   while IFS= read -r repo; do
     [ -n "$repo" ] || continue
+    # The candidate id is "owner/repo" or "owner/repo/sub/path": every API call
+    # goes to the repo root, and the path bounds what is read and screened.
+    root=$(_repo_root "$repo"); sub="${repo#"$root"}"; sub="${sub#/}"
 
     # Gate 1 — trust (LLM-free). Discovery is the community track (third-party).
-    score=$(trust_score "$repo" community 2>/dev/null) || true
+    score=$(trust_score "$root" community ${sub:+"$sub"} 2>/dev/null) || true
     tverdict=$(printf '%s' "$score" | jq -r '.verdict // "error"' 2>/dev/null || echo error)
     if [ "$tverdict" != "pass" ]; then
         treasons=$(printf '%s' "$score" | jq -r '(.reasons // []) | join(", ")' 2>/dev/null || true)
@@ -397,28 +726,55 @@ if [ "$n_candidates" -gt 0 ]; then
         continue
     fi
 
-    ref=$(resolve_ref "$repo")
+    ref=$(resolve_ref "$root")
     [ -n "$ref" ] || { _reject "$repo" ref "could not resolve a release tag or HEAD (operational)" false; continue; }
 
-    # Gate 2 — safety (LLM-free).
-    screen=$(curation_safety_screen "$repo" "$ref")
-    if [ "$(printf '%s' "$screen" | jq -r '.verdict')" != "pass" ]; then
+    # Gate 2 — the repo must ship a skill (LLM-free). A link list or a product
+    # repo has no SKILL.md: nothing to install, so nothing to judge.
+    if ! skills=$(shipped_skills "$root" "$ref"); then
+        _reject "$repo" no-skill "repository tree unreadable or truncated (operational)" false
+        continue
+    fi
+    if [ -n "$sub" ]; then
+        skills=$(printf '%s\n' "$skills" | awk -v p="$sub/" 'index($0, p) == 1')
+    fi
+    if [ -z "$skills" ]; then
+        _reject "$repo" no-skill "ships no SKILL.md${sub:+ under $sub}" true
+        continue
+    fi
+
+    # Gate 3 — safety (LLM-free): the root screen, then the skill directories the
+    # judge will read. The root screen scans the root SKILL.md / README; without
+    # the second pass a skill under skills/<x>/ reached the judge unscanned.
+    # A path candidate skips the whole-repo pass (a monorepo's own scripts would
+    # put it over its cap, and they are not what the user installs) and screens
+    # the PATH itself instead: every script, hook or MCP config under it — the
+    # user installs the whole directory, not only the skills the judge reads —
+    # plus each read skill's own SKILL.md.
+    subs=$(skill_subpaths "$skills")
+    screen_failed=0
+    if [ -n "$sub" ]; then scopes=("$sub${subs:++$subs}"); else scopes=("" ${subs:+"$subs"}); fi
+    for scope in "${scopes[@]}"; do
+        screen=$(curation_safety_screen "$root" "$ref" "$scope")
+        [ "$(printf '%s' "$screen" | jq -r '.verdict')" = "pass" ] && continue
         sreasons=$(printf '%s' "$screen" | jq -r '(.reasons // []) | join(", ")' 2>/dev/null || true)
         if [ -z "$sreasons" ] || printf '%s' "$sreasons" | grep -qE "$_SAFETY_OUTAGE"; then
             _reject "$repo" safety "${sreasons:-no screen verdict} (operational)" false
         else
             _reject "$repo" safety "$sreasons" true
         fi
-        continue
-    fi
+        screen_failed=1
+        break
+    done
+    [ "$screen_failed" -eq 0 ] || continue
 
     # Budget gate — BEFORE any model call. Exhausted → defer this and the rest.
     if [ "$spent" -ge "$BUDGET" ]; then
         deferred=$((deferred + 1)); continue
     fi
 
-    # Gate 3 — judge (LLM). Haiku triage; escalate a borderline verdict once.
-    content=$(_curation_fetch_content "$repo" "$ref" 2>/dev/null | head -c 4000)
+    # Gate 4 — judge (LLM). Haiku triage; escalate a borderline verdict once.
+    content=$(skill_dossier "$root" "$ref" "$skills")
     verdict=$(llm_judge "$repo" "$ref" "$content" "$MODEL")
     spent=$((spent + $(printf '%s' "$verdict" | jq -r '(.tokensUsed | numbers | floor) // 1000')))
 
@@ -446,7 +802,7 @@ if [ "$n_candidates" -gt 0 ]; then
         # proposal path entirely (regardless of fit/neutrality).
         moat=$((moat + 1))
         moat_arr+=("$(jq -cn \
-            --arg repo "$repo" --arg prov "${repo%%/*}" --arg ref "$ref" \
+            --arg repo "$repo" --arg prov "${root%%/*}" --arg ref "$ref" \
             --argjson trust "$score" --argjson judge "$verdict" \
             '{repo:$repo, provenance:$prov, pinnedRef:$ref, trustVerdict:$trust.verdict,
               fit:$judge.fit, rationale:$judge.rationale}')")
@@ -456,7 +812,7 @@ if [ "$n_candidates" -gt 0 ]; then
         grad_for=$(_graduation_for "$repo")
         [ -n "$grad_for" ] && graduation=$((graduation + 1))
         proposals_arr+=("$(jq -cn \
-            --arg repo "$repo" --arg prov "${repo%%/*}" --arg ref "$ref" \
+            --arg repo "$repo" --arg prov "${root%%/*}" --arg ref "$ref" \
             --arg gradFor "$grad_for" \
             --argjson trust "$score" --argjson safety "$screen" --argjson judge "$verdict" \
             '{repo:$repo, provenance:$prov, pinnedRef:$ref, trustTrack:"community",
@@ -487,6 +843,30 @@ else
     moat_signals='[]'
 fi
 
+# pending_proposals — proposals from EARLIER runs still in the ledger window and
+# not yet decided (not in the registry/presets, not declined). They are not
+# judged again (judged_recent_set skips them), so the digest keeps naming them
+# instead of letting them vanish or re-proposing them every month.
+pending_proposals() {
+    [ -n "$LEDGER" ] && [ -f "$LEDGER" ] || { echo '[]'; return 0; }
+    local decided
+    decided=$(_record_keys | awk -F'\t' 'NF == 2' | jq -R 'split("\t")' | jq -s '.')
+    local thisrun
+    thisrun=$(printf '%s' "$proposals" | jq -c '[.[].repo | ascii_downcase]' 2>/dev/null) || thisrun='[]'
+    jq -c --arg now "$NOW" --argjson days "$REJUDGE_DAYS" --argjson decided "$decided" --argjson thisrun "$thisrun" "$_LEDGER_DEFS"'
+        [.entries[]? | select(type == "object" and .gate == "proposed" and fresh($now; $days))
+         | select((.repo | ascii_downcase) as $r | $thisrun | index($r) | not)
+         | select((.repo | ascii_downcase) as $r
+                  | ($r | split("/") | .[0:2] | join("/")) as $root
+                  | ($decided | any(.[0] == "E" and .[1] == $r)
+                     or any(. as $k | $k[0] == "P" and ($r | startswith($k[1] + "/")))
+                     or any(.[0] == "R" and .[1] == $root)
+                     or ($r == $root and any(.[0] == "A" and .[1] == $root))) | not)
+         | {repo, proposedAt:.judgedAt, pinnedRef, fit, reason}]' "$LEDGER" 2>/dev/null || echo '[]'
+}
+pending=$(pending_proposals)
+printf '%s' "$pending" | jq -e 'type == "array"' >/dev/null 2>&1 || pending='[]'
+
 exhausted=$([ "$deferred" -gt 0 ] && echo true || echo false)
 if [ "${#unjudged_arr[@]}" -gt 0 ]; then
     unjudged_repos=$(printf '%s\n' "${unjudged_arr[@]}" | jq -R . | jq -s '.')
@@ -501,13 +881,13 @@ digest=$(jq -cn \
     --argjson moat "$moat" --argjson graduation "$graduation" \
     --argjson limit "$BUDGET" --argjson spent "$spent" --argjson exhausted "$exhausted" \
     --argjson proposals "$proposals" --argjson moatSignals "$moat_signals" \
-    --argjson rejections "$rejections" \
+    --argjson rejections "$rejections" --argjson pending "$pending" \
     '{generatedAt:$now, scope:{candidates:$cand},
       sourcesFailed:$srcFailed, sourceFailures:$srcFailures,
       counts:{proposed:$proposed, rejected:$rejected, deferred:$deferred, unjudged:$unjudged, moat:$moat, graduation:$graduation},
       unjudgedRepos:$unjudgedRepos,
       budget:{limit:$limit, spent:$spent, exhausted:$exhausted},
-      proposals:$proposals, moatSignals:$moatSignals, rejections:$rejections}')
+      proposals:$proposals, pendingProposals:$pending, moatSignals:$moatSignals, rejections:$rejections}')
 
 # _MD_DEFS — jq helpers for the digest tables. Reasons and rationales are written
 # by a model reading third-party SKILL.md content and end up in a GitHub issue
@@ -517,7 +897,9 @@ digest=$(jq -cn \
 _MD_DEFS='def esc: tostring | gsub("[\r\n]+"; " ") | gsub("\\\\"; "\\\\") | gsub("://"; ":/\u200b/") | gsub("&"; "&amp;") | gsub("<"; "&lt;") | gsub(">"; "&gt;")
     | gsub("\\|"; "\\|") | gsub("\\["; "\\[") | gsub("\\]"; "\\]") | gsub("`"; "\\`") | gsub("@"; "@\u200b")
     | if length > 300 then .[0:300] + "…" else . end;
-  def link: "[\(.)](https://github.com/\(.))";'
+  def link: (split("/")) as $p
+    | if ($p | length) > 2 then "[\(.)](https://github.com/\($p[0])/\($p[1])/tree/HEAD/\($p[2:] | join("/")))"
+      else "[\(.)](https://github.com/\(.))" end;'
 
 render_markdown() {
     printf '# Curation discovery — %s\n\n' "$NOW"
@@ -538,6 +920,14 @@ render_markdown() {
         printf '| Repo | Provenance | Pin | Fit | Rationale |\n|---|---|---|---|---|\n'
         printf '%s' "$proposals" | jq -r "$_MD_DEFS"'
             .[] | "| \(.repo|link) | \(.provenance|esc) | \(.pinnedRef|esc) | \(.fit|esc) | \(.rationale|esc) |"'
+        printf '\n'
+    fi
+    if [ "$(printf '%s' "$pending" | jq 'length')" -gt 0 ]; then
+        printf '## ⏳ Pending proposals (earlier runs, not yet added or declined)\n\n'
+        printf 'Not judged again while pending. Add to the registry, or record a decline, to clear one.\n\n'
+        printf '| Repo | Proposed | Pin | Fit | Rationale |\n|---|---|---|---|---|\n'
+        printf '%s' "$pending" | jq -r "$_MD_DEFS"'
+            .[] | "| \(.repo|link) | \(.proposedAt|esc) | \(.pinnedRef|esc) | \(.fit|esc) | \(.reason|esc) |"'
         printf '\n'
     fi
     if [ "$graduation" -gt 0 ]; then
@@ -574,13 +964,14 @@ if [ -n "$DIGEST_DIR" ] && [ "$DRY_RUN" = false ]; then
     mkdir -p "$DIGEST_DIR"
     printf '%s\n' "$digest" > "$DIGEST_DIR/proposals.json"
     render_markdown > "$DIGEST_DIR/proposals.md"
-    # Judged ledger: this run's rejections replace any older entry for the same
+    # Judged ledger: this run's rejections AND proposals replace any older entry for the same
     # repo; entries past the re-judge window are dropped (they are eligible
     # again anyway). A corrupted ledger is started afresh, never fatal.
     _prev='{"entries":[]}'
     if [ -f "$LEDGER" ] && jq -e '.entries | arrays' "$LEDGER" >/dev/null 2>&1; then _prev=$(cat "$LEDGER"); fi
-    if printf '%s' "$_prev" | jq --arg now "$NOW" --argjson days "$REJUDGE_DAYS" --argjson new "$rejections" "$_LEDGER_DEFS"'
-        ($new | map(select(.recorded) | {repo, gate, reason, judgedAt:$now})) as $add
+    if printf '%s' "$_prev" | jq --arg now "$NOW" --argjson days "$REJUDGE_DAYS" --argjson new "$rejections" --argjson props "$proposals" "$_LEDGER_DEFS"'
+        (($new | map(select(.recorded) | {repo, gate, reason, judgedAt:$now}))
+         + ($props | map({repo, gate:"proposed", reason:.rationale, judgedAt:$now, pinnedRef, fit}))) as $add
         | ($add | map(.repo | ascii_downcase)) as $renewed
         | {version:"1.0.0",
            entries: ([.entries[] | select(fresh($now; $days))
@@ -597,7 +988,10 @@ fi
 # --emit-issue: surface the proposals as ONE propose-only GitHub issue (mirrors
 # the watch). No-noise: only when there is something to review (proposed / moat /
 # graduation > 0). Reuses emit_issue (CWD-independent -R, fail-safe). Never auto-adds.
-if [ "$EMIT_ISSUE" = true ] && [ "$DRY_RUN" = false ] && [ $((proposed + moat + graduation)) -gt 0 ]; then
+n_pending=$(printf '%s' "$pending" | jq 'length' 2>/dev/null || echo 0)
+# Pending proposals count too: a month with nothing new but undecided proposals
+# still updates the digest issue, or they would only live in proposals.md.
+if [ "$EMIT_ISSUE" = true ] && [ "$DRY_RUN" = false ] && [ $((proposed + moat + graduation + n_pending)) -gt 0 ]; then
     _disco_body=$(mktemp 2>/dev/null)
     if [ -n "$DIGEST_DIR" ] && [ -f "$DIGEST_DIR/proposals.md" ]; then
         cp "$DIGEST_DIR/proposals.md" "$_disco_body"

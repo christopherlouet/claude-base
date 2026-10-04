@@ -414,3 +414,7 @@ YOU MUST add a CI check that validates translation completeness between locales.
 NEVER commit LLM translations without native speaker human review (variable quality on nuances).
 
 NEVER use `padding-left` / `margin-right` / `text-align: left` in an RTL-supported app. Use logical properties.
+
+## See also
+
+FormatJS publishes two skills of its own — `localization-review` (ICU message review) and `translate` — in [`formatjs/formatjs`](https://github.com/formatjs/formatjs/tree/main/.agents/skills) (MIT per package, pin `bc0fd225`), indexed at its `.well-known/agent-skills`. For Flutter, the Flutter team's `flutter-setup-localization` ([`flutter/agent-plugins`](https://github.com/flutter/agent-plugins)). Library setup (next-intl, react-i18next, vue-i18n) stays here: no vendor ships a setup skill.

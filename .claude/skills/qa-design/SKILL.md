@@ -127,7 +127,7 @@ color:\s*#[def][def][def]|color:\s*#[cdef]{6}
 |---|------|--------|
 | P1 | CLS < 0.1 | No layout shift |
 | P2 | LCP < 2.5s | Largest Contentful Paint |
-| P3 | FID < 100ms | First Input Delay |
+| P3 | INP < 200ms | Interaction to Next Paint (replaced FID in 2024) |
 | P4 | Skeleton/loading states | No blank page |
 | P5 | Code splitting per route | Bundles < 200KB gzip |
 | P6 | Inline critical CSS | Fast above-the-fold |

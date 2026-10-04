@@ -65,7 +65,7 @@
 
 ---
 
-## Auth (better-auth, Lucia, NextAuth, Clerk, Supabase Auth)
+## Auth (better-auth, NextAuth, Clerk, Supabase Auth)
 
 ### From the foundation
 
@@ -80,7 +80,7 @@
 ### External best practices
 
 - [OWASP Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html)
-- [better-auth](https://www.better-auth.com/) · [Lucia](https://lucia-auth.com/) · [NextAuth/Auth.js](https://authjs.dev/)
+- [better-auth](https://www.better-auth.com/) · [NextAuth/Auth.js](https://authjs.dev/) · [Lucia guide](https://lucia-auth.com/) (sessions by hand; the `lucia` package is deprecated since March 2025)
 
 ---
 

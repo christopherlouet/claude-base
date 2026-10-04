@@ -46,3 +46,7 @@ Configuration of complete CI/CD pipelines.
 - NEVER use plaintext passwords in CI configurations
 
 Think hard about pipeline security and speed.
+
+## See also
+
+GitHub's own [`github-actions-hardening`](https://github.com/github/awesome-copilot/tree/main/skills/github-actions-hardening) skill (`github/awesome-copilot`, MIT, pin `143a3d97`) goes deeper on workflow security: token permissions, pinning actions by SHA, untrusted input in `run:`, `pull_request_target`. It does not generate pipelines and does not cover GitLab — authoring stays here.

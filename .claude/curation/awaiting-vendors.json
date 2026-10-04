@@ -3,18 +3,11 @@
   "version": "1.1.0",
   "entries": [
     {
-      "foundationSkill": "dev-flutter",
-      "tech": "Flutter",
-      "matchKeywords": ["flutter"],
-      "currentBest": "vp-k/flutter-craft (~10 stars, MIT declared in README — no LICENSE file) — broad match but tiny; no authority supply",
-      "bar": "authority skill, OR community >=500 stars + license + breadth (widgets/state/arch/test)"
-    },
-    {
       "foundationSkill": "dev-i18n",
       "tech": "i18n",
       "matchKeywords": ["lingui", "i18next", "next-intl"],
-      "currentBest": "lingui/skills (authority but single-library, already curated); no broad neutral i18n skill exists",
-      "bar": "a broad neutral i18n skill (i18next/formatjs org), or narrow the pack to Lingui-only -> POINT"
+      "currentBest": "formatjs/formatjs .agents/skills (localization-review, translate — authority, licensed per package, no root licence file; pointed to from dev-i18n 2026-10-04) + lingui/skills (single-library) + flutter-setup-localization; no vendor ships a library-SETUP skill (next-intl, react-i18next, vue-i18n)",
+      "bar": "an authority setup skill for next-intl / i18next / vue-i18n (the review and translation half is already POINTed to formatjs)"
     },
     {
       "foundationSkill": "ops-k8s",
@@ -24,18 +17,11 @@
       "bar": "KubeShark crosses ~500 stars, OR a CNCF/tool-org authority skill appears"
     },
     {
-      "foundationSkill": "ops-docker",
-      "tech": "Docker",
-      "matchKeywords": ["docker", "dockerfile"],
-      "currentBest": "akin-ozer/cc-devops-skills (~236 stars, neutral, covers Docker + CI in one suite)",
-      "bar": "cc-devops-skills crosses ~500 stars (would graduate ops-docker AND ops-ci together), OR Docker Inc ships a skill"
-    },
-    {
       "foundationSkill": "ops-ci",
       "tech": "CI/CD (GitHub Actions / GitLab CI)",
       "matchKeywords": ["github-actions", "gitlab-ci", "devops", "cicd"],
-      "currentBest": "akin-ozer/cc-devops-skills (~236 stars, covers Actions + GitLab CI)",
-      "bar": "cc-devops-skills crosses ~500 stars, OR GitHub ships an Actions skill"
+      "currentBest": "github/awesome-copilot github-actions-hardening (GitHub org, MIT; hardening only, no generator, no GitLab). akin-ozer/cc-devops-skills (316 stars, 2026-10-03) is blocked by SAFETY, not stars: its github-actions-validator runs install_tools.sh, which pipes unpinned remote installers to a shell",
+      "bar": "a GitHub-authored Actions skill covering pipeline authoring, OR a community suite >= 500 stars that passes the pipe-to-shell screen (ops-docker graduated separately to docker/skills on 2026-10-03)"
     },
     {
       "foundationSkill": "dev-neovim",

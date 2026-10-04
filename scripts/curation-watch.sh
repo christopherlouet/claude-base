@@ -216,6 +216,11 @@ collect_targets() {
 # would report drift on every run. Echoes the current ref, or nothing when it
 # cannot be resolved (gh failure or tag-pin-without-releases).
 #
+# A plain tag pin resolves to the highest-version stable release of the same
+# SHAPE (the prefix before the first digit) published since the pin — not the
+# repo's "Latest" badge, which prisma/orm set on another product line (v0.17.0
+# beside 7.10.0). See curation_stable_release.
+#
 # Like-with-like extends to tag FAMILIES: a monorepo releases several packages
 # under distinct tag prefixes (`shadcn@4.13.0`, `@shadcn/react@0.2.1`, ...), so
 # the repo-global latest release can belong to a DIFFERENT package than the pin
@@ -229,17 +234,10 @@ resolve_current_ref() {
         curation_gh_api "repos/$repo/commits/HEAD" 2>/dev/null | jq -r '.sha // empty'
         return
     fi
-    local family=""
-    [[ "$pinned" == *@* ]] && family="${pinned%@*}"
-    if [ -n "$family" ]; then
-        curation_gh_api "repos/$repo/releases?per_page=100" 2>/dev/null \
-            | jq -r --arg fam "$family" \
-                '[.[] | select(.draft == false and .prerelease == false)
-                      | select(.tag_name | startswith($fam + "@"))]
-                 | first.tag_name // empty'
-    else
-        curation_gh_api "repos/$repo/releases/latest" 2>/dev/null | jq -r '.tag_name // empty'
-    fi
+    # Same shape, newest stable by version (curation_stable_release): a family
+    # pin `pkg@1.0.0` has the shape "pkg@", so the family rule below holds; a
+    # plain tag pin no longer follows the repo-wide "Latest" badge.
+    curation_stable_release "$repo" "$pinned"
 }
 
 # _repo_has_root_record <owner/repo> <registry> <presets-dir> — true when any

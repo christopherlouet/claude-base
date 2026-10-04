@@ -44,6 +44,14 @@ else
   gate_run_tail() { local n="$1"; shift; "$@" 2>&1 | tail -"$n"; return "${PIPESTATUS[0]}"; }
   gate_block_if_timed_out() { :; }
 fi
+# The project's own Node (_node-runtime.sh): missing helper → inherited Node.
+if [ -n "$_dir" ] && [ -f "$_dir/_node-runtime.sh" ]; then
+  # shellcheck source=_node-runtime.sh
+  . "$_dir/_node-runtime.sh"
+else
+  node_runtime_select() { NODE_RUN=(); return 0; }
+fi
+BYPASS_HINT="(Bypass: set SKIP_PRE_COMMIT_TESTS=1 in the environment Claude Code runs in; a prefix on the command does not reach this hook.)"
 is_git_commit_command "$CMD" || exit 0
 # Claude Code feeds a blocking hook's STDERR back and drops its stdout: all the
 # gate prints goes there, or a red suite blocks with "No stderr output".
@@ -76,20 +84,22 @@ if [ -f package.json ] && [ "$(jq -r 'if (.scripts.pretest // .scripts.posttest)
 fi
 
 if [ "$NPM_PLACEHOLDER" = 0 ] && [ -f package.json ] && grep -q '"test"' package.json; then
-  echo "Running tests before commit..."
-  gate_run_tail 20 npm test
-  rc=$?; gate_block_if_timed_out "$rc" "pre-commit-tests"
-  [ "$rc" -ne 0 ] && { echo "BLOCKED: Tests failed. Fix before committing."; exit 2; }
+  if node_runtime_select pre-commit-tests; then
+    echo "Running tests before commit..."
+    gate_run_tail 20 ${NODE_RUN[@]+"${NODE_RUN[@]}"} npm test
+    rc=$?; gate_block_if_timed_out "$rc" "pre-commit-tests"
+    [ "$rc" -ne 0 ] && { echo "BLOCKED: Tests failed. Fix before committing. $BYPASS_HINT"; exit 2; }
+  fi
 elif [ -f pyproject.toml ] && command -v pytest >/dev/null 2>&1; then
   echo "Running tests before commit..."
   gate_run_tail 20 pytest --tb=short -q
   rc=$?; gate_block_if_timed_out "$rc" "pre-commit-tests"
-  [ "$rc" -ne 0 ] && { echo "BLOCKED: Tests failed. Fix before committing."; exit 2; }
+  [ "$rc" -ne 0 ] && { echo "BLOCKED: Tests failed. Fix before committing. $BYPASS_HINT"; exit 2; }
 elif [ -f go.mod ] && command -v go >/dev/null 2>&1; then
   echo "Running tests before commit..."
   gate_run_tail 20 go test ./...
   rc=$?; gate_block_if_timed_out "$rc" "pre-commit-tests"
-  [ "$rc" -ne 0 ] && { echo "BLOCKED: Tests failed. Fix before committing."; exit 2; }
+  [ "$rc" -ne 0 ] && { echo "BLOCKED: Tests failed. Fix before committing. $BYPASS_HINT"; exit 2; }
 fi
 
 exit 0

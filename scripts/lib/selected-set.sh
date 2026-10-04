@@ -50,7 +50,10 @@ get_rules_for_type() {
 
     # The web bundle — shared by every JS/TS-flavoured type. service-worker
     # belongs here (paths: sw.js, service-worker*) and nowhere else.
-    local web_rules=("typescript.md" "react.md" "nextjs.md" "accessibility.md" "performance.md" "api.md" "design-style.md" "service-worker.md")
+    # prisma and supabase hold the security rules of their vendor pointers: a
+    # session may load the pointer, a vendor skill or no skill at all, so the rules
+    # must load from the files instead (eval/skill-triggering/FINDINGS.md).
+    local web_rules=("typescript.md" "react.md" "nextjs.md" "accessibility.md" "performance.md" "api.md" "design-style.md" "service-worker.md" "prisma.md" "supabase.md")
 
     # Rules specific to the project type
     case "$project_type" in
@@ -69,10 +72,12 @@ get_rules_for_type() {
             rules+=("${web_rules[@]}")
             ;;
         flutter)
-            rules+=("flutter.md" "design-style.md")
+            # supabase_flutter: dev-flutter points Flutter backends at Supabase.
+            rules+=("flutter.md" "design-style.md" "supabase.md")
             ;;
         python)
-            rules+=("python.md")
+            # Supabase serves Python backends too (the fastapi preset keeps dev-supabase).
+            rules+=("python.md" "supabase.md")
             ;;
         go)
             rules+=("go.md")

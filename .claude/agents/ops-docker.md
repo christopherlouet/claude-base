@@ -16,7 +16,7 @@ Docker containerization optimized for production.
 2. **Docker Compose**: app + db + redis, healthchecks, depends_on, persistent volumes
 3. **.dockerignore**: node_modules, .git, .env*, tests, coverage
 4. **Size optimization**: Alpine (-70%), multi-stage (-50%), --no-cache-dir
-5. **Security**: official images, non-root user, no secrets in the image, docker scan
+5. **Security**: official images, non-root user, no secrets in the image, image scan (`docker scout cves` or `trivy image`)
 
 ## Supported stacks
 
@@ -55,3 +55,7 @@ Before any Docker deployment to production:
 - YOU MUST verify the pre-deployment checklist before any deploy to production
 
 Think hard about image size and security.
+
+## See also
+
+Docker Inc.'s own skills at [`docker/skills`](https://github.com/docker/skills) go deeper on Dockerfiles and Compose; image scanning and Hadolint stay this agent's job.

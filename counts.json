@@ -7,7 +7,7 @@
     "agents": 26,
     "skills": 39
   },
-  "rules": 32,
+  "rules": 34,
   "byDomain": {
     "biz": 9,
     "data": 2,
@@ -20,6 +20,6 @@
     "work": 15
   },
   "presets": 11,
-  "vendorSkillsValidated": 24,
+  "vendorSkillsValidated": 28,
   "marketplaceAuditPilots": 5
 }

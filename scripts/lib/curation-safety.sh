@@ -154,7 +154,10 @@ _curation_fetch_content() {
 # test the same expressions. Shared by the doc scan AND the exec-surface scan;
 # high-signal, deterministic, case-insensitive, line-based:
 #   remote-exec      — a downloaded payload reaching an interpreter (curl|sh,
-#                      curl|node, bash <(curl), eval "$(curl …)")
+#                      curl|node, bash <(curl), eval "$(curl …)"), or an
+#                      unpinned git source: a git+ URL (any scheme) with no @ref,
+#                      or with @main/master/HEAD/develop/trunk/refs/… (uvx --from,
+#                      pip install, a script constant). A SHA or a tag is a pin.
 #   obfuscated-exec  — decode (base64/xxd) then execute / eval "$(base64 …)"
 #   destructive-rm   — recursive+force delete of a root/home path (either flag order)
 #   prompt-injection — overriding the operator's / system instructions
@@ -166,10 +169,21 @@ _curation_fetch_content() {
 # executed in a SEPARATE statement (`curl -o p …` then `sh p`) is not correlated
 # across lines, nor is a hook command that references a script file outside the
 # scanned surface. These need filename correlation; until then they evade the
-# grep. The screen fails toward human review (a clean verdict only enables an
+# grep. Nor is a package runner at @latest (`npx x@latest`, an .mcp.json running
+# `uvx server@latest`): measured 2026-10-04 on the 27 pinned repos, the pattern
+# flagged only vendors running their OWN CLI in their docs (prisma/skills
+# `npx create-db@latest`, shadcn `npx shadcn@latest`) — separating that from an
+# auto-started server needs a per-file-type rule the table does not have.
+# Also unseen, as of 2026-10-04: other fetch-and-run forms — `npx github:user/repo`,
+# `npm i user/repo`, `go run …@latest`, `cargo install --git`, a branch archive
+# (`…/archive/main.zip`, `…/refs/heads/main.tar.gz`) — and a moving branch with a
+# name outside main/master/HEAD/develop/dev/trunk/latest/refs/.
+# The screen fails toward human review (a clean verdict only enables an
 # auto-DRAFT, still human-merged), so this is a coverage gap, never a silent risk.
 _INTERP='sh|bash|zsh|node|deno|bun|python[0-9.]*|perl|ruby|php|env'
 _SAFETY_CATEGORIES=(
+    remote-exec
+    remote-exec
     remote-exec
     remote-exec
     remote-exec
@@ -182,6 +196,12 @@ _SAFETY_PATTERNS=(
     "(curl|wget).*\|[[:space:]]*(sudo[[:space:]]+)?($_INTERP)\b"
     "($_INTERP)[[:space:]]+(-[a-z]+[[:space:]]+)*(-c[[:space:]]+)?[\"']?[[:space:]]*[\$<]\(?(curl|wget)"
     'eval[^=]*\$\([^)]*(curl|wget)'
+    # an unpinned git source — no @ref after the path (login details before the
+    # host, as in git+ssh://git@… or a token@, are not a ref): uvx --from / pip
+    # install / a script constant
+    "git\\+[a-z]+://([^/[:space:]\"'@]+@)?[^[:space:]\"'@#]+([#[:space:]\"']|$)"
+    # a git source "pinned" to a moving branch
+    "git\\+[a-z]+://([^/[:space:]\"'@]+@)?[^[:space:]\"'@#]+@(main|master|head|develop|dev|trunk|latest|refs/)"
     "(base64|xxd)[^|]*(--decode|-d|-D|-r)?[^|]*\|.*\b(sudo[[:space:]]+)?($_INTERP|eval)\b"
     'eval[^=]*\$\([^)]*(base64|xxd)'
     'rm[[:space:]]+(-[a-z]*(rf|fr)[a-z]*|-[rf][[:space:]]+-[rf]|--recursive[[:space:]]+--force|--force[[:space:]]+--recursive)[[:space:]]+(/|~|\$\{?HOME)'
@@ -454,6 +474,14 @@ _curation_list_exec_surface() {
 # to nothing; 1 = tree unfetchable (the exec-surface scan already fails safe, so
 # the caller does not double-flag). A valid collection root (e.g. phaser's
 # `skills`) matches many child paths and resolves cleanly.
+# _curation_tree_has <repo> <ref> <path> — 0 iff the recursive tree at <ref>
+# lists <path> as a file. Any failure answers no (the caller only uses it to
+# tell "not scanned" from "nothing there").
+_curation_tree_has() {
+    curation_gh_api "repos/$1/git/trees/$2?recursive=1" 2>/dev/null \
+        | jq -e --arg p "$3" '[.tree[]? | select(.type == "blob" and .path == $p)] | length > 0' >/dev/null 2>&1
+}
+
 _curation_subpaths_resolve() {
     local repo="$1" ref="$2" subpaths="$3" body paths sp sps=() missing=0
     body=$(curation_gh_api "repos/$repo/git/trees/$ref?recursive=1" 2>/dev/null) || return 1
@@ -532,19 +560,31 @@ curation_safety_screen() {
     else
         local sp sps=()
         IFS='+' read -ra sps < <(printf '%s' "$subpaths") || true
+        local sp_got
         for sp in "${sps[@]}"; do
             [ -n "$sp" ] || continue
+            sp_got=1
             for doc in "$sp/SKILL.md" "$sp/README.md"; do
                 text=$(_curation_fetch_one "$repo" "$ref" "$doc"); frc=$?
                 if [ "$frc" -eq 2 ]; then
                     reasons+=("doc-unreadable")
+                    sp_got=0
                     break
                 fi
                 if [ "$frc" -eq 0 ]; then
                     _curation_screen_scan "$doc" < <(printf '%s\n' "$text")
+                    sp_got=0
                     break
                 fi
             done
+            # Neither doc could be fetched although the tree lists the skill's
+            # SKILL.md: the skill was not scanned. Silence here let a later
+            # successful fetch (discovery's dossier) hand the judge a skill body
+            # no screen had read. An outage, not a finding. (A collection root
+            # such as `skills`, with no SKILL.md of its own, is not this case.)
+            if [ "$sp_got" -ne 0 ] && _curation_tree_has "$repo" "$ref" "$sp/SKILL.md"; then
+                reasons+=("content-unfetchable")
+            fi
         done
     fi
 

@@ -128,8 +128,9 @@ SessionStart: Verify .env in .gitignore
 To disable a hook on the fly without modifying the shared config:
 
 ```bash
-# Skip pre-commit tests once
-SKIP_PRE_COMMIT_TESTS=1 git commit -m "fix: typo correction"
+# Skip pre-commit tests for one Claude Code launch (hooks read Claude Code's
+# environment: a prefix on the git command does not reach them)
+SKIP_PRE_COMMIT_TESTS=1 claude
 
 # Allow a direct modification on main (exceptional case)
 ALLOW_MAIN_EDIT=1 claude
@@ -292,7 +293,7 @@ the same ground on every Edit/Write.
 
 Files in `.claude/rules/` are committed to git and activate automatically based on the modified files. This is the most efficient mechanism to share code conventions without putting them in CLAUDE.md.
 
-The foundation includes 32 pre-configured rules. For a team, the most important to commit are:
+The foundation includes 34 pre-configured rules. For a team, the most important to commit are:
 
 | Rule | Automatic activation | Team usefulness |
 |------|---------------------|-----------------|

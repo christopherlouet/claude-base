@@ -49,6 +49,13 @@ else
   gate_run_tail() { local n="$1"; shift; "$@" 2>&1 | tail -"$n"; return "${PIPESTATUS[0]}"; }
   gate_block_if_timed_out() { :; }
 fi
+# The project's own Node (_node-runtime.sh): missing helper → inherited Node.
+if [ -n "$_dir" ] && [ -f "$_dir/_node-runtime.sh" ]; then
+  # shellcheck source=_node-runtime.sh
+  . "$_dir/_node-runtime.sh"
+else
+  node_runtime_select() { NODE_RUN=(); return 0; }
+fi
 is_git_push_command "$CMD" || exit 0
 # Claude Code feeds a blocking hook's STDERR back and drops its stdout: all the
 # gate prints goes there, or a red push blocks with "No stderr output".
@@ -72,28 +79,30 @@ fi
 if [ -f package.json ] && { grep -q '"lint"' package.json || grep -q '"typecheck"' package.json \
      || { [ -f tsconfig.json ] && [ -f node_modules/.bin/tsc ]; } \
      || { [ "$NPM_PLACEHOLDER" = 0 ] && grep -q '"test"' package.json; }; }; then
-  if grep -q '"lint"' package.json; then
-    echo "[1/3] Lint..."
-    gate_run_tail 5 npm run lint --silent
-    rc=$?; gate_block_if_timed_out "$rc" "pre-push-ci"
-    [ "$rc" -ne 0 ] && { echo "FAILED: Lint"; FAILED=1; }
-  fi
-  if grep -q '"typecheck"' package.json; then
-    echo "[2/3] Type-check..."
-    gate_run_tail 5 npm run typecheck --silent
-    rc=$?; gate_block_if_timed_out "$rc" "pre-push-ci"
-    [ "$rc" -ne 0 ] && { echo "FAILED: Type-check"; FAILED=1; }
-  elif [ -f tsconfig.json ] && [ -f node_modules/.bin/tsc ]; then
-    echo "[2/3] tsc --noEmit..."
-    gate_run_tail 5 npx tsc --noEmit
-    rc=$?; gate_block_if_timed_out "$rc" "pre-push-ci"
-    [ "$rc" -ne 0 ] && { echo "FAILED: TypeScript"; FAILED=1; }
-  fi
-  if [ "$NPM_PLACEHOLDER" = 0 ] && grep -q '"test"' package.json; then
-    echo "[3/3] Tests..."
-    gate_run_tail 10 npm test --silent
-    rc=$?; gate_block_if_timed_out "$rc" "pre-push-ci"
-    [ "$rc" -ne 0 ] && { echo "FAILED: Tests"; FAILED=1; }
+  if node_runtime_select pre-push-ci; then
+    if grep -q '"lint"' package.json; then
+      echo "[1/3] Lint..."
+      gate_run_tail 5 ${NODE_RUN[@]+"${NODE_RUN[@]}"} npm run lint --silent
+      rc=$?; gate_block_if_timed_out "$rc" "pre-push-ci"
+      [ "$rc" -ne 0 ] && { echo "FAILED: Lint"; FAILED=1; }
+    fi
+    if grep -q '"typecheck"' package.json; then
+      echo "[2/3] Type-check..."
+      gate_run_tail 5 ${NODE_RUN[@]+"${NODE_RUN[@]}"} npm run typecheck --silent
+      rc=$?; gate_block_if_timed_out "$rc" "pre-push-ci"
+      [ "$rc" -ne 0 ] && { echo "FAILED: Type-check"; FAILED=1; }
+    elif [ -f tsconfig.json ] && [ -f node_modules/.bin/tsc ]; then
+      echo "[2/3] tsc --noEmit..."
+      gate_run_tail 5 ${NODE_RUN[@]+"${NODE_RUN[@]}"} npx tsc --noEmit
+      rc=$?; gate_block_if_timed_out "$rc" "pre-push-ci"
+      [ "$rc" -ne 0 ] && { echo "FAILED: TypeScript"; FAILED=1; }
+    fi
+    if [ "$NPM_PLACEHOLDER" = 0 ] && grep -q '"test"' package.json; then
+      echo "[3/3] Tests..."
+      gate_run_tail 10 ${NODE_RUN[@]+"${NODE_RUN[@]}"} npm test --silent
+      rc=$?; gate_block_if_timed_out "$rc" "pre-push-ci"
+      [ "$rc" -ne 0 ] && { echo "FAILED: Tests"; FAILED=1; }
+    fi
   fi
 elif [ -f pyproject.toml ] || [ -f requirements.txt ]; then
   if command -v ruff >/dev/null 2>&1; then
@@ -126,7 +135,7 @@ elif [ -f go.mod ]; then
 fi
 
 if [ "$FAILED" -ne 0 ]; then
-  echo "BLOCKED: Local CI failed. Fix before pushing. (Bypass once: SKIP_PRE_PUSH_CI=1.)"
+  echo "BLOCKED: Local CI failed. Fix before pushing. (Bypass: set SKIP_PRE_PUSH_CI=1 in the environment Claude Code runs in; a prefix on the command does not reach this hook.)"
   exit 2
 fi
 echo "=== Local CI OK ==="

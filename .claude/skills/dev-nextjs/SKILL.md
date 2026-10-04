@@ -306,6 +306,14 @@ Vercel Labs publishes official agent skills at [`vercel-labs/agent-skills`](http
 - **`react-best-practices`** — 40+ rules across 8 categories from Vercel Engineering.
 - Companion skills: React Composition Patterns, React View Transitions, `deploy-to-vercel`, `vercel-optimize`, Web Design Guidelines.
 
+The Next.js team ships its own skills **inside the framework repo**, at [`vercel/next.js/skills`](https://github.com/vercel/next.js/tree/canary/skills) (MIT; pin a stable release tag, v16.3.8 at the 2026-10-03 audit). They are adoption and verification procedures for recent features, not a general reference:
+
+- **`next-cache-components-adoption`** / **`-optimizer`** — enable Cache Components and resolve the blocking routes it surfaces.
+- **`next-partial-prefetching-adoption`** (+ an optimizer on `canary`) — enable Partial Prefetching and work through its insights.
+- **`next-dev-loop`** — verify runtime behaviour in a running `next dev` (needs a browser-driving tool).
+
+Since 16.2 the `next` package bundles version-matched docs at `node_modules/next/dist/docs/`; from 16.3, `next dev` upserts a managed block into `AGENTS.md` and `CLAUDE.md` (when it detects an agent) telling agents to read them first. Prefer those docs over this skill for API details on 16.2+: they match the installed version.
+
 Install the vendor skill alongside this one on a Next.js project: the vendor sharpens the **React layer and Vercel deploy/optimize**, while **this foundation skill stays the primary Next.js reference** — App Router, Server Components, caching/streaming, Server Actions, middleware, route handlers — plus the opinionated workflow the foundation imposes (TDD-first, security defaults, deploy-safety, anti-patterns).
 
 Install command and full list of validated vendor skills: `docs/recipes/recommended-vendor-skills.md`. Audit pilot trace: `specs/marketplace-audit/dev-skills-pilot-2026-05-05.md`.

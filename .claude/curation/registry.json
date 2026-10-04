@@ -59,7 +59,8 @@
       "status": "candidate",
       "sourceAudit": "dev-skills-pilot-2026-05-05",
       "flags": [
-        "license: MIT declared in README (no LICENSE file) — recognized by the README license probe (EF-006)"
+        "license: MIT declared in README (no LICENSE file) — recognized by the README license probe (EF-006)",
+        "partial-replacement-elsewhere: this repo (the record's vendorId) ships no Next.js skill — dev-nextjs fires 3/3 with all nine installed (eval/skill-triggering/FINDINGS.md, 2026-10-03). The Next.js team ships its own skills in vercel/next.js/skills (v16.3.8: cache-components adoption/optimizer, partial-prefetching adoption, dev-loop) — feature-adoption procedures, not the App Router / RSC / Server Actions reference dev-nextjs is. Do NOT reduce dev-nextjs to a pointer on the strength of either repo."
       ]
     },
     {
@@ -75,7 +76,8 @@
       "status": "candidate",
       "sourceAudit": "dev-skills-pilot-2026-05-05",
       "flags": [
-        "command-side graduated to pointer-command 2026-06-21 (specs/dev-command-vendor-graduation)"
+        "command-side graduated to pointer-command 2026-06-21 (specs/dev-command-vendor-graduation)",
+        "outcome 2026-10-04 (Opus, Prisma project, vendor skills installed, 3 runs per arm): schema and migration correct 3/3 whether dev-prisma defers (no skill fired) or fires — the deferring description stays; rules load from .claude/rules/prisma.md either way"
       ]
     },
     {
@@ -329,6 +331,141 @@
       "sourceAudit": "growth-skills-pilot-2026-05-21",
       "flags": [
         "reduce-planned"
+      ]
+    },
+    {
+      "foundationSkill": "dev-react-perf",
+      "vendorId": "vercel-labs/agent-skills/skills/react-best-practices+skills/composition-patterns",
+      "vendorUrl": "https://github.com/vercel-labs/agent-skills",
+      "pinnedRef": "063bee94c3f4df8453406c830b0a7df0f2860278",
+      "trustTrack": "authority",
+      "trustVerdict": "pass",
+      "provenance": "Vercel",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-10-03",
+      "status": "candidate",
+      "sourceAudit": "supply-audit-2026-10-03",
+      "flags": [
+        "license: MIT in each SKILL.md frontmatter (no LICENSE file at the root)",
+        "reduced 2026-10-03: dev-react-perf is a pointer keeping list virtualization, state colocation, profiling tools and Core Web Vitals targets (absent from the vendor's 72 files)",
+        "triggering: installed together, dev-react-perf fires and the vendor skill does not (Opus, 3/3); a description that defers to the vendor left NO skill firing — so the pointer carries a 5-line condensed top of the vendor ranking",
+        "outcome comparison (12 planted defects, blind-graded): no measurable difference between the two skills on Opus 5.5 or Haiku 4.5 — graduation rests on maintenance, not on a measured gain"
+      ]
+    },
+    {
+      "foundationSkill": "ops-infra-code",
+      "vendorId": "antonbabenko/terraform-skill",
+      "vendorUrl": "https://github.com/antonbabenko/terraform-skill",
+      "pinnedRef": "v1.17.1",
+      "trustTrack": "community",
+      "trustVerdict": "pass",
+      "provenance": "Anton Babenko (independent maintainer)",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-10-03",
+      "status": "candidate",
+      "sourceAudit": "supply-audit-2026-10-03",
+      "flags": [
+        "license: Apache-2.0 — LICENSE carries a copyright/promo preamble before the Apache text, so GitHub reports NOASSERTION; SKILL.md frontmatter says Apache-2.0",
+        "community bar: 2,397 stars (>= 500)",
+        "a root mcp.json (docker run hashicorp/terraform-mcp-server:latest) serves other harnesses; the recipe links skills/terraform-skill only",
+        "reduced 2026-10-03: ops-infra-code was an excerpt of this skill; now a pointer keeping state/plan/scan/deploy-gate discipline",
+        "safety screen v1.17.1: pass — exec surface and root docs only (root record: the screen does not open skills/terraform-skill/)",
+        "read 2026-10-03: references/security-compliance.md installs Trivy with an unpinned pipe-to-shell line — a doc instruction, not executed; the foundation skill tells users to prefer a pinned release",
+        "triggering 2026-10-03 (Opus, 3/3): installed together, ops-infra-code fires and the vendor skills do not — the pointer keeps the core HCL patterns for that reason and for its agent, which preloads it"
+      ]
+    },
+    {
+      "foundationSkill": "ops-infra-code",
+      "vendorId": "hashicorp/agent-skills/terraform/code-generation/skills/terraform-style-guide+terraform/code-generation/skills/terraform-test",
+      "vendorUrl": "https://github.com/hashicorp/agent-skills",
+      "pinnedRef": "v1.0.0",
+      "trustTrack": "authority",
+      "trustVerdict": "pass",
+      "provenance": "HashiCorp (IBM)",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-10-03",
+      "status": "candidate",
+      "sourceAudit": "supply-audit-2026-10-03",
+      "flags": [
+        "Terraform-only: no OpenTofu coverage (Babenko's skill keeps that)",
+        "its Claude plugins register an MCP server running the unpinned hashicorp/terraform-mcp-server image with TFE_TOKEN: recommend the skill folders, not the plugins",
+        "scoped to the two skill dirs the foundation recommends, so the screen reads their SKILL.md bodies (the plugin dirs above them hold none)"
+      ]
+    },
+    {
+      "foundationSkill": "ops-docker",
+      "vendorId": "docker/skills/skills/docker-project-foundations+skills/docker-build-strategies+skills/docker-compose-patterns+skills/docker-destructive-guardrails",
+      "vendorUrl": "https://github.com/docker/skills",
+      "pinnedRef": "v0.3.1",
+      "trustTrack": "authority",
+      "trustVerdict": "pass",
+      "provenance": "Docker Inc.",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-10-03",
+      "status": "candidate",
+      "sourceAudit": "supply-audit-2026-10-03",
+      "flags": [
+        "safety screen flags are false positives, read 2026-10-03: whole repo -> scripts/test_content_risk.py (fixtures of Docker's own content-risk scanner); the four skill dirs -> one sentence saying a BuildKit cache mount makes the usual apt-lists cleanup unnecessary. Expect re-pins to be demoted to propose-only.",
+        "verify-*.sh scripts only run docker build / docker compose config",
+        "gap kept in the foundation: image vulnerability scanning and Hadolint (absent from all four skills)"
+      ]
+    },
+    {
+      "foundationSkill": "dev-flutter",
+      "vendorId": "flutter/agent-plugins/skills",
+      "vendorUrl": "https://github.com/flutter/agent-plugins",
+      "pinnedRef": "0ef3972f93e2baa4156ba1cbb1e515cd53079c68",
+      "trustTrack": "authority",
+      "trustVerdict": "pass",
+      "provenance": "Google (Flutter team)",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-10-04",
+      "status": "candidate",
+      "sourceAudit": "supply-audit-2026-10-03",
+      "flags": [
+        "POINT, not REDUCE: the official architecture skill teaches MVVM + ChangeNotifier; dev-flutter keeps the Clean Architecture + BLoC opinion",
+        "no release for the skills (the repo's releases tag a lint tool): pinned to a commit",
+        "safety screen (skills/): pass; the Claude plugin starts the Dart SDK's local MCP server",
+        "triggering 2026-10-04 (Opus, 3/3, BLoC project): with the 25 official skills and two community BLoC skills installed, dev-flutter fires and the vendor skills do not"
+      ]
+    },
+    {
+      "foundationSkill": "qa-chrome",
+      "vendorId": "ChromeDevTools/chrome-devtools-mcp/skills",
+      "vendorUrl": "https://github.com/ChromeDevTools/chrome-devtools-mcp",
+      "pinnedRef": "chrome-devtools-mcp-v1.10.1",
+      "trustTrack": "authority",
+      "trustVerdict": "pass",
+      "provenance": "Google (Chrome DevTools team)",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-10-04",
+      "status": "candidate",
+      "sourceAudit": "supply-audit-2026-10-03",
+      "flags": [
+        "qa-chrome was already a pointer; it keeps the manual review checklist for --chrome sessions",
+        "seven skills ship next to the MCP server; the plugin pins chrome-devtools-mcp@1.10.1",
+        "safety screen (skills/): pass",
+        "the plugin route follows the default branch's plugin.json (npx server); only `claude mcp add … chrome-devtools-mcp@1.10.1` is pinned by the foundation"
+      ]
+    },
+    {
+      "foundationSkill": "dev-flutter",
+      "vendorId": "HoangNguyen0403/agent-skills-standard/skills/flutter/flutter-bloc-state-management+skills/flutter/flutter-feature-based-clean-architecture",
+      "vendorUrl": "https://github.com/HoangNguyen0403/agent-skills-standard",
+      "pinnedRef": "1fb0537c339c1e135167f4c15ba603b8849da5bc",
+      "trustTrack": "community",
+      "trustVerdict": "pass",
+      "provenance": "HoangNguyen0403 (independent maintainer)",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-10-04",
+      "status": "candidate",
+      "sourceAudit": "supply-audit-2026-10-03",
+      "flags": [
+        "community bar: 569 stars (>= 500), MIT",
+        "BLoC depth for the foundation's own architecture opinion; authority (flutter/agent-plugins) preferred for framework APIs — vendor-precedence vendor-vs-vendor step 2",
+        "safety screen (the two folders): pass; they hold only references/ and evals/",
+        "the repo is a multi-domain mega-collection with its own hooks, agents and MCP config: link the two folders only",
+        "default branch is develop; pinned to the commit of tag skillspector-verified-v20261002"
       ]
     }
   ]

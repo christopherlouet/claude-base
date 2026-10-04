@@ -218,7 +218,7 @@
 | `/dev:dev-tdd` | TDD cycle + test generation + test infra setup |
 | `/dev:dev-debug` | Debug a problem |
 | `/dev:dev-refactor` | Guided refactoring |
-| `/dev:dev-document` | Document generation (PDF, DOCX, XLSX, PPTX) |
+| `/dev:dev-document` | Code that generates documents in your app (PDF, DOCX, XLSX, PPTX) |
 | `/dev:dev-api` | Create/document REST, GraphQL, or tRPC API + versioning |
 | `/dev:dev-component` | Create a complete UI component (or custom hook) |
 | `/dev:dev-error-handling` | Error handling strategy |
@@ -548,4 +548,4 @@ refactor(user): extract validation logic
 
 ---
 
-*Claude-Base v<!-- version -->5.7.0<!-- /version --> - <!-- count:commands -->106<!-- /count --> commands - <!-- count:agents -->44<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->32<!-- /count --> rules*
+*Claude-Base v<!-- version -->5.7.1<!-- /version --> - <!-- count:commands -->106<!-- /count --> commands - <!-- count:agents -->44<!-- /count --> agents - <!-- count:skills -->53<!-- /count --> skills - <!-- count:rules -->34<!-- /count --> rules*

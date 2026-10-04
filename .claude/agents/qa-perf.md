@@ -30,10 +30,9 @@ Performance analysis and optimization.
 | Metric | Target |
 |--------|--------|
 | LCP | < 2.5s |
-| FID | < 100ms |
+| INP | < 200ms |
 | CLS | < 0.1 |
 | TTFB | < 800ms |
-| INP | < 200ms |
 
 ## Patterns to look for
 

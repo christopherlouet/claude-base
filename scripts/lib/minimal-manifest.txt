@@ -59,6 +59,7 @@
 scripts/hooks/_core-helpers.sh
 scripts/hooks/_gate-budget.sh
 scripts/hooks/_hook-helpers.sh
+scripts/hooks/_node-runtime.sh
 scripts/hooks/_policy-dangerous-commands.sh
 scripts/hooks/_policy-destructive-sql.sh
 scripts/hooks/_policy-secrets.sh

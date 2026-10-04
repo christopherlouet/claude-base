@@ -98,3 +98,247 @@ The other two:
 Across all three campaigns: 34 auto-triggerable inline skills measured, 2
 descriptions fixed (`work-quick`, `dev-debug`), 1 skill found redundant on
 Opus (`parallel-agents`).
+
+## 2026-10-03 — foundation skill and vendor skill installed together
+
+Question: when a project installs the vendor skill the foundation points to,
+which one fires? Same prompts as the `*-fires` cases, run with
+`--extra-skills DIR`, DIR holding every skill of the five vendor repos at the
+ref pinned in `.claude/curation/registry.json` (36 skills: `prisma/skills`,
+`supabase/agent-skills`, `shadcn-ui/ui`, `apollographql/skills`,
+`vercel-labs/agent-skills`). Cases `vendor-*-coexist`: pass = a vendor skill
+fires and the foundation skill does not. 3 runs per case, `claude-opus-5-5`,
+about 3 USD at list price.
+
+| Case | Skills fired, per run |
+|---|---|
+| prisma — "Add a Comment model… create the migration" | `dev-prisma` · `dev-prisma` · `dev-prisma` — **the vendor never fires** |
+| shadcn — "Install shadcn/ui… add a Dialog and a DataTable" | `dev-shadcn` + `shadcn` · `shadcn` · `shadcn` |
+| supabase — "Store user avatars in Supabase Storage… RLS" | `supabase` ×3 |
+| graphql — "Add a resolver… Apollo GraphQL server" | `apollo-server` ×3 |
+| nextjs — "…statically generated and revalidated every hour" | `dev-nextjs` ×3 |
+
+Three readings:
+
+1. **Prisma: the pointer shadows the vendor.** `dev-prisma`'s description names
+   the prompt's exact gestures ("add a model, create a migration,
+   schema.prisma"); no vendor description does. The pointer then tells the
+   model to install a skill that is already installed.
+2. **Where the vendor wins, the pointer's safety rules are lost.** Supabase
+   fires alone 3/3, so "RLS on every public table" and "never expose the
+   `service_role` key client-side" — kept in `dev-supabase` under "Foundation
+   rules preserved" — never reach the session. `vendor-precedence` (tier 1)
+   says a vendor skill must never relax a foundation security rule; installed
+   together, it does, silently. A rule that must survive the vendor cannot live
+   in a skill the vendor out-triggers.
+3. **Next.js has no vendor counterpart at this pin.** `vercel-labs/agent-skills`
+   ships React performance, composition, deployment and view-transition skills,
+   none on App Router caching or ISR; `dev-nextjs` fires because nothing else
+   covers the prompt. Its registry record treats the repo as its replacement.
+
+To replay: fetch each repo at its `pinnedRef`, copy every `<skill>/` dir holding
+a `SKILL.md` into one flat DIR, then
+`run.sh --extra-skills DIR --case vendor-<tool>-coexist` (one call per case).
+Without `--extra-skills`, `run.sh` leaves these cases out.
+
+Limits: N=3, one prompt per tool, one model. All skills sit in one plugin here;
+in a project the vendor skills would live under `.claude/skills/`, the
+foundation's beside them — same descriptions, same competition.
+
+## 2026-10-03 — fix: rules out of the pointers, `dev-prisma` steps aside
+
+The "Foundation rules preserved" lists of `dev-prisma` and `dev-supabase` moved
+to `.claude/rules/prisma.md` and `.claude/rules/supabase.md`, scoped to the
+tool's files, so they load whichever skill fires. `dev-prisma`'s description now
+presents it as the pointer it is, for use "only when no prisma-* skill is
+installed". Same method, 3 runs per case, `claude-opus-5-5`, about 0.75 USD.
+
+| Case | Before | After |
+|---|---|---|
+| `vendor-prisma-coexist` (vendor skills installed) | `dev-prisma` ×3 | **`prisma-cli` ×3**, pointer silent |
+| `dev-prisma-fires` (no vendor skill) | `dev-prisma` ×3 | `dev-prisma` ×3 — still the switch when the vendor is absent |
+
+That the rules load from the files was proven by effect, outside this harness: a
+canary token in each rule, a throwaway project, `claude -p` reading one file per
+session. `README.md` (control) → no token; `prisma/schema.prisma` → the Prisma
+token; `lib/supabase.ts` and `supabase/migrations/001.sql` → the Supabase token.
+
+Left as measured: `dev-shadcn` also fired once in three next to the vendor's
+`shadcn`. Its kept rules are styling conventions, not security, so nothing is
+lost when it stays silent.
+
+Review follow-up: `prisma.md` also matches `**/*prisma*` (the client module,
+where the singleton and `select`-over-`include` rules apply) — canary loaded on
+`lib/prisma.ts`, not on `lib/db.ts` (control). `supabase.md` also ships to
+Flutter projects. Known limits, no glob reaches them at an acceptable cost: a
+Prisma client named `db.ts`, query code in arbitrary files, and a `service_role`
+key written into a component or a `NEXT_PUBLIC_` variable — the rule loads only
+once the session touches a Supabase or Prisma file.
+
+## 2026-10-03 — `dev-react-perf` and `dev-document` next to their vendor skills
+
+Same method (`--extra-skills`, 3 runs, `claude-opus-5-5`).
+
+**`dev-document` vs Anthropic's `docx`/`pdf`/`xlsx`/`pptx`.** The two do different
+jobs: Anthropic's skills make Claude write or edit a file itself; `dev-document`
+teaches the code an application uses to generate one. Its description claimed
+both ("create a document… produce an office file").
+
+| Case | Before (old description) | After (scoped to application code) |
+|---|---|---|
+| `vendor-document-author-coexist` — "Write a one-page Word memo (memo.docx)…" | `docx` ×3 | `docx` ×3 |
+| `vendor-document-app-coexist` — "Add an endpoint GET /invoices/:id/pdf to our Express app…" | `dev-api` ×3 — no document skill | **`dev-document` ×3** |
+| `dev-document-fires` (no vendor skill), same endpoint prompt | — | `dev-document` ×3 |
+| `dev-document-script-fires` — "Write scripts/monthly-report.js, run by cron… writes reports/<YYYY-MM>.pdf" | — | `dev-document` ×3, with or without the vendor skills |
+
+The old `dev-document-fires` prompt ("Generate our monthly sales report as a PDF…
+from sales.csv") is a file Claude produces: after the change it fires `pdf` ×3
+with the vendor skills installed, `dataviz` ×3 without. The case now carries the
+endpoint prompt, which is what the skill is for.
+
+**`dev-react-perf` vs Vercel's `react-best-practices`** (`dev-react-perf-fires`):
+
+| Pointer description | Vendor installed | Fired |
+|---|---|---|
+| fires on React perf work (reduced to pointer + gaps) | no | `dev-react-perf` ×3 |
+| same | yes | `dev-react-perf` ×3 — vendor never fires |
+| defers to the vendor when installed | yes | **nothing ×3** |
+| fires, body says "invoke the vendor skill now" | yes | `dev-react-perf` ×3, vendor still not loaded |
+
+The vendor skill does not fire on this prompt by itself, so a pointer that steps
+aside leaves the session with no skill. Kept: the pointer fires and carries a
+five-line condensed top of the vendor's ranking (MIT, attributed).
+
+A blind outcome comparison (12 planted defects in a React dashboard, Opus grader,
+`tsc` on every result) found no measurable difference between the two skills:
+11/12 for both, and for no skill, on Opus 5.5; on Haiku 4.5, 5 to 9 out of 12
+with a run-to-run spread larger than any gap between arms (vendor 7.0 mean over
+5 runs, pointer 7.25 over 4, no skill 6.3 over 3). An early "vendor 8 vs 6–7"
+from two runs per arm did not survive more runs.
+
+## 2026-10-03 — `ops-infra-code` next to Babenko's and HashiCorp's skills
+
+`ops-infra-code-fires` ("Write a Terraform module for an S3 bucket… state stored
+remotely in S3"), 3 runs, `claude-opus-5-5`, with `terraform-skill` (Babenko
+v1.17.1), `terraform-style-guide` and `terraform-test` (HashiCorp v1.0.0)
+installed: `ops-infra-code` ×3, the vendor skills never fire; alone, also ×3.
+Same pattern as `dev-react-perf`: the foundation pointer wins the trigger, so it
+keeps the core HCL patterns (layout, naming, block order, `count` vs
+`for_each`, testing ladder) next to its discipline — the `ops-infra-code` agent
+preloads it and has no Skill tool to load the vendor skills either.
+
+## 2026-10-04 — the harness never granted Write/Edit; `dev-flutter` next to the Flutter team's skills
+
+**Harness defect.** A case's `allowed_tools` lists what the model may use, but
+`claude plugin eval` withholds Write and Edit unless the run grants them with
+`--allow-tools`. `run.sh` did not, so every session since 2026-09-27 chose its
+skill unable to write a file (one `dev-flutter-fires` run said so). Fixed:
+`run.sh` passes `--allow-tools Write,Edit`. Three earlier cases replayed with the
+grant (Opus, 3 runs):
+
+| Case | Before (no write) | With Write/Edit |
+|---|---|---|
+| `dev-tdd-fires` | `dev-tdd` ×3 | `dev-tdd` ×3 |
+| `dev-debug-hard-fires` | `dev-debug` ×3 | `dev-debug` ×3 |
+| `work-quick-fires` — "Fix the typo in README.md" | `work-quick` ×3 | **`work-quick` ×1**, no skill ×2 — able to write, Opus fixes the typo directly |
+
+The other results of the earlier campaigns were not replayed.
+
+**`dev-flutter`.** New case `vendor-flutter-coexist`: the same prompt as
+`dev-flutter-fires` ("Create a Flutter screen that lists products from our
+API…") in a scaffolded BLoC project (`flutter_bloc` in `pubspec.yaml`, an
+existing bloc), Write/Edit granted.
+
+| Installed next to the foundation | Fired |
+|---|---|
+| the 25 skills of `flutter/agent-plugins` | `dev-flutter` ×3 |
+| those + two community BLoC skills (HoangNguyen0403) | `dev-flutter` ×3 |
+
+The official architecture skill (MVVM + `ChangeNotifier`) never fires in the BLoC
+project, so it cannot contradict `dev-flutter`'s layering. Without the scaffold
+(`dev-flutter-fires`, empty workspace, no write grant) two of three runs used no
+skill and asked where the project was.
+
+**Replay of the 2026-10-03 coexistence cases with Write/Edit granted** (Opus,
+3 runs, same vendor sets, skills as on `main` after #630–#633):
+
+| Case | 2026-10-03 (no write) | 2026-10-04 (write granted) |
+|---|---|---|
+| `vendor-prisma-coexist` | `prisma-cli` ×3 (after #630) | **`prisma-cli` ×1, no skill ×2** |
+| `vendor-supabase-coexist` | `supabase` ×3 | `supabase` ×3 |
+| `vendor-shadcn-coexist` | `shadcn` ×3, `dev-shadcn` also ×1 | `shadcn` ×3 alone |
+| `vendor-graphql-coexist` | `apollo-server` ×3 | `apollo-server` ×3 |
+| `vendor-nextjs-coexist` | `dev-nextjs` ×3 | `dev-nextjs` ×3 |
+| `vendor-document-app-coexist` | `dev-document` ×3 | `dev-document` ×3 |
+| `vendor-document-author-coexist` | `docx` ×3 | `docx` ×3 |
+| `dev-react-perf-fires` (Vercel installed) | `dev-react-perf` ×3 | `dev-react-perf` ×3 |
+| `ops-infra-code-fires` (Babenko + HashiCorp installed) | `ops-infra-code` ×3 | `ops-infra-code` ×3 |
+
+The decisions of #632 and #633 hold. Prisma does not: able to write, Opus edits
+`schema.prisma` itself in two runs of three, and `dev-prisma` — told to step
+aside when a `prisma-*` skill is installed — leaves the session with no skill,
+as the deferring `dev-react-perf` description did. The safety rules still load
+from `.claude/rules/prisma.md` (path-scoped); the pointer's description is an
+open question.
+
+**Open**: `work-quick-fires` now fails its 1.0 threshold (1/3). A typo fixed
+without the skill may be the right outcome; the case or the description needs a
+decision.
+
+## 2026-10-04 — `dev-prisma`: judged by the outcome, the deferring design stays
+
+Both Prisma cases now run in a scaffolded Prisma 6 project (`schema.prisma` with a
+`Post` model, one migration), Write/Edit granted. With Prisma's skills installed,
+the deferring description fired `prisma-cli` ×1 and **no skill ×2** — so a
+description that fires on Prisma work was tried: `dev-prisma` ×3. Firing is not
+the goal, though, and an independent review pointed out that the "no skill"
+sessions had done the work. New case `vendor-prisma-outcome` (same prompt, 30
+turns, two LLM graders: the schema has the relation on both sides and an index on
+the foreign key; exactly one new migration, no second `init`), vendor skills
+installed, 3 runs per arm:
+
+| `dev-prisma` description | Skills fired | `schema-ok` | `migration-ok` | Turns |
+|---|---|---|---|---|
+| deferring (as on `main`) | none ×3 | 3/3 | 3/3 | 7–8 |
+| firing on Prisma work | `dev-prisma` ×3 | 3/3 | 3/3 | 9–10 |
+
+No difference in the result on Opus, a few more turns when the pointer fires.
+Kept: the deferring description (with the body corrected — pinned install, the
+`--create-only` review step, `generate` after `migrate dev` since Prisma 7). The
+security rules load from `.claude/rules/prisma.md` whichever skill fires, or none.
+`vendor-prisma-coexist` asserts the pointer stays quiet (3/3; `prisma-cli` fired
+2/3 on that run); `dev-prisma-fires` still fires it alone (3/3).
+
+Lesson for these cases: "no skill fired" is not a failure until the outcome says
+so — the same standard as the next section.
+
+## 2026-10-04 — `work-quick-fires` judges the outcome, not the skill
+
+With Write granted, "Fix the typo in README.md" fired `work-quick` ×1 then, on a
+later run, ×3: Opus fixes a typo correctly with or without the skill. The skill
+exists so a trivial edit does not drag in the full cycle (explore, TDD, audit);
+it has nothing to add when nothing heavy fires. The case therefore no longer
+requires `work-quick`: it fails if **any other** skill fires (`no-other-skill`,
+unchanged) or if the typo is not fixed (`typo-fixed`, an LLM grader reading
+`README.md`). The new grader was shown able to fail: on a variant asking only to
+name the misspelt word, `typo-fixed` = false.
+
+## 2026-10-04 — `data-pipeline` next to the Airflow, Dagster and dbt skills
+
+`data-pipeline-fires` ("Build a nightly job that pulls orders from Postgres,
+aggregates revenue per day and loads the result into BigQuery" — no tool named),
+Write/Edit granted, 3 runs: alone `data-pipeline` ×3; with 18 vendor skills
+installed (Astronomer's `airflow`, `authoring-dags`, `testing-dags`,
+`debugging-dags`, `migrating-airflow-2-to-3`; Dagster's `dagster-expert`, whose
+description claims every "data pipelines" task; dbt Labs' `skills/dbt/skills/*`)
+also `data-pipeline` ×3 — no vendor skill took the tool-neutral request.
+
+## 2026-10-04 — `dev-i18n` next to FormatJS's and Flutter's localization skills
+
+`dev-i18n-fires` ("Our React app is English-only. Make it available in French
+and German, including plurals and date formats"), Write/Edit granted, 3 runs:
+alone `dev-i18n` ×3; with FormatJS's `localization-review` and `translate` and
+Flutter's `flutter-setup-localization` installed, also `dev-i18n` ×3 — their
+broad descriptions ("translation requests", "changed user-facing text") did not
+take a setup request. Not measured: an explicit "translate these strings"
+request, which `translate` may well take (without `dev-i18n`'s native-review rule).

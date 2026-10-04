@@ -1,39 +1,37 @@
 ---
 name: dev-prisma
-description: Development with Prisma ORM (schema, migrations, type-safe queries, Accelerate, transactions). Trigger when the user wants to add a model, create a migration, optimize Prisma queries, or when schema.prisma is detected in the project.
+description: Pointer to Prisma's own agent skills (prisma-cli, prisma-client-api...) and how to install them, plus the schema-change workflow. Use for Prisma ORM work (schema, migrations, queries, schema.prisma) only when no prisma-* skill is installed; when one is, use it instead.
 ---
 
-# Prisma ORM (pointer)
+# Prisma ORM (pointer + workflow)
 
-Prisma publishes the canonical agent skill at [`prisma/skills`](https://github.com/prisma/skills) — maintained by the Prisma team, in sync with v7 (ESM-only, driver adapters, `prisma.config.ts`). The vendor reference stays current with every release; the prior foundation skill (418 lines) drifted on each Prisma version bump.
+Prisma's own skills (`prisma-cli`, `prisma-client-api`, …) track each Prisma release: install them. This pointer adds the workflow below.
 
-## Delegate to the vendor skill
+Prisma publishes them at [`prisma/skills`](https://github.com/prisma/skills) (9 skills: CLI, Client API, database setup, Prisma Postgres, the v6 → v7 upgrade, driver adapters, MongoDB, Compute). The foundation's former 418-line skill drifted on every Prisma release.
 
 ```bash
-# Prisma's preferred path (verify on their README):
-npx skills add prisma/skills
-
-# Fallback — clone and copy:
-git clone --depth 1 https://github.com/prisma/skills ~/dev/vendor-skills/prisma
-# Skill content lives in CLAUDE.md / AGENTS.md per their convention.
+git clone https://github.com/prisma/skills ~/dev/vendor-skills/prisma
+git -C ~/dev/vendor-skills/prisma checkout 1123817e60d15ca0f3af91878923241dee7e3b09   # the registry pin
+ln -s ~/dev/vendor-skills/prisma/prisma-cli ./.claude/skills/prisma-cli
+ln -s ~/dev/vendor-skills/prisma/prisma-client-api ./.claude/skills/prisma-client-api
 ```
 
-Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Prisma — `prisma/skills`". Reduction rationale: [`specs/foundation-positioning-review/spec.md`](../../../specs/foundation-positioning-review/spec.md) Wave 1.
+Recipe entry: [`docs/recipes/recommended-vendor-skills.md`](../../../docs/recipes/recommended-vendor-skills.md) §"Prisma — `prisma/skills`".
 
-## Foundation-unique angle preserved: cross-cutting discipline
+## Schema change workflow
 
-The vendor covers the Prisma API surface. The foundation enforces version-agnostic conventions that survive across releases:
+1. Edit `schema.prisma`: the relation on both sides; indexes per `.claude/rules/prisma.md`.
+2. `npx prisma migrate dev --create-only --name <change>` — writes the migration without applying it.
+3. Read the generated SQL: a rename shows up as drop + add (data loss) — split it as `.claude/rules/prisma.md` says before anything runs.
+4. `npx prisma migrate dev` to apply it, then `npx prisma generate` — since Prisma 7, `migrate dev` no longer regenerates the client (v6 did). Commit the migration folder with the schema; one migration per change, never a second `init`.
+5. Production: apply the committed migrations from CI or the deploy step — the exact commands, and what never runs against production, are in `.claude/rules/prisma.md`.
 
-- **Security**: never `select: { passwordHash: true }` or any sensitive column without explicit need; default to `select` over `include` for security + perf — cross-ref `.claude/rules/security.md`.
-- **TDD with a real DB**: integration tests hit a real test database (Docker Compose pattern), never a Prisma mock — cross-ref the `dev-tdd` skill.
-- **Postgres interop**: if the stack uses Supabase, Prisma operates against the same Postgres — cross-ref the `dev-supabase` skill (Supabase RLS coexists with Prisma queries).
+## Discipline that holds whichever skill fires
 
-## Foundation rules preserved
+The migration, secret and query rules live in `.claude/rules/prisma.md`, scoped to the Prisma files, so they load even when a vendor skill fires instead of this one.
 
-- NEVER use `prisma migrate dev` in production. Always `prisma migrate deploy`.
-- `prisma generate` MUST run after every schema change. Add it to the CI build step.
-- Singleton PrismaClient (HMR-safe `globalThis` pattern in dev) — avoid connection leaks.
-- YOU MUST add an index on every foreign key and on every column in frequent WHERE clauses.
-- YOU MUST use `select` instead of `include` when you know the fields (security + perf).
-- NEVER commit `.env` with `DATABASE_URL`. Always `.env.example` with placeholders.
-- NEVER rename a field in one migration. Two steps: add new column → backfill → remove old column (avoids prod downtime).
+- **Security**: never fetch `passwordHash` or any sensitive column without explicit need; `select` over `include` — `.claude/rules/prisma.md` and `.claude/rules/security.md`.
+- **TDD with a real DB**: integration tests hit a real test database (Docker Compose pattern), never a Prisma mock — the `dev-tdd` skill.
+- **Postgres interop**: with Supabase, Prisma runs against the same Postgres and RLS still applies — the `dev-supabase` skill.
+
+Why this pointer steps aside when Prisma's skills are installed, even though a session then often loads no skill: measured 2026-10-04, the work came out right either way (schema and migration correct 3/3 with and without this skill firing), and `.claude/rules/prisma.md` loads from the files in both cases — `eval/skill-triggering/FINDINGS.md`.

@@ -1,19 +1,21 @@
 ---
 name: dev-document
-description: Document generation (PDF, DOCX, XLSX, PPTX). Trigger when the user wants to create a document, generate a report, export to PDF/Word/Excel/PowerPoint, or produce an office file.
+description: Code that generates documents inside an application (PDF, DOCX, XLSX, PPTX) - choose and wire the library for an export endpoint, an invoice, a scheduled report. Trigger when the user wants their app or a script to generate, export or download PDF/Word/Excel/PowerPoint files. For Claude itself to write, read or edit an office file, use Anthropic's docx/pdf/xlsx/pptx skills instead.
 ---
 
 # Document Generation
 
 ## Goal
 
-Create professional documents in different formats: PDF, DOCX, XLSX, PPTX.
+Write the code that makes an application produce documents — PDF, DOCX, XLSX, PPTX — with the right library for the stack.
+
+**Not this skill:** when the deliverable is a file Claude writes, reads or edits itself (a memo, a filled-in form, a reviewed contract with tracked changes), Anthropic's own skills do it far better: [`anthropics/skills`](https://github.com/anthropics/skills/tree/main/skills) — `docx`, `pdf`, `xlsx`, `pptx` (reading and editing existing files, tracked changes, form filling, OCR). They ship under Anthropic's own terms (not open source): install or point to them, never copy them.
 
 ## Supported formats
 
 | Format | Extension | Recommended tool | Usage |
 |--------|-----------|------------------|-------|
-| **PDF** | `.pdf` | puppeteer, wkhtmltopdf, markdown-pdf | Reports, invoices, formal docs |
+| **PDF** | `.pdf` | puppeteer / Playwright, WeasyPrint, pandoc | Reports, invoices, formal docs |
 | **Word** | `.docx` | docx (npm), python-docx | Editable documents, specifications |
 | **Excel** | `.xlsx` | exceljs, openpyxl | Tabular data, numeric reports |
 | **PowerPoint** | `.pptx` | pptxgenjs, python-pptx | Presentations, pitch decks |
@@ -26,11 +28,12 @@ Create professional documents in different formats: PDF, DOCX, XLSX, PPTX.
 # Option 1: Puppeteer (Node.js)
 npm install puppeteer
 
-# Option 2: wkhtmltopdf (CLI)
-wkhtmltopdf input.html output.pdf
+# Option 2: WeasyPrint (Python, HTML/CSS -> PDF, no browser)
+pip install weasyprint
+weasyprint input.html output.pdf
 
-# Option 3: markdown-pdf (Markdown -> PDF)
-npm install markdown-pdf
+# Option 3: pandoc (Markdown -> PDF, needs a PDF engine such as weasyprint or a LaTeX install)
+pandoc input.md -o output.pdf --pdf-engine=weasyprint
 ```
 
 ```typescript

@@ -1499,6 +1499,34 @@ EOF
     [ -z "$output" ]
 }
 
+@test "_subpaths_for_repo: a root record widens the scope to the whole repo" {
+    # A repo watched at its root (a record, or a preset installing the whole
+    # repo) ships every skill dir in it. A sibling record scoped to a subpath
+    # must not narrow the pin-time safety screen to that subpath: a new
+    # exec-bit script in another skill dir would pass unscreened.
+    cat > "$TEST_DIR/registry.json" <<'EOF'
+{ "records": [
+  {"vendorId":"acme/mono"},
+  {"vendorId":"acme/mono/skills/a+skills/b"}
+] }
+EOF
+    run bash -c "source '$EMIT_LIB'; _subpaths_for_repo acme/mono '$TEST_DIR/registry.json' '$TEST_DIR/presets'"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "_subpaths_for_repo: a preset installing the repo root widens the scope too" {
+    cat > "$TEST_DIR/registry.json" <<'EOF'
+{ "records": [ {"vendorId":"acme/mono/skills/a"} ] }
+EOF
+    cat > "$TEST_DIR/presets/p.json" <<'EOF'
+{ "recommendedVendorSkills": [ {"id":"acme/mono","url":"https://github.com/acme/mono"} ] }
+EOF
+    run bash -c "source '$EMIT_LIB'; _subpaths_for_repo acme/mono '$TEST_DIR/registry.json' '$TEST_DIR/presets'"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
 @test "_subpaths_for_repo: only matches the requested repo-root" {
     cat > "$TEST_DIR/registry.json" <<'EOF'
 { "records": [
@@ -1783,4 +1811,113 @@ delivery() { jq -r ".delivery.$1 // \"absent\"" "$TEST_DIR/digest/digest.json"; 
     drifting_target
     run_watch_env FAKE_NOTHING_TO_COMMIT=1 -- --emit-pr --draft
     [ "$(delivery pr)" = "failed" ]
+}
+
+# =============================================================================
+# Newest stable release, compared like with like (2026-10). The "Latest" badge is
+# set by the repo's maintainer and need not be the newest stable: prisma/orm put
+# it on its Prisma Next line (v0.17.0) while the ORM line was at 7.10.0. A tag pin
+# now resolves to the highest-VERSION stable release of the same tag shape (the
+# prefix before the first digit: "", "v", "pkg@"...). Version, not date: a
+# backport published later (6.19.3) is not newer than 7.10.0.
+# =============================================================================
+
+@test "watch: a tag pin drifts to the newest stable of its own line, not the Latest badge" {
+    registry_one "acme/orm" "7.9.0" authority
+    gh_fixture "repos/acme/orm" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/orm/releases/latest" '{"tag_name":"v0.17.0"}'
+    gh_fixture "repos/acme/orm/releases?per_page=100" '[
+        {"tag_name":"v8.0.0-rc.14","draft":false,"prerelease":true,"published_at":"2026-09-30T00:00:00Z"},
+        {"tag_name":"6.19.3","draft":false,"prerelease":false,"published_at":"2026-09-01T00:00:00Z"},
+        {"tag_name":"7.10.0","draft":false,"prerelease":false,"published_at":"2026-08-25T00:00:00Z"},
+        {"tag_name":"v0.17.0","draft":false,"prerelease":false,"published_at":"2026-08-04T00:00:00Z"},
+        {"tag_name":"v9.1.0","draft":false,"prerelease":false,"published_at":"2026-09-15T00:00:00Z"},
+        {"tag_name":"7.9.0","draft":false,"prerelease":false,"published_at":"2026-07-20T00:00:00Z"}]'
+    # v9.1.0 belongs to another line ("v" shape): higher version, newer, and still
+    # not the pin's line.
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "7.10.0" ]]
+}
+
+@test "watch: a backport published after the pin is not drift" {
+    registry_one "acme/orm" "7.10.0" authority
+    gh_fixture "repos/acme/orm" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/orm/releases/latest" '{"tag_name":"6.19.3"}'
+    gh_fixture "repos/acme/orm/releases?per_page=100" '[
+        {"tag_name":"6.19.3","draft":false,"prerelease":false,"published_at":"2026-09-01T00:00:00Z"},
+        {"tag_name":"7.10.0","draft":false,"prerelease":false,"published_at":"2026-08-25T00:00:00Z"}]'
+    run_watch
+    [[ "$status" -eq 0 ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findingCount')" -eq 0 ]]
+}
+
+@test "watch: a v-prefixed pin compares versions numerically (v1.10.0 is newer than v1.9.0)" {
+    registry_one "acme/lib" "v1.9.0" authority
+    gh_fixture "repos/acme/lib" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/lib/releases/latest" '{"tag_name":"v1.9.0"}'
+    gh_fixture "repos/acme/lib/releases?per_page=100" '[
+        {"tag_name":"v1.9.0","draft":false,"prerelease":false,"published_at":"2026-08-01T00:00:00Z"},
+        {"tag_name":"v1.10.0","draft":false,"prerelease":false,"published_at":"2026-09-01T00:00:00Z"}]'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "v1.10.0" ]]
+}
+
+@test "watch: an old mis-numbered release (v0.180.0 before the pin) is never taken as newer" {
+    # microsoft/playwright-cli: a January release tagged v0.180.0 (named v0.0.62)
+    # sits beside the current v0.1.x line. Only releases published since the pin
+    # compete on version.
+    registry_one "acme/cli" "v0.1.21" authority
+    gh_fixture "repos/acme/cli" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/cli/releases/latest" '{"tag_name":"v0.1.22"}'
+    gh_fixture "repos/acme/cli/releases?per_page=100" '[
+        {"tag_name":"v0.1.22","draft":false,"prerelease":false,"published_at":"2026-09-28T00:00:00Z"},
+        {"tag_name":"v0.1.21","draft":false,"prerelease":false,"published_at":"2026-09-18T00:00:00Z"},
+        {"tag_name":"v0.180.0","draft":false,"prerelease":false,"published_at":"2026-01-31T00:00:00Z"}]'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "v0.1.22" ]]
+}
+
+# --- review follow-ups (2026-10) ---------------------------------------------
+
+@test "watch: a digit in a package name never makes two families one (vue2-lib@ vs vue3-lib@)" {
+    registry_one "acme/mono" "vue2-lib@1.0.0" authority
+    gh_fixture "repos/acme/mono" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/mono/releases?per_page=100" '[
+        {"tag_name":"vue3-lib@9.0.0","draft":false,"prerelease":false,"published_at":"2026-09-10T00:00:00Z"},
+        {"tag_name":"vue2-lib@1.1.0","draft":false,"prerelease":false,"published_at":"2026-09-01T00:00:00Z"},
+        {"tag_name":"vue2-lib@1.0.0","draft":false,"prerelease":false,"published_at":"2026-08-01T00:00:00Z"}]'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "vue2-lib@1.1.0" ]]
+}
+
+@test "watch: a repo that switched tag style (v1.0.0, then 2.0.0) is reported as drift" {
+    registry_one "acme/lib" "v1.0.0" authority
+    gh_fixture "repos/acme/lib" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/lib/releases?per_page=100" '[
+        {"tag_name":"2.0.0","draft":false,"prerelease":false,"published_at":"2026-09-10T00:00:00Z"},
+        {"tag_name":"v1.0.0","draft":false,"prerelease":false,"published_at":"2026-05-01T00:00:00Z"}]'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].type')" == "drift" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "2.0.0" ]]
+}
+
+@test "watch: a pin missing from the release list never lets an old mis-numbered release win" {
+    registry_one "acme/cli" "v0.1.5" authority
+    gh_fixture "repos/acme/cli" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/cli/releases?per_page=100" '[
+        {"tag_name":"v0.1.22","draft":false,"prerelease":false,"published_at":"2026-09-28T00:00:00Z"},
+        {"tag_name":"v0.180.0","draft":false,"prerelease":false,"published_at":"2026-01-31T00:00:00Z"}]'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "v0.1.22" ]]
+}
+
+@test "watch: of two equal versions, the more recently published is taken" {
+    registry_one "acme/lib" "v1.2.3" authority
+    gh_fixture "repos/acme/lib" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/lib/releases?per_page=100" '[
+        {"tag_name":"v1.2.3-hotfix","draft":false,"prerelease":false,"published_at":"2026-09-10T00:00:00Z"},
+        {"tag_name":"v1.2.3","draft":false,"prerelease":false,"published_at":"2026-08-01T00:00:00Z"}]'
+    run_watch
+    [[ "$(printf '%s' "$output" | jq -r '.findings[0].currentRef')" == "v1.2.3-hotfix" ]]
 }

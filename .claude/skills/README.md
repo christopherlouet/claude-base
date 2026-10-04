@@ -30,17 +30,17 @@ skill-name/
 | `api-mocking` | API mock, MSW, test without backend | API mock configuration for tests |
 | `data-pipeline` | ETL, Airflow, dbt | Design of ETL/ELT pipelines |
 | `dev-api` | API, endpoint, REST, route | Develop and document a REST or GraphQL API |
-| `dev-auth` | login, signup, OAuth, sessions, 2FA | Modern web auth (better-auth, Lucia, NextAuth, Clerk, Supabase Auth) |
+| `dev-auth` | login, signup, OAuth, sessions, 2FA | Modern web auth (better-auth, NextAuth, Clerk, Supabase Auth; off the deprecated Lucia) |
 | `dev-debug` | bug, error, debug, not working | Debug and resolve problems |
-| `dev-document` | PDF, DOCX, XLSX, PPTX, report | Office document generation |
+| `dev-document` | PDF/DOCX/XLSX/PPTX export, invoice, report job | Code in an app that generates office documents |
 | `dev-error-handling` | error handling, exceptions, error boundary | Error handling strategy |
 | `dev-flutter` | Flutter, widget, BLoC | Flutter development with Clean Architecture |
 | `dev-frontend-design` | UI, landing page, visual component, art direction | Distinctive UI design with strong art direction |
 | `dev-graphql` | GraphQL, resolver, schema | GraphQL API development |
 | `dev-i18n` | i18n, translation, locale, multiple languages | Internationalization (next-intl, react-i18next, vue-i18n, ARB) |
 | `dev-nextjs` | Next.js, App Router, RSC, Server Actions | Next.js development (caching, streaming, middleware) |
-| `dev-prisma` | Prisma, schema.prisma, migration, type-safe queries | Development with Prisma ORM |
-| `dev-react-perf` | React perf, re-render, memo | React/Next.js performance optimization |
+| `dev-prisma` | Prisma, schema.prisma, migration, type-safe queries | Pointer to Prisma's own skills + the schema-change workflow |
+| `dev-react-perf` | React perf, re-render, memo | Pointer to Vercel's react-best-practices + virtualization, colocation, profiling |
 | `dev-refactor` | refactor, clean code, restructure | Code refactoring |
 | `dev-shadcn` | shadcn, shadcn/ui, Radix, copy-paste components | Integration and customization of shadcn/ui |
 | `dev-supabase` | Supabase, auth, RLS, storage | Supabase backend development |

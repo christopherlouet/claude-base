@@ -47,3 +47,7 @@ IMPORTANT: Always increment the versionCode/build number before a release.
 YOU MUST test on real devices before publishing.
 
 NEVER publish directly to production - use test tracks first.
+
+## See also
+
+If the app ships with **Expo / EAS**, Expo's own [`eas-app-stores`](https://github.com/expo/skills/tree/main/plugins/expo/skills/eas-app-stores) skill (`expo/skills`, MIT, pin `13ad8e05`) covers `eas.json`, signing, versions and store submission. EAS has a free tier and paid plans; the skill states their limits. Fastlane publishes no skill: the fastlane path stays here.

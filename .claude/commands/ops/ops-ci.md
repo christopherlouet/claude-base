@@ -43,3 +43,7 @@ YOU MUST use secrets for all credentials - never in clear text.
 NEVER grant excessive permissions to the GITHUB_TOKEN.
 
 Think hard about the steps that are truly necessary - a fast pipeline is a used pipeline.
+
+## See also
+
+GitHub's own [`github-actions-hardening`](https://github.com/github/awesome-copilot/tree/main/skills/github-actions-hardening) skill (`github/awesome-copilot`, MIT, pin `143a3d97`) goes deeper on workflow security: token permissions, pinning actions by SHA, untrusted input in `run:`, `pull_request_target`. It does not generate pipelines and does not cover GitLab — authoring stays here.
