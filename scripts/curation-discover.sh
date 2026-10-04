@@ -248,25 +248,44 @@ _npm_get() {
     return 1
 }
 
-# _skills_roots <owner/repo> — the candidate ids for the skills a repo ships at
-# its default branch: each directory named *skills (skills/, packages/x/skills/,
-# docs/agent-skills/, .agents/skills/) that holds SKILL.md files is one id,
-# owner/repo/<dir>; a SKILL.md with no such directory above its own makes the
-# whole repo the candidate. Nothing on an unreadable tree.
+# _gh_url_repo <url> — owner/repo of a GitHub repository URL in any form npm
+# records (https://, git+https://, git://, git+ssh://git@, git@github.com:,
+# with or without .git, #fragment or ?query). Non-zero for any other host.
+_gh_url_repo() {
+    local u="${1#git+}"
+    u="${u%%[?#]*}"; u="${u%/}"; u="${u%.git}"
+    case "$(printf '%s' "$u" | tr '[:upper:]' '[:lower:]')" in
+        https://github.com/*|http://github.com/*|git://github.com/*|ssh://git@github.com/*|https://www.github.com/*) u="${u#*://}"; u="${u#*@}"; u="${u#*/}" ;;
+        git@github.com:*) u="${u#*:}" ;;
+        *) return 1 ;;
+    esac
+    _repo_root "$u"
+}
+
+# _skills_roots <owner/repo> — the candidate ids for the skills a repo ships, read
+# at the ref the gates will judge (resolve_ref): each directory named *skills
+# (skills/, packages/x/skills/, docs/agent-skills/) that holds SKILL.md files is
+# one id, owner/repo/<dir>; a SKILL.md under no such directory makes its parent
+# the candidate, one at the repo root the whole repo. Skipped: SKILL.md under a
+# hidden or examples/ directory (the repo's own tooling and demos, not what the
+# package ships), and any path a candidate id cannot carry safely (a . or ..
+# segment, an empty segment, '+' — the id's path separator — or a control
+# character). Prints "<owner/repo>\t<id>"; non-zero when the tree is unreadable.
 _skills_roots() {
-    local repo="$1" sha body
-    sha=$(curation_gh_api "repos/$repo/commits/HEAD" 2>/dev/null | jq -r '.sha // empty' 2>/dev/null) || return 0
-    [ -n "$sha" ] || return 0
-    body=$(curation_gh_api "repos/$repo/git/trees/$sha?recursive=1" 2>/dev/null) || return 0
-    printf '%s' "$body" | jq -r '.tree[]? | select(.type == "blob") | .path | select(test("(^|/)SKILL\\.md$"))' 2>/dev/null \
-        | awk -v r="$repo" '{
-            n = split($0, seg, "/"); root = ""
-            # seg[n] is SKILL.md and seg[n-1] the skill own directory: look above it.
+    local repo="$1" ref paths
+    ref=$(resolve_ref "$repo") && [ -n "$ref" ] || return 1
+    paths=$(shipped_skills "$repo" "$ref") || return 1
+    printf '%s\n' "$paths" | LC_ALL=C awk -v r="$repo" '
+        /[[:cntrl:]+]/ { next }
+        {
+            n = split($0, seg, "/"); if (seg[n] != "SKILL.md") next
+            for (i = 1; i < n; i++) if (seg[i] == "" || seg[i] ~ /^\./ || tolower(seg[i]) ~ /^examples?$/) next
+            root = ""
+            # seg[n-1] is the skill own directory: look above it.
             for (i = n - 2; i >= 1; i--) if (tolower(seg[i]) ~ /skills$/) { root = seg[1]; for (j = 2; j <= i; j++) root = root "/" seg[j]; break }
             if (root == "" && n >= 3) { root = seg[1]; for (j = 2; j <= n - 2; j++) root = root "/" seg[j] }
             id = (root == "") ? r : r "/" root
-            # One line per root, not per SKILL.md: hits are ranked by line number.
-            if (!seen[id]++) print id
+            if (!seen[id]++) print r "\t" id
         }'
 }
 
@@ -279,7 +298,10 @@ _source_hits() {
     if [ "$kind" = "npm" ]; then
         # Libraries that ship their own skills in the published package: npm
         # names each package's GitHub repo, the repo's tree says where the
-        # skills are (_skills_roots). Packages of one repo collapse to its roots.
+        # skills are (_skills_roots). Packages of one repo collapse to its roots,
+        # emitted breadth-first — every repo's first root, then every second
+        # one — so a monorepo of 18 adapters cannot take all of this source's
+        # slots under the candidate cap (hits are ranked by line number).
         query=$(printf '%s' "$src" | jq -r '.query // empty')
         [ -n "$query" ] || return 0
         if ! items=$(_npm_get "-/v1/search?text=$(printf '%s' "$query" | jq -sRr @uri)&size=${per}"); then
@@ -287,10 +309,11 @@ _source_hits() {
             return 0
         fi
         printf '%s' "$items" | jq -r '.objects[]?.package.links.repository // empty' 2>/dev/null \
-            | while IFS= read -r url; do
-                case "$url" in https://github.com/*|http://github.com/*) _repo_root "${url%.git}" ;; esac
-              done | awk '!seen[tolower($0)]++' \
-            | while IFS= read -r r; do _skills_roots "$r"; done
+            | while IFS= read -r url; do _gh_url_repo "$url"; done | awk '!seen[tolower($0)]++' \
+            | while IFS= read -r r; do
+                _skills_roots "$r" || { [ -n "${SOURCE_FAIL_LOG:-}" ] && printf 'npm %s (tree unreadable)\n' "$r" >> "$SOURCE_FAIL_LOG"; }
+              done \
+            | awk -F '\t' '{ print k[$1]++ "\t" NR "\t" $2 }' | sort -n -k1,1 -k2,2 | cut -f3
         return 0
     fi
     if [ "$kind" = "path" ]; then

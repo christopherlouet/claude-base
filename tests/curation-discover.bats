@@ -1632,10 +1632,12 @@ More guidance."
 # candidate (owner/repo/<dir>), judged like any path candidate.
 # =============================================================================
 
-# npm_fixture <query> <name=owner/repo>... — the npm search result for <query>.
+# npm_fixture <query> <name=owner/repo|name=url>... — the npm search result for
+# <query>; a bare owner/repo becomes https://github.com/owner/repo.
 npm_fixture() {
     local q="$1"; shift
-    printf '%s\n' "$@" | jq -R 'split("=") | {package:{name:.[0], links:{repository:("https://github.com/" + .[1])}}}' \
+    printf '%s\n' "$@" | jq -R 'sub("="; "\u0000") | split("\u0000")
+        | {package:{name:.[0], links:{repository:(if .[1] | test(":") then .[1] else "https://github.com/" + .[1] end)}}}' \
         | jq -s '{objects:., total:length}' > "$TEST_DIR/fx/npm-search_$(printf '%s' "$q" | tr -c 'A-Za-z0-9' '_')"
 }
 # fake curl: npm search URLs map to npm_fixture files; anything else fails.
@@ -1664,7 +1666,9 @@ head_tree() {
 @test "discover: an npm source turns each package's skills directories into candidates" {
     npm_curl
     jq -cn '{version:"1.0.0", perPage:15, sources:[{domain:"npm", kind:"npm", query:"keywords:tanstack-intent"}]}' > "$TEST_DIR/sources.json"
-    npm_fixture "keywords:tanstack-intent" "@acme/core=acme/mono" "@acme/react=acme/mono" "solo=solo/lib"
+    # npm records links mostly as git+https://…​.git; the others seen live too.
+    npm_fixture "keywords:tanstack-intent" "@acme/core=git+https://github.com/acme/mono.git" \
+        "@acme/react=git@github.com:Acme/Mono.git" "solo=https://github.com/solo/lib.git#readme"
     head_tree acme/mono packages/core/skills/a/SKILL.md packages/core/skills/b/SKILL.md \
         packages/react/skills/c/SKILL.md docs/agent-skills/d/SKILL.md src/index.ts \
         packages/core/skills/group/e/SKILL.md tools/f/SKILL.md
@@ -1704,4 +1708,59 @@ head_tree() {
     local f="$BATS_TEST_DIRNAME/../.claude/curation/discovery-sources.json"
     run jq -r '.sources[] | select(.kind == "npm") | .query' "$f"
     [[ "$output" == *"keywords:tanstack-intent"* ]]
+}
+
+@test "discover: npm links in every GitHub form npm records reach the same repo" {
+    npm_curl
+    jq -cn '{version:"1.0.0", sources:[{domain:"npm", kind:"npm", query:"keywords:tanstack-intent"}]}' > "$TEST_DIR/sources.json"
+    npm_fixture "keywords:tanstack-intent" "a=git+https://github.com/o/a.git" "b=git+ssh://git@github.com/o/b.git" \
+        "c=git://github.com/o/c.git" "d=git@github.com:o/d.git" "e=https://github.com/o/e/tree/main/packages/e" \
+        "f=git+https://gitlab.com/o/f.git" "g=https://github.com.evil.example/o/g"
+    local r; for r in o/a o/b o/c o/d o/e o/f o/g; do head_tree "$r" skills/s/SKILL.md; done
+    run_discover --dry-run
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '[.rejections[].repo] | sort | join(",")')" = "o/a/skills,o/b/skills,o/c/skills,o/d/skills,o/e/skills" ]
+}
+
+@test "discover: npm skills roots are read at the release the gates judge, not at HEAD" {
+    npm_curl
+    jq -cn '{version:"1.0.0", sources:[{domain:"npm", kind:"npm", query:"keywords:tanstack-intent"}]}' > "$TEST_DIR/sources.json"
+    npm_fixture "keywords:tanstack-intent" "t=bigco/tool"
+    gh_fixture "repos/bigco/tool/releases?per_page=100" '[{"tag_name":"v2.0.0","draft":false,"prerelease":false,"published_at":"2026-01-01T00:00:00Z"}]'
+    tree_fixture bigco/tool v2.0.0 skills/x/SKILL.md
+    head_tree bigco/tool next/skills/y/SKILL.md
+    run_discover --dry-run
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '[.rejections[].repo] | join(",")')" = "bigco/tool/skills" ]
+}
+
+@test "discover: npm skips demo, tooling and unsafe paths a candidate id cannot carry" {
+    npm_curl
+    jq -cn '{version:"1.0.0", sources:[{domain:"npm", kind:"npm", query:"keywords:tanstack-intent"}]}' > "$TEST_DIR/sources.json"
+    npm_fixture "keywords:tanstack-intent" "p=o/r"
+    head_tree o/r .claude/skills/a/SKILL.md examples/demo/skills/b/SKILL.md a+b/skills/c/SKILL.md \
+        x/../y/skills/d/SKILL.md x//skills/e/SKILL.md lib/skills/ok/SKILL.md
+    run_discover --dry-run
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '[.rejections[].repo] | join(",")')" = "o/r/lib/skills" ]
+}
+
+@test "discover: an npm monorepo's roots come after every other repo's first root" {
+    npm_curl
+    jq -cn '{version:"1.0.0", sources:[{domain:"npm", kind:"npm", query:"keywords:tanstack-intent"}]}' > "$TEST_DIR/sources.json"
+    npm_fixture "keywords:tanstack-intent" "m=m/m" "s=s/s"
+    head_tree m/m a/skills/x/SKILL.md b/skills/x/SKILL.md@b c/skills/x/SKILL.md@c
+    head_tree s/s skills/x/SKILL.md
+    run_discover --dry-run --max-candidates 2
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '[.rejections[].repo] | sort | join(",")')" = "m/m/a/skills,s/s/skills" ]
+}
+
+@test "discover: an npm repo whose tree cannot be read is reported, not silent" {
+    npm_curl
+    jq -cn '{version:"1.0.0", sources:[{domain:"npm", kind:"npm", query:"keywords:tanstack-intent"}]}' > "$TEST_DIR/sources.json"
+    npm_fixture "keywords:tanstack-intent" "g=gone/repo"
+    run_discover --dry-run
+    [ "$status" -eq 0 ]
+    [[ "$(digest_json | jq -r '.sourceFailures | join(" ")')" == *"gone/repo"* ]]
 }
