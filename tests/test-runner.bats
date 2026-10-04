@@ -135,17 +135,59 @@ teardown() {
     [ "$raw_count" -eq "$total" ]
 }
 
-@test "test.sh --shard balances shards within a reasonable spread" {
-    local min=99999 max=0 c
+# shard_loads <table> — the summed measured seconds of each of the 4 shards,
+# one per line, read from the same table test.sh weights by.
+shard_loads() {
+    local table="$1" i
     for i in 1 2 3 4; do
-        run "$TEST_SCRIPT" --shard "$i/4" --dry-run
-        [ "$status" -eq 0 ]
-        c=$(printf '%s\n' "$output" | grep -c '\.bats$')
-        [ "$c" -lt "$min" ] && min=$c
-        [ "$c" -gt "$max" ] && max=$c
+        TEST_DURATIONS="$table" "$TEST_SCRIPT" --shard "$i/4" --dry-run 2>/dev/null \
+            | awk -F/ '{print $NF}' \
+            | awk -v t="$table" 'BEGIN { while ((getline l < t) > 0) { split(l, a, "\t"); d[a[1]] = a[2] } }
+                                 { s += d[$0] } END { printf "%d\n", s }'
     done
-    # Greedy balancing should keep the file-count spread small (<= 4 files apart)
-    [ "$((max - min))" -le 4 ]
+}
+
+@test "test.sh --shard balances shards by measured duration" {
+    # Measured 2026-10-04: weighting by line count gave shards of 194/862/395/378 s
+    # (the slowest shard set every CI run's wall time); by duration, 457 each.
+    local table="$BATS_TEST_DIRNAME/../scripts/test-durations.tsv"
+    [ -f "$table" ]
+    local loads max min sum ideal
+    loads=$(shard_loads "$table")
+    max=$(printf '%s\n' "$loads" | sort -n | tail -1)
+    min=$(printf '%s\n' "$loads" | sort -n | head -1)
+    sum=$(printf '%s\n' "$loads" | awk '{s += $1} END {print s}')
+    ideal=$(( sum / 4 ))
+    echo "loads: $(printf '%s ' $loads) ideal=$ideal" >&3
+    # the slowest shard stays within 15% of an even split
+    [ "$max" -le $(( ideal * 115 / 100 )) ]
+    [ "$min" -gt 0 ]
+}
+
+@test "test.sh --shard still partitions every file when the table misses some" {
+    # A new test file is not in the table yet: it gets an estimate, never dropped.
+    local partial="$TEST_DIR/partial.tsv"
+    head -20 "$BATS_TEST_DIRNAME/../scripts/test-durations.tsv" > "$partial"
+    local total all="" i
+    total=$(ls "$BATS_TEST_DIRNAME"/*.bats | wc -l | tr -d ' ')
+    for i in 1 2 3 4; do
+        run env TEST_DURATIONS="$partial" "$TEST_SCRIPT" --shard "$i/4" --dry-run
+        [ "$status" -eq 0 ]
+        all+="$output"$'\n'
+    done
+    [ "$(printf '%s' "$all" | grep -c '\.bats$')" -eq "$total" ]
+    [ "$(printf '%s' "$all" | grep -o '[^/]*\.bats$' | sort -u | wc -l | tr -d ' ')" -eq "$total" ]
+}
+
+@test "test.sh --shard falls back to line counts without a duration table" {
+    local total all="" i
+    total=$(ls "$BATS_TEST_DIRNAME"/*.bats | wc -l | tr -d ' ')
+    for i in 1 2 3 4; do
+        run env TEST_DURATIONS="$TEST_DIR/none.tsv" "$TEST_SCRIPT" --shard "$i/4" --dry-run
+        [ "$status" -eq 0 ]
+        all+="$output"$'\n'
+    done
+    [ "$(printf '%s' "$all" | grep -c '\.bats$')" -eq "$total" ]
 }
 
 @test "test.sh --shard 1/1 selects all files" {

@@ -47,7 +47,8 @@ ${BOLD}ARGUMENTS${NC}
 ${BOLD}OPTIONS${NC}
     -h, --help          Show this help
     -v, --verbose       Verbose mode
-    --shard I/N         Run only shard I of N (balanced by test count).
+    --shard I/N         Run only shard I of N (balanced by measured duration,
+                        scripts/test-durations.tsv; TEST_DURATIONS overrides).
                         Used by CI to split the suite across parallel runners.
     --dry-run           Print the test files that would run, then exit
                         (no bats execution). Honors --shard and FILTER.
@@ -104,25 +105,45 @@ parse_shard() {
 }
 
 # Print the files belonging to shard SHARD_INDEX of SHARD_TOTAL, one per line.
-# Files are assigned greedily (heaviest-first) to the least-loaded shard, so
-# wall-clock stays balanced and the split self-rebalances as the suite grows —
-# no stored weight table to maintain. Weight = line count, which tracks real
-# runtime better than @test count (heavy-per-test files like lint/preflight
-# carry proportionally more setup lines). Deterministic across invocations:
+# Files are assigned greedily (heaviest-first) to the least-loaded shard.
+# Weight = the file's measured duration from scripts/test-durations.tsv
+# (regenerate with scripts/measure-test-durations.sh). Line count, the previous
+# weight, predicted runtime badly: measured 2026-10-04, line-balanced shards took
+# 194/862/395/378 s (update.bats alone: 1,625 lines, 349 s; preset-detect.bats:
+# 437 lines, 6 s) against 457 s each by duration. A file missing from the table
+# is weighted by its line count scaled to the table's ms-per-line, so a stale
+# table degrades the balance gracefully and never drops a file. Deterministic across invocations:
 # every shard computes the same full assignment and emits only its own bucket.
 # bash-3.2-safe (indexed arrays only; no associative arrays).
 select_shard() {
     local idx="$1" total="$2"
     shift 2
-    local tab f c sorted
+    local tab f c sorted table
     tab="$(printf '\t')"
+    table="${TEST_DURATIONS:-$SCRIPT_DIR/test-durations.tsv}"
+    # Weight = measured milliseconds from the duration table; a file missing from
+    # it gets its line count scaled to the table's ms-per-line (a new file is
+    # estimated, never dropped); no table at all = plain line count.
     sorted=$(
         for f in "$@"; do
             c=$(wc -l < "$f" 2>/dev/null || true)
             c=$(printf '%s' "$c" | tr -d '[:space:]')
             [[ -z "$c" ]] && c=0
             printf '%s\t%s\n' "$c" "$f"
-        done | sort -t "$tab" -k1,1rn -k2,2
+        done | awk -F'\t' -v table="$table" '
+            BEGIN { while ((getline l < table) > 0) { split(l, a, "\t"); ms[a[1]] = int(a[2] * 1000) } }
+            {
+                n = split($2, p, "/"); base = p[n]
+                lines[NR] = $1; file[NR] = $2; key[NR] = base
+                if (base in ms) { known_ms += ms[base]; known_lines += $1 }
+            }
+            END {
+                ratio = (known_lines > 0) ? known_ms / known_lines : 1
+                for (i = 1; i <= NR; i++) {
+                    w = (key[i] in ms) ? ms[key[i]] : int(lines[i] * ratio)
+                    printf "%d\t%s\n", w, file[i]
+                }
+            }' | sort -t "$tab" -k1,1rn -k2,2
     )
 
     local i
