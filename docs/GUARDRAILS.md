@@ -146,6 +146,7 @@ how the sandbox starts its seccomp helper, and revisit the shipped settings if i
 | **Format + type/lint feedback** | unformatted code; type/lint errors slipping by | PostToolUse (auto-format + tsc/eslint re-injected) | No |
 | **Coverage check** | a test edit that drops coverage unnoticed | PostToolUse | No |
 | **Substance gate** | hollow tests, stubs, and focused `.only` tests that make a green suite prove nothing | PostToolUse `substance-check.sh` — **advisory**: flags the finding to the agent, never blocks | No |
+| **zsh PIPESTATUS guard** | a pipe check that reads `${PIPESTATUS[0]}` under zsh (the Bash tool's shell when yours is zsh, the macOS default), where it expands to an empty string with no error, so a failed stage reads as success | PreToolUse `zsh-pipestatus-guard.sh` (blocks; silent when the shell is bash) | No |
 
 ## 4. Anti-gaming gates — *stop defeating the gate instead of satisfying it*
 
