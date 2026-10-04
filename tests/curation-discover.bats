@@ -1715,11 +1715,11 @@ head_tree() {
     jq -cn '{version:"1.0.0", sources:[{domain:"npm", kind:"npm", query:"keywords:tanstack-intent"}]}' > "$TEST_DIR/sources.json"
     npm_fixture "keywords:tanstack-intent" "a=git+https://github.com/o/a.git" "b=git+ssh://git@github.com/o/b.git" \
         "c=git://github.com/o/c.git" "d=git@github.com:o/d.git" "e=https://github.com/o/e/tree/main/packages/e" \
-        "f=git+https://gitlab.com/o/f.git" "g=https://github.com.evil.example/o/g"
-    local r; for r in o/a o/b o/c o/d o/e o/f o/g; do head_tree "$r" skills/s/SKILL.md; done
+        "f=git+https://gitlab.com/o/f.git" "g=https://github.com.evil.example/o/g" "h=git+https://GitHub.com/o/h.git"
+    local r; for r in o/a o/b o/c o/d o/e o/f o/g o/h; do head_tree "$r" skills/s/SKILL.md; done
     run_discover --dry-run
     [ "$status" -eq 0 ]
-    [ "$(digest_json | jq -r '[.rejections[].repo] | sort | join(",")')" = "o/a/skills,o/b/skills,o/c/skills,o/d/skills,o/e/skills" ]
+    [ "$(digest_json | jq -r '[.rejections[].repo] | sort | join(",")')" = "o/a/skills,o/b/skills,o/c/skills,o/d/skills,o/e/skills,o/h/skills" ]
 }
 
 @test "discover: npm skills roots are read at the release the gates judge, not at HEAD" {
