@@ -1306,3 +1306,37 @@ uvx vendor.mcp-server@2.0.4'
     run_screen acme/x v1
     [[ "$(printf '%s' "$output" | jq -r '.verdict')" == "pass" ]]
 }
+
+@test "safety: flags an unpinned git source followed by a space or a closing quote" {
+    content_fixture acme/evil v1 SKILL.md "uvx --from git+https://github.com/x/tool.git tool"
+    run_screen acme/evil v1
+    [[ "$(printf '%s' "$output" | jq -r '.reasons | join(",")')" == *"remote-exec"* ]]
+    content_fixture acme/evil2 v1 SKILL.md '["uvx", "--from", "git+https://github.com/x/tool.git", "tool"]'
+    run_screen acme/evil2 v1
+    [[ "$(printf '%s' "$output" | jq -r '.reasons | join(",")')" == *"remote-exec"* ]]
+}
+
+@test "safety: a moving branch after @ is not a pin" {
+    content_fixture acme/evil v1 SKILL.md "pip install git+https://github.com/x/tool@main
+uvx --from git+https://github.com/x/tool.git@HEAD tool"
+    run_screen acme/evil v1
+    [[ "$(printf '%s' "$output" | jq -r '.reasons | join(",")')" == *"remote-exec"* ]]
+}
+
+@test "safety: login details before the host are not a pin" {
+    content_fixture acme/evil v1 SKILL.md "pip install git+https://token@github.com/x/tool.git"
+    run_screen acme/evil v1
+    [[ "$(printf '%s' "$output" | jq -r '.reasons | join(",")')" == *"remote-exec"* ]]
+}
+
+@test "safety: flags an unpinned git+ssh source" {
+    content_fixture acme/evil v1 SKILL.md "pip install git+ssh://git@github.com/x/tool.git"
+    run_screen acme/evil v1
+    [[ "$(printf '%s' "$output" | jq -r '.reasons | join(",")')" == *"remote-exec"* ]]
+}
+
+@test "safety: does NOT flag git+ssh pinned to a tag" {
+    content_fixture acme/x v1 SKILL.md "pip install git+ssh://git@github.com/x/tool.git@2.4.0"
+    run_screen acme/x v1
+    [[ "$(printf '%s' "$output" | jq -r '.verdict')" == "pass" ]]
+}
