@@ -92,3 +92,7 @@ YOU MUST distinguish violations from needs-review.
 NEVER ignore Critical accessibility errors.
 
 Think hard about the experience of users with disabilities.
+
+## See also
+
+[`addyosmani/web-quality-skills`](https://github.com/addyosmani/web-quality-skills) `skills/accessibility` (MIT, community, 2.9k★, pin `afa8da94`) is a detailed WCAG 2.2 checklist — a companion for the fixes. This audit keeps its own output format (impact levels, violations vs needs-review, `file:line`). Deque's own skill needs a paid axe DevTools subscription.

@@ -44,3 +44,7 @@ YOU MUST define acceptable performance thresholds before the tests.
 NEVER run load tests without active monitoring.
 
 Think hard about realistic scenarios before creating the tests.
+
+## See also
+
+For **k6**, Grafana's own skills — [`grafana/skills`](https://github.com/grafana/skills) `skills/grafana-k6/*` (Apache-2.0, pin `1ccacf29`, already the `ops-monitoring` vendor) — go far deeper: script authoring, maintenance, trend analysis, cloud runs. Their `k6-perf-test-website` triggers on "load test this URL" without asking whether the user owns the target: the rule above still applies — an isolated environment, never production, only systems you own or are authorised to test.

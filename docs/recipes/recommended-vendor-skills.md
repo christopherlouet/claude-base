@@ -771,6 +771,100 @@ In a repository that versions `.claude/`, copy these folders instead of linking 
 
 ---
 
+### Redux Toolkit — skills inside `@reduxjs/toolkit` (state-management, if Redux)
+
+**Covers**: eight skills — modern Redux, data flow, slices and selectors, state ownership, side effects, RTK Query, debugging, migration to modern Redux.
+
+**Install only if**: the project uses Redux Toolkit ≥ 2.13. They ship in the npm package (TanStack Intent), versioned with the installed library — nothing to fetch:
+
+```bash
+ls node_modules/@reduxjs/toolkit/skills/*/*/SKILL.md
+ln -s "$PWD/node_modules/@reduxjs/toolkit/skills/build-modern-redux-apps/modern-redux" ./.claude/skills/
+```
+
+**Provenance**: Redux maintainers, MIT. Safety screen (`packages/toolkit/skills` at `e7a8b318`): pass.
+
+---
+
+### FormatJS — `localization-review`, `translate` (dev-i18n, if ICU/FormatJS)
+
+**Covers**: ICU message review and translation. Published under `.agents/skills/` and indexed at `.well-known/agent-skills`.
+
+**Install only if**: the project uses ICU messages (FormatJS, react-intl).
+
+```bash
+git clone https://github.com/formatjs/formatjs ~/dev/vendor-skills/formatjs
+git -C ~/dev/vendor-skills/formatjs checkout bc0fd2253f6b
+ln -s ~/dev/vendor-skills/formatjs/.agents/skills/localization-review ~/dev/vendor-skills/formatjs/.agents/skills/translate ./.claude/skills/
+```
+
+**Provenance**: FormatJS maintainers, MIT per package (no root LICENSE). Safety screen: pass.
+
+---
+
+### Addy Osmani — `web-quality-skills` `accessibility` (wcag-audit companion)
+
+**Covers**: a WCAG 2.2 checklist with fixes (the repo also has performance, SEO and Core Web Vitals skills).
+
+**Install only if**: you want a fix-oriented companion to `/qa:wcag-audit`.
+
+```bash
+git clone https://github.com/addyosmani/web-quality-skills ~/dev/vendor-skills/web-quality
+git -C ~/dev/vendor-skills/web-quality checkout afa8da942115
+ln -s ~/dev/vendor-skills/web-quality/skills/accessibility ./.claude/skills/
+```
+
+**Provenance**: community (Addy Osmani), MIT, 2.9k★, no releases. Safety screen: pass.
+
+---
+
+### Grafana — `grafana/skills` `grafana-k6` (ops-load-testing, if k6)
+
+**Covers**: k6 script authoring, docs, maintenance, trend analysis, cloud runs, a website test suite. Same repo and pin as the `ops-monitoring` entry.
+
+**Install only if**: the project load-tests with k6. Keep `/ops:ops-load-testing`'s rule: `k6-perf-test-website` does not ask whether the user owns the target.
+
+```bash
+git clone https://github.com/grafana/skills ~/dev/vendor-skills/grafana
+git -C ~/dev/vendor-skills/grafana checkout 1ccacf29049f
+ln -s ~/dev/vendor-skills/grafana/skills/grafana-k6/k6 ./.claude/skills/
+```
+
+**Provenance**: Grafana Labs, Apache-2.0. Safety screen (`skills/grafana-k6`): pass.
+
+---
+
+### Firecrawl — `firecrawl/cli` skills (web-scraping, if Firecrawl)
+
+**Covers**: one skill per CLI operation (scrape, crawl, map, search, agent, interact, monitor, parse, download…) plus a `firecrawl` router.
+
+**Install only if**: the user wants Firecrawl. Link the operation skills, **not the router**: it claims "any live-web task — including ordinary web research", routing every lookup to a paid API.
+
+```bash
+git clone --branch v1.25.3 https://github.com/firecrawl/cli ~/dev/vendor-skills/firecrawl
+for s in scrape crawl map search agent; do ln -s ~/dev/vendor-skills/firecrawl/skills/firecrawl-$s ./.claude/skills/; done
+```
+
+**Provenance**: Firecrawl, ISC (package.json; no LICENSE file). Safety screen (`skills/`): pass. The CLI sends telemetry by default (`export FIRECRAWL_NO_TELEMETRY=1` turns it off).
+
+---
+
+### GitHub — `github-actions-hardening` (ops-ci, workflow security)
+
+**Covers**: GitHub Actions hardening — token permissions, SHA-pinned actions, untrusted input, `pull_request_target`. No pipeline authoring, no GitLab.
+
+**Install only if**: the project runs GitHub Actions.
+
+```bash
+git clone https://github.com/github/awesome-copilot ~/dev/vendor-skills/awesome-copilot
+git -C ~/dev/vendor-skills/awesome-copilot checkout 143a3d976b3c
+ln -s ~/dev/vendor-skills/awesome-copilot/skills/github-actions-hardening ./.claude/skills/
+```
+
+**Provenance**: GitHub org (community-written collection), MIT, no releases. Safety screen: pass.
+
+---
+
 ## Vendors evaluated and NOT recommended
 
 This list is part of the curation work. Naming what we rejected matters as much as naming what we approve.

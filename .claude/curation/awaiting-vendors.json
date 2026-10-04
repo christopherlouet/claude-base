@@ -6,8 +6,8 @@
       "foundationSkill": "dev-i18n",
       "tech": "i18n",
       "matchKeywords": ["lingui", "i18next", "next-intl"],
-      "currentBest": "lingui/skills (authority but single-library, already curated); no broad neutral i18n skill exists",
-      "bar": "a broad neutral i18n skill (i18next/formatjs org), or narrow the pack to Lingui-only -> POINT"
+      "currentBest": "formatjs/formatjs .agents/skills (localization-review, translate — authority, MIT, 2026-10-04; pointed to from dev-i18n) + lingui/skills (single-library) + flutter-setup-localization; no vendor ships a library-SETUP skill (next-intl, react-i18next, vue-i18n)",
+      "bar": "an authority setup skill for next-intl / i18next / vue-i18n (the review and translation half is already POINTed to formatjs)"
     },
     {
       "foundationSkill": "ops-k8s",

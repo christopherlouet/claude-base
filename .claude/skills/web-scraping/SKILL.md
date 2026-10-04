@@ -204,3 +204,7 @@ YOU MUST respect robots.txt and the target site's ToS.
 YOU MUST save outputs in `./scraped/<date>/` with timestamp for traceability.
 
 NEVER bypass an anti-bot system without documented legitimate justification.
+
+## See also
+
+Firecrawl publishes its own skills in [`firecrawl/cli`](https://github.com/firecrawl/cli/tree/main/skills) (13 skills, CLI v1.25.3; the package is ISC-licensed). Install the **operation** skills you use (`firecrawl-scrape`, `-crawl`, `-map`, `-search`, `-agent`), not the `firecrawl` router: its description claims "any live-web task — including ordinary web research", which would route every lookup to a paid API. The decision tree, the free fallbacks, the cost gates and the legal rules above stay here.
