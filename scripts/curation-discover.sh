@@ -152,9 +152,10 @@ _ids_of() {
 #            whole-repo candidate is not proposed again (as before);
 #   R root — a record of the WHOLE repo: every candidate of the repo is skipped;
 #   E id   — this exact id (a recorded path, or a repo/path judged recently);
-#   P id   — a recorded path: the collect filter also skips a candidate that
-#            contains it or lies inside it (a vendor's skills directory is
-#            curated once, not proposed again per nested or enclosing path).
+#   P id   — a recorded path: a candidate lying inside it is skipped too (a
+#            vendor's skills directory is curated once, not again per nested
+#            root). A candidate ENCLOSING it is not: a root holding one
+#            recorded skill may hold unrecorded ones.
 # A record of one path therefore no longer hides the repo's SIBLING paths.
 _record_keys() {
     local v id root
@@ -243,7 +244,7 @@ _list_candidates() {
 _web_get() {
     local tries="${CURATION_GH_RETRIES:-3}" i out
     for ((i = 1; i <= tries; i++)); do
-        if out=$(curl -fsSL --max-time 20 "$1" 2>/dev/null); then
+        if out=$(curl -fsSL --proto =https --proto-redir =https --max-filesize 2000000 --max-time 20 "$1" 2>/dev/null); then
             printf '%s' "$out"; return 0
         fi
         [ "$i" -lt "$tries" ] && sleep "${CURATION_GH_BACKOFF:-2}"
@@ -262,7 +263,15 @@ _gh_url_repo() {
         git@github.com:*) u="${u#*:}" ;;
         *) return 1 ;;
     esac
-    _repo_root "$u"
+    u=$(_repo_root "$u") || return 1
+    _valid_repo "$u" && printf '%s\n' "$u"
+}
+
+# _valid_repo <owner/repo> — a GitHub owner/repo name, nothing an API path or a
+# candidate id could be steered by ('?', '#', '%', spaces, '.', '..').
+_valid_repo() {
+    [[ "$1" =~ ^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$ ]] || return 1
+    case "/$1/" in */./*|*/../*) return 1 ;; esac
 }
 
 # _skills_roots <owner/repo> [declared] — the candidate ids for the skills a repo
@@ -301,7 +310,7 @@ _skills_roots() {
             return root
         }
         BEGIN {
-            # DECLARED is split on "\n" too: a raw "+" never reaches it (refused upstream).
+            # DECLARED is "+"-joined; a declared path holding "+" is dropped upstream.
             m = split(ENVIRON["DECLARED"], d, /[+\n]/)
             for (i = 1; i <= m; i++) if (d[i] == "*") all = 1; else if (safe(d[i])) want[root_of(d[i])] = 1
         }
@@ -319,10 +328,19 @@ _skills_roots() {
 # take all of a source's slots under the candidate cap (hits are ranked by line
 # number). An unreadable tree is reported as "<label> <repo> (tree unreadable)".
 _roots_breadth_first() {
-    local label="$1" r decl
+    local label="$1" r decl out
     while IFS=$'\t' read -r r decl; do
         [ -n "$r" ] || continue
-        _skills_roots "$r" "${decl:-*}" || { [ -n "${SOURCE_FAIL_LOG:-}" ] && printf '%s %s (tree unreadable)\n' "$label" "$r" >> "$SOURCE_FAIL_LOG"; }
+        if ! out=$(_skills_roots "$r" "${decl:-*}"); then
+            [ -n "${SOURCE_FAIL_LOG:-}" ] && printf '%s %s (tree unreadable)\n' "$label" "$r" >> "$SOURCE_FAIL_LOG"
+            continue
+        fi
+        # Declared skills (well-known) absent from the tree the gates judge — a
+        # skill newer than the release, or a URL form not understood: say so.
+        if [ -z "$out" ] && [ -n "$decl" ] && [ "$decl" != "*" ] && [ -n "${SOURCE_FAIL_LOG:-}" ]; then
+            printf '%s %s (declared skills not found at its release)\n' "$label" "$r" >> "$SOURCE_FAIL_LOG"
+        fi
+        [ -n "$out" ] && printf '%s\n' "$out"
     done | awk -F '\t' '{ print k[$1]++ "\t" NR "\t" $2 }' | sort -n -k1,1 -k2,2 | cut -f3
 }
 
@@ -374,14 +392,17 @@ _source_hits() {
                 continue
             fi
             printf '%s' "$idx" | jq -r '
-                .skills[]? | .url | strings
-                | (capture("^https://raw\\.githubusercontent\\.com/(?<o>[^/]+)/(?<r>[^/]+)/[^/]+/(?<p>.+/SKILL\\.md)$"; "i")
-                   // capture("^https://github\\.com/(?<o>[^/]+)/(?<r>[^/]+)/(blob|raw)/[^/]+/(?<p>.+/SKILL\\.md)$"; "i")
+                def name: test("^[A-Za-z0-9._-]+$") and . != "." and . != "..";
+                .skills[]? | objects | .url | strings
+                | (capture("^https://raw\\.githubusercontent\\.com/(?<o>[^/]+)/(?<r>[^/]+)/(refs/(heads|tags)/)?[^/]+/(?<p>(.+/)?SKILL\\.md)$"; "i")
+                   // capture("^https://github\\.com/(?<o>[^/]+)/(?<r>[^/]+)/(blob|raw)/[^/]+/(?<p>(.+/)?SKILL\\.md)$"; "i")
                    // (capture("^https://github\\.com/(?<o>[^/]+)/(?<r>[^/?#]+)"; "i") | .p = "*")
                    // empty)
+                | .r |= sub("\\.git$"; "")
+                | select((.o | name) and (.r | name) and (.p | test("[+%[:cntrl:]]") | not))
                 | "\(.o)/\(.r)\t\(.p)"'
         done < <(printf '%s' "$src" | jq -r '.hosts[]? | strings') \
-            | awk -F '\t' '{ r = $1; sub(/\.git$/, "", r); k = tolower(r)
+            | awk -F '\t' '{ r = $1; k = tolower(r)
                               if (!(k in d)) { order[++n] = k; repo[k] = r; d[k] = $2 } else d[k] = d[k] "+" $2 }
                             END { for (i = 1; i <= n; i++) print repo[order[i]] "\t" d[order[i]] }' \
             | _roots_breadth_first well-known
@@ -455,7 +476,7 @@ collect_candidates() {
                 k = tolower($3); n = split(k, seg, "/"); root = seg[1] "/" seg[2]
                 if (key["E", k] || key["R", root]) next
                 if (n == 2 && key["A", root]) next
-                if (n > 2) for (q in path) if (index(k "/", q "/") == 1 || index(q "/", k "/") == 1) next
+                if (n > 2) for (q in path) if (index(k "/", q "/") == 1) next
                 if (!seen[k]++) print $3
             }' \
             <(printf '#\tknown\n%s\n' "$known") - \
@@ -838,6 +859,7 @@ pending_proposals() {
          | select((.repo | ascii_downcase) as $r
                   | ($r | split("/") | .[0:2] | join("/")) as $root
                   | ($decided | any(.[0] == "E" and .[1] == $r)
+                     or any(. as $k | $k[0] == "P" and ($r | startswith($k[1] + "/")))
                      or any(.[0] == "R" and .[1] == $root)
                      or ($r == $root and any(.[0] == "A" and .[1] == $root))) | not)
          | {repo, proposedAt:.judgedAt, pinnedRef, fit, reason}]' "$LEDGER" 2>/dev/null || echo '[]'

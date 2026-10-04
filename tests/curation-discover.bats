@@ -1591,6 +1591,21 @@ More guidance."
     [ "$(digest_json | jq -r '.pendingProposals | length')" -eq 0 ]
 }
 
+@test "discover: a pending path proposal inside a since-recorded path is no longer pending" {
+    subpath_candidate "bigco/tool" "skills"
+    mkdir -p "$TEST_DIR/out"
+    jq -cn --arg d "$(date -u +%Y-%m-%d)" '{version:1, entries:[{repo:"bigco/tool/skills/group", gate:"proposed", reason:"deep", judgedAt:$d, pinnedRef:"v2.0.0", fit:5}]}' \
+        > "$TEST_DIR/out/judged.json"
+    # Listed while only a sibling is recorded (the list itself must not be empty
+    # by accident), cleared once an enclosing path is.
+    echo '{"version":"1.0.0","records":[{"vendorId":"bigco/tool/other"}]}' > "$TEST_DIR/registry.json"
+    run_discover --digest-dir "$TEST_DIR/out"
+    [ "$(digest_json | jq -r '[.pendingProposals[].repo] | join(",")')" = "bigco/tool/skills/group" ]
+    echo '{"version":"1.0.0","records":[{"vendorId":"bigco/tool/skills"}]}' > "$TEST_DIR/registry.json"
+    run_discover --digest-dir "$TEST_DIR/out"
+    [ "$(digest_json | jq -r '.pendingProposals | length')" -eq 0 ]
+}
+
 @test "discover: an executable under the path but outside a skill directory is screened" {
     # The user installs the whole directory: a hook beside the skills must not
     # escape the screen because it is in no skill's own directory.
@@ -1849,16 +1864,27 @@ wk_fixture() { printf '%s' "$2" > "$TEST_DIR/fx/wk_$1"; }
     [[ "$f" == *"html.example"* ]]
 }
 
-@test "discover: a candidate overlapping a recorded path is not proposed again, a sibling is" {
+@test "discover: a candidate inside a recorded path is not proposed again, a sibling is" {
     npm_curl
-    jq -cn '{version:"1.0.0", records:[{vendorId:"hc/agent-skills/terraform/gen/skills/style+terraform/gen/skills/test"},{vendorId:"dk/skills/skills"}]}' > "$TEST_DIR/registry.json"
+    jq -cn '{version:"1.0.0", records:[{vendorId:"hc/agent-skills/packer/hcp/skills"},{vendorId:"dk/skills/skills"}]}' > "$TEST_DIR/registry.json"
     jq -cn '{version:"1.0.0", sources:[{domain:"tools", kind:"repos", repos:["hc/agent-skills","dk/skills"]}]}' > "$TEST_DIR/sources.json"
-    head_tree hc/agent-skills terraform/gen/skills/style/SKILL.md terraform/gen/skills/test/SKILL.md packer/hcp/skills/p/SKILL.md
+    head_tree hc/agent-skills packer/hcp/skills/p/SKILL.md packer/hcp/skills/sub/skills/q/SKILL.md terraform/gen/skills/t/SKILL.md
     # dk/skills/skills is recorded whole; its nested group is covered by it.
     head_tree dk/skills skills/group/skills/x/SKILL.md
     run_discover --dry-run
     [ "$status" -eq 0 ]
-    [ "$(digest_json | jq -r '[.rejections[].repo] | join(",")')" = "hc/agent-skills/packer/hcp/skills" ]
+    [ "$(digest_json | jq -r '[.rejections[].repo] | join(",")')" = "hc/agent-skills/terraform/gen/skills" ]
+}
+
+@test "discover: a root holding a recorded skill and unrecorded ones is still proposed" {
+    npm_curl
+    # docker/skills shape: 4 of 11 skills recorded one by one, the root itself not.
+    jq -cn '{version:"1.0.0", records:[{vendorId:"dk/skills/skills/a+skills/b"}]}' > "$TEST_DIR/registry.json"
+    jq -cn '{version:"1.0.0", sources:[{domain:"tools", kind:"repos", repos:["dk/skills"]}]}' > "$TEST_DIR/sources.json"
+    head_tree dk/skills skills/a/SKILL.md skills/b/SKILL.md skills/new/SKILL.md
+    run_discover --dry-run
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '[.rejections[].repo] | join(",")')" = "dk/skills/skills" ]
 }
 
 @test "discovery-sources.json (shipped): tool repos and well-known hosts are watched" {
@@ -1878,4 +1904,42 @@ wk_fixture() { printf '%s' "$2" > "$TEST_DIR/fx/wk_$1"; }
     [ "$status" -eq 0 ]
     grep -q 'ok.example' "$TEST_DIR/curl.log"
     ! grep -q 'evil.example\|b.example' "$TEST_DIR/curl.log"
+}
+
+@test "discover: well-known raw URLs with a refs/heads ref, a repo-root SKILL.md, and a bad entry" {
+    npm_curl
+    jq -cn '{version:"1.0.0", sources:[{domain:"wk", kind:"well-known", hosts:["r.example"]}]}' > "$TEST_DIR/sources.json"
+    wk_fixture r.example '{"skills":["not-an-object",
+      {"name":"a","url":"https://raw.githubusercontent.com/fj/fj/refs/heads/main/.agents/skills/a/SKILL.md"},
+      {"name":"b","url":"https://raw.githubusercontent.com/one/skill/main/SKILL.md"}]}'
+    head_tree fj/fj .agents/skills/a/SKILL.md
+    head_tree one/skill SKILL.md
+    run_discover --dry-run
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '[.rejections[].repo] | sort | join(",")')" = "fj/fj/.agents/skills,one/skill" ]
+}
+
+@test "discover: a well-known index cannot smuggle a bad owner, repo or '+' path" {
+    npm_curl
+    jq -cn '{version:"1.0.0", sources:[{domain:"wk", kind:"well-known", hosts:["s.example"]}]}' > "$TEST_DIR/sources.json"
+    wk_fixture s.example '{"skills":[
+      {"url":"https://raw.githubusercontent.com/o/r?x=1/main/skills/a/SKILL.md"},
+      {"url":"https://raw.githubusercontent.com/../r/main/skills/a/SKILL.md"},
+      {"url":"https://raw.githubusercontent.com/p/q/main/skills/a+b/SKILL.md"}]}'
+    # Were "skills/a+b" split on '+', the undeclared b/skills root would appear.
+    head_tree p/q b/skills/y/SKILL.md
+    run_discover --dry-run
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.scope.candidates')" -eq 0 ]
+    refute_called 'x=1'
+}
+
+@test "discover: declared well-known skills missing from the judged tree are reported" {
+    npm_curl
+    jq -cn '{version:"1.0.0", sources:[{domain:"wk", kind:"well-known", hosts:["m.example"]}]}' > "$TEST_DIR/sources.json"
+    wk_fixture m.example '{"skills":[{"url":"https://raw.githubusercontent.com/o/r/main/.agents/skills/new/SKILL.md"}]}'
+    head_tree o/r skills/old/SKILL.md
+    run_discover --dry-run
+    [ "$status" -eq 0 ]
+    [[ "$(digest_json | jq -r '.sourceFailures | join(" ")')" == *"o/r"*"not found"* ]]
 }
