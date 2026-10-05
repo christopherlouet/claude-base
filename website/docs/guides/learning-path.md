@@ -81,7 +81,7 @@ At startup, you should see a message similar to:
 
 ```
 === Claude Code Session ===
-Version: <!-- version -->5.7.1<!-- /version -->
+Version: <!-- version -->5.8.0<!-- /version -->
 Commandes: 106
 Agents: 44
 ===========================
