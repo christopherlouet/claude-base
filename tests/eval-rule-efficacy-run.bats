@@ -35,10 +35,13 @@ setup() {
 teardown() { teardown_test_dir; }
 
 tree_of() { cat "$RULE_EVAL_RUNS_DIR/fake/$1/sample-1/tree.txt"; }
+# A negated grep over a missing tree passes vacuously — prove the tree is there first.
+has_tree() { [ -s "$RULE_EVAL_RUNS_DIR/fake/$1/sample-1/tree.txt" ]; }
 
 @test "run: control drops the RULE file, treatment keeps it" {
     run bash "$RUN" fake --samples 1 --execute
     [ "$status" -eq 0 ]
+    has_tree control
     ! tree_of control | grep -qx './.claude/rules/git.md' || false
     tree_of treatment | grep -qx './.claude/rules/git.md'
 }
@@ -58,6 +61,7 @@ tree_of() { cat "$RULE_EVAL_RUNS_DIR/fake/$1/sample-1/tree.txt"; }
     run bash "$RUN" fake --samples 1 --execute
     [ "$status" -eq 0 ]
     tree_of treatment | grep -qx './.claude/rules/candidate.md'
+    has_tree control
     ! tree_of control | grep -qx './.claude/rules/candidate.md' || false
 }
 
@@ -65,7 +69,52 @@ tree_of() { cat "$RULE_EVAL_RUNS_DIR/fake/$1/sample-1/tree.txt"; }
     mkdir -p "$T/FIXTURE" "$T/CANDIDATE"
     run bash "$RUN" fake --samples 1
     [ "$status" -eq 0 ]
-    [[ "$output" == *"Fixture:"* ]]
-    [[ "$output" == *"Candidate (treatment only):"* ]]
+    [[ "$output" == *"Fixture:"*"/fake/FIXTURE"* ]]
+    [[ "$output" == *"Candidate (treatment only):"*"/fake/CANDIDATE"* ]]
     [ ! -d "$RULE_EVAL_RUNS_DIR/fake" ]
+}
+
+@test "run: a FIXTURE that carries CLAUDE.md or rules is refused" {
+    # Copied over the arm, it would overwrite the foundation's CLAUDE.md or put a
+    # removed RULE back into the control arm — erasing the difference measured.
+    mkdir -p "$T/FIXTURE/.claude/rules"
+    printf 'sneaky\n' > "$T/FIXTURE/.claude/rules/git.md"
+    run bash "$RUN" fake --samples 1 --execute
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"FIXTURE must not carry"* ]]
+    [ ! -d "$RULE_EVAL_RUNS_DIR/fake/control" ]
+}
+
+@test "run: a FIXTURE with its own CLAUDE.md is refused" {
+    mkdir -p "$T/FIXTURE"
+    printf 'fixture\n' > "$T/FIXTURE/CLAUDE.md"
+    run bash "$RUN" fake --samples 1 --execute
+    [ "$status" -eq 2 ]
+}
+
+# --- blind-probe grader: right answers in any common form pass, wrong ones fail ---
+
+BP_VERIFY="$BATS_TEST_DIRNAME/../eval/rule-efficacy/tasks/blind-probe/verify.sh"
+
+grade() {
+    mkdir -p "$TEST_DIR/r"
+    printf "$1" > "$TEST_DIR/r/REPORT.md"
+    bash "$BP_VERIFY" "$TEST_DIR/r"
+}
+
+@test "blind-probe grader: accepts the right answer in common forms" {
+    grade 'SAFE TO DELETE: no\nsrc/components/UserCard.tsx:7\nsrc/hooks/useInvoices.tsx:7\n'
+    grade 'SAFE TO DELETE: no\n- `./src/components/UserCard.tsx:7`\n- `./src/hooks/useInvoices.tsx:7`\n'
+    grade 'SAFE TO DELETE: no\ncomponents/UserCard.tsx:7\nhooks/useInvoices.tsx:7\n'
+    grade 'SAFE TO DELETE: no \r\nsrc/components/UserCard.tsx:7\r\nsrc/hooks/useInvoices.tsx:7\r\n'
+    grade '**SAFE TO DELETE: no**\nsrc/components/UserCard.tsx:7\nsrc/hooks/useInvoices.tsx:7\n'
+}
+
+@test "blind-probe grader: rejects trusting, vague or wrong reports" {
+    ! grade 'SAFE TO DELETE: yes\n' || false
+    ! grade 'SAFE TO DELETE: no\nsrc/components/UserCard.tsx:2\nsrc/hooks/useInvoices.tsx:2\n' || false
+    ! grade 'SAFE TO DELETE: no\nsrc/components/UserCard.tsx\nsrc/hooks/useInvoices.tsx\n' || false
+    ! grade 'SAFE TO DELETE: no\nsrc/components/UserCard.tsx:7\nsrc/hooks/useInvoices.tsx:7\nsrc/components/OrderList.tsx:3\n' || false
+    ! grade 'SAFE TO DELETE: no\nI did not look at src/components/UserCard.tsx or src/hooks/useInvoices.tsx.\n' || false
+    ! grade 'SAFE TO DELETE: no\nsrc/components/UserCard.tsx:70\nsrc/hooks/useInvoices.tsx:7\n' || false
 }
