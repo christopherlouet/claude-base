@@ -9,6 +9,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 > Earlier entries (v1.30.x and before) remain in their original French
 > as a historical record of the project's pre-i18n era.
 
+## [5.8.0] - 2026-10-05
+
+Nineteen pull requests on one question: **why do so few vendor skills replace the foundation's
+own?** Measured answer: discovery only ever judged one alphabetical slice of its candidates, its
+judge read a repo's README instead of the skills it ships, and vendors publish through channels a
+repository-name search never sees — inside the tool's own repo, inside an npm package, under
+`.well-known/agent-skills`. And the foundation's skills are not "better": eleven of them carried
+third-party facts that had gone stale. This release fixes the judge and the discovery channels,
+corrects those facts, and points six skills at the vendor that now maintains the depth.
+
+### Added
+
+- **Discovery reaches the channels vendors actually use.** A candidate can now be a sub-directory of
+  a repo (`owner/repo/sub`), screened and judged on that sub-directory alone (#640); a new `npm`
+  source reads the skills shipped inside packages tagged `tanstack-intent`, at their release (#641);
+  and two more sources read a fixed list of tool repos (vercel/next.js, cypress, ChromeDevTools,
+  flutter, docker, hashicorp) and `.well-known/agent-skills` indexes (#642).
+- **Six skills point at their vendor.** `dev-react-perf` → Vercel's react-best-practices (keeping
+  what it leaves out: virtualization, state colocation, profiling, Core Web Vitals) (#632);
+  `ops-infra-code` → antonbabenko/terraform-skill v1.17.1 and hashicorp/agent-skills v1.0.0, keeping
+  a condensed HCL core (#633); `ops-docker` → docker/skills v0.3.1, keeping image scanning and
+  Hadolint (#633); `dev-flutter` → flutter/agent-plugins, keeping BLoC, and `qa-chrome` →
+  chrome-devtools-mcp skills (#634). `dev-document` is scoped to code that generates documents —
+  for Claude to write an office file itself, Anthropic's docx/pdf/xlsx/pptx skills fit (#632).
+- **Conditional vendor pointers** ("if you use X") for Stripe, Airflow, Dagster, dbt, AWS,
+  Cloudflare, Expo (#636), Redux, FormatJS, web-quality, k6 and GitHub Actions hardening (#638).
+  Firecrawl's operation skills are deliberately not recommended (#638).
+- **Trigger eval with vendor skills installed side by side**: `run.sh --extra-skills DIR` and five
+  `vendor-*-coexist` cases (#629); `dev-prisma` and `work-quick` are judged by the outcome, not by
+  which skill fired (#635).
+
+### Fixed
+
+- **Security rules that never loaded.** With a vendor's Supabase skill installed, `dev-supabase`
+  never fired — so its RLS and `service_role` rules never reached the session. Those rules, and
+  Prisma's, now live in two path-scoped rules, `.claude/rules/supabase.md` and
+  `.claude/rules/prisma.md`, loaded on matching files whichever skill fires (#630).
+- **Eleven stale third-party facts**: FID instead of INP, Lucia (abandoned), wkhtmltopdf
+  (archived), Airflow `schedule_interval` (removed in 3), Terraform stopping at 1.11, a CI example
+  without `permissions:` and mutable tags, among others; a test replays the old files and flags them
+  all (#631).
+- **The curation judge reads the skills a repo ships**, not its README; a repo with no `SKILL.md` is
+  rejected without an LLM call (#627). Pins track the newest stable release (neither draft nor
+  prerelease), and proposals are recorded so they stop coming back each month (#628).
+- **Unpinned git sources are screened as remote exec** (`git+` without a pin, a moving branch,
+  a login before the host) (#637).
+
+### Changed
+
+- CI bats shards are balanced by measured duration instead of line count: macOS longest shard
+  619 s → ~514 s (#639).
+- Re-pinned 12 vendor skills (#624, #644); CI action bump (#645).
+
+### Upgrade notes
+
+- **`claude-base update --all`** brings the two new path-scoped rules (`prisma.md`, `supabase.md`)
+  and the updated skills. Vendor skills are never installed for you: the preset's
+  recommendations list them, opt-in, with their pinned ref.
+
 ## [5.7.1] - 2026-10-03
 
 One fix, found the morning after 5.7.0 while updating the fleet: the two test gates blocked a green
