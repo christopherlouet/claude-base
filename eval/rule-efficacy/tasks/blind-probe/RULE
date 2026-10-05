@@ -1,0 +1,3 @@
+# Nothing is removed for the CONTROL arm: control = the foundation as it ships.
+# The rule under evaluation is not in the repo yet — it is added to the
+# TREATMENT arm only, from CANDIDATE/ (promotion eval).

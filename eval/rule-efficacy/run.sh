@@ -43,7 +43,8 @@ while [ $# -gt 0 ]; do
 done
 [ -n "$TASK_NAME" ] || { echo "run.sh: missing <task-name>" >&2; exit 2; }
 
-TASK_DIR="$SELF_DIR/tasks/$TASK_NAME"
+# Overridable so the harness can be tested without touching the real task/run dirs.
+TASK_DIR="${RULE_EVAL_TASKS_DIR:-$SELF_DIR/tasks}/$TASK_NAME"
 [ -d "$TASK_DIR" ] || { echo "run.sh: no such task: $TASK_NAME" >&2; exit 2; }
 [ -f "$TASK_DIR/PROMPT.md" ] || { echo "run.sh: task has no PROMPT.md" >&2; exit 2; }
 
@@ -67,11 +68,19 @@ if [ -f "$TASK_DIR/OUTPUTS" ]; then
 fi
 [ "${#OUTPUTS[@]}" -gt 0 ] || { echo "run.sh: task has no OUTPUTS to collect" >&2; exit 2; }
 
-WORK="$SELF_DIR/runs/${TASK_NAME}"
+# Optional task dirs: FIXTURE/ = a pre-existing project copied into BOTH arms (a
+# task that needs code to work in); CANDIDATE/ = files added to the TREATMENT arm
+# only (a rule evaluated for promotion, not in the repo yet).
+FIXTURE_DIR=""; [ -d "$TASK_DIR/FIXTURE" ] && FIXTURE_DIR="$TASK_DIR/FIXTURE"
+CANDIDATE_DIR=""; [ -d "$TASK_DIR/CANDIDATE" ] && CANDIDATE_DIR="$TASK_DIR/CANDIDATE"
+
+WORK="${RULE_EVAL_RUNS_DIR:-$SELF_DIR/runs}/${TASK_NAME}"
 echo "Task:       $TASK_NAME"
 echo "Samples:    $SAMPLES per arm (control + treatment = $((2 * SAMPLES)) generation calls)"
 echo "Control removes rule(s): ${RULES[*]:-<none>}"
 echo "Collect outputs:         ${OUTPUTS[*]}"
+echo "Fixture:                 ${FIXTURE_DIR:-<none>}"
+echo "Candidate (treatment only): ${CANDIDATE_DIR:-<none>}"
 echo "Work dir:   $WORK"
 echo "Generator:  $GEN_CMD"
 echo
@@ -103,6 +112,12 @@ build_project() {
     if [ "$arm" = "control" ] && [ "${#RULES[@]}" -gt 0 ]; then
         for r in "${RULES[@]}"; do rm -f "$dir/$r"; done
     fi
+    # Trailing /. copies the directory's contents, dotfiles included (.claude/).
+    [ -n "$FIXTURE_DIR" ] && cp -R "$FIXTURE_DIR/." "$dir/"
+    if [ "$arm" = "treatment" ] && [ -n "$CANDIDATE_DIR" ]; then
+        cp -R "$CANDIDATE_DIR/." "$dir/"
+    fi
+    return 0
 }
 
 for arm in control treatment; do

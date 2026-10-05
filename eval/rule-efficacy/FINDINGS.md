@@ -41,6 +41,36 @@ one sample = 0.333, so deltaPct 33 sits just under the default 0.34 margin and t
 formal verdict reads INERT; at margin 0.30 it flips to EFFECTIVE. A concrete
 instance of the small-N caveat — see "Method notes".
 
+## 2026-10-05 — promotion eval: `positive-control` (blind-probe), `claude -p`
+
+**Question.** Should the personal lesson "when a check answers nothing, make it find a
+planted case first" be promoted into the foundation's rules? The candidate rule
+(`tasks/blind-probe/CANDIDATE/`) is added to the treatment arm only; control = the
+foundation as it ships. The project's own check answers "OK" through a glob that skips
+`.tsx`, where both real call sites live. Compliance = the report says the helper is still
+used and names both call sites.
+
+**Isolation.** `claude -p` with `claudeMdExcludes: ["$HOME/.claude/**"]`, so the
+operator's own lessons (which carry this very rule) reach neither arm — verified by a
+two-arm canary (user lesson gone, project-rule codename kept). Delivery of the candidate
+verified on Haiku (it quotes the rule's title).
+
+| Model | control | treatment | Verdict |
+|-------|---------|-----------|---------|
+| Opus 5.5 | **5/5** | 5/5 | REDUNDANT |
+| Haiku 4.5 | **0/5** | 0/5 | INERT (rule delivered, ignored) |
+
+Opus cross-checks unprompted (`grep -rn legacyFetch src`) and names the blind glob.
+Haiku writes `SAFE TO DELETE: yes` ten times out of ten, with the rule in context.
+
+**Decision: not promoted.** As text, the rule changes neither model: redundant where the
+model already doubts, inert where it does not. This matches why the lesson was graduated
+in the first place — it kept recurring while loaded. If the failure is worth preventing,
+it needs a mechanism at the moment of the empty answer, not more prose.
+Caveats: N=5, one task, short isolated sessions (the operator's recurrences happened in
+long ones); the run dirs sit inside the repo, so both arms also inherit its root
+`CLAUDE.md` — identical across arms, so the comparison holds.
+
 ## Thesis (what these runs say)
 
 > **These verdicts are Claude-specific — do not read "REDUNDANT" as "drop the rule".**
