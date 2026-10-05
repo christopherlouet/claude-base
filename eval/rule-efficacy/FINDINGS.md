@@ -63,11 +63,14 @@ verified on Haiku (it quotes the rule's title).
 Opus cross-checks unprompted (`grep -rn legacyFetch src`) and names the blind glob.
 Haiku writes `SAFE TO DELETE: yes` ten times out of ten, with the rule in context.
 
-**Decision: not promoted.** As text, the rule changes neither model: redundant where the
-model already doubts, inert where it does not. This matches why the lesson was graduated
+**Decision: not promoted.** On this task, at N=5, the rule moved neither model: redundant
+where the model already doubts, inert where it does not. That is not proof of no effect —
+with 0/5 in Haiku's treatment arm, its true rate could still be up to ~52% (exact 95%
+upper bound) — but nothing here justifies the rule's context cost. This matches why the lesson was graduated
 in the first place — it kept recurring while loaded. If the failure is worth preventing,
 it needs a mechanism at the moment of the empty answer, not more prose.
-Caveats: N=5, one task, short isolated sessions (the operator's recurrences happened in
+Caveats: N=5, one task; the prompt itself says to *use the project's check to confirm*,
+so the rule competes with an explicit instruction, not only with an empty answer; short isolated sessions (the operator's recurrences happened in
 long ones); the run dirs sit inside the repo, so both arms also inherit its root
 `CLAUDE.md` — identical across arms, so the comparison holds.
 

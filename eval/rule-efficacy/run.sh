@@ -73,6 +73,13 @@ fi
 # only (a rule evaluated for promotion, not in the repo yet).
 FIXTURE_DIR=""; [ -d "$TASK_DIR/FIXTURE" ] && FIXTURE_DIR="$TASK_DIR/FIXTURE"
 CANDIDATE_DIR=""; [ -d "$TASK_DIR/CANDIDATE" ] && CANDIDATE_DIR="$TASK_DIR/CANDIDATE"
+# The fixture is copied over each arm, so a CLAUDE.md or rules dir in it would
+# overwrite the foundation's, or put a removed RULE back into the control arm —
+# erasing the very difference the eval measures. Instructions belong to the arms.
+if [ -n "$FIXTURE_DIR" ] && { [ -e "$FIXTURE_DIR/CLAUDE.md" ] || [ -e "$FIXTURE_DIR/.claude/rules" ]; }; then
+    echo "run.sh: FIXTURE must not carry CLAUDE.md or .claude/rules (it would override the arms)" >&2
+    exit 2
+fi
 
 WORK="${RULE_EVAL_RUNS_DIR:-$SELF_DIR/runs}/${TASK_NAME}"
 echo "Task:       $TASK_NAME"

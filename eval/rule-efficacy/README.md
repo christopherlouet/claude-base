@@ -66,7 +66,7 @@ test — or anything close to it — the control arm is not a control. Measured:
 documented `claudeMdExcludes` setting does, and keeps the project's rules in:
 
 ```bash
-GEN_CMD="claude -p --settings '{\"claudeMdExcludes\":[\"$HOME/.claude/**\"]}' --allowedTools Bash Read Write Edit Grep Glob --"
+export GEN_CMD="claude -p --settings '{\"claudeMdExcludes\":[\"$HOME/.claude/**\"]}' --allowedTools Bash Read Write Edit Grep Glob --"
 ```
 
 Prove it with a two-arm canary before a run: ask the agent (no tools) whether a
@@ -87,7 +87,7 @@ without it, "yes" and the codename.
 `run.sh` builds each arm as a minimal project (`CLAUDE.md` + `.claude/rules/`,
 the target rule removed for control), runs the agent once per sample, collects the
 task's `OUTPUTS`, and prints `eval.sh compare`. Override the agent with
-`CLAUDE_CMD`. Keep N small — this is an occasional check, not CI (see the
+`GEN_CMD` (exported, or inline before `./run.sh`; the `Generator:` line shows which one runs). Keep N small — this is an occasional check, not CI (see the
 agentic-billing note in project memory).
 
 Score already-generated dirs by hand:
