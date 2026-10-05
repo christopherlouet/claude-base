@@ -132,6 +132,7 @@ that is the artifact that tells you which rules to keep/emphasize/rephrase per m
 | `no-any` | `typescript` | a real `parseConfig` in `config.ts` that uses **no `any`** type |
 | `substantive-tests` | `verification` + `tdd-enforcement` | impl **plus a test the substance gate flags 0 hollow findings on** (dogfoods `scripts/substance-check.sh`) |
 | `blind-probe` | candidate `positive-control` (promotion eval) | the report does **not** trust the project's check, which answers "OK" through a glob that skips `.tsx`: it says the helper is still used and names both call sites |
+| `blind-probe-hook` | candidate hook `positive-control.sh` (same fixture/grader) | same as `blind-probe`; the treatment arm gets a PostToolUse hook instead of a rule |
 
 ## Adding a task
 

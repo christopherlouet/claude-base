@@ -74,6 +74,33 @@ so the rule competes with an explicit instruction, not only with an empty answer
 long ones); the run dirs sit inside the repo, so both arms also inherit its root
 `CLAUDE.md` — identical across arms, so the comparison holds.
 
+### Same lesson as a HOOK — `blind-probe-hook`, Haiku 4.5 (first EFFECTIVE)
+
+The text failed, so the same lesson was tried as a mechanism: a PostToolUse(Bash) hook
+(`tasks/blind-probe-hook/CANDIDATE/`) that speaks right after a query-like command
+answers "nothing" — empty, a bare `0`, or a short "OK / no … found" line — with
+structural exclusions only (background runs, wait loops, heredoc writes, fully
+redirected output; the `> script` banner npm prints is ignored). Same fixture, prompt
+and grader as `blind-probe` (symlinks).
+
+| Haiku 4.5 | correct |
+|-----------|---------|
+| control (three runs pooled) | **0/15** |
+| text rule | 0/5 |
+| **hook** | **3/5** — fired 6 times (delivery traced via `POSITIVE_CONTROL_TRACE`) |
+
+One-sided Fisher exact, 3/5 vs 0/15: p ≈ 0.009. Still one task, N=5.
+First run fired **0** times: the hook judged npm's two-line banner as a long answer —
+the test payloads were cleaner than real output. Fixed, then re-run. Project hooks do
+load under `claude -p` (canary).
+
+**Noise, replayed offline on the operator's own sessions** (18,521 recorded Bash calls,
+30 days): 287 firings (1.5% of calls, ~9.6/day). In a masked sample of 40: ~10 were
+genuine blind checks — `(eval):1: no matches found: --include=*.md`, zsh failing an
+unquoted glob before `grep` ever ran, read back as "nothing found" — ~20 were empty
+searches used as evidence of absence, ~10 were noise (mostly `grep '^not ok'` over a
+green suite). The mechanism catches the very slip the lesson records.
+
 ## Thesis (what these runs say)
 
 > **These verdicts are Claude-specific — do not read "REDUNDANT" as "drop the rule".**
