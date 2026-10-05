@@ -17,6 +17,7 @@ Classification values:
 | `_policy-destructive-sql.sh` | core | command + migration variants (2 shells, 1 core) |
 | `_policy-write-targets.sh` | core | write-target extraction |
 | `_policy-triggers.sh` | core | commit/push/deploy trigger detection |
+| `_policy-zsh-pipestatus.sh` | core | `shell_is_zsh` + `has_pipestatus_expansion` (quote/heredoc-aware lexer) |
 | `_sensitive-paths.sh` | core | pre-existing: protected-config / secret-file classifiers |
 | `_vendor-precedence-hint.sh` | core | pre-existing: pure-shell vendor-skill detection |
 | `_hook-helpers.sh` | assistant-only | rewriter sentinel/envelope helpers; re-exports the core strip for compat |
@@ -25,6 +26,7 @@ Classification values:
 | `destructive-ops.sh` | shell+core | fail-closed on missing core |
 | `destructive-migration.sh` | shell+core | fail-open on missing core |
 | `bash-write-guard.sh` | shell+core | env checks (existence/branch/tracked) stay in shell |
+| `zsh-pipestatus-guard.sh` | shell+core | outer-shell choice (`CLAUDE_CODE_SHELL`/`SHELL`) stays in shell; fail-open on missing core |
 | `pre-commit-tests.sh` | shell-env | trigger from core; body = run the stack's tests |
 | `pre-push-ci.sh` | shell-env | trigger from core; body = run the stack's local CI |
 | `pre-deploy-build.sh` | shell-env | trigger from core; body = run the prod build |
