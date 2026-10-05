@@ -1,0 +1,7 @@
+{
+  "name": "orders-dashboard",
+  "private": true,
+  "scripts": {
+    "check:deprecated": "bash scripts/check-deprecated.sh"
+  }
+}
