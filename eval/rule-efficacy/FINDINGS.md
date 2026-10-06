@@ -101,6 +101,12 @@ unquoted glob before `grep` ever ran, read back as "nothing found" — ~20 were 
 searches used as evidence of absence, ~10 were noise (mostly `grep '^not ok'` over a
 green suite). The mechanism catches the very slip the lesson records.
 
+**Decision (2026-10-06): opt-in, not default.** One task, N=5, on Haiku only — and on
+Opus the text was already redundant. That does not justify firing ~1.5% of every
+user's Bash calls with ~1 in 4 noise. The hook stays here as the single copy; the
+lessons recipe (`docs/recipes/personal-lessons-referential.md`) shows how to enable it
+per user. Revisit with more tasks or a second model.
+
 ## Thesis (what these runs say)
 
 > **These verdicts are Claude-specific — do not read "REDUNDANT" as "drop the rule".**
