@@ -1,0 +1,4 @@
+# Nothing is removed for the CONTROL arm. The TREATMENT arm adds, from
+# CANDIDATE/, a PostToolUse hook that speaks right after a query-like Bash
+# command answers "nothing" — the mechanical form of the positive-control
+# lesson, whose text form was REDUNDANT/INERT on blind-probe.
