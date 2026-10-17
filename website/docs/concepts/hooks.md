@@ -94,7 +94,7 @@ Executed **before** the tool is used.
 **Behavior:**
 - Exit code **2** blocks the tool: it is not executed and the hook's stderr is shown to Claude
 - Exit code **0** allows the tool; any other non-zero code surfaces an error but does **not** block, unless the hook carries `"onFailure": "block"` (Claude Code 2.1.295+)
-- With `"onFailure": "block"`, which every foundation PreToolUse guard carries, a guard that crashes, cannot start or outlives its `timeout` (seconds) blocks too; without it, or on an older CLI, it does not. Either way blocking scripts carry a wide `timeout` (30 s, 1800 s for test/CI gates) in `.claude/settings.json`
+- With `"onFailure": "block"`, which every foundation PreToolUse guard carries bar the zsh PIPESTATUS correctness guard (`"continue"` on purpose), a guard that crashes, cannot start or outlives its `timeout` (seconds) blocks too; without it, or on an older CLI, it does not. Either way blocking scripts carry a wide `timeout` (30 s, 1800 s for test/CI gates) in `.claude/settings.json`
 
 ### PostToolUse
 
@@ -330,7 +330,7 @@ There is **no single dispatcher script**. Each hook is its own small script unde
 | `config-protection.sh` | PreToolUse (Edit/Write) | Blocks edits to existing linter/formatter configs |
 | `bash-write-guard.sh` | PreToolUse (Bash) | Blocks Bash writes to protected/secrets files |
 
-A PreToolUse script **blocks** the tool by exiting **2**; PostToolUse scripts are advisory. An exit 1, a crash or a hook that outlives its `timeout` (in seconds) blocks only under `"onFailure": "block"` (Claude Code 2.1.295+), which the foundation's PreToolUse guards carry (measured 2026-10-17); the only valid values are `block` and `continue`, and any other one disables every PreToolUse guard. See [`docs/reference/hooks-reference.md`](/docs/reference/hooks-reference) for the full, authoritative catalogue of scripts, events and environment toggles.
+A PreToolUse script **blocks** the tool by exiting **2**; PostToolUse scripts are advisory. An exit 1, a crash or a hook that outlives its `timeout` (in seconds) blocks only under `"onFailure": "block"` (Claude Code 2.1.295+), which the foundation's PreToolUse guards carry, bar the zsh PIPESTATUS correctness guard (measured 2026-10-17); the only valid values are `block` and `continue`, and any other one disables every PreToolUse guard. See [`docs/reference/hooks-reference.md`](/docs/reference/hooks-reference) for the full, authoritative catalogue of scripts, events and environment toggles.
 
 ## Best practices
 

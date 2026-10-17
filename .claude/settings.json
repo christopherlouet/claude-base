@@ -228,7 +228,8 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/zsh-pipestatus-guard.sh\"",
-            "timeout": 30
+            "timeout": 30,
+            "onFailure": "continue"
           }
         ]
       },
