@@ -231,10 +231,12 @@ Instructions for the agent...
 
 | Model | Usage | Cost | Speed | Context | Max output |
 |--------|-------|------|---------|----------|------------|
-| haiku | Simple tasks, reading | $ | Fast | 200k | 8k |
-| sonnet (Sonnet 5) | Complex tasks, analysis | $$ | Medium | 1M | 128k |
-| opus (Opus 5) | Critical tasks, adaptive thinking | $$$ | Slower | 1M | 128k |
+| haiku (Haiku 5.5) | Simple tasks, reading | $ | Fast | 1M | 128k |
+| sonnet (Sonnet 5.5) | Complex tasks, analysis | $$ | Medium | 1M | 128k |
+| opus (Opus 5.5) | Critical tasks, adaptive thinking | $$$ | Slower | 1M | 128k |
 | fable (Fable 5.1) | Above-Opus tier — **no foundation agent is pinned to it** | $$$$ | Slowest | 1M | 128k |
+
+Aliases as resolved on the Anthropic API. On Bedrock, Google Cloud and Foundry `sonnet` and `haiku` resolve to Sonnet 4.5 and Haiku 4.5, and on Foundry `opus` to Opus 4.6 ([model config](https://code.claude.com/docs/en/model-config)).
 
 ### Agent example
 ```yaml

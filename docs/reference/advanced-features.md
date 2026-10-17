@@ -45,7 +45,7 @@ Best practices:
 | `low` | `/effort low` | Exploration, formatting, simple tasks |
 | `medium` | `/effort medium` | Standard development, fixes |
 | `high` | `/effort high` | Architecture, audit, complex refactoring, debug |
-| `xhigh` | `/effort xhigh` | Critical system architecture, advanced security audit (Opus-class models: Opus 5 / 4.8) |
+| `xhigh` | `/effort xhigh` | Critical system architecture, advanced security audit (Fable 5.1 / 5, Opus 5.5 / 5 / 4.8 / 4.7, Sonnet 5.5 / 5, Haiku 5.5; not Opus 4.6 or Sonnet 4.6) |
 | `max` | `/effort max` | The ceiling, above `xhigh` — reserve for the hardest single problem; slowest and most expensive per turn |
 
 Recommendations per foundation workflow:
@@ -84,15 +84,15 @@ vscode://anthropic.claude-code/open
 
 Useful for: CI/CD integration, setup scripts, notification hooks.
 
-## Opus 5 (recommended default, since 2026-07-24)
+## Opus 5.5 (recommended default, since 2026-09-22)
 
-`claude-opus-5` is the new default of the `opus` tier alias (CC 2.1.219) — **same price as Opus 4.8 (`$5/$25` per MTok) with greatly improved performance**: within ~0.5% of Fable 5's peak scores at half Fable's price, double Opus 4.8 on Frontier-Bench v0.1, and ahead of Fable 5 on OSWorld 2.0. 1M context, configurable effort settings, fast mode at `$10/$50` per MTok (~2.5× speed). Agent `model: opus` frontmatter picks it up with no change. Opus 4.8 is not deprecated — it serves as fallback for flagged requests and stays available in fast mode. ([Announcement](https://techcrunch.com/2026/07/24/anthropic-launches-opus-5/))
+`claude-opus-5-5` is the default of the `opus` tier alias since CC 2.1.280 (2026-09-22) on every provider but Microsoft Foundry (where `opus` still resolves to Opus 4.6), and Claude Code's default model on every subscription plan: that release moved Pro and Team Standard from Sonnet to Opus, matching Max, Team Premium and Enterprise. It is **cheaper than the Opus 5 it replaces**: `$4/$20` per MTok with cache reads at `$0.20` (Opus 5: `$5/$25`, `$0.50`), 1M context, 128K output. Agent `model: opus` frontmatter picks it up with no change, but two defaults moved with it: Claude Code runs Opus 5.5 at **`medium` effort by default** (Opus 5 defaults to `high`), and its adaptive thinking is always on. Fast mode on it costs `$8/$40` per MTok (see [Fast Mode](#fast-mode-research-preview)). Opus 5 (released 2026-07-24, within ~0.5% of Fable 5's peak scores, [announcement](https://techcrunch.com/2026/07/24/anthropic-launches-opus-5/)) and Opus 4.8 stay available. ([pricing](https://platform.claude.com/docs/en/about-claude/pricing), [models overview](https://platform.claude.com/docs/en/about-claude/models/overview), [model config](https://code.claude.com/docs/en/model-config))
 
-## Fable 5.1 (above-Opus tier — niche since Opus 5)
+## Fable 5.1 (above-Opus tier — a deliberate niche)
 
-`claude-fable-5-1` (since 2026-09-01, CC 2.1.257 — the default Fable model, superseding `claude-fable-5`): 1M context (default and max), 128K output, `$10/$50` per MTok. Anthropic's own guidance is to start from Opus 5 for most workloads and reach for Fable 5.1 for demanding reasoning and long-horizon agentic work, or when evals on Opus 5 at higher effort still fall short — which is the position this foundation already took. It stays a **rare, deliberate escalation**, not the routine "hard chantier" pick it briefly was.
+`claude-fable-5-1` (since 2026-09-01, CC 2.1.257 — the default Fable model, superseding `claude-fable-5`): 1M context (default and max), 128K output, `$10/$50` per MTok. Anthropic's own guidance is to start from Opus 5.5 for most workloads and reach for Fable 5.1 for demanding reasoning and long-horizon agentic work, or when evals on Opus 5.5 at higher effort still fall short — which is the position this foundation already took. It stays a **rare, deliberate escalation**, not the routine "hard chantier" pick it briefly was.
 
-**What changed with 5.1 is the cache economics, not the sticker price.** Cache reads dropped to `$0.25` per MTok, a quarter of Fable 5's; Anthropic estimates ~25% off a typical workload and up to ~45% off a highly agentic one. Every other model reads cache at 0.1× base input; Opus 5 reads at `$0.50` per MTok, so **Fable 5.1's cache reads are half of Opus 5's.** Base input and output remain 2× Opus 5, so the "2× Opus 5" shorthand still holds for a short one-shot request but overstates the gap for a long session re-reading a cached prefix.
+**What changed with 5.1 was the cache economics, not the sticker price.** Cache reads dropped to `$0.25` per MTok, a quarter of Fable 5's; Anthropic estimates ~25% off a typical workload and up to ~45% off a highly agentic one. Against Opus 5 (`$0.50`) that made Fable 5.1's cache reads half the price. **Against Opus 5.5 the argument is reversed**: Opus 5.5 reads cache at `$0.20` and costs `$4/$20`, so Fable 5.1 is 2.5× on input and output and dearer per cache read too. ([pricing](https://platform.claude.com/docs/en/about-claude/pricing))
 
 A **`fable` alias now exists** in sub-agent `model:` frontmatter (alongside `sonnet`, `opus`, `haiku`, full ids and `inherit`). This foundation still pins no agent to Fable: that is a cost decision, no longer a limitation of the tool. In Claude apps gateway sessions `fable` and `best` still resolve to Fable 5 rather than 5.1 (CC 2.1.260), so select 5.1 explicitly.
 
@@ -102,17 +102,17 @@ Three breaking changes if you call it from the SDK: forced tool use (`tool_choic
 
 Behaviourally: thinking is always on (the raw chain of thought is never returned) and individual turns on hard tasks can run several minutes — plan for streaming and async check-ins. Versus Fable 5, 5.1 batches parallel tool calls less predictably, writes fewer progress updates, and is likelier to rewrite a whole file instead of making a targeted edit. For the API-level caveats when building with the SDK (no `thinking:{type:"disabled"}`, no assistant prefill, refusal classifiers, 30-day data retention), see the `dev-ai-integration` skill.
 
-## Opus 4.8 (superseded by Opus 5)
+## Opus 4.8 (superseded by Opus 5, then Opus 5.5)
 
-Frontier model from 2026-05-28 to 2026-07-24; now the fallback behind Opus 5 (same pricing). Introduced **`high` effort by default**, Adaptive Thinking (replaces `budget_tokens`), the effort ladder (`low`–`max`, `xhigh` slotted in below `max` in v2.1.111), 1M context by default and 128k output. Anthropic reported it roughly **4× less likely than Opus 4.7 to let a flaw in code it has written pass unremarked** — the property that made Opus-class models the recommendation for the TDD and Audit phases, which Opus 5 inherits.
+Frontier model from 2026-05-28 to 2026-07-24; still available behind Opus 5.5 (`$5/$25`). Introduced **`high` effort by default**, Adaptive Thinking (replaces `budget_tokens`), the effort ladder (`low`–`max`, `xhigh` slotted in below `max` in v2.1.111), 1M context by default and 128k output. Anthropic reported it roughly **4× less likely than Opus 4.7 to let a flaw in code it has written pass unremarked** — the property that made Opus-class models the recommendation for the TDD and Audit phases, which Opus 5 and Opus 5.5 inherit.
 
-**Auto mode (native, July 2026)** — a Claude Code permission mode where a model classifier approves/denies each tool call in place of the human (positioned as the safe alternative to `--dangerously-skip-permissions`; default-on for Bedrock/Vertex/Foundry since CLI 2.1.207). **It composes with — and does not replace — this foundation's hooks**: the classifier is probabilistic and decides *approval*, while the foundation's PreToolUse guards (command-validator, destructive-ops, config-protection, bash-write-guard…) are deterministic *class blockers* that keep running under any permission mode, auto included. Running both is defense in depth: keep the hooks even with auto mode on.
+**Auto mode (native, July 2026)** — a Claude Code permission mode where a model classifier approves/denies each tool call in place of the human (positioned as the safe alternative to `--dangerously-skip-permissions`; since CLI 2.1.283–2.1.284 (2026-09-25/28), an interactive terminal or VS Code session with nothing else choosing its mode **starts in auto mode** on every plan and provider, except in an organization with the HIPAA configuration, which starts in Manual (2.1.285+). A project's `permissions.defaultMode` overrides it for terminal sessions only, the VS Code extension does not read project settings for its starting mode, and the foundation's `settings.json` sets none; [permission modes](https://code.claude.com/docs/en/permission-modes)). **It composes with — and does not replace — this foundation's hooks**: the classifier is probabilistic and decides *approval*, while the foundation's PreToolUse guards (command-validator, destructive-ops, config-protection, bash-write-guard…) are deterministic *class blockers* that keep running under any permission mode, auto included. Running both is defense in depth: keep the hooks even with auto mode on.
 
-## Sonnet 5 (default tier, since 2026-06-30)
+## Sonnet 5.5 (default Sonnet, since 2026-09-28)
 
-`claude-sonnet-5` is Anthropic's most agentic Sonnet yet — released 2026-06-30 and now **Claude Code's default model**. It delivers **near-Opus 4.8 quality on many agentic tasks at roughly a third of the cost**, with a **native 1M-token context**. Pricing is **`$2/$10` per MTok** (vs Opus 4.8 at `$5/$25`) — announced as introductory through 2026-08-31, but **made the permanent standard price on 2026-08-10**; the scheduled rise to `$3/$15` on September 1 will not happen.
+`claude-sonnet-5-5` replaced Sonnet 5 as the default Sonnet on the Anthropic API on 2026-09-28 (CC 2.1.284; on Bedrock, Google Cloud and Foundry `sonnet` still resolves to Sonnet 4.5, on Claude Platform on AWS to Sonnet 4.6): same **`$2/$10` per MTok**, cache reads halved to **`$0.10`**, 1M context, 128K output. It is **no longer Claude Code's default model**: since CC 2.1.280 that is Opus on every subscription plan. (Sonnet 5, released 2026-06-30, stays available at the same price, with cache reads at `$0.20`.)
 
-The `sonnet` tier alias resolves to Sonnet 5 automatically, so agent `model: sonnet` frontmatter picks it up with **no change needed**. This foundation recommends **Opus 5 for complex/critical work** (TDD, Audit, architecture) — see [best-practices.md](./best-practices.md) — and uses Sonnet 5 where its price/perf wins: audits, analyses, and high-volume agentic passes.
+On the Anthropic API the `sonnet` tier alias resolves to Sonnet 5.5 automatically, so agent `model: sonnet` frontmatter picks it up with **no change needed**. This foundation recommends **Opus 5.5 for complex/critical work** (TDD, Audit, architecture) — see [best-practices.md](./best-practices.md) — and uses Sonnet 5.5 where its price/perf wins: audits, analyses, and high-volume agentic passes.
 
 ## Checkpoint / Rewind
 
@@ -138,7 +138,7 @@ Recommended in the TDD Refactor phase: if the refactoring breaks the tests, `/re
 
 ## Fast Mode (Research Preview)
 
-Same Opus model at ~2.5× faster output, 2× base price (`$10/$50` per MTok on Opus 5). Toggle with `/fast`. Runs on Opus 5 and Opus 4.8 (Opus 4.7 was removed from fast mode in CC 2.1.219).
+Same Opus model at up to ~2.5× faster output, at a premium: `$8/$40` per MTok on Opus 5.5 (the fast mode default since CC 2.1.280) and `$10/$50` on Opus 5 and Opus 4.8. Toggle with `/fast`. Fast mode is still a research preview in Claude Code; on the Claude API, Opus 5.5 fast mode no longer needs the beta header. Anthropic API and subscriptions only (usage credits), not Bedrock, Google Cloud or Foundry. ([fast mode](https://code.claude.com/docs/en/fast-mode), [pricing](https://platform.claude.com/docs/en/about-claude/pricing))
 
 | Use case | Recommendation |
 |-------------|----------------|

@@ -74,7 +74,7 @@ Examples of personal preferences:
 # Personal preferences
 
 - Preferred response language: English
-- Preferred model: claude-opus-5 for complex tasks
+- Preferred model: claude-opus-5-5 for complex tasks
 - Response format: concise, no repetition
 - My shortcuts: /w = work, /q = qa
 ```
@@ -348,15 +348,15 @@ paths:
 
 | Usage | Model | Why |
 |-------|-------|-----|
-| Hardest / long-horizon autonomous work (rare) | Fable 5.1 (`claude-fable-5-1`) | 2× Opus 5 on input and output, but **cheaper per cache read** — **deliberate niche** use since Opus 5 |
-| Architecture, design | Opus 5 | Near-Fable reasoning at half Fable's price, 1M context, `xhigh` effort |
+| Hardest / long-horizon autonomous work (rare) | Fable 5.1 (`claude-fable-5-1`) | 2.5× Opus 5.5 on input and output, and dearer per cache read too (`$0.25` vs `$0.20`) — **deliberate niche** use |
+| Architecture, design | Opus 5.5 | The default Opus since 2026-09-22, `$4/$20` per MTok, 1M context, `xhigh` effort |
 | Feature implementation | Sonnet | Speed/quality balance |
 | Exploration, reading | Haiku | Fast for simple operations |
-| Security audits | Sonnet or Opus 5 | Detection of subtle flaws |
+| Security audits | Sonnet or Opus 5.5 | Detection of subtle flaws |
 | PR reviews in CI | Haiku | Low cost, high volume |
 | Cloud review (large PRs) | `/code-review ultra` | Parallel agents in cloud (`/ultrareview` is a deprecated alias) |
 
-> **Running the foundation's own heavy sessions on Fable 5.1:** Opus 5 is the right pick for large migrations and deep audits too — this is Anthropic's own guidance, which says to start from Opus 5 and reach for Fable 5.1 when evals on Opus 5 at higher effort still fall short. Reserve `--model claude-fable-5-1` (or `/model`) for those runs. Two updates since 2026-09-01: `claude-fable-5-1` is the default Fable model, and **a `fable` alias now exists** in sub-agent frontmatter. This foundation still never pins an agent to Fable — that is a cost decision, not a limitation. On cost, the old "2× Opus 5" shorthand holds for input and output but not for cache reads, which are `$0.25` per MTok on Fable 5.1 against `$0.50` on Opus 5 ([announcement](https://www.anthropic.com/claude-fable-and-mythos-5-1)).
+> **Running the foundation's own heavy sessions on Fable 5.1:** Opus 5.5 is the right pick for large migrations and deep audits too — this is Anthropic's own guidance, which says to start from Opus 5.5 and reach for Fable 5.1 when evals on Opus 5.5 at higher effort still fall short. Reserve `--model claude-fable-5-1` (or `/model`) for those runs. Two updates since 2026-09-01: `claude-fable-5-1` is the default Fable model, and **a `fable` alias now exists** in sub-agent frontmatter. This foundation still never pins an agent to Fable — that is a cost decision, not a limitation. On cost, Fable 5.1 is 2.5× Opus 5.5 on input and output, and its cache reads (`$0.25` per MTok) now cost more than Opus 5.5's (`$0.20`); the September argument that Fable read cache at half the Opus price held against Opus 5 and Opus 4.8 only ([pricing](https://platform.claude.com/docs/en/about-claude/pricing)).
 
 ---
 
@@ -612,7 +612,7 @@ Using the right effort level avoids consuming tokens unnecessarily:
 /effort low      # Reading, exploration
 /effort medium   # Standard implementation
 /effort high     # Architecture, refactoring
-/effort xhigh    # Critical debug (Opus-class models)
+/effort xhigh    # Critical debug (Fable, Opus 5.5/5/4.8/4.7, Sonnet 5.5/5, Haiku 5.5)
 ```
 
 ### Typical consumption per workflow phase
@@ -621,7 +621,7 @@ Using the right effort level avoids consuming tokens unnecessarily:
 |-------|---------------------------|-------------------|
 | Explore (medium codebase) | 50k - 150k input | Haiku |
 | Specify (user stories) | 5k - 20k | Sonnet |
-| Plan (complex feature) | 10k - 40k | Opus 5 |
+| Plan (complex feature) | 10k - 40k | Opus 5.5 |
 | TDD (implementation) | 30k - 100k | Sonnet |
 | Quality audit | 20k - 60k | Sonnet |
 | PR review | 5k - 15k | Haiku |
