@@ -290,10 +290,13 @@ FILE=$(jq -r '.tool_input.file_path // empty')
 
 ### Behavior on failure
 
-Only the hook's own exit code blocks: `exit 2` on a PreToolUse hook refuses the action. A hook that
-crashes, exits otherwise, or outlives its `timeout` (in **seconds**) does **not** block — the action
-proceeds (measured 2026-09-25). There is no `onFailure` setting; keep guards fast and give them a wide
-`timeout`.
+`exit 2` on a PreToolUse hook refuses the action. By default, a hook that crashes, exits otherwise, or
+outlives its `timeout` (in **seconds**) does **not** block — the action proceeds (measured 2026-09-25).
+Since Claude Code 2.1.295, `"onFailure": "block"` on the hook turns those failures into a block; every
+foundation PreToolUse guard carries it, so a guard that crashes, is cut or is missing fails closed (measured
+2026-10-17); its deliberate fail-open paths (no `jq`, a missing policy core) exit 0 and still let the call through. The only
+values are `"block"` and `"continue"`: any other one silently disables every PreToolUse guard. Keep
+guards fast and give them a wide `timeout`, since under `"block"` a cut guard refuses a legitimate call.
 
 ---
 

@@ -467,6 +467,82 @@ EOF
     [[ "$output" != *"hook-timeout-ms"* ]]
 }
 
+# onFailure accepts "block" and "continue" (Claude Code 2.1.295+). Installs from
+# before #587 carry "ignore"; measured 2026-10-17, one invalid value on any
+# PreToolUse hook silently disables every PreToolUse guard of the project.
+@test "detect_security_drift: flags an invalid onFailure value" {
+    skip_if_no_jq
+    mkdir -p "$TEST_DIR/.claude"
+    cat > "$TEST_DIR/.claude/settings.json" <<'EOF'
+{ "hooks": {
+  "PreToolUse": [ { "matcher": "Bash", "hooks": [
+    { "type": "command", "command": "echo guard", "onFailure": "block" },
+    { "type": "command", "command": "echo rtk", "onFailure": "ignore" } ] } ],
+  "PostToolUse": [ { "hooks": [ { "type": "command", "command": "echo fmt", "onFailure": "ignore" } ] } ] } }
+EOF
+    run detect_security_drift "$TEST_DIR"
+    [ "$status" -ne 0 ]
+    [ "$(printf '%s\n' "$output" | grep -c 'hook-onfailure-invalid')" -eq 1 ]
+    [[ "$output" == *"2 hook(s) in settings.json"* ]]
+    [[ "$output" == *"PreToolUse"* ]]
+    [[ "$output" == *"update --settings"* ]]
+}
+
+@test "detect_security_drift: block, continue and an absent onFailure are not drift" {
+    skip_if_no_jq
+    mkdir -p "$TEST_DIR/.claude"
+    cat > "$TEST_DIR/.claude/settings.json" <<'EOF'
+{ "hooks": { "PreToolUse": [ { "hooks": [
+    { "type": "command", "command": "echo a", "onFailure": "block" },
+    { "type": "command", "command": "echo b", "onFailure": "continue" },
+    { "type": "command", "command": "echo c" } ] } ] } }
+EOF
+    run detect_security_drift "$TEST_DIR"
+    [[ "$output" != *"hook-onfailure-invalid"* ]]
+}
+
+@test "detect_security_drift: an invalid onFailure in settings.local.json is flagged too" {
+    # Claude Code merges settings.local.json into the project's hooks, so a
+    # value copied there disables the guards just the same.
+    skip_if_no_jq
+    mkdir -p "$TEST_DIR/.claude"
+    printf '%s' '{ "hooks": {} }' > "$TEST_DIR/.claude/settings.json"
+    printf '%s' '{ "hooks": { "PreToolUse": [ { "hooks": [ { "type": "command", "command": "echo x", "onFailure": "ignore" } ] } ] } }' \
+        > "$TEST_DIR/.claude/settings.local.json"
+    run detect_security_drift "$TEST_DIR"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"hook-onfailure-invalid: 1 hook(s) in settings.local.json"* ]]
+}
+
+@test "detect_security_drift: flags PreToolUse guards that carry no onFailure (fail open)" {
+    skip_if_no_jq
+    mkdir -p "$TEST_DIR/.claude" "$TEST_DIR/scripts/hooks"
+    : > "$TEST_DIR/scripts/hooks/g.sh"
+    cat > "$TEST_DIR/.claude/settings.json" <<'EOF2'
+{ "hooks": {
+  "PreToolUse": [ { "matcher": "Bash", "hooks": [
+    { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/g.sh\"" },
+    { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/g.sh\"", "onFailure": "continue" },
+    { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/g.sh\"", "onFailure": "block" },
+    { "type": "command", "command": "echo inline" } ] } ],
+  "PostToolUse": [ { "hooks": [ { "type": "command", "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/g.sh\"" } ] } ] } }
+EOF2
+    run detect_security_drift "$TEST_DIR"
+    [ "$status" -ne 0 ]
+    # Only the PreToolUse script guard with no onFailure at all: an explicit
+    # "continue" is a choice, an inline command is not a foundation guard.
+    [[ "$output" == *"hook-fail-open: 1 PreToolUse guard(s)"* ]]
+}
+
+@test "detect_security_drift: the foundation's own settings.json has no onFailure drift" {
+    skip_if_no_jq
+    mkdir -p "$TEST_DIR/.claude"
+    cp "$BATS_TEST_DIRNAME/../.claude/settings.json" "$TEST_DIR/.claude/settings.json"
+    run detect_security_drift "$TEST_DIR"
+    [[ "$output" != *"hook-onfailure-invalid"* ]]
+    [[ "$output" != *"hook-fail-open"* ]]
+}
+
 @test "detect_security_drift: the foundation's own settings.json has no ms timeout" {
     skip_if_no_jq
     mkdir -p "$TEST_DIR/.claude"

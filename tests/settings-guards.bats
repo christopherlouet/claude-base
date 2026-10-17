@@ -195,14 +195,16 @@ _fable_pins() {
 }
 
 # -----------------------------------------------------------------------------
-# Hook timeouts are SECONDS, and a timed-out PreToolUse guard FAILS OPEN
+# Hook timeouts are SECONDS, and a timed-out PreToolUse guard fails OPEN by default
 # -----------------------------------------------------------------------------
 # Measured 2026-09-25 (Claude Code 2.1.281, fresh headless sessions): a hook
 # `sleep 1` with timeout 3 completed and `sleep 4` with timeout 2 was cut, so the
 # unit is the second; every value here had been written in milliseconds (2000 =
 # 33 min, 180000 = 50 h), bounding nothing. And a PreToolUse guard that would
 # have blocked (exit 2) but outlived its timeout let the command RUN. So a
-# budget too tight on a guard is a silent bypass, not a safety margin.
+# budget too tight on a guard is a silent bypass, not a safety margin. Under
+# onFailure "block" (below) it is the opposite failure, a refused legitimate
+# call, so the floor stays either way.
 TIMEOUTS_FILTER='.hooks | to_entries[] | .key as $e | .value[] | .hooks[] | {e:$e, t:(.timeout // 0), c:(.command // "")}'
 
 @test "settings: no hook timeout is millisecond-sized (the unit is seconds)" {
@@ -210,9 +212,9 @@ TIMEOUTS_FILTER='.hooks | to_entries[] | .key as $e | .value[] | .hooks[] | {e:$
     [ -z "$output" ] || { echo "timeouts above 1 h (written in ms?): $output" >&2; return 1; }
 }
 
-@test "settings: every blocking PreToolUse guard has at least 30 s (a timeout fails open)" {
+@test "settings: every blocking PreToolUse guard has at least 30 s (a cut guard misjudges the call)" {
     run jq -r "$TIMEOUTS_FILTER | select(.e == \"PreToolUse\" and (.c | test(\"scripts/hooks/\"))) | select(.t < 30) | \"\(.t) \(.c)\"" "$SETTINGS"
-    [ -z "$output" ] || { echo "guards that would fail open under load: $output" >&2; return 1; }
+    [ -z "$output" ] || { echo "guards that would be cut under load: $output" >&2; return 1; }
 }
 
 @test "settings: the timeout guards are not vacuous — they flag both planted shapes" {
@@ -224,12 +226,98 @@ TIMEOUTS_FILTER='.hooks | to_entries[] | .key as $e | .value[] | .hooks[] | {e:$
     [ "$output" = "bash scripts/hooks/x.sh" ]
 }
 
-@test "settings: no hook carries onFailure (not a Claude Code field; measured inert)" {
-    # 26 hooks carried "onFailure": "block"/"ignore" and five docs taught it as
-    # what makes a guard block. Measured 2026-09-25: a timed-out guard with
-    # onFailure "block" let the command run exactly like one without it.
-    run jq -r '[.. | objects | select(has("onFailure"))] | length' "$SETTINGS"
-    [ "$output" = "0" ]
+# onFailure arrived in Claude Code 2.1.295 (it did not exist when the 2026-09-25
+# measurement above found it inert). Measured 2026-10-17 on 2.1.302, fresh
+# headless sessions, one hook each: "block" makes a guard that times out, exits
+# 1 or cannot start BLOCK the call; absent or "continue" lets it through. One
+# INVALID value ("ignore", which older installs carry) on any PreToolUse hook,
+# even under another matcher, silently disables EVERY PreToolUse guard. 2.1.292
+# ignores the field entirely, so "block" is safe on older CLIs.
+ONFAILURE_FILTER='.hooks | to_entries[] | .key as $e | .value[] | .hooks[] | select(has("onFailure")) | {e:$e, o:.onFailure, c:(.command // "")}'
+GUARDS_FILTER='.hooks.PreToolUse[]? | .hooks[] | select((.command // "") | test("scripts/hooks/")) | {o:(.onFailure // "<absent>"), c:.command}'
+
+@test "settings: every onFailure is block or continue (one bad value disables all PreToolUse guards)" {
+    run jq -r "$ONFAILURE_FILTER | select(.o != \"block\" and .o != \"continue\") | \"\(.e) \(.o) \(.c)\"" "$SETTINGS"
+    [ -z "$output" ] || { echo "invalid onFailure values: $output" >&2; return 1; }
+}
+
+@test "settings: every PreToolUse guard fails closed (onFailure block)" {
+    run jq -r "$GUARDS_FILTER | select(.o != \"block\") | \"\(.o) \(.c)\"" "$SETTINGS"
+    [ -z "$output" ] || { echo "guards that fail open on a timeout or crash: $output" >&2; return 1; }
+    run jq -r "[$GUARDS_FILTER] | length" "$SETTINGS"
+    [ "$output" -gt 0 ]
+}
+
+@test "settings: the onFailure guards are not vacuous — they flag both planted shapes" {
+    local fixture="$BATS_TEST_TMPDIR/s.json"
+    printf '%s' '{"hooks":{"PreToolUse":[{"hooks":[{"command":"bash scripts/hooks/x.sh"},{"command":"bash scripts/hooks/y.sh","onFailure":"block"}]}],"PostToolUse":[{"hooks":[{"command":"z","onFailure":"ignore"}]}]}}' > "$fixture"
+    run jq -r "$ONFAILURE_FILTER | select(.o != \"block\" and .o != \"continue\") | .c" "$fixture"
+    [ "$output" = "z" ]
+    run jq -r "$GUARDS_FILTER | select(.o != \"block\") | .c" "$fixture"
+    [ "$output" = "bash scripts/hooks/x.sh" ]
+}
+
+@test "settings: no PreToolUse guard exits outside 0/2 on odd input (under block, any other code blocks the tool)" {
+    # With onFailure "block", an exit 1 is no longer a silent pass: it refuses
+    # the call. A guard that crashes on an empty payload, on garbage, outside a
+    # git repository, or on its own TRIGGER path (a commit, a push, a deploy, a
+    # migration, an edit on main) would then block the call with a harness
+    # error instead of its own verdict. Each guard is fed every payload, in a
+    # plain directory and in a repository on main whose fixtures make every
+    # guard block at least once (asserted below, so the trigger paths really ran).
+    command -v npm >/dev/null 2>&1 || skip "npm is needed to make the three gates block"
+    local plain="$BATS_TEST_TMPDIR/plain" repo="$BATS_TEST_TMPDIR/repo" dir script input rc bad="" ran=0 want blocked unblocked=""
+    mkdir -p "$plain" "$repo/migrations"
+    git -C "$repo" init -q -b main
+    printf 'a\n' > "$repo/notes.txt"
+    git -C "$repo" add notes.txt
+    git -C "$repo" -c user.email=t@t -c user.name=t -c core.hooksPath=/dev/null commit -qm init
+    # An existing `feature` ref makes main-branch-guard's automatic
+    # feature/auto-* branch fail, the one case where it blocks an edit on main.
+    git -C "$repo" branch feature
+    # Failing test and build scripts make the commit, push and deploy gates block.
+    printf '%s' '{ "name": "fixture", "version": "1.0.0", "scripts": { "test": "exit 1", "build": "exit 1" } }' > "$repo/package.json"
+    printf '{}' > "$repo/.eslintrc.json"
+    # Assembled from fragments so no committed line looks like a live key.
+    local fake_key="AKIA""1234567890ABCDEF"
+    local payloads=(
+        ''
+        'not json'
+        '{"tool_name":"Bash","tool_input":{"command":"ls"}}'
+        '{"tool_name":"Bash","tool_input":{"command":"git commit -m x"}}'
+        '{"tool_name":"Bash","tool_input":{"command":"git push origin main"}}'
+        '{"tool_name":"Bash","tool_input":{"command":"git push --force origin main"}}'
+        '{"tool_name":"Bash","tool_input":{"command":"npm run deploy"}}'
+        '{"tool_name":"Bash","tool_input":{"command":"rm -rf /"}}'
+        '{"tool_name":"Bash","tool_input":{"command":"echo x > .env"}}'
+        '{"tool_name":"Edit","tool_input":{"file_path":"notes.txt","old_string":"a","new_string":"b"}}'
+        '{"tool_name":"Edit","tool_input":{"file_path":".env","old_string":"a","new_string":"b"}}'
+        '{"tool_name":"Write","tool_input":{"file_path":"migrations/001.sql","content":"DROP TABLE users;"}}'
+        '{"tool_name":"Edit","tool_input":{"file_path":".claude/settings.json","old_string":"a","new_string":"b"}}'
+        '{"tool_name":"Bash","tool_input":{"command":"psql -c \"DROP TABLE users\""}}'
+        '{"tool_name":"Bash","tool_input":{"command":"sed -i s/a/b/ .eslintrc.json"}}'
+        '{"tool_name":"Edit","tool_input":{"file_path":".eslintrc.json","old_string":"{","new_string":"["}}'
+        "{\"tool_name\":\"Write\",\"tool_input\":{\"file_path\":\"k.txt\",\"content\":\"$fake_key\"}}"
+        '{"tool_name":"Bash","tool_input":{"command":"./deploy.sh production"}}'
+    )
+    while IFS= read -r script; do
+        ran=$((ran + 1))
+        blocked=0
+        for dir in "$plain" "$repo"; do
+            for input in "${payloads[@]}"; do
+                rc=0
+                (cd "$dir" && printf '%s' "$input" | CLAUDE_PROJECT_DIR="$dir" bash "$BASE_DIR/$script" >/dev/null 2>&1) || rc=$?
+                if [ "$rc" -eq 2 ]; then blocked=1; fi
+                if [ "$rc" -ne 0 ] && [ "$rc" -ne 2 ]; then bad="$bad $script(exit $rc in ${dir##*/} on '${input:0:40}')"; fi
+            done
+        done
+        [ "$blocked" -eq 1 ] || unblocked="$unblocked $script"
+    done < <(jq -r '.hooks.PreToolUse[].hooks[].command' "$SETTINGS" | grep -oE 'scripts/hooks/[A-Za-z0-9_-]+\.sh' | sort -u)
+    [ -z "$bad" ] || { echo "guards exiting outside 0/2:$bad" >&2; return 1; }
+    [ -z "$unblocked" ] || { echo "guards whose trigger path no payload reached:$unblocked" >&2; return 1; }
+    # Not vacuous: as many scripts ran as there are fail-closed guards.
+    want=$(jq '[.hooks.PreToolUse[].hooks[] | select(.onFailure == "block")] | length' "$SETTINGS")
+    [ "$ran" -gt 0 ] && [ "$ran" -eq "$want" ] || { echo "ran $ran guard scripts, $want carry block" >&2; return 1; }
 }
 
 @test "agents: no hook timeout in agent frontmatter is millisecond-sized" {

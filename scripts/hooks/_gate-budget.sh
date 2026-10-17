@@ -2,12 +2,14 @@
 # =============================================================================
 # _gate-budget.sh — one time budget per blocking gate (sourced, not a hook)
 # =============================================================================
-# A PreToolUse hook that outlives its settings.json `timeout` does NOT block:
-# measured 2026-09-25, the command runs anyway. The three gates that run whole
-# suites (pre-commit-tests, pre-push-ci, pre-deploy-build) get 1800 s there; a
-# suite still running at that point would let the commit, push or deploy
-# through, silently. So each gate spends ONE budget across all its steps and
-# BLOCKS when it runs out: the gate decides before the harness cancels it.
+# A PreToolUse hook that outlives its settings.json `timeout` is cancelled by
+# the harness. Before Claude Code 2.1.295 the command then runs anyway (measured
+# 2026-09-25); from 2.1.295 the foundation's `onFailure: "block"` refuses it
+# instead, but with a generic harness error that names neither the budget nor
+# the SKIP_ variable. The three gates that run whole suites (pre-commit-tests,
+# pre-push-ci, pre-deploy-build) get 1800 s there. So each gate spends ONE
+# budget across all its steps and BLOCKS, with its own message, when it runs
+# out: the gate decides before the harness cancels it.
 #
 #   gate_budget_init            read CLAUDE_BASE_GATE_SECONDS (default 1500,
 #                               below the 1800 s hook timeout; a test pins that)
@@ -16,7 +18,7 @@
 #                               The gate never waits on a pipe: a grandchild
 #                               that ignores TERM (npm dies, its worker lives)
 #                               held `cmd | tail` open past the budget — measured
-#                               30 s for 2, i.e. the fail-open again past 1800.
+#                               30 s for 2, i.e. the harness cut again past 1800.
 #   gate_block_if_timed_out <rc> <gate>
 #                               124 (TERM) or 137 (KILL after -k) AND the budget
 #                               really elapsed: print why and exit 2. A suite that
@@ -61,6 +63,6 @@ gate_run_tail() {
 gate_block_if_timed_out() {
     case "$1" in 124|137) ;; *) return 0 ;; esac
     [ $((SECONDS - ${GATE_START:-$SECONDS})) -ge "${GATE_SECONDS:-1500}" ] || return 0
-    echo "BLOCKED: $2 did not finish within ${GATE_SECONDS} s (CLAUDE_BASE_GATE_SECONDS). A gate cut by Claude Code's hook timeout lets the action through, so it blocks instead. Raise the budget, or bypass once with the gate's SKIP_ variable." >&2
+    echo "BLOCKED: $2 did not finish within ${GATE_SECONDS} s (CLAUDE_BASE_GATE_SECONDS). It stops before Claude Code's hook timeout cuts it, which would let the action through on a CLI older than 2.1.295. Raise the budget, or bypass once with the gate's SKIP_ variable." >&2
     exit 2
 }
