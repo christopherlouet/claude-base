@@ -234,27 +234,38 @@ TIMEOUTS_FILTER='.hooks | to_entries[] | .key as $e | .value[] | .hooks[] | {e:$
 # even under another matcher, silently disables EVERY PreToolUse guard. 2.1.292
 # ignores the field entirely, so "block" is safe on older CLIs.
 ONFAILURE_FILTER='.hooks | to_entries[] | .key as $e | .value[] | .hooks[] | select(has("onFailure")) | {e:$e, o:.onFailure, c:(.command // "")}'
-GUARDS_FILTER='.hooks.PreToolUse[]? | .hooks[] | select((.command // "") | test("scripts/hooks/")) | {o:(.onFailure // "<absent>"), c:.command}'
+GUARDS_FILTER='.hooks.PreToolUse[]? | .hooks[] | select((.command // "") | test("scripts/hooks/")) | {o:(.onFailure // "<absent>"), c:.command, s:((.command | capture("scripts/hooks/(?<s>[A-Za-z0-9_-]+\\.sh)").s) // "")}'
+# Correctness guards that fail open on purpose: a crash or a missing script must
+# not refuse every Bash call over a check that protects no secret and no branch.
+# Each carries an explicit "continue" (so doctor's hook-fail-open, which flags an
+# ABSENT value, stays quiet); every other guard carries "block".
+FAIL_OPEN_BY_DESIGN='["zsh-pipestatus-guard.sh"]'
+WRONG_ONFAILURE="$GUARDS_FILTER | select(if (.s | IN(\$open[])) then .o != \"continue\" else .o != \"block\" end)"
 
 @test "settings: every onFailure is block or continue (one bad value disables all PreToolUse guards)" {
     run jq -r "$ONFAILURE_FILTER | select(.o != \"block\" and .o != \"continue\") | \"\(.e) \(.o) \(.c)\"" "$SETTINGS"
     [ -z "$output" ] || { echo "invalid onFailure values: $output" >&2; return 1; }
 }
 
-@test "settings: every PreToolUse guard fails closed (onFailure block)" {
-    run jq -r "$GUARDS_FILTER | select(.o != \"block\") | \"\(.o) \(.c)\"" "$SETTINGS"
-    [ -z "$output" ] || { echo "guards that fail open on a timeout or crash: $output" >&2; return 1; }
+@test "settings: every PreToolUse guard fails closed (onFailure block), bar the listed correctness guards" {
+    run jq -r --argjson open "$FAIL_OPEN_BY_DESIGN" "$WRONG_ONFAILURE | \"\(.o) \(.c)\"" "$SETTINGS"
+    [ -z "$output" ] || { echo "guards whose onFailure contradicts their policy: $output" >&2; return 1; }
     run jq -r "[$GUARDS_FILTER] | length" "$SETTINGS"
     [ "$output" -gt 0 ]
+    # The exception list names only guards that exist: a stale entry would
+    # silently pre-approve a future guard of that name failing open.
+    run jq -r --argjson open "$FAIL_OPEN_BY_DESIGN" "[$GUARDS_FILTER | .s] as \$have | \$open[] | select(IN(\$have[]) | not)" "$SETTINGS"
+    [ -z "$output" ] || { echo "FAIL_OPEN_BY_DESIGN names no registered guard: $output" >&2; return 1; }
 }
 
-@test "settings: the onFailure guards are not vacuous — they flag both planted shapes" {
+@test "settings: the onFailure guards are not vacuous — they flag every planted shape" {
     local fixture="$BATS_TEST_TMPDIR/s.json"
-    printf '%s' '{"hooks":{"PreToolUse":[{"hooks":[{"command":"bash scripts/hooks/x.sh"},{"command":"bash scripts/hooks/y.sh","onFailure":"block"}]}],"PostToolUse":[{"hooks":[{"command":"z","onFailure":"ignore"}]}]}}' > "$fixture"
+    printf '%s' '{"hooks":{"PreToolUse":[{"hooks":[{"command":"bash scripts/hooks/x.sh"},{"command":"bash scripts/hooks/y.sh","onFailure":"block"},{"command":"bash scripts/hooks/w.sh","onFailure":"continue"},{"command":"bash scripts/hooks/zsh-pipestatus-guard.sh","onFailure":"block"},{"command":"bash scripts/hooks/zsh-pipestatus-guard.sh"}]}],"PostToolUse":[{"hooks":[{"command":"z","onFailure":"ignore"}]}]}}' > "$fixture"
     run jq -r "$ONFAILURE_FILTER | select(.o != \"block\" and .o != \"continue\") | .c" "$fixture"
     [ "$output" = "z" ]
-    run jq -r "$GUARDS_FILTER | select(.o != \"block\") | .c" "$fixture"
-    [ "$output" = "bash scripts/hooks/x.sh" ]
+    # Flagged: an unlisted guard absent or on continue, a listed one on block or absent.
+    run jq -r --argjson open "$FAIL_OPEN_BY_DESIGN" "[$WRONG_ONFAILURE | \"\(.s) \(.o)\"] | join(\",\")" "$fixture"
+    [ "$output" = "x.sh <absent>,w.sh continue,zsh-pipestatus-guard.sh block,zsh-pipestatus-guard.sh <absent>" ]
 }
 
 @test "settings: no PreToolUse guard exits outside 0/2 on odd input (under block, any other code blocks the tool)" {
@@ -299,6 +310,7 @@ GUARDS_FILTER='.hooks.PreToolUse[]? | .hooks[] | select((.command // "") | test(
         '{"tool_name":"Edit","tool_input":{"file_path":".eslintrc.json","old_string":"{","new_string":"["}}'
         "{\"tool_name\":\"Write\",\"tool_input\":{\"file_path\":\"k.txt\",\"content\":\"$fake_key\"}}"
         '{"tool_name":"Bash","tool_input":{"command":"./deploy.sh production"}}'
+        '{"tool_name":"Bash","tool_input":{"command":"false | true; echo \"${PIPESTATUS[0]}\""}}'
     )
     while IFS= read -r script; do
         ran=$((ran + 1))
@@ -306,7 +318,9 @@ GUARDS_FILTER='.hooks.PreToolUse[]? | .hooks[] | select((.command // "") | test(
         for dir in "$plain" "$repo"; do
             for input in "${payloads[@]}"; do
                 rc=0
-                (cd "$dir" && printf '%s' "$input" | CLAUDE_PROJECT_DIR="$dir" bash "$BASE_DIR/$script" >/dev/null 2>&1) || rc=$?
+                # A zsh Bash tool, so the zsh guard's trigger path runs; SHELL is
+                # read by name only, zsh need not be installed.
+                (cd "$dir" && printf '%s' "$input" | env -u CLAUDE_CODE_SHELL CLAUDE_PROJECT_DIR="$dir" SHELL=/bin/zsh bash "$BASE_DIR/$script" >/dev/null 2>&1) || rc=$?
                 if [ "$rc" -eq 2 ]; then blocked=1; fi
                 if [ "$rc" -ne 0 ] && [ "$rc" -ne 2 ]; then bad="$bad $script(exit $rc in ${dir##*/} on '${input:0:40}')"; fi
             done
@@ -315,9 +329,9 @@ GUARDS_FILTER='.hooks.PreToolUse[]? | .hooks[] | select((.command // "") | test(
     done < <(jq -r '.hooks.PreToolUse[].hooks[].command' "$SETTINGS" | grep -oE 'scripts/hooks/[A-Za-z0-9_-]+\.sh' | sort -u)
     [ -z "$bad" ] || { echo "guards exiting outside 0/2:$bad" >&2; return 1; }
     [ -z "$unblocked" ] || { echo "guards whose trigger path no payload reached:$unblocked" >&2; return 1; }
-    # Not vacuous: as many scripts ran as there are fail-closed guards.
-    want=$(jq '[.hooks.PreToolUse[].hooks[] | select(.onFailure == "block")] | length' "$SETTINGS")
-    [ "$ran" -gt 0 ] && [ "$ran" -eq "$want" ] || { echo "ran $ran guard scripts, $want carry block" >&2; return 1; }
+    # Not vacuous: as many scripts ran as there are guards (fail-closed or listed).
+    want=$(jq --argjson open "$FAIL_OPEN_BY_DESIGN" "[$GUARDS_FILTER | select(.o == \"block\" or (.s | IN(\$open[])))] | length" "$SETTINGS")
+    [ "$ran" -gt 0 ] && [ "$ran" -eq "$want" ] || { echo "ran $ran guard scripts, $want are guards" >&2; return 1; }
 }
 
 @test "agents: no hook timeout in agent frontmatter is millisecond-sized" {

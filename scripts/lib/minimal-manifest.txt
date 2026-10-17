@@ -65,6 +65,7 @@ scripts/hooks/_policy-destructive-sql.sh
 scripts/hooks/_policy-secrets.sh
 scripts/hooks/_policy-triggers.sh
 scripts/hooks/_policy-write-targets.sh
+scripts/hooks/_policy-zsh-pipestatus.sh
 scripts/hooks/_sensitive-paths.sh
 scripts/hooks/_vendor-precedence-hint.sh
 scripts/hooks/base-integrity-check.sh
@@ -87,6 +88,7 @@ scripts/hooks/scratchpad-check.sh
 scripts/hooks/secret-scan.sh
 scripts/hooks/setup-deps.sh
 scripts/hooks/substance-check.sh
+scripts/hooks/zsh-pipestatus-guard.sh
 
 # === Scripts (CLI tools referenced by shipped rules/skills/hooks) ===
 # The substance gate detector — invoked by the hook above and by the
