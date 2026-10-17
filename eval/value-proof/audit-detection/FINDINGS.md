@@ -72,3 +72,34 @@ there.** Put the proof effort where the value is real and measurable: the
 deterministic gates (`../LEDGER.md`), the structure/consistency claim (qualitative),
 and the **multi-LLM column** (where these harnesses are expected to finally show a
 gain).
+
+## Round 3 — effort `medium` vs `high` on `security-auth-hard` (2026-10-17)
+
+**Why.** Since Opus 5.5 became the default (Claude Code 2.1.280, 2026-09-22),
+Claude Code runs it at `medium` effort by default where Opus 5 ran at `high`, and
+a sub-agent without an `effort:` frontmatter field inherits the session's effort
+(measured with a `claude -p` probe: a `low` session gave a field-less agent `low`,
+and `effort: high` in the frontmatter gave `high`). No foundation agent sets the
+field, so every audit agent silently moved from `high` to `medium`. Question:
+does that cost detection?
+
+**Setup.** `qa-security` (its real definition and preloaded skill) on a fixture
+regenerated from `GROUND_TRUTH.md`, Opus 5.5, session held at `medium`, the arm
+set by the agent's frontmatter `effort` (applied effort read back from each
+sub-agent transcript). 2 samples per arm. Graded blind against the ground truth
+by a fresh-context agent; the reports' file paths named the arm and were scrubbed
+before grading.
+
+| Arm | Recall (FOUND = 1, PARTIAL = 0.5) | Decoys flagged | Valid extras | Cost per run |
+|-----|-----------------------------------|----------------|--------------|--------------|
+| `high` #1 | 6/6 | 0 | 6 | $0.68 |
+| `high` #2 | 6/6 | 0 | 5 | $0.63 |
+| `medium` #1 | **5.5/6** (H1 JWT alg found without its consequence, rated Low) | 0 | 6 (+1 false sub-claim) | $0.50 |
+| `medium` #2 | 6/6 | 0 | 7 | $0.61 |
+
+**Reading.** No measurable difference. The spread between the two `medium` runs
+equals the spread between the arms, and the case still sits at ceiling, so it
+cannot show what `high` → `medium` costs. The single weaker report is a `medium`
+one: a hint at N=2, not a result. Decision taken from it: **no agent is pinned to
+`effort: high`**. Settling the question needs the regime named above (cross-file
+taint flows, codebase-scale noise), where a single pass no longer ceilings.
