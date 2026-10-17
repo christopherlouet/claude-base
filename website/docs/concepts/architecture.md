@@ -246,6 +246,8 @@ Instructions for the agent...
 | opus (Opus 5.5) | Critical tasks, adaptive thinking | $$$ | Slower | 1M | 128k |
 | fable (Fable 5.1) | Above-Opus tier — **no foundation agent is pinned to it** | $$$$ | Slowest | 1M | 128k |
 
+Aliases as resolved on the Anthropic API. On Bedrock, Google Cloud and Foundry `sonnet` and `haiku` resolve to Sonnet 4.5 and Haiku 4.5, and on Foundry `opus` to Opus 4.6 ([model config](https://code.claude.com/docs/en/model-config)).
+
 ### Agent example
 ```yaml
 ---

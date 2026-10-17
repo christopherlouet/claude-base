@@ -356,7 +356,7 @@ paths:
 | PR reviews in CI | Haiku | Low cost, high volume |
 | Cloud review (large PRs) | `/code-review ultra` | Parallel agents in cloud (`/ultrareview` is a deprecated alias) |
 
-> **Running the foundation's own heavy sessions on Fable 5.1:** Opus 5.5 is the right pick for large migrations and deep audits too — this is Anthropic's own guidance, which says to start from Opus 5.5 and reach for Fable 5.1 when evals on Opus 5.5 at higher effort still fall short. Reserve `--model claude-fable-5-1` (or `/model`) for those runs. Two updates since 2026-09-01: `claude-fable-5-1` is the default Fable model, and **a `fable` alias now exists** in sub-agent frontmatter. This foundation still never pins an agent to Fable — that is a cost decision, not a limitation. On cost, Fable 5.1 is 2.5× Opus 5.5 on input and output, and its cache reads (`$0.25` per MTok) now cost more than Opus 5.5's (`$0.20`); the September argument that Fable read cache at half the Opus price held against Opus 5 only ([pricing](https://platform.claude.com/docs/en/about-claude/pricing)).
+> **Running the foundation's own heavy sessions on Fable 5.1:** Opus 5.5 is the right pick for large migrations and deep audits too — this is Anthropic's own guidance, which says to start from Opus 5.5 and reach for Fable 5.1 when evals on Opus 5.5 at higher effort still fall short. Reserve `--model claude-fable-5-1` (or `/model`) for those runs. Two updates since 2026-09-01: `claude-fable-5-1` is the default Fable model, and **a `fable` alias now exists** in sub-agent frontmatter. This foundation still never pins an agent to Fable — that is a cost decision, not a limitation. On cost, Fable 5.1 is 2.5× Opus 5.5 on input and output, and its cache reads (`$0.25` per MTok) now cost more than Opus 5.5's (`$0.20`); the September argument that Fable read cache at half the Opus price held against Opus 5 and Opus 4.8 only ([pricing](https://platform.claude.com/docs/en/about-claude/pricing)).
 
 ---
 
@@ -612,7 +612,7 @@ Using the right effort level avoids consuming tokens unnecessarily:
 /effort low      # Reading, exploration
 /effort medium   # Standard implementation
 /effort high     # Architecture, refactoring
-/effort xhigh    # Critical debug (Opus-class models)
+/effort xhigh    # Critical debug (Fable, Opus 5.5/5/4.8/4.7, Sonnet 5.5/5, Haiku 5.5)
 ```
 
 ### Typical consumption per workflow phase

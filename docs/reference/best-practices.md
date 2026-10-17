@@ -16,12 +16,12 @@ _(Since 2026-09-22, **Opus 5.5** is the recommended default for complex work, an
 
 | Context | Model | Rationale |
 |----------|--------|---------------|
-| Complex tasks (default) | **Opus 5.5** (`claude-opus-5-5`) | Released 2026-09-22 (CC 2.1.280): `$4/$20` per MTok with cache reads at `$0.20` (Opus 5: `$5/$25`, `$0.50`), 1M context, 128K output. The `opus` alias resolves to it automatically, and it is Claude Code's default model on every subscription plan, Pro and Team Standard included |
+| Complex tasks (default) | **Opus 5.5** (`claude-opus-5-5`) | Released 2026-09-22 (CC 2.1.280): `$4/$20` per MTok with cache reads at `$0.20` (Opus 5: `$5/$25`, `$0.50`), 1M context, 128K output. The `opus` alias resolves to it automatically (except on Microsoft Foundry), and it is Claude Code's default model on every subscription plan, Pro and Team Standard included |
 | Extreme niche: demanding reasoning, long-horizon work | **Fable 5.1** (`claude-fable-5-1`) | `$10/$50` per MTok with cache reads at `$0.25`: **2.5× Opus 5.5 on input and output, and no longer cheaper per cache read** (Opus 5.5 reads at `$0.20`). A **rare, deliberate** choice — see the note below |
-| Audits, analyses, high-volume agentic work | **Sonnet** (Sonnet 5.5) | `$2/$10` per MTok with cache reads at `$0.10`, 1M context; the default Sonnet since 2026-09-28 (CC 2.1.284) |
-| Simple tasks | **Haiku** (Haiku 5.5) | `$0.10/$0.50` per MTok for prompts up to 100K tokens (`$0.50/$2.50` above), 1M context; the default Haiku since 2026-10-07 (CC 2.1.293) |
+| Audits, analyses, high-volume agentic work | **Sonnet** (Sonnet 5.5) | `$2/$10` per MTok with cache reads at `$0.10`, 1M context; the default Sonnet on the Anthropic API since 2026-09-28 (CC 2.1.284) |
+| Simple tasks | **Haiku** (Haiku 5.5) | `$0.10/$0.50` per MTok for prompts up to 100K tokens (`$0.50/$2.50` above), 1M context; the default Haiku on the Anthropic API since 2026-10-07 (CC 2.1.293) |
 
-> **Opus 5.5 (since 2026-09-22):** the new default of the `opus` tier alias (no agent-frontmatter change needed), at a lower price than Opus 5 (`$4/$20` vs `$5/$25` per MTok, cache reads `$0.20` vs `$0.50`). Fast mode on it is out of research preview, at `$8/$40` per MTok. Opus 5 and Opus 4.8 stay available but are no longer the recommendation. ([pricing](https://platform.claude.com/docs/en/about-claude/pricing), [models overview](https://platform.claude.com/docs/en/about-claude/models/overview))
+> **Opus 5.5 (since 2026-09-22):** the new default of the `opus` tier alias (no agent-frontmatter change needed), at a lower price than Opus 5 (`$4/$20` vs `$5/$25` per MTok, cache reads `$0.20` vs `$0.50`). Claude Code runs it at `medium` effort by default (Opus 5: `high`). Fast mode on it costs `$8/$40` per MTok and is still a research preview in Claude Code. Opus 5 and Opus 4.8 stay available but are no longer the recommendation. ([pricing](https://platform.claude.com/docs/en/about-claude/pricing), [models overview](https://platform.claude.com/docs/en/about-claude/models/overview))
 
 > **Fable 5.1 after Opus 5.5 (updated 2026-10-17):** the "escalate to Fable for hard chantiers" advice stays **obsolete as a default** — and this is Anthropic's own guidance, which says to start from Opus 5.5 for most workloads and reach for Fable 5.1 for demanding reasoning and long-horizon agentic work, or when evals on Opus 5.5 at higher effort still fall short. Two things changed on 2026-09-01 (Claude Code 2.1.257):
 >
@@ -30,7 +30,7 @@ _(Since 2026-09-22, **Opus 5.5** is the recommended default for complex work, an
 >
 > Availability: the June export-control directive was lifted 2026-06-30 and the Fable tier has been generally available since 2026-07-01; Mythos 5.1 is restricted to Project Glasswing participants. ([Fable 5.1 announcement](https://www.anthropic.com/claude-fable-and-mythos-5-1), [what's new](https://platform.claude.com/docs/en/models/fable-5-1/whats-new-fable-5-1))
 
-> **Sonnet 5.5 (since 2026-09-28):** replaces Sonnet 5 under the `sonnet` alias at the same `$2/$10` per MTok, with cache reads halved to `$0.10`. It is no longer Claude Code's default for subscription seats: Opus has been the default on every plan since 2026-09-22 (CC 2.1.280). This foundation recommends **Opus 5.5 for complex/critical work** (TDD, Audit, architecture) where the quality delta pays off, and Sonnet 5.5 for audits, analyses, and high-volume agentic passes where its price/perf shines.
+> **Sonnet 5.5 (since 2026-09-28):** replaces Sonnet 5 under the `sonnet` alias on the Anthropic API (Bedrock, Google Cloud and Foundry still resolve it to Sonnet 4.5) at the same `$2/$10` per MTok, with cache reads halved to `$0.10`. It is no longer Claude Code's default for subscription seats: Opus has been the default on every plan since 2026-09-22 (CC 2.1.280). This foundation recommends **Opus 5.5 for complex/critical work** (TDD, Audit, architecture) where the quality delta pays off, and Sonnet 5.5 for audits, analyses, and high-volume agentic passes where its price/perf shines.
 
 ## Advanced Prompting
 

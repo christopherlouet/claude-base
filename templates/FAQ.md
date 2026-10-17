@@ -171,7 +171,7 @@ No, it's a recommendation. Adapt it to your needs:
 
 ### What is the maximum context size?
 
-Claude has a 200k token context window by default (1M by default with Opus 5.5, Sonnet 5.5, Haiku 5.5, Opus 5, Opus 4.8, Sonnet 5 and Fable 5.1 on the API, Bedrock and Vertex AI). For large projects:
+Current Claude models (Opus 5.5, Sonnet 5.5, Haiku 5.5, Fable 5.1, and Opus 5, Sonnet 5 and Opus 4.8 before them) have a 1M-token context window; older models can be limited to 200k. For large projects:
 - Use targeted agents
 - Analyze by module/folder
 - Exclude irrelevant files
