@@ -41,6 +41,72 @@ one sample = 0.333, so deltaPct 33 sits just under the default 0.34 margin and t
 formal verdict reads INERT; at margin 0.30 it flips to EFFECTIVE. A concrete
 instance of the small-N caveat — see "Method notes".
 
+## 2026-10-05 — promotion eval: `positive-control` (blind-probe), `claude -p`
+
+**Question.** Should the personal lesson "when a check answers nothing, make it find a
+planted case first" be promoted into the foundation's rules? The candidate rule
+(`tasks/blind-probe/CANDIDATE/`) is added to the treatment arm only; control = the
+foundation as it ships. The project's own check answers "OK" through a glob that skips
+`.tsx`, where both real call sites live. Compliance = the report says the helper is still
+used and names both call sites.
+
+**Isolation.** `claude -p` with `claudeMdExcludes: ["$HOME/.claude/**"]`, so the
+operator's own lessons (which carry this very rule) reach neither arm — verified by a
+two-arm canary (user lesson gone, project-rule codename kept). Delivery of the candidate
+verified on Haiku (it quotes the rule's title).
+
+| Model | control | treatment | Verdict |
+|-------|---------|-----------|---------|
+| Opus 5.5 | **5/5** | 5/5 | REDUNDANT |
+| Haiku 4.5 | **0/5** | 0/5 | INERT (rule delivered, ignored) |
+
+Opus cross-checks unprompted (`grep -rn legacyFetch src`) and names the blind glob.
+Haiku writes `SAFE TO DELETE: yes` ten times out of ten, with the rule in context.
+
+**Decision: not promoted.** On this task, at N=5, the rule moved neither model: redundant
+where the model already doubts, inert where it does not. That is not proof of no effect —
+with 0/5 in Haiku's treatment arm, its true rate could still be up to ~52% (exact 95%
+upper bound) — but nothing here justifies the rule's context cost. This matches why the lesson was graduated
+in the first place — it kept recurring while loaded. If the failure is worth preventing,
+it needs a mechanism at the moment of the empty answer, not more prose.
+Caveats: N=5, one task; the prompt itself says to *use the project's check to confirm*,
+so the rule competes with an explicit instruction, not only with an empty answer; short isolated sessions (the operator's recurrences happened in
+long ones); the run dirs sit inside the repo, so both arms also inherit its root
+`CLAUDE.md` — identical across arms, so the comparison holds.
+
+### Same lesson as a HOOK — `blind-probe-hook`, Haiku 4.5 (first EFFECTIVE)
+
+The text failed, so the same lesson was tried as a mechanism: a PostToolUse(Bash) hook
+(`tasks/blind-probe-hook/CANDIDATE/`) that speaks right after a query-like command
+answers "nothing" — empty, a bare `0`, or a short "OK / no … found" line — with
+structural exclusions only (background runs, wait loops, heredoc writes, fully
+redirected output; the `> script` banner npm prints is ignored). Same fixture, prompt
+and grader as `blind-probe` (symlinks).
+
+| Haiku 4.5 | correct |
+|-----------|---------|
+| control (three runs pooled) | **0/15** |
+| text rule | 0/5 |
+| **hook** | **3/5** — fired 6 times (delivery traced via `POSITIVE_CONTROL_TRACE`) |
+
+One-sided Fisher exact, 3/5 vs 0/15: p ≈ 0.009. Still one task, N=5.
+First run fired **0** times: the hook judged npm's two-line banner as a long answer —
+the test payloads were cleaner than real output. Fixed, then re-run. Project hooks do
+load under `claude -p` (canary).
+
+**Noise, replayed offline on the operator's own sessions** (18,521 recorded Bash calls,
+30 days): 287 firings (1.5% of calls, ~9.6/day). In a masked sample of 40: ~10 were
+genuine blind checks — `(eval):1: no matches found: --include=*.md`, zsh failing an
+unquoted glob before `grep` ever ran, read back as "nothing found" — ~20 were empty
+searches used as evidence of absence, ~10 were noise (mostly `grep '^not ok'` over a
+green suite). The mechanism catches the very slip the lesson records.
+
+**Decision (2026-10-06): opt-in, not default.** One task, N=5, on Haiku only — and on
+Opus the text was already redundant. That does not justify firing ~1.5% of every
+user's Bash calls with ~1 in 4 noise. The hook stays here as the single copy; the
+lessons recipe (`docs/recipes/personal-lessons-referential.md`) shows how to enable it
+per user. Revisit with more tasks or a second model.
+
 ## Thesis (what these runs say)
 
 > **These verdicts are Claude-specific — do not read "REDUNDANT" as "drop the rule".**

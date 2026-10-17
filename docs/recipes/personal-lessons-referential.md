@@ -83,6 +83,33 @@ Reports whether the store is over budget and proposes merges (near-duplicates) a
 
 Whatever you choose, the store stays a single relocatable file — the transport owns conflict resolution. Because the file is append-mostly, conflicts are rare.
 
+## When a lesson keeps recurring (opt-in hook)
+
+A lesson that recurs while it is loaded is not short of words — prose did not move the model at
+the moment of the slip. One such lesson ships as an **opt-in** mechanism instead: the
+positive-control hook, which speaks right after a search or check answers "nothing" (empty, a bare
+`0`, a short "OK / no … found") and asks for a known positive before trusting it. Measured on one
+task: Haiku 0/15 → 3/5 with the hook, where the same lesson as a rule moved neither Haiku nor Opus;
+on a month of real sessions it fires on ~1.5% of Bash calls, about a quarter of them noise
+([findings](../../eval/rule-efficacy/FINDINGS.md)). It is not on by default for that reason.
+
+To enable it for yourself, copy
+[`positive-control.sh`](../../eval/rule-efficacy/tasks/blind-probe-hook/CANDIDATE/.claude/hooks/positive-control.sh)
+to `~/.claude/hooks/` and register it in `~/.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      { "matcher": "Bash",
+        "hooks": [{ "type": "command", "command": "bash \"$HOME/.claude/hooks/positive-control.sh\"", "timeout": 5 }] }
+    ]
+  }
+}
+```
+
+It is advisory (never blocks) and needs `jq`; `SKIP_POSITIVE_CONTROL=1` silences it.
+
 ## What this is NOT
 
 - Not a community/shared lessons list — it is **personal**.

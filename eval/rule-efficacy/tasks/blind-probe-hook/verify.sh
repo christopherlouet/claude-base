@@ -1,0 +1,1 @@
+../blind-probe/verify.sh

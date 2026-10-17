@@ -57,6 +57,23 @@ prove rules reach the agent:
    the harness can't see rules headless, every verdict is confounded, and the
    real finding is *"rules don't load in `-p` mode"* (itself worth knowing).
 
+### ⚠️ Isolate the operator's own instructions too
+
+`claude -p` loads the **operator's** user-level memory (`~/.claude/CLAUDE.md`,
+`~/.claude/rules/*.md`) into BOTH arms. If those files already carry the rule under
+test — or anything close to it — the control arm is not a control. Measured:
+`--setting-sources project,local` does **not** keep `~/.claude/rules` out; the
+documented `claudeMdExcludes` setting does, and keeps the project's rules in:
+
+```bash
+export GEN_CMD="claude -p --settings '{\"claudeMdExcludes\":[\"$HOME/.claude/**\"]}' --allowedTools Bash Read Write Edit Grep Glob --"
+```
+
+Prove it with a two-arm canary before a run: ask the agent (no tools) whether a
+known line of your user rules is in its context, and to quote a codename planted in
+a throwaway project rule — with the setting it must answer "no" and the codename;
+without it, "yes" and the codename.
+
 ## Running it
 
 ```bash
@@ -70,7 +87,7 @@ prove rules reach the agent:
 `run.sh` builds each arm as a minimal project (`CLAUDE.md` + `.claude/rules/`,
 the target rule removed for control), runs the agent once per sample, collects the
 task's `OUTPUTS`, and prints `eval.sh compare`. Override the agent with
-`CLAUDE_CMD`. Keep N small — this is an occasional check, not CI (see the
+`GEN_CMD` (exported, or inline before `./run.sh`; the `Generator:` line shows which one runs). Keep N small — this is an occasional check, not CI (see the
 agentic-billing note in project memory).
 
 Score already-generated dirs by hand:
@@ -114,6 +131,8 @@ that is the artifact that tells you which rules to keep/emphasize/rephrase per m
 |------|-----------------|--------------|
 | `no-any` | `typescript` | a real `parseConfig` in `config.ts` that uses **no `any`** type |
 | `substantive-tests` | `verification` + `tdd-enforcement` | impl **plus a test the substance gate flags 0 hollow findings on** (dogfoods `scripts/substance-check.sh`) |
+| `blind-probe` | candidate `positive-control` (promotion eval) | the report does **not** trust the project's check, which answers "OK" through a glob that skips `.tsx`: it says the helper is still used and names both call sites |
+| `blind-probe-hook` | candidate hook `positive-control.sh` (same fixture/grader) | same as `blind-probe`; the treatment arm gets a PostToolUse hook instead of a rule |
 
 ## Adding a task
 
@@ -125,6 +144,11 @@ Create `tasks/<name>/` with:
 - `verify.sh <solution-dir>` — exit `0` **iff the solution complies** with the
   rule. Make it require a non-trivial solution, so "compliance" can't be won by
   doing nothing.
+- `FIXTURE/` *(optional)* — a pre-existing project copied into **both** arms, for a
+  task that needs code to work in (dotfiles included).
+- `CANDIDATE/` *(optional)* — files added to the **treatment** arm only: a rule
+  evaluated for **promotion**, which is not in the repo yet. With a candidate, the
+  control arm is the foundation as it ships and `RULE` usually lists nothing.
 
 **Make the task ADVERSARIAL.** A task where the model complies *without* the rule
 can only ever score REDUNDANT or INERT — it can never reveal an EFFECTIVE rule.
