@@ -191,7 +191,7 @@ Messages relayed via `SendMessage` from other Claude sessions no longer carry us
 
 ## Dynamic Workflows
 
-Introduced with Opus 4.8 (and inherited by Opus 5 and 5.5): a native **Workflow** capability that orchestrates work across **tens to hundreds of agents in the background** for large, complex tasks. Unlike the two mechanisms above, control flow is **deterministic and scripted** (loops, conditionals, fan-out, fan-in) rather than model-driven — you describe the structure (pipeline, parallel fan-out, adversarial verification) and the harness drives the agents.
+Introduced with Opus 4.8 (and inherited by Opus 5): a native **Workflow** capability that orchestrates work across **tens to hundreds of agents in the background** for large, complex tasks. Unlike the two mechanisms above, control flow is **deterministic and scripted** (loops, conditionals, fan-out, fan-in) rather than model-driven — you describe the structure (pipeline, parallel fan-out, adversarial verification) and the harness drives the agents.
 
 The opt-in keyword is **`ultracode`** (highlighted in the prompt input). Since CC 2.1.160 the word *"workflow"* no longer triggers a run — asking in your own words still does, but `ultracode` is the reliable switch, and it can also be left on for a whole session via `/config`. Once triggered, Claude generates a script orchestrating the fleet. Typical shapes:
 
