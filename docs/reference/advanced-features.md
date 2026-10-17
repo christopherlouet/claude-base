@@ -289,7 +289,7 @@ MCP tools can declare `_meta["anthropic/maxResultSizeChars"]` (up to 500K) to ov
 }
 ```
 
-Recommendation: `async: true`, so an unavailable remote service never delays the session (a hook failure never blocks it anyway; there is no `onFailure` setting).
+Recommendation: `async: true`, so an unavailable remote service never delays the session (an `async` hook never blocks, even with `onFailure: "block"`, which applies to synchronous `command` and `http` hooks from Claude Code 2.1.295).
 
 ## Model-switch hooks (CLI 2.1.251+)
 

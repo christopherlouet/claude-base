@@ -132,7 +132,8 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/main-branch-guard.sh\"",
-            "timeout": 30
+            "timeout": 30,
+            "onFailure": "block"
           }
         ]
       },
@@ -143,7 +144,8 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/secret-scan.sh\"",
-            "timeout": 30
+            "timeout": 30,
+            "onFailure": "block"
           }
         ]
       },
@@ -154,7 +156,8 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/pre-commit-tests.sh\"",
-            "timeout": 1800
+            "timeout": 1800,
+            "onFailure": "block"
           }
         ]
       },
@@ -165,7 +168,8 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/pre-push-ci.sh\"",
-            "timeout": 1800
+            "timeout": 1800,
+            "onFailure": "block"
           }
         ]
       },
@@ -176,7 +180,8 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/destructive-ops.sh\"",
-            "timeout": 30
+            "timeout": 30,
+            "onFailure": "block"
           }
         ]
       },
@@ -187,7 +192,8 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/pre-deploy-build.sh\"",
-            "timeout": 1800
+            "timeout": 1800,
+            "onFailure": "block"
           }
         ]
       },
@@ -198,7 +204,8 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/command-validator.sh\"",
-            "timeout": 30
+            "timeout": 30,
+            "onFailure": "block"
           }
         ]
       },
@@ -209,7 +216,8 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/bash-write-guard.sh\"",
-            "timeout": 30
+            "timeout": 30,
+            "onFailure": "block"
           }
         ]
       },
@@ -220,7 +228,8 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/config-protection.sh\"",
-            "timeout": 30
+            "timeout": 30,
+            "onFailure": "block"
           }
         ]
       },
@@ -231,7 +240,8 @@
           {
             "type": "command",
             "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/destructive-migration.sh\"",
-            "timeout": 30
+            "timeout": 30,
+            "onFailure": "block"
           }
         ]
       }

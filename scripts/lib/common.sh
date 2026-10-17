@@ -1201,6 +1201,20 @@ detect_security_drift() {
             printf 'hook-timeout-ms: %d hook timeout(s) above 3600 — written in milliseconds, but Claude Code reads seconds, so they bound nothing and disagree with the gates'"'"' 1500 s budget; re-sync with `update --settings --hook-scripts`\n' "$n"
             count=$((count + 1))
         fi
+
+        # onFailure takes "block" or "continue" (Claude Code 2.1.295+). Installs
+        # from before #587 carry "ignore"; measured 2026-10-17 on 2.1.302, one
+        # invalid value on any PreToolUse hook silently disables EVERY
+        # PreToolUse guard. Re-sync the whole file: setting that one value to
+        # "continue" re-enables guards whose scripts may be missing, and under
+        # their "block" a missing script refuses every call.
+        local evs
+        n=$(jq '[(.hooks // {})[][]? | (.hooks // [])[] | select(has("onFailure") and .onFailure != "block" and .onFailure != "continue")] | length' "$settings" 2>/dev/null || echo 0)
+        if [ "${n:-0}" -gt 0 ]; then
+            evs=$(jq -r '[(.hooks // {}) | to_entries[] | select([.value[]? | (.hooks // [])[] | select(has("onFailure") and .onFailure != "block" and .onFailure != "continue")] | length > 0) | .key] | join(", ")' "$settings" 2>/dev/null || true)
+            printf 'hook-onfailure-invalid: %d hook(s) carry an onFailure other than block/continue (%s) — on Claude Code 2.1.295+ one such value on a PreToolUse hook disables every PreToolUse guard, and an event'"'"'s other hooks are at risk too; re-sync with `update --settings --hook-scripts`, not by editing the value\n' "$n" "$evs"
+            count=$((count + 1))
+        fi
     fi
 
     # A security guard that has fallen behind the foundation is the shape that
