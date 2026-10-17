@@ -37,8 +37,8 @@ else
   echo >&2 "[pre-push-ci] policy core _policy-triggers.sh missing - pre-push CI gate DISABLED. Run 'claude-base update' to restore."
   exit 0
 fi
-# One time budget for the whole gate (_gate-budget.sh): a gate cut by the hook
-# timeout would let the action through, so it blocks when the budget runs out.
+# One time budget for the whole gate (_gate-budget.sh): it blocks with its own
+# message when the budget runs out, before the hook timeout cuts it.
 # Missing helper → unbounded, as before.
 if [ -n "$_dir" ] && [ -f "$_dir/_gate-budget.sh" ]; then
   # shellcheck source=_gate-budget.sh

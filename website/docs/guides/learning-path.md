@@ -1703,11 +1703,13 @@ The `matcher` filters hooks by tool or by regex pattern:
 
 #### When does a hook block?
 
-Only through its own exit code: `exit 2` on a `PreToolUse` hook refuses the action. A hook that crashes,
-exits otherwise, or outlives its `timeout` (in **seconds**) does **not** block: the action proceeds
-(measured 2026-09-25). There is no `onFailure` setting.
+`exit 2` on a `PreToolUse` hook refuses the action. By default, a hook that crashes, exits otherwise,
+or outlives its `timeout` (in **seconds**) does **not** block: the action proceeds (measured 2026-09-25).
+Since Claude Code 2.1.295, `"onFailure": "block"` turns those failures into a block (measured
+2026-10-17); the only values are `"block"` and `"continue"`, and any other one silently disables every
+`PreToolUse` guard.
 
-IMPORTANT: a security hook (gitleaks, main protection, pre-commit tests) blocks only by exiting 2, so it must be fast and carry a wide `timeout` (the foundation uses 30 s, 1800 s for test gates): past its timeout it lets the action through. Logging and notification hooks should use `"async": true`.
+IMPORTANT: the foundation's security hooks (gitleaks, main protection, pre-commit tests) carry `"onFailure": "block"`, so a broken one fails closed on 2.1.295+. They must still be fast and carry a wide `timeout` (the foundation uses 30 s, 1800 s for test gates): a cut guard refuses a legitimate call, and on an older CLI it lets the action through. Logging and notification hooks should use `"async": true`.
 
 #### Asynchronous hooks
 

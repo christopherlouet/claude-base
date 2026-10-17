@@ -1180,7 +1180,7 @@ detect_security_drift() {
                 # Every scripts/hooks/NAME.sh the command names must exist on disk.
                 for ref in $(printf '%s' "$cmd" | grep -oE 'scripts/hooks/[A-Za-z0-9_-]+\.sh' | sort -u); do
                     if [ ! -f "$target/$ref" ]; then
-                        printf 'hook-missing-script: the %s hook runs %s, which is not on disk — it exits 127 on every invocation; re-sync with `update --hook-scripts`\n' "$ev" "$(basename "$ref")"
+                        printf 'hook-missing-script: the %s hook runs %s, which is not on disk — it exits 127 on every invocation: a silent no-op, or, under onFailure "block", a refusal of every matching call (Claude Code 2.1.295+); re-sync with `update --hook-scripts`\n' "$ev" "$(basename "$ref")"
                         count=$((count + 1))
                     fi
                 done
@@ -1205,14 +1205,29 @@ detect_security_drift() {
         # onFailure takes "block" or "continue" (Claude Code 2.1.295+). Installs
         # from before #587 carry "ignore"; measured 2026-10-17 on 2.1.302, one
         # invalid value on any PreToolUse hook silently disables EVERY
-        # PreToolUse guard. Re-sync the whole file: setting that one value to
-        # "continue" re-enables guards whose scripts may be missing, and under
-        # their "block" a missing script refuses every call.
-        local evs
-        n=$(jq '[(.hooks // {})[][]? | (.hooks // [])[] | select(has("onFailure") and .onFailure != "block" and .onFailure != "continue")] | length' "$settings" 2>/dev/null || echo 0)
+        # PreToolUse guard. Claude Code merges settings.local.json, so a value
+        # copied there does the same. Re-sync the whole file: setting that one
+        # value to "continue" re-enables guards whose scripts may be missing,
+        # and under their "block" a missing script refuses every call.
+        local f fo
+        for f in "$settings" "$target/.claude/settings.local.json"; do
+            [ -f "$f" ] || continue
+            fo=$(jq -r '[(.hooks // {}) | to_entries[] | .key as $e | .value[]? | (.hooks // [])[]
+                         | select(has("onFailure") and .onFailure != "block" and .onFailure != "continue") | $e]
+                        | "\(length) \(unique | join(", "))"' "$f" 2>/dev/null || echo 0)
+            if [ "${fo%% *}" -gt 0 ] 2>/dev/null; then
+                printf 'hook-onfailure-invalid: %d hook(s) in %s carry an onFailure other than block/continue (%s) — on Claude Code 2.1.295+ one such value on a PreToolUse hook disables every PreToolUse guard, and an event'"'"'s other hooks are at risk too; re-sync with `update --settings --hook-scripts`, not by editing the value\n' "${fo%% *}" "$(basename "$f")" "${fo#* }"
+                count=$((count + 1))
+            fi
+        done
+
+        # The foundation's PreToolUse guards carry onFailure "block", so one that
+        # crashes, is cut by its timeout or is missing refuses the call instead
+        # of letting it through. An install whose settings.json predates that
+        # still fails open, and `update` leaves settings.json alone by default.
+        n=$(jq '[.hooks.PreToolUse[]? | (.hooks // [])[] | select((.command // "") | test("scripts/hooks/")) | select(has("onFailure") | not)] | length' "$settings" 2>/dev/null || echo 0)
         if [ "${n:-0}" -gt 0 ]; then
-            evs=$(jq -r '[(.hooks // {}) | to_entries[] | select([.value[]? | (.hooks // [])[] | select(has("onFailure") and .onFailure != "block" and .onFailure != "continue")] | length > 0) | .key] | join(", ")' "$settings" 2>/dev/null || true)
-            printf 'hook-onfailure-invalid: %d hook(s) carry an onFailure other than block/continue (%s) — on Claude Code 2.1.295+ one such value on a PreToolUse hook disables every PreToolUse guard, and an event'"'"'s other hooks are at risk too; re-sync with `update --settings --hook-scripts`, not by editing the value\n' "$n" "$evs"
+            printf 'hook-fail-open: %d PreToolUse guard(s) carry no onFailure — one that crashes, times out or is missing lets the call through; re-sync with `update --settings --hook-scripts`\n' "$n"
             count=$((count + 1))
         fi
     fi

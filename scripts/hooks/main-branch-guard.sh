@@ -95,8 +95,9 @@ if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
   # case — the answer is discarded, and a Write envelope carries the file's
   # whole content, so parsing it would cost a multi-megabyte jq pass on every
   # large edit. And wasted work is not merely slow: a PreToolUse hook that
-  # outlives its timeout does not block (measured 2026-09-25), so every second
-  # spent here is a second nearer to letting the edit through unchecked.
+  # outlives its timeout is cut, which lets the edit through unchecked before
+  # Claude Code 2.1.295 and refuses a legitimate edit from then on (its
+  # onFailure is "block"), so every second spent here costs one way or the other.
   # Same semantics, none of the cost.
   target_is_outside_repo && exit 0
 

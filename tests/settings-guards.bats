@@ -259,20 +259,65 @@ GUARDS_FILTER='.hooks.PreToolUse[]? | .hooks[] | select((.command // "") | test(
 
 @test "settings: no PreToolUse guard exits outside 0/2 on odd input (under block, any other code blocks the tool)" {
     # With onFailure "block", an exit 1 is no longer a silent pass: it refuses
-    # the call. A guard that crashes on an empty payload, garbage, or outside a
-    # git repository would then block every Bash or Edit call.
-    local work="$BATS_TEST_TMPDIR/not-a-repo" script input rc bad=""
-    mkdir -p "$work"
+    # the call. A guard that crashes on an empty payload, on garbage, outside a
+    # git repository, or on its own TRIGGER path (a commit, a push, a deploy, a
+    # migration, an edit on main) would then block the call with a harness
+    # error instead of its own verdict. Each guard is fed every payload, in a
+    # plain directory and in a repository on main whose fixtures make every
+    # guard block at least once (asserted below, so the trigger paths really ran).
+    command -v npm >/dev/null 2>&1 || skip "npm is needed to make the three gates block"
+    local plain="$BATS_TEST_TMPDIR/plain" repo="$BATS_TEST_TMPDIR/repo" dir script input rc bad="" ran=0 want blocked unblocked=""
+    mkdir -p "$plain" "$repo/migrations"
+    git -C "$repo" init -q -b main
+    printf 'a\n' > "$repo/notes.txt"
+    git -C "$repo" add notes.txt
+    git -C "$repo" -c user.email=t@t -c user.name=t -c core.hooksPath=/dev/null commit -qm init
+    # An existing `feature` ref makes main-branch-guard's automatic
+    # feature/auto-* branch fail, the one case where it blocks an edit on main.
+    git -C "$repo" branch feature
+    # Failing test and build scripts make the commit, push and deploy gates block.
+    printf '%s' '{ "name": "fixture", "version": "1.0.0", "scripts": { "test": "exit 1", "build": "exit 1" } }' > "$repo/package.json"
+    printf '{}' > "$repo/.eslintrc.json"
+    # Assembled from fragments so no committed line looks like a live key.
+    local fake_key="AKIA""1234567890ABCDEF"
+    local payloads=(
+        ''
+        'not json'
+        '{"tool_name":"Bash","tool_input":{"command":"ls"}}'
+        '{"tool_name":"Bash","tool_input":{"command":"git commit -m x"}}'
+        '{"tool_name":"Bash","tool_input":{"command":"git push origin main"}}'
+        '{"tool_name":"Bash","tool_input":{"command":"git push --force origin main"}}'
+        '{"tool_name":"Bash","tool_input":{"command":"npm run deploy"}}'
+        '{"tool_name":"Bash","tool_input":{"command":"rm -rf /"}}'
+        '{"tool_name":"Bash","tool_input":{"command":"echo x > .env"}}'
+        '{"tool_name":"Edit","tool_input":{"file_path":"notes.txt","old_string":"a","new_string":"b"}}'
+        '{"tool_name":"Edit","tool_input":{"file_path":".env","old_string":"a","new_string":"b"}}'
+        '{"tool_name":"Write","tool_input":{"file_path":"migrations/001.sql","content":"DROP TABLE users;"}}'
+        '{"tool_name":"Edit","tool_input":{"file_path":".claude/settings.json","old_string":"a","new_string":"b"}}'
+        '{"tool_name":"Bash","tool_input":{"command":"psql -c \"DROP TABLE users\""}}'
+        '{"tool_name":"Bash","tool_input":{"command":"sed -i s/a/b/ .eslintrc.json"}}'
+        '{"tool_name":"Edit","tool_input":{"file_path":".eslintrc.json","old_string":"{","new_string":"["}}'
+        "{\"tool_name\":\"Write\",\"tool_input\":{\"file_path\":\"k.txt\",\"content\":\"$fake_key\"}}"
+        '{"tool_name":"Bash","tool_input":{"command":"./deploy.sh production"}}'
+    )
     while IFS= read -r script; do
-        for input in '' 'not json' \
-            '{"tool_name":"Bash","tool_input":{"command":"ls"}}' \
-            '{"tool_name":"Edit","tool_input":{"file_path":"notes.txt","old_string":"a","new_string":"b"}}'; do
-            rc=0
-            (cd "$work" && printf '%s' "$input" | CLAUDE_PROJECT_DIR="$work" bash "$BASE_DIR/$script" >/dev/null 2>&1) || rc=$?
-            if [ "$rc" -ne 0 ] && [ "$rc" -ne 2 ]; then bad="$bad $script(exit $rc on '${input:0:20}')"; fi
+        ran=$((ran + 1))
+        blocked=0
+        for dir in "$plain" "$repo"; do
+            for input in "${payloads[@]}"; do
+                rc=0
+                (cd "$dir" && printf '%s' "$input" | CLAUDE_PROJECT_DIR="$dir" bash "$BASE_DIR/$script" >/dev/null 2>&1) || rc=$?
+                if [ "$rc" -eq 2 ]; then blocked=1; fi
+                if [ "$rc" -ne 0 ] && [ "$rc" -ne 2 ]; then bad="$bad $script(exit $rc in ${dir##*/} on '${input:0:40}')"; fi
+            done
         done
+        [ "$blocked" -eq 1 ] || unblocked="$unblocked $script"
     done < <(jq -r '.hooks.PreToolUse[].hooks[].command' "$SETTINGS" | grep -oE 'scripts/hooks/[A-Za-z0-9_-]+\.sh' | sort -u)
     [ -z "$bad" ] || { echo "guards exiting outside 0/2:$bad" >&2; return 1; }
+    [ -z "$unblocked" ] || { echo "guards whose trigger path no payload reached:$unblocked" >&2; return 1; }
+    # Not vacuous: as many scripts ran as there are fail-closed guards.
+    want=$(jq '[.hooks.PreToolUse[].hooks[] | select(.onFailure == "block")] | length' "$SETTINGS")
+    [ "$ran" -gt 0 ] && [ "$ran" -eq "$want" ] || { echo "ran $ran guard scripts, $want carry block" >&2; return 1; }
 }
 
 @test "agents: no hook timeout in agent frontmatter is millisecond-sized" {
