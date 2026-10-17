@@ -18,6 +18,10 @@
 #
 # Known limits (a lexer, not a parser): a single quote inside `"…$(…'…')…"` is
 # read as literal, and an `eval`/`zsh -c "…"` re-expansion is not followed.
+# Missed: a read in arithmetic (`(( PIPESTATUS[0] == 0 ))`, `$(( PIPESTATUS ))`,
+# where zsh evaluates it to 0) and zsh flag forms (`${=PIPESTATUS}`,
+# `${(@)PIPESTATUS}`). An arithmetic shift (`$((1<<2))`) is read as a heredoc
+# operator, so a later single-quoted read can be flagged.
 #
 # Pure: no stdin, no harness envelope, no exit codes beyond return values.
 # Bash 3.2-safe; the scan is POSIX awk (BSD awk on macOS).
@@ -77,7 +81,10 @@ has_pipestatus_expansion() {
           while (i < n && substr(s, i + 1, 1) != "\n") i++
           prev = "x"; continue
         }
-        if (c == "<" && substr(s, i + 1, 1) == "<" && substr(s, i + 2, 1) != "<") {
+        # here-string <<<: its operand is an ordinary word zsh expands, so step
+        # past the operator and keep scanning (else its second < reads as <<)
+        if (c == "<" && substr(s, i + 1, 2) == "<<") { i += 2; prev = "x"; continue }
+        if (c == "<" && substr(s, i + 1, 1) == "<") {
           # heredoc operator: read optional -, blanks, then the delimiter
           j = i + 2; strip = 0
           if (substr(s, j, 1) == "-") { strip = 1; j++ }

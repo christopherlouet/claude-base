@@ -40,12 +40,22 @@ hook_with() {
 
 @test "hook: CLAUDE_CODE_SHELL (the CLI's override) wins over SHELL" {
     jq -n --arg c 'a | b; echo ${PIPESTATUS[0]}' '{tool_input:{command:$c}}' > "$TEST_DIR/input.json"
+    # The CLI honours the override only when it is executable: a stand-in named
+    # zsh, so the test needs no zsh installed.
+    mkdir -p "$TEST_DIR/bin" && printf '#!/bin/sh\n' > "$TEST_DIR/bin/zsh" && chmod +x "$TEST_DIR/bin/zsh"
     run env -u SKIP_ZSH_PIPESTATUS_GUARD SHELL=/usr/bin/zsh CLAUDE_CODE_SHELL=/bin/bash \
         bash "$HOOK" < "$TEST_DIR/input.json"
     [ "$status" -eq 0 ]
-    run env -u SKIP_ZSH_PIPESTATUS_GUARD SHELL=/bin/bash CLAUDE_CODE_SHELL=/usr/bin/zsh \
+    run env -u SKIP_ZSH_PIPESTATUS_GUARD SHELL=/bin/bash CLAUDE_CODE_SHELL="$TEST_DIR/bin/zsh" \
         bash "$HOOK" < "$TEST_DIR/input.json"
     [ "$status" -eq 2 ]
+}
+
+@test "hook: a CLAUDE_CODE_SHELL that is not executable is ignored, as the CLI does" {
+    jq -n --arg c 'a | b; echo ${PIPESTATUS[0]}' '{tool_input:{command:$c}}' > "$TEST_DIR/input.json"
+    run env -u SKIP_ZSH_PIPESTATUS_GUARD SHELL=/bin/bash CLAUDE_CODE_SHELL="$TEST_DIR/missing/zsh" \
+        bash "$HOOK" < "$TEST_DIR/input.json"
+    [ "$status" -eq 0 ]
 }
 
 @test "hook: allows a clean command under zsh" {

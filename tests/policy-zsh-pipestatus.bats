@@ -108,6 +108,28 @@ expands() {
     [ "$status" -eq 1 ]
 }
 
+# --- Core: a here-string <<< is not a heredoc (zsh expands its operand) ------
+
+@test "core: a double-quoted here-string operand is an expansion" {
+    expands 'false | true; cat <<< "${PIPESTATUS[0]}"'
+    [ "$status" -eq 0 ]
+}
+
+@test "core: a bare here-string operand is an expansion" {
+    expands 'false | true; cat <<<$PIPESTATUS'
+    [ "$status" -eq 0 ]
+}
+
+@test "core: a quoted here-string does not swallow the lines after it" {
+    expands $'grep -q x <<< "foo"\nfalse | true; echo "${PIPESTATUS[0]}"'
+    [ "$status" -eq 0 ]
+}
+
+@test "core: a bare here-string does not turn later single quotes into a heredoc body" {
+    expands $'grep -q x <<< foo\nbash -c \'false | true; echo ${PIPESTATUS[0]}\''
+    [ "$status" -eq 1 ]
+}
+
 # --- Core: shell classification ---------------------------------------------
 
 @test "core: shell_is_zsh recognises zsh paths and rejects bash" {

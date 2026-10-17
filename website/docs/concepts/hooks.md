@@ -330,7 +330,7 @@ There is **no single dispatcher script**. Each hook is its own small script unde
 | `config-protection.sh` | PreToolUse (Edit/Write) | Blocks edits to existing linter/formatter configs |
 | `bash-write-guard.sh` | PreToolUse (Bash) | Blocks Bash writes to protected/secrets files |
 
-A PreToolUse script **blocks** the tool by exiting **2**; PostToolUse scripts are advisory. An exit 1, a crash or a hook that outlives its `timeout` (in seconds) blocks only under `"onFailure": "block"` (Claude Code 2.1.295+), which the foundation's PreToolUse guards carry, bar the zsh PIPESTATUS correctness guard (measured 2026-10-17); the only valid values are `block` and `continue`, and any other one disables every PreToolUse guard. See [`docs/reference/hooks-reference.md`](/docs/reference/hooks-reference) for the full, authoritative catalogue of scripts, events and environment toggles.
+A PreToolUse script **blocks** the tool by exiting **2**; PostToolUse scripts are advisory. An exit 1, a crash or a hook that outlives its `timeout` (in seconds) blocks only under `"onFailure": "block"` (Claude Code 2.1.295+), which the foundation's PreToolUse guards carry (measured 2026-10-17), bar the zsh PIPESTATUS correctness guard, which carries `"continue"` on purpose; the only valid values are `block` and `continue`, and any other one disables every PreToolUse guard. See [`docs/reference/hooks-reference.md`](/docs/reference/hooks-reference) for the full, authoritative catalogue of scripts, events and environment toggles.
 
 ## Best practices
 

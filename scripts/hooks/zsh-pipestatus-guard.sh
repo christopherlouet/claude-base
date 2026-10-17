@@ -46,9 +46,12 @@ else
   exit 0
 fi
 
-# The CLI's own precedence: CLAUDE_CODE_SHELL only counts when it names bash/zsh.
+# The CLI's own precedence: CLAUDE_CODE_SHELL only counts when it names bash/zsh
+# and is executable.
 _shell="${SHELL:-}"
-case "${CLAUDE_CODE_SHELL:-}" in *bash*|*zsh*) _shell="$CLAUDE_CODE_SHELL" ;; esac
+case "${CLAUDE_CODE_SHELL:-}" in
+  *bash*|*zsh*) [ -x "$CLAUDE_CODE_SHELL" ] && _shell="$CLAUDE_CODE_SHELL" ;;
+esac
 shell_is_zsh "$_shell" || exit 0
 
 command -v jq >/dev/null 2>&1 || exit 0

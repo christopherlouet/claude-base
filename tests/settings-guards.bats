@@ -318,9 +318,9 @@ WRONG_ONFAILURE="$GUARDS_FILTER | select(if (.s | IN(\$open[])) then .o != \"con
         for dir in "$plain" "$repo"; do
             for input in "${payloads[@]}"; do
                 rc=0
-                # A zsh Bash tool, so the zsh guard's trigger path runs; only the
-                # name is read, zsh need not be installed.
-                (cd "$dir" && printf '%s' "$input" | CLAUDE_PROJECT_DIR="$dir" CLAUDE_CODE_SHELL=/bin/zsh bash "$BASE_DIR/$script" >/dev/null 2>&1) || rc=$?
+                # A zsh Bash tool, so the zsh guard's trigger path runs; SHELL is
+                # read by name only, zsh need not be installed.
+                (cd "$dir" && printf '%s' "$input" | env -u CLAUDE_CODE_SHELL CLAUDE_PROJECT_DIR="$dir" SHELL=/bin/zsh bash "$BASE_DIR/$script" >/dev/null 2>&1) || rc=$?
                 if [ "$rc" -eq 2 ]; then blocked=1; fi
                 if [ "$rc" -ne 0 ] && [ "$rc" -ne 2 ]; then bad="$bad $script(exit $rc in ${dir##*/} on '${input:0:40}')"; fi
             done
