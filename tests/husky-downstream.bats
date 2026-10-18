@@ -138,7 +138,8 @@ install_with_hooks() {
 # and package.json exist, which says nothing about the TOOL being there.
 # =============================================================================
 
-# Commits in $1 with message $2; echoes nothing, asserted by effect in the log.
+# Commits in $1 with message $2, the hooks' stderr kept in $1/commit.err;
+# asserted by effect in the log, not by exit status.
 probe_commit() {
     local proj="$1" msg="$2"
     echo "$msg" >> "$proj/readme.txt"
@@ -146,7 +147,7 @@ probe_commit() {
     # Offline: an npx that falls back to a download must fail here, not reach
     # the network and turn the test slow and flaky.
     npm_config_offline=true git -C "$proj" -c user.email=probe@example.invalid \
-        -c user.name=probe commit -m "$msg" >/dev/null 2>&1 || true
+        -c user.name=probe commit -m "$msg" >/dev/null 2>"$proj/commit.err" || true
 }
 
 # Installs a Node project with hooks wired, and echoes its path.
@@ -166,12 +167,21 @@ stub_tool() {
     chmod +x "$proj/node_modules/.bin/$name"
 }
 
+# No skip without npx: the fixed hooks never call it, and a runner without
+# Node is exactly where a regression that needs node_modules would show.
 @test "install --hooks: a Node project without the tools installed still commits" {
-    command -v npx >/dev/null || skip "npx not on PATH: the failing path cannot run"
     local proj; proj=$(install_node_project)
     probe_commit "$proj" "test: no tools installed"
     run git -C "$proj" log --oneline
     [[ "$output" == *"no tools installed"* ]]
+}
+
+@test "install --hooks: a skipped check says so on stderr" {
+    local proj; proj=$(install_node_project)
+    probe_commit "$proj" "test: skipped checks"
+    run cat "$proj/commit.err"
+    [[ "$output" == *"commitlint not installed"* ]]
+    [[ "$output" == *"lint-staged not installed"* ]]
 }
 
 @test "install --hooks: installed tools are run, with the commit message file" {
