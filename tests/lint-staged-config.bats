@@ -108,11 +108,34 @@ tasks_for() {
     [ "$output" = "prettier --write" ]
 }
 
-@test "lint-staged config: a legacy .eslintrc counts as configured" {
+# Writes node_modules/eslint/package.json at version $1, as npm would.
+eslint_version() {
     install_tool eslint
+    mkdir -p "$PROJ/node_modules/eslint"
+    printf '{"name":"eslint","version":"%s"}\n' "$1" > "$PROJ/node_modules/eslint/package.json"
+}
+
+@test "lint-staged config: a legacy .eslintrc counts as configured below eslint 9" {
+    eslint_version 8.57.0
     echo '{}' > "$PROJ/.eslintrc.json"
     run tasks_for a.js
     [ "$output" = "eslint --fix" ]
+}
+
+@test "lint-staged config: an eslintConfig key counts as configured below eslint 9" {
+    eslint_version 8.57.0
+    printf '{"name":"p","eslintConfig":{}}\n' > "$PROJ/package.json"
+    run tasks_for a.js
+    [ "$output" = "eslint --fix" ]
+}
+
+@test "lint-staged config: a leftover .eslintrc under eslint 9 is not run" {
+    # eslint 9 ignores .eslintrc and fails for want of eslint.config.*.
+    eslint_version 9.4.0
+    echo '{}' > "$PROJ/.eslintrc.json"
+    run tasks_for a.js
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
 }
 
 # =============================================================================
@@ -141,8 +164,27 @@ install_into() {
 }
 
 @test "install --hooks: a lint-staged key in package.json means no config file" {
+    command -v jq >/dev/null || skip "jq not on PATH: the key is not looked for"
     local p="$TEST_DIR/own-key"; mkdir -p "$p"
     printf '{"name":"p","lint-staged":{"*.md":"echo own"}}\n' > "$p/package.json"
     install_into "$p"
     [ ! -e "$p/.lintstagedrc.mjs" ]
+}
+
+# The prerequisite the team guide states: lint-staged in devDependencies. The
+# same string as the config key, one level down — read as a config, it shipped
+# none, and lint-staged refused every commit with "No valid configuration".
+@test "install --hooks: lint-staged as a devDependency still gets the config" {
+    local p="$TEST_DIR/dep-only"; mkdir -p "$p"
+    printf '{"name":"p","devDependencies":{"lint-staged":"^15.2.0"}}\n' > "$p/package.json"
+    install_into "$p"
+    [ -f "$p/.lintstagedrc.mjs" ]
+}
+
+@test "install --hooks: keeping the project's own config is reported" {
+    local p="$TEST_DIR/reported"; mkdir -p "$p"
+    printf '{"*.md":"echo own"}\n' > "$p/.lintstagedrc.json"
+    git -C "$p" init -q
+    run bash "$NEW_PROJECT_SCRIPT" --simple --hooks -y "$p"
+    [[ "$output" == *"Kept the project's own files"*".lintstagedrc.json"* ]]
 }

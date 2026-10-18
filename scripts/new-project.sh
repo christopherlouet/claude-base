@@ -1152,17 +1152,27 @@ install_cicd_files() {
     if $landed; then seed_dependabot_config "$target_dir"; fi
 }
 
-# True when the project already configures lint-staged: a .lintstagedrc in any
-# form, a lint-staged.config.*, or a "lint-staged" key in package.json.
+# Prints the project's own lint-staged config and returns 0 when it has one: a
+# .lintstagedrc in any form, a lint-staged.config.*, or a TOP-LEVEL
+# "lint-staged" key in package.json. Only the top level counts — the same
+# string as a devDependency means installed, not configured, and taking it for
+# a config shipped none, so lint-staged refused every commit. Without jq the
+# key cannot be told apart and is not looked for: lint-staged reads
+# package.json first, so a config shipped beside one is dead, not blocking.
 #
 # Arguments:
 #   $1 - Target directory (absolute path)
 has_lint_staged_config() {
     local dir="$1" f
     for f in "$dir"/.lintstagedrc "$dir"/.lintstagedrc.* "$dir"/lint-staged.config.*; do
-        [[ -e "$f" ]] && return 0
+        [[ -e "$f" ]] && { basename "$f"; return 0; }
     done
-    grep -q '"lint-staged"[[:space:]]*:' "$dir/package.json" 2>/dev/null
+    if [[ -f "$dir/package.json" ]] && command -v jq >/dev/null 2>&1 \
+        && jq -e 'has("lint-staged")' "$dir/package.json" >/dev/null 2>&1; then
+        echo 'package.json "lint-staged"'
+        return 0
+    fi
+    return 1
 }
 
 # Install pre-commit hooks (husky)
@@ -1197,7 +1207,10 @@ install_hooks_files() {
             copy_unless_present "$BASE_DIR/.pre-commit-config.yaml" "$target_dir/.pre-commit-config.yaml"
         # lint-staged reads ONE config, in any of a dozen forms: a project that
         # has its own keeps it, and is not handed a second one beside it.
-        if ! has_lint_staged_config "$target_dir"; then
+        local own_lint_staged
+        if own_lint_staged=$(has_lint_staged_config "$target_dir"); then
+            PRESERVED_FILES="$PRESERVED_FILES $own_lint_staged"
+        else
             copy_unless_present "$BASE_DIR/templates/lint-staged/.lintstagedrc.mjs" \
                 "$target_dir/.lintstagedrc.mjs"
         fi
