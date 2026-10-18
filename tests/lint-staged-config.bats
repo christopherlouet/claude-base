@@ -48,7 +48,7 @@ tasks_for() {
         const { default: c } = await import(config)
         const ext = file.slice(file.lastIndexOf(".") + 1)
         for (const [glob, task] of Object.entries(c)) {
-            const exts = glob === "*" ? [ext] : (glob.match(/\{([^}]*)\}/)?.[1] ?? "").split(",")
+            const exts = (glob.match(/\{([^}]*)\}/)?.[1] ?? "").split(",")
             if (!exts.includes(ext)) continue
             const out = typeof task === "function" ? task([file]) : task
             for (const cmd of [].concat(out)) console.log(cmd.split(" ").slice(0, 2).join(" "))
@@ -161,6 +161,14 @@ install_into() {
     printf '{"*.md":"echo own"}\n' > "$p/.lintstagedrc.json"
     install_into "$p"
     [ ! -e "$p/.lintstagedrc.mjs" ]
+}
+
+@test "install --hooks: a backup or example of a config is not a config" {
+    local p="$TEST_DIR/backup"; mkdir -p "$p"
+    printf '{}\n' > "$p/.lintstagedrc.json.bak"
+    printf '{}\n' > "$p/.lintstagedrc.example"
+    install_into "$p"
+    [ -f "$p/.lintstagedrc.mjs" ]
 }
 
 @test "install --hooks: a lint-staged key in package.json means no config file" {

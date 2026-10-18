@@ -294,7 +294,8 @@ blocked by a hook it cannot feed. To re-enable manually in an existing install: 
 
 The lint-staged config it ships, `.lintstagedrc.mjs`, adapts to what the project has: `prettier
 --write` once prettier is installed, `eslint --fix` once eslint is installed **and** configured
-(`eslint.config.*` or `.eslintrc*`), nothing otherwise — a tool you have not added never refuses a
+(`eslint.config.*`; below eslint 9 also `.eslintrc*` or an `eslintConfig` key, which eslint 9
+ignores), nothing otherwise — a tool you have not added never refuses a
 commit. A project with its own lint-staged config (any `.lintstagedrc*`, `lint-staged.config.*` or a
 `lint-staged` key in `package.json`) keeps it and gets no second one.
 
