@@ -1152,6 +1152,19 @@ install_cicd_files() {
     if $landed; then seed_dependabot_config "$target_dir"; fi
 }
 
+# True when the project already configures lint-staged: a .lintstagedrc in any
+# form, a lint-staged.config.*, or a "lint-staged" key in package.json.
+#
+# Arguments:
+#   $1 - Target directory (absolute path)
+has_lint_staged_config() {
+    local dir="$1" f
+    for f in "$dir"/.lintstagedrc "$dir"/.lintstagedrc.* "$dir"/lint-staged.config.*; do
+        [[ -e "$f" ]] && return 0
+    done
+    grep -q '"lint-staged"[[:space:]]*:' "$dir/package.json" 2>/dev/null
+}
+
 # Install pre-commit hooks (husky)
 #
 # The source is templates/husky/, NOT the foundation's own .husky/. The
@@ -1182,7 +1195,12 @@ install_hooks_files() {
         done
         [[ -f "$BASE_DIR/.pre-commit-config.yaml" ]] && \
             copy_unless_present "$BASE_DIR/.pre-commit-config.yaml" "$target_dir/.pre-commit-config.yaml"
-        copy_unless_present "$BASE_DIR/.lintstagedrc.json" "$target_dir/.lintstagedrc.json"
+        # lint-staged reads ONE config, in any of a dozen forms: a project that
+        # has its own keeps it, and is not handed a second one beside it.
+        if ! has_lint_staged_config "$target_dir"; then
+            copy_unless_present "$BASE_DIR/templates/lint-staged/.lintstagedrc.mjs" \
+                "$target_dir/.lintstagedrc.mjs"
+        fi
         copy_unless_present "$BASE_DIR/.commitlintrc.json" "$target_dir/.commitlintrc.json"
         if ! chmod +x "$target_dir/.husky/"* 2>/dev/null; then
                 warning "Unable to make husky hooks executable"
