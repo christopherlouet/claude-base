@@ -123,11 +123,83 @@ install_with_hooks() {
     [[ "$output" == *"probe commit"* ]]
 }
 
-@test "install --hooks: commit-msg is still shipped and stays tool-tolerant" {
+@test "install --hooks: commit-msg is still shipped" {
     local proj; proj=$(install_with_hooks)
     [ -f "$proj/.husky/commit-msg" ]
-    # Guarded on both npx and package.json: absent either, it must no-op rather
-    # than refuse — a hook nobody feeds must not block a commit.
-    grep -q 'command -v npx' "$proj/.husky/commit-msg"
-    grep -q 'package.json' "$proj/.husky/commit-msg"
+    [ -x "$proj/.husky/commit-msg" ]
+}
+
+# =============================================================================
+# A Node project that has not installed the hook tools yet.
+#
+# Measured on a fresh project before the fix: package.json present, npx on the
+# PATH, commitlint not installed — `npx --no -- commitlint` refused to download
+# it, exited non-zero, and every commit was refused. The guard tested that npx
+# and package.json exist, which says nothing about the TOOL being there.
+# =============================================================================
+
+# Commits in $1 with message $2; echoes nothing, asserted by effect in the log.
+probe_commit() {
+    local proj="$1" msg="$2"
+    echo "$msg" >> "$proj/readme.txt"
+    git -C "$proj" add -A
+    # Offline: an npx that falls back to a download must fail here, not reach
+    # the network and turn the test slow and flaky.
+    npm_config_offline=true git -C "$proj" -c user.email=probe@example.invalid \
+        -c user.name=probe commit -m "$msg" >/dev/null 2>&1 || true
+}
+
+# Installs a Node project with hooks wired, and echoes its path.
+install_node_project() {
+    local proj; proj=$(install_with_hooks)
+    echo '{"name":"probe","version":"0.0.0","private":true}' > "$proj/package.json"
+    git -C "$proj" config core.hooksPath .husky
+    printf '%s' "$proj"
+}
+
+# Puts a stub tool in node_modules/.bin that logs its args and exits with $3.
+stub_tool() {
+    local proj="$1" name="$2" code="$3"
+    mkdir -p "$proj/node_modules/.bin"
+    printf '#!/bin/sh\necho "%s $*" >> "%s/tool-calls.log"\nexit %s\n' \
+        "$name" "$proj" "$code" > "$proj/node_modules/.bin/$name"
+    chmod +x "$proj/node_modules/.bin/$name"
+}
+
+@test "install --hooks: a Node project without the tools installed still commits" {
+    command -v npx >/dev/null || skip "npx not on PATH: the failing path cannot run"
+    local proj; proj=$(install_node_project)
+    probe_commit "$proj" "test: no tools installed"
+    run git -C "$proj" log --oneline
+    [[ "$output" == *"no tools installed"* ]]
+}
+
+@test "install --hooks: installed tools are run, with the commit message file" {
+    local proj; proj=$(install_node_project)
+    stub_tool "$proj" commitlint 0
+    stub_tool "$proj" lint-staged 0
+    probe_commit "$proj" "test: tools installed"
+    run git -C "$proj" log --oneline
+    [[ "$output" == *"tools installed"* ]]
+    run cat "$proj/tool-calls.log"
+    [[ "$output" == *"lint-staged"* ]]
+    [[ "$output" == *"commitlint --edit "*"COMMIT_EDITMSG"* ]]
+}
+
+# Positive control: tolerating an ABSENT tool must not mean ignoring a PRESENT
+# one. A hook that no-ops whatever happens would pass the two cases above.
+@test "install --hooks: a failing commitlint still refuses the commit" {
+    local proj; proj=$(install_node_project)
+    stub_tool "$proj" commitlint 1
+    probe_commit "$proj" "test: rejected by commitlint"
+    run git -C "$proj" log --oneline
+    [[ "$output" != *"rejected by commitlint"* ]]
+}
+
+@test "install --hooks: a failing lint-staged still refuses the commit" {
+    local proj; proj=$(install_node_project)
+    stub_tool "$proj" lint-staged 1
+    probe_commit "$proj" "test: rejected by lint-staged"
+    run git -C "$proj" log --oneline
+    [[ "$output" != *"rejected by lint-staged"* ]]
 }

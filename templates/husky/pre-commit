@@ -8,10 +8,12 @@
 # copy called files that were not there and refused every commit once
 # git-hooks-wire.sh set core.hooksPath on the first session.
 #
-# What is left is what a project actually has: lint-staged, and only when the
-# project is set up for it. Absent npx or package.json this hook is a no-op —
-# a gate nobody feeds must step aside, not block the work.
+# What is left is what a project actually has: lint-staged, and only when it
+# is INSTALLED. A guard on npx and package.json let `npx lint-staged` try to
+# download it on a project that had not added it, which fails offline and
+# refuses the commit. A hook never downloads a tool; absent, it no-ops — a
+# gate nobody feeds must step aside, not block the work.
 
-if command -v npx >/dev/null 2>&1 && [ -f "package.json" ]; then
-  npx lint-staged
+if [ -x node_modules/.bin/lint-staged ]; then
+  node_modules/.bin/lint-staged
 fi
