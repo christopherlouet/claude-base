@@ -3,9 +3,14 @@
 # Downstream commit-msg hook, installed by `claude-base init --hooks`.
 #
 # Validates the Conventional Commits format via commitlint (config shipped
-# alongside as .commitlintrc.json). Guarded on both npx and package.json: with
-# neither present it no-ops rather than refusing the commit.
+# alongside as .commitlintrc.json). Runs only when commitlint is INSTALLED:
+# guarding on npx and package.json said nothing about the tool, and on a Node
+# project that had not added it yet `npx --no` refused to fetch it and every
+# commit was refused. A hook never downloads a tool; absent, it steps aside,
+# and says so in a Node project — a skipped gate must not read as a passed one.
 
-if command -v npx >/dev/null 2>&1 && [ -f "package.json" ]; then
-  npx --no -- commitlint --edit "$1"
+if [ -x node_modules/.bin/commitlint ]; then
+  node_modules/.bin/commitlint --edit "$1"
+elif [ -f package.json ]; then
+  echo "commit-msg: commitlint not installed in node_modules - message check skipped" >&2
 fi
