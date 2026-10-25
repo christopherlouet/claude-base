@@ -91,7 +91,7 @@ tests/*.bats @anthropics/claude-base-maintainers
 .gitattributes @anthropics/claude-base-maintainers
 
 # Linting and formatting
-.lintstagedrc.json @anthropics/claude-base-maintainers
+templates/lint-staged/ @anthropics/claude-base-maintainers
 .commitlintrc.json @anthropics/claude-base-maintainers
 .editorconfig @anthropics/claude-base-maintainers
 

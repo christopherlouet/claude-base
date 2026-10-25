@@ -283,6 +283,13 @@ project it says so on stderr, so a project that has not set up the tooling yet i
 hook it cannot feed, and a skipped check does not pass for a green one. To re-enable manually in an existing install: `npx husky install`
 (assumes husky + lint-staged + commitlint are in your project's devDependencies).
 
+The lint-staged config it ships, `.lintstagedrc.mjs`, adapts to what the project has: `prettier
+--write` once prettier is installed, `eslint --fix` once eslint is installed **and** configured
+(`eslint.config.*`; below eslint 9 also `.eslintrc*` or an `eslintConfig` key, which eslint 9
+ignores), nothing otherwise — a tool you have not added never refuses a
+commit. A project with its own lint-staged config (any `.lintstagedrc*`, `lint-staged.config.*` or a
+`lint-staged` key in `package.json`) keeps it and gets no second one.
+
 Secret detection is **not** in these hooks. It ships in `.pre-commit-config.yaml` (the Python
 `pre-commit` framework, `detect-secrets`), opt-in via `pip install pre-commit && pre-commit install`
 — a separate tool with its own installation step. On the assistant side, `secret-scan.sh` covers
