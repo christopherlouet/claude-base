@@ -20,7 +20,19 @@
 # Deliberately narrow. It repairs only unambiguous breakage:
 #   unset + .husky present            -> wire it
 #   set, but the path does not exist  -> repair it
-#   set to some OTHER existing dir    -> LEAVE ALONE (a deliberate choice)
+#   ABSOLUTE path to this repo's .husky, and .husky is TRACKED
+#                                     -> make it relative (.husky): it works
+#                 today and is the repo-moved breakage on the next rename.
+#                 The config is shared by all linked worktrees while a relative
+#                 path resolves per worktree, so only a tracked dir is a safe
+#                 target: an untracked one (.localhooks, husky v9's .husky/_)
+#                 is missing in a worktree, whose next session would rewire the
+#                 shared value and take over the main checkout's choice.
+#                 Trade-off, same as a fresh clone: a worktree on a branch that
+#                 has no .husky then runs no hooks, where the absolute value ran
+#                 the main checkout's.
+#   set to some OTHER existing dir    -> LEAVE ALONE (a deliberate choice;
+#                 a ~ or ~/ path counts, git expands the tilde itself)
 #
 # Silent on the happy path, one line when it repairs. Always exits 0: a session
 # must never fail because of this.
@@ -38,19 +50,45 @@ TOPLEVEL=$(git rev-parse --show-toplevel 2>/dev/null || true)
 
 CURRENT=$(git config --local core.hooksPath 2>/dev/null || true)
 
+# The main checkout, not a linked worktree: its git dir IS the common dir.
+# The .husky rewrite below is decided from here only — from a worktree, its
+# own index would speak for a config every other checkout shares.
+in_main_checkout() {
+    local gd cd
+    gd=$(cd "$(git rev-parse --git-dir 2>/dev/null)" 2>/dev/null && pwd -P) || return 1
+    cd=$(cd "$(git rev-parse --git-common-dir 2>/dev/null)" 2>/dev/null && pwd -P) || return 1
+    [ "$gd" = "$cd" ]
+}
+
 if [ -n "$CURRENT" ]; then
-    # A relative hooksPath resolves against the repo root, not the cwd.
+    # A relative hooksPath resolves against the repo root, not the cwd; git
+    # expands a leading ~ itself, so it is a home path, not a relative one.
+    # shellcheck disable=SC2088  # the LITERAL ~ git stores, matched on purpose
     case "$CURRENT" in
-        /*) RESOLVED="$CURRENT" ;;
+        /*)
+            RESOLVED="$CURRENT"
+            # Same directory as our own .husky, by inode, so a symlinked or
+            # trailing-slash spelling counts; tracked, so it exists in every
+            # worktree whose branch has it; and seen from the main checkout.
+            if [ "$RESOLVED" -ef "$TOPLEVEL/.husky" ] \
+                && [ -n "$(git -C "$TOPLEVEL" ls-files -- .husky 2>/dev/null | head -n 1)" ] \
+                && in_main_checkout; then
+                MESSAGE="git hooks path was absolute ($CURRENT) - made relative (.husky) so a repo move cannot break it"
+            fi ;;
+        "~")   RESOLVED="$HOME" ;;
+        "~/"*) RESOLVED="$HOME/${CURRENT#"~/"}" ;;
         *)  RESOLVED="$TOPLEVEL/$CURRENT" ;;
     esac
     # Points somewhere real: honour it, whatever it is.
-    [ -d "$RESOLVED" ] && exit 0
-    REASON="stale (was: $CURRENT)"
+    if [ -z "${MESSAGE:-}" ]; then
+        [ -d "$RESOLVED" ] && exit 0
+        MESSAGE="git hooks were stale (was: $CURRENT) - wired to .husky (the pre-commit that keeps derived counts in sync now runs)"
+    fi
 else
-    REASON="unset"
+    MESSAGE="git hooks were unset - wired to .husky (the pre-commit that keeps derived counts in sync now runs)"
 fi
 
+# The one write: every repair ends on the relative .husky.
 git config --local core.hooksPath .husky 2>/dev/null || exit 0
-echo "[INFO] git hooks were $REASON — wired to .husky (the pre-commit that keeps derived counts in sync now runs)"
+echo "[INFO] $MESSAGE"
 exit 0

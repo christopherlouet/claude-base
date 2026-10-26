@@ -25,7 +25,24 @@ load 'test_helper'
 WIRE="$BASE_DIR/scripts/hooks/git-hooks-wire.sh"
 
 setup() { setup_test_dir; }
-teardown() { teardown_test_dir; }
+
+# The self-application tests write the developer's REAL local hooksPath; the
+# value they found is put back here, whether the test passed or not.
+teardown() {
+    if [ -n "${REAL_HOOKS_PATH_SAVED:-}" ]; then
+        if [ -n "${REAL_HOOKS_PATH:-}" ]; then
+            git -C "$BASE_DIR" config --local core.hooksPath "$REAL_HOOKS_PATH"
+        else
+            git -C "$BASE_DIR" config --local --unset core.hooksPath || true
+        fi
+    fi
+    teardown_test_dir
+}
+
+save_real_hooks_path() {
+    REAL_HOOKS_PATH=$(git -C "$BASE_DIR" config --local core.hooksPath || true)
+    REAL_HOOKS_PATH_SAVED=1
+}
 
 @test "git-hooks-wire: script exists and is executable" {
     [ -f "$WIRE" ]
@@ -64,6 +81,208 @@ teardown() { teardown_test_dir; }
     git config --local core.hooksPath .githooks-that-vanished
     run bash "$WIRE"
     [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = ".husky" ]
+}
+
+# --- An absolute path that still works is the next rename's breakage -----------
+#
+# The repo-moved case above is only repaired AFTER the move, once the path is
+# stale. An absolute value that still resolves to the repo's own .husky works
+# today and breaks silently on the next rename — observed on this very repo
+# after it moved, where the absolute value had been re-created at the new
+# location. It is unambiguous (it IS the foundation's hooks dir), so the hook
+# makes it relative before the move instead of after — when .husky is TRACKED,
+# the condition for it to exist in the linked worktrees that share the config.
+
+# Creates .husky with one committed hook in the repo of the current directory.
+track_husky() {
+    mkdir -p .husky
+    echo 'exit 0' > .husky/pre-commit
+    git add .husky
+    git -c user.email=t@example.invalid -c user.name=t commit -qm husky
+}
+
+@test "git-hooks-wire: an ABSOLUTE hooksPath to the repo's own .husky becomes relative" {
+    cd "$TEST_DIR"
+    git init -q
+    track_husky
+    git config --local core.hooksPath "$(git rev-parse --show-toplevel)/.husky"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = ".husky" ]
+    [[ "$output" == *"made relative (.husky)"* ]]
+}
+
+# ONLY .husky is relativised. Another dir inside the repo may be untracked,
+# and the config is shared by every linked worktree while a relative path
+# resolves per worktree (see the worktree cases below): left alone.
+@test "git-hooks-wire: an ABSOLUTE hooksPath to another dir INSIDE the repo is left alone" {
+    cd "$TEST_DIR"
+    git init -q
+    # Both TRACKED, so only the "ONLY .husky" rule keeps it, not the tracked
+    # check or the inode one.
+    track_husky
+    mkdir .githooks
+    echo 'exit 0' > .githooks/pre-commit
+    git add .githooks
+    git -c user.email=t@example.invalid -c user.name=t commit -qm githooks
+    local abs; abs="$(git rev-parse --show-toplevel)/.githooks"
+    git config --local core.hooksPath "$abs"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = "$abs" ]
+    [ -z "$output" ]
+}
+
+# What husky v9 itself points at: generated and untracked, so the same rule.
+@test "git-hooks-wire: an ABSOLUTE hooksPath to husky v9's .husky/_ is left alone" {
+    cd "$TEST_DIR"
+    git init -q
+    mkdir -p .husky/_
+    local abs; abs="$(git rev-parse --show-toplevel)/.husky/_"
+    git config --local core.hooksPath "$abs"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = "$abs" ]
+}
+
+# --- Linked worktrees share one config ---------------------------------------
+#
+# Makes a repo in $TEST_DIR/main with a TRACKED .husky and an untracked
+# .localhooks, plus a linked worktree at $TEST_DIR/wt.
+make_repo_with_worktree() {
+    mkdir "$TEST_DIR/main"
+    cd "$TEST_DIR/main"
+    git init -q
+    mkdir .husky .localhooks
+    echo 'exit 0' > .husky/pre-commit
+    git add .husky
+    git -c user.email=t@example.invalid -c user.name=t commit -qm init
+    git worktree add -q "$TEST_DIR/wt" -b wt
+}
+
+# Reproduced in review against a version that relativised any in-repo dir: the
+# main session wrote `.localhooks`, absent from the worktree, whose next
+# session declared it stale and wrote .husky into the SHARED config.
+@test "git-hooks-wire: an untracked in-repo hooksPath survives sessions in main AND a worktree" {
+    make_repo_with_worktree
+    git config --local core.hooksPath "$TEST_DIR/main/.localhooks"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    cd "$TEST_DIR/wt"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git -C "$TEST_DIR/main" config --local core.hooksPath)" = "$TEST_DIR/main/.localhooks" ]
+}
+
+# Decided from the main checkout only: a worktree's own index would speak for
+# a config every other checkout shares.
+@test "git-hooks-wire: from a linked worktree, an absolute .husky is not rewritten" {
+    make_repo_with_worktree
+    git config --local core.hooksPath "$TEST_DIR/wt/.husky"
+    cd "$TEST_DIR/wt"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = "$TEST_DIR/wt/.husky" ]
+    [ -z "$output" ]
+}
+
+# The tracked .husky exists in every worktree whose branch has it, so the
+# relative value holds there. (A worktree on a branch WITHOUT .husky then runs
+# no hooks — the accepted trade-off, the state a fresh clone gets anyway.)
+@test "git-hooks-wire: the absolute .husky made relative in main stays quiet in a worktree" {
+    make_repo_with_worktree
+    git config --local core.hooksPath "$TEST_DIR/main/.husky"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = ".husky" ]
+    cd "$TEST_DIR/wt"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+    [ "$(git config --local core.hooksPath)" = ".husky" ]
+}
+
+# git expands a leading ~/ itself; read raw it looks relative to the repo,
+# and a working home directory was declared stale and replaced.
+@test "git-hooks-wire: a ~/ hooksPath to an existing dir is left alone" {
+    export HOME="$TEST_DIR/home"
+    mkdir -p "$HOME/.githooks" "$TEST_DIR/repo"
+    cd "$TEST_DIR/repo"
+    git init -q
+    mkdir .husky
+    git config --local core.hooksPath '~/.githooks'
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = '~/.githooks' ]
+    [ -z "$output" ]
+}
+
+# A bare ~ is the home directory too.
+@test "git-hooks-wire: a bare ~ hooksPath is left alone" {
+    export HOME="$TEST_DIR/home"
+    mkdir -p "$HOME" "$TEST_DIR/repo"
+    cd "$TEST_DIR/repo"
+    git init -q
+    mkdir .husky
+    git config --local core.hooksPath '~'
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = '~' ]
+    [ -z "$output" ]
+}
+
+# Untracked (or gitignored) .husky is missing in every linked worktree, so
+# relativising it would turn their hooks off: the absolute value is kept.
+@test "git-hooks-wire: an ABSOLUTE hooksPath to an UNTRACKED .husky is left alone" {
+    cd "$TEST_DIR"
+    git init -q
+    mkdir .husky
+    local abs; abs="$(git rev-parse --show-toplevel)/.husky"
+    git config --local core.hooksPath "$abs"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = "$abs" ]
+    [ -z "$output" ]
+}
+
+# Same directory reached through a symlink and a trailing slash: a string
+# comparison would miss it, the inode comparison does not.
+@test "git-hooks-wire: the repo's own .husky is recognised through a symlink" {
+    mkdir "$TEST_DIR/real"
+    ln -s "$TEST_DIR/real" "$TEST_DIR/link"
+    cd "$TEST_DIR/real"
+    git init -q
+    track_husky
+    git config --local core.hooksPath "$TEST_DIR/link/.husky/"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = ".husky" ]
+}
+
+@test "git-hooks-wire: an ABSOLUTE hooksPath to some OTHER existing dir is left alone" {
+    cd "$TEST_DIR"
+    mkdir repo shared-hooks
+    cd repo
+    git init -q
+    mkdir .husky
+    git config --local core.hooksPath "$TEST_DIR/shared-hooks"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = "$TEST_DIR/shared-hooks" ]
+    [ -z "$output" ]
+}
+
+@test "git-hooks-wire: once made relative, a second run is silent" {
+    cd "$TEST_DIR"
+    git init -q
+    track_husky
+    git config --local core.hooksPath "$(git rev-parse --show-toplevel)/.husky"
+    bash "$WIRE" >/dev/null
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+    # Silent because it was FIXED, not because nothing happened.
     [ "$(git config --local core.hooksPath)" = ".husky" ]
 }
 
@@ -148,6 +367,7 @@ teardown() { teardown_test_dir; }
     #
     # What must hold on any checkout: the end state is .husky, and a second run
     # has nothing left to do.
+    save_real_hooks_path
     cd "$BASE_DIR"
     run bash "$WIRE"
     [ "$status" -eq 0 ]
@@ -156,5 +376,14 @@ teardown() { teardown_test_dir; }
     run bash "$WIRE"
     [ "$status" -eq 0 ]
     [ -z "$output" ]
+    [ "$(git config --local core.hooksPath)" = ".husky" ]
+
+    # Then from the state this checkout was actually found in: an absolute
+    # value pointing at the real .husky. Kept in THIS test, not a second one:
+    # bats --jobs runs a file's tests in parallel, and two tests writing the
+    # same real config key would race (and restore each other's values).
+    git config --local core.hooksPath "$(git rev-parse --show-toplevel)/.husky"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
     [ "$(git config --local core.hooksPath)" = ".husky" ]
 }
