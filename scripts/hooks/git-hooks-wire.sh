@@ -20,16 +20,19 @@
 # Deliberately narrow. It repairs only unambiguous breakage:
 #   unset + .husky present            -> wire it
 #   set, but the path does not exist  -> repair it
-#   ABSOLUTE path to this repo's .husky -> make it relative (.husky): it works
+#   ABSOLUTE path to this repo's .husky, and .husky is TRACKED
+#                                     -> make it relative (.husky): it works
 #                 today and is the repo-moved breakage on the next rename.
-#                 ONLY .husky: it is tracked, so it exists in every linked
-#                 worktree. The config is shared by all worktrees while a
-#                 relative path resolves per worktree, so relativising an
-#                 untracked dir (.localhooks, husky v9's .husky/_) would make
-#                 it stale in a worktree, whose next session would then rewire
-#                 the shared value and take over the main checkout's choice.
+#                 The config is shared by all linked worktrees while a relative
+#                 path resolves per worktree, so only a tracked dir is a safe
+#                 target: an untracked one (.localhooks, husky v9's .husky/_)
+#                 is missing in a worktree, whose next session would rewire the
+#                 shared value and take over the main checkout's choice.
+#                 Trade-off, same as a fresh clone: a worktree on a branch that
+#                 has no .husky then runs no hooks, where the absolute value ran
+#                 the main checkout's.
 #   set to some OTHER existing dir    -> LEAVE ALONE (a deliberate choice;
-#                 a ~/ path counts, git expands the tilde itself)
+#                 a ~ or ~/ path counts, git expands the tilde itself)
 #
 # Silent on the happy path, one line when it repairs. Always exits 0: a session
 # must never fail because of this.
@@ -49,18 +52,21 @@ CURRENT=$(git config --local core.hooksPath 2>/dev/null || true)
 
 if [ -n "$CURRENT" ]; then
     # A relative hooksPath resolves against the repo root, not the cwd; git
-    # expands a leading ~/ itself, so it is a home path, not a relative one.
-    # shellcheck disable=SC2088  # the LITERAL ~/ git stores, matched on purpose
+    # expands a leading ~ itself, so it is a home path, not a relative one.
+    # shellcheck disable=SC2088  # the LITERAL ~ git stores, matched on purpose
     case "$CURRENT" in
         /*)
             RESOLVED="$CURRENT"
             # Same directory as our own .husky, by inode, so a symlinked or
-            # trailing-slash spelling counts.
-            if [ "$RESOLVED" -ef "$TOPLEVEL/.husky" ]; then
+            # trailing-slash spelling counts; and tracked, so it exists in
+            # every worktree whose branch has it.
+            if [ "$RESOLVED" -ef "$TOPLEVEL/.husky" ] \
+                && [ -n "$(git -C "$TOPLEVEL" ls-files -- .husky 2>/dev/null | head -n 1)" ]; then
                 git config --local core.hooksPath .husky 2>/dev/null || exit 0
                 echo "[INFO] git hooks path was absolute ($CURRENT) - made relative (.husky) so a repo move cannot break it"
                 exit 0
             fi ;;
+        "~")   RESOLVED="$HOME" ;;
         "~/"*) RESOLVED="$HOME/${CURRENT#"~/"}" ;;
         *)  RESOLVED="$TOPLEVEL/$CURRENT" ;;
     esac

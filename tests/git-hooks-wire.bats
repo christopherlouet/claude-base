@@ -91,12 +91,21 @@ save_real_hooks_path() {
 # today and breaks silently on the next rename — observed on this very repo
 # after it moved, where the absolute value had been re-created at the new
 # location. It is unambiguous (it IS the foundation's hooks dir), so the hook
-# makes it relative before the move instead of after.
+# makes it relative before the move instead of after — when .husky is TRACKED,
+# the condition for it to exist in the linked worktrees that share the config.
+
+# Creates .husky with one committed hook in the repo of the current directory.
+track_husky() {
+    mkdir -p .husky
+    echo 'exit 0' > .husky/pre-commit
+    git add .husky
+    git -c user.email=t@example.invalid -c user.name=t commit -qm husky
+}
 
 @test "git-hooks-wire: an ABSOLUTE hooksPath to the repo's own .husky becomes relative" {
     cd "$TEST_DIR"
     git init -q
-    mkdir .husky
+    track_husky
     git config --local core.hooksPath "$(git rev-parse --show-toplevel)/.husky"
     run bash "$WIRE"
     [ "$status" -eq 0 ]
@@ -160,13 +169,15 @@ make_repo_with_worktree() {
     [ "$(git -C "$TEST_DIR/main" config --local core.hooksPath)" = "$TEST_DIR/main/.localhooks" ]
 }
 
-# The tracked .husky exists in every worktree, so relativising it holds there.
+# The tracked .husky exists in every worktree whose branch has it, so the
+# relative value holds there. (A worktree on a branch WITHOUT .husky then runs
+# no hooks — the accepted trade-off, the state a fresh clone gets anyway.)
 @test "git-hooks-wire: the absolute .husky made relative in main stays quiet in a worktree" {
     make_repo_with_worktree
     git config --local core.hooksPath "$TEST_DIR/main/.husky"
     run bash "$WIRE"
     [ "$status" -eq 0 ]
-    [ "$(git config --local core.hooksPath)" = ".husky" ] || false
+    [ "$(git config --local core.hooksPath)" = ".husky" ]
     cd "$TEST_DIR/wt"
     run bash "$WIRE"
     [ "$status" -eq 0 ]
@@ -189,6 +200,34 @@ make_repo_with_worktree() {
     [ -z "$output" ]
 }
 
+# A bare ~ is the home directory too.
+@test "git-hooks-wire: a bare ~ hooksPath is left alone" {
+    export HOME="$TEST_DIR/home"
+    mkdir -p "$HOME" "$TEST_DIR/repo"
+    cd "$TEST_DIR/repo"
+    git init -q
+    mkdir .husky
+    git config --local core.hooksPath '~'
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = '~' ]
+    [ -z "$output" ]
+}
+
+# Untracked (or gitignored) .husky is missing in every linked worktree, so
+# relativising it would turn their hooks off: the absolute value is kept.
+@test "git-hooks-wire: an ABSOLUTE hooksPath to an UNTRACKED .husky is left alone" {
+    cd "$TEST_DIR"
+    git init -q
+    mkdir .husky
+    local abs; abs="$(git rev-parse --show-toplevel)/.husky"
+    git config --local core.hooksPath "$abs"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = "$abs" ]
+    [ -z "$output" ]
+}
+
 # Same directory reached through a symlink and a trailing slash: a string
 # comparison would miss it, the inode comparison does not.
 @test "git-hooks-wire: the repo's own .husky is recognised through a symlink" {
@@ -196,7 +235,7 @@ make_repo_with_worktree() {
     ln -s "$TEST_DIR/real" "$TEST_DIR/link"
     cd "$TEST_DIR/real"
     git init -q
-    mkdir .husky
+    track_husky
     git config --local core.hooksPath "$TEST_DIR/link/.husky/"
     run bash "$WIRE"
     [ "$status" -eq 0 ]
@@ -219,7 +258,7 @@ make_repo_with_worktree() {
 @test "git-hooks-wire: once made relative, a second run is silent" {
     cd "$TEST_DIR"
     git init -q
-    mkdir .husky
+    track_husky
     git config --local core.hooksPath "$(git rev-parse --show-toplevel)/.husky"
     bash "$WIRE" >/dev/null
     run bash "$WIRE"
