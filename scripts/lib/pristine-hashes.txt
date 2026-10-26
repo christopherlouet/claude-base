@@ -156,6 +156,7 @@
 16773a4f08a9c39026f70e07c1cd877af884e8de9da12797188853fda72f9b44 .claude/agents/growth-seo.md
 1708c92a345c1659c630aa8f7d219ef1db0fa94d38841d2f6878cba597bd479b .claude/commands/ops/ops-gitflow-feature.md
 1711fd6703743c45de54c560c82f7274e76c48437d414fef12bbde16541f4c3d .claude/commands/growth/growth-cro.md
+171254130b44b4cb10008391939de9768cf2fbfbfce02b8a9867ad29319857a3 scripts/hooks/git-hooks-wire.sh
 1720d60e773df79bdb2de43988b50c589263084f7513a46ebd765595c2d886a5 .claude/commands/biz/biz-roadmap.md
 1730a2ffaba8fd397760267d320f7c74455a3ccd0c393acbf868ece7767c7276 .claude/agents/ops-proxmox.md
 17588f998cf558f136164ce68b509d2bf17a1a6e007b88f79e22fae3d2cb991e .claude/commands/biz/biz-model.md

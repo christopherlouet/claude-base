@@ -20,9 +20,14 @@
 # Deliberately narrow. It repairs only unambiguous breakage:
 #   unset + .husky present            -> wire it
 #   set, but the path does not exist  -> repair it
-#   ABSOLUTE path INSIDE this repo    -> make it relative, same directory:
-#                 it works today and is the repo-moved breakage on the next
-#                 rename (covers .husky, husky v9's .husky/_, a .githooks)
+#   ABSOLUTE path to this repo's .husky -> make it relative (.husky): it works
+#                 today and is the repo-moved breakage on the next rename.
+#                 ONLY .husky: it is tracked, so it exists in every linked
+#                 worktree. The config is shared by all worktrees while a
+#                 relative path resolves per worktree, so relativising an
+#                 untracked dir (.localhooks, husky v9's .husky/_) would make
+#                 it stale in a worktree, whose next session would then rewire
+#                 the shared value and take over the main checkout's choice.
 #   set to some OTHER existing dir    -> LEAVE ALONE (a deliberate choice;
 #                 a ~/ path counts, git expands the tilde itself)
 #
@@ -49,20 +54,12 @@ if [ -n "$CURRENT" ]; then
     case "$CURRENT" in
         /*)
             RESOLVED="$CURRENT"
-            # Absolute but inside this repo: compared on physical paths, so a
-            # symlinked or trailing-slash spelling counts. The repo root itself
-            # is not "inside" and is left alone. Both paths must resolve: an
-            # empty prefix would make every absolute path look "inside".
-            TOP_PHYS=$(cd "$TOPLEVEL" 2>/dev/null && pwd -P) || TOP_PHYS=""
-            CUR_PHYS=$(cd "$CURRENT" 2>/dev/null && pwd -P) || CUR_PHYS=""
-            if [ -n "$TOP_PHYS" ] && [ -n "$CUR_PHYS" ]; then
-                case "$CUR_PHYS" in
-                    "$TOP_PHYS"/?*)
-                        REL=${CUR_PHYS#"$TOP_PHYS"/}
-                        git config --local core.hooksPath "$REL" 2>/dev/null || exit 0
-                        echo "[INFO] git hooks path was absolute ($CURRENT) - made relative ($REL) so a repo move cannot break it"
-                        exit 0 ;;
-                esac
+            # Same directory as our own .husky, by inode, so a symlinked or
+            # trailing-slash spelling counts.
+            if [ "$RESOLVED" -ef "$TOPLEVEL/.husky" ]; then
+                git config --local core.hooksPath .husky 2>/dev/null || exit 0
+                echo "[INFO] git hooks path was absolute ($CURRENT) - made relative (.husky) so a repo move cannot break it"
+                exit 0
             fi ;;
         "~/"*) RESOLVED="$HOME/${CURRENT#"~/"}" ;;
         *)  RESOLVED="$TOPLEVEL/$CURRENT" ;;

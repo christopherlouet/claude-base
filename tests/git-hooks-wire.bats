@@ -104,27 +104,74 @@ save_real_hooks_path() {
     [[ "$output" == *"made relative (.husky)"* ]]
 }
 
-# Any directory inside the repo breaks the same way on a rename, not only
-# .husky: a deliberate .githooks keeps its target, only its spelling changes.
-@test "git-hooks-wire: an ABSOLUTE hooksPath to another dir INSIDE the repo becomes relative" {
+# ONLY .husky is relativised. Another dir inside the repo may be untracked,
+# and the config is shared by every linked worktree while a relative path
+# resolves per worktree (see the worktree cases below): left alone.
+@test "git-hooks-wire: an ABSOLUTE hooksPath to another dir INSIDE the repo is left alone" {
     cd "$TEST_DIR"
     git init -q
     mkdir .husky .githooks
-    git config --local core.hooksPath "$(git rev-parse --show-toplevel)/.githooks"
+    local abs; abs="$(git rev-parse --show-toplevel)/.githooks"
+    git config --local core.hooksPath "$abs"
     run bash "$WIRE"
     [ "$status" -eq 0 ]
-    [ "$(git config --local core.hooksPath)" = ".githooks" ]
+    [ "$(git config --local core.hooksPath)" = "$abs" ]
+    [ -z "$output" ]
 }
 
-# What husky v9 itself points at.
-@test "git-hooks-wire: an ABSOLUTE hooksPath to husky v9's .husky/_ keeps its subdirectory" {
+# What husky v9 itself points at: generated and untracked, so the same rule.
+@test "git-hooks-wire: an ABSOLUTE hooksPath to husky v9's .husky/_ is left alone" {
     cd "$TEST_DIR"
     git init -q
     mkdir -p .husky/_
-    git config --local core.hooksPath "$(git rev-parse --show-toplevel)/.husky/_"
+    local abs; abs="$(git rev-parse --show-toplevel)/.husky/_"
+    git config --local core.hooksPath "$abs"
     run bash "$WIRE"
     [ "$status" -eq 0 ]
-    [ "$(git config --local core.hooksPath)" = ".husky/_" ]
+    [ "$(git config --local core.hooksPath)" = "$abs" ]
+}
+
+# --- Linked worktrees share one config ---------------------------------------
+#
+# Makes a repo in $TEST_DIR/main with a TRACKED .husky and an untracked
+# .localhooks, plus a linked worktree at $TEST_DIR/wt.
+make_repo_with_worktree() {
+    mkdir "$TEST_DIR/main"
+    cd "$TEST_DIR/main"
+    git init -q
+    mkdir .husky .localhooks
+    echo 'exit 0' > .husky/pre-commit
+    git add .husky
+    git -c user.email=t@example.invalid -c user.name=t commit -qm init
+    git worktree add -q "$TEST_DIR/wt" -b wt
+}
+
+# Reproduced in review against a version that relativised any in-repo dir: the
+# main session wrote `.localhooks`, absent from the worktree, whose next
+# session declared it stale and wrote .husky into the SHARED config.
+@test "git-hooks-wire: an untracked in-repo hooksPath survives sessions in main AND a worktree" {
+    make_repo_with_worktree
+    git config --local core.hooksPath "$TEST_DIR/main/.localhooks"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    cd "$TEST_DIR/wt"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git -C "$TEST_DIR/main" config --local core.hooksPath)" = "$TEST_DIR/main/.localhooks" ]
+}
+
+# The tracked .husky exists in every worktree, so relativising it holds there.
+@test "git-hooks-wire: the absolute .husky made relative in main stays quiet in a worktree" {
+    make_repo_with_worktree
+    git config --local core.hooksPath "$TEST_DIR/main/.husky"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = ".husky" ] || false
+    cd "$TEST_DIR/wt"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+    [ "$(git config --local core.hooksPath)" = ".husky" ]
 }
 
 # git expands a leading ~/ itself; read raw it looks relative to the repo,
@@ -273,13 +320,11 @@ save_real_hooks_path() {
     [ "$status" -eq 0 ]
     [ -z "$output" ]
     [ "$(git config --local core.hooksPath)" = ".husky" ]
-}
 
-# The state this checkout was actually found in: an absolute value pointing at
-# the real .husky. Ends on .husky, the state the test above leaves anyway.
-@test "git-hooks-wire: on the real foundation an absolute hooksPath converges to .husky" {
-    save_real_hooks_path
-    cd "$BASE_DIR"
+    # Then from the state this checkout was actually found in: an absolute
+    # value pointing at the real .husky. Kept in THIS test, not a second one:
+    # bats --jobs runs a file's tests in parallel, and two tests writing the
+    # same real config key would race (and restore each other's values).
     git config --local core.hooksPath "$(git rev-parse --show-toplevel)/.husky"
     run bash "$WIRE"
     [ "$status" -eq 0 ]
