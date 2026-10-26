@@ -152,15 +152,26 @@ probe_commit() {
         -c user.name=probe commit -m "$msg" >/dev/null 2>"$proj/commit.err" || true
 }
 
+# Writes a stub $3 into directory $1 that logs its name and args to
+# $2/tool-calls.log and exits with $4 — the log is how a test sees it ran.
+write_stub() {
+    local dir="$1" proj="$2" name="$3" code="$4"
+    mkdir -p "$dir"
+    printf '#!/bin/sh\necho "%s $*" >> "%s/tool-calls.log"\nexit %s\n' \
+        "$name" "$proj" "$code" > "$dir/$name"
+    chmod +x "$dir/$name"
+}
+
+# Puts a stub tool in node_modules/.bin that logs its args and exits with $3.
+stub_tool() {
+    write_stub "$1/node_modules/.bin" "$1" "$2" "$3"
+}
+
 # Puts a stub $2 exiting with $3 in $TEST_DIR/pathbin, outside the project,
 # and echoes that directory for PROBE_PATH_PREFIX.
 stub_on_path() {
-    local proj="$1" name="$2" code="$3" bin="$TEST_DIR/pathbin"
-    mkdir -p "$bin"
-    printf '#!/bin/sh\necho "%s $*" >> "%s/tool-calls.log"\nexit %s\n' \
-        "$name" "$proj" "$code" > "$bin/$name"
-    chmod +x "$bin/$name"
-    printf '%s' "$bin"
+    write_stub "$TEST_DIR/pathbin" "$1" "$2" "$3"
+    printf '%s' "$TEST_DIR/pathbin"
 }
 
 # Installs a Node project with hooks wired, and echoes its path.
@@ -171,14 +182,8 @@ install_node_project() {
     printf '%s' "$proj"
 }
 
-# Puts a stub tool in node_modules/.bin that logs its args and exits with $3.
-stub_tool() {
-    local proj="$1" name="$2" code="$3"
-    mkdir -p "$proj/node_modules/.bin"
-    printf '#!/bin/sh\necho "%s $*" >> "%s/tool-calls.log"\nexit %s\n' \
-        "$name" "$proj" "$code" > "$proj/node_modules/.bin/$name"
-    chmod +x "$proj/node_modules/.bin/$name"
-}
+# A `[[ ]]` that is not a test's last line does not fail it on bash < 4.1
+# (macOS system bash), hence `|| false` on every earlier one.
 
 # No skip without npx: the fixed hooks never call it, and a runner without
 # Node is exactly where a regression that needs node_modules would show.
@@ -192,12 +197,15 @@ stub_tool() {
 # Pins the original defect on any runner: the npx the old hooks called is
 # present and refuses, as `npx --no` did for a tool that was not installed.
 # Without it, a runner lacking npx made the old hooks no-op and this passed.
+# Not called at all: a hook that ran npx and ignored its status would still
+# reach for a download.
 @test "install --hooks: an npx that refuses does not block the commit" {
     local proj; proj=$(install_node_project)
     PROBE_PATH_PREFIX=$(stub_on_path "$proj" npx 1)
     probe_commit "$proj" "test: npx refuses"
     run git -C "$proj" log --oneline
-    [[ "$output" == *"npx refuses"* ]]
+    [[ "$output" == *"npx refuses"* ]] || false
+    [ ! -e "$proj/tool-calls.log" ]
 }
 
 # Only the project's OWN install is a gate. A global tool (npm -g, volta, nix,
@@ -211,7 +219,7 @@ stub_tool() {
     PROBE_PATH_PREFIX=$(stub_on_path "$proj" lint-staged 1)
     probe_commit "$proj" "test: global tools ignored"
     run git -C "$proj" log --oneline
-    [[ "$output" == *"global tools ignored"* ]]
+    [[ "$output" == *"global tools ignored"* ]] || false
     [ ! -e "$proj/tool-calls.log" ]
 }
 
@@ -221,19 +229,20 @@ stub_tool() {
 @test "install --hooks: a project without package.json skips silently" {
     local proj; proj=$(install_with_hooks)
     git -C "$proj" config core.hooksPath .husky
-    PROBE_PATH_PREFIX=$(stub_on_path "$proj" commitlint 1)
+    stub_on_path "$proj" commitlint 0 >/dev/null
+    PROBE_PATH_PREFIX=$(stub_on_path "$proj" lint-staged 0)
     probe_commit "$proj" "test: no package.json"
     run git -C "$proj" log --oneline
-    [[ "$output" == *"no package.json"* ]]
-    run cat "$proj/commit.err"
-    [[ "$output" != *"not installed"* ]]
+    [[ "$output" == *"no package.json"* ]] || false
+    [ ! -e "$proj/tool-calls.log" ]
+    [ ! -s "$proj/commit.err" ]
 }
 
 @test "install --hooks: a skipped check says so on stderr" {
     local proj; proj=$(install_node_project)
     probe_commit "$proj" "test: skipped checks"
     run cat "$proj/commit.err"
-    [[ "$output" == *"commitlint not installed"* ]]
+    [[ "$output" == *"commitlint not installed"* ]] || false
     [[ "$output" == *"lint-staged not installed"* ]]
 }
 
@@ -243,9 +252,9 @@ stub_tool() {
     stub_tool "$proj" lint-staged 0
     probe_commit "$proj" "test: tools installed"
     run git -C "$proj" log --oneline
-    [[ "$output" == *"tools installed"* ]]
+    [[ "$output" == *"tools installed"* ]] || false
     run cat "$proj/tool-calls.log"
-    [[ "$output" == *"lint-staged"* ]]
+    [[ "$output" == *"lint-staged"* ]] || false
     [[ "$output" == *"commitlint --edit "*"COMMIT_EDITMSG"* ]]
 }
 
@@ -256,7 +265,7 @@ stub_tool() {
     stub_tool "$proj" commitlint 1
     probe_commit "$proj" "test: rejected by commitlint"
     run git -C "$proj" log --oneline
-    [[ "$output" != *"rejected by commitlint"* ]]
+    [[ "$output" != *"rejected by commitlint"* ]] || false
     # Refused BY commitlint, not by some other breakage in the hook.
     run cat "$proj/tool-calls.log"
     [[ "$output" == *"commitlint --edit"* ]]
@@ -267,7 +276,7 @@ stub_tool() {
     stub_tool "$proj" lint-staged 1
     probe_commit "$proj" "test: rejected by lint-staged"
     run git -C "$proj" log --oneline
-    [[ "$output" != *"rejected by lint-staged"* ]]
+    [[ "$output" != *"rejected by lint-staged"* ]] || false
     run cat "$proj/tool-calls.log"
     [[ "$output" == *"lint-staged"* ]]
 }

@@ -66,7 +66,8 @@ if [ -f package.json ] && grep -q "husky" package.json; then
     gate_run npm install --silent >/dev/null 2>&1 < /dev/null || true
     # `husky install`, not bare `husky`: v9 only deprecates it, while v8 run
     # with no command prints its help and exits 0 having wired nothing.
-    gate_run npx husky install >/dev/null 2>&1 < /dev/null || true
+    # `--no`: if npm install failed, npx must not fetch husky@latest instead.
+    gate_run npx --no husky install >/dev/null 2>&1 < /dev/null || true
     [ ! -d node_modules/husky ] && echo "[WARN] Husky cannot be installed. Tests run manually."
   fi
 fi

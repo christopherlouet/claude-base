@@ -291,9 +291,11 @@ files (`lint-staged`, `pre-commit`) and **Conventional Commits validation** (`co
 — a hook never downloads a tool, and a global install does not count: it would run against the
 shipped configs without their presets, and in repos that never set the tooling up. Without it the hook steps aside rather than refusing the commit, and in a Node
 project it says so on stderr, so a project that has not set up the tooling yet is not blocked by a
-hook it cannot feed, and a skipped check does not pass for a green one. To re-enable manually in an existing install: `npx husky`
-on husky v9, `npx husky install` on v8 (assumes husky + lint-staged + commitlint are in your
-project's devDependencies; `husky init` would overwrite the shipped `.husky/pre-commit`).
+hook it cannot feed, and a skipped check does not pass for a green one. To re-enable manually in an existing install: `npx husky install`
+(it works on husky v8 and v9, where it is only deprecated; bare `npx husky` wires nothing on v8, and
+`husky init` would overwrite the shipped `.husky/pre-commit`). It assumes husky, lint-staged,
+`@commitlint/cli` **and `@commitlint/config-conventional`** are in your project's devDependencies:
+the shipped `.commitlintrc.json` extends that preset, and commitlint without it refuses every commit.
 
 The lint-staged config it ships, `.lintstagedrc.mjs`, adapts to what the project has: `prettier
 --write` once prettier is installed, `eslint --fix` once eslint is installed **and** configured
