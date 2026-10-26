@@ -8,6 +8,7 @@
 00c79d801d493b4bb73f87a4eb02ab0bace281ca5fc3756f63ceef618c5a1a00 .claude/commands/qa/qa-audit.md
 00cb474274b7402c39fdae1a99d7f9ee84764f35b847e991da06b2e8934b58b4 .claude/commands/growth/growth-onboarding.md
 00e6a472749c577c3d279e6961ec3611ecf7ac9fa4ece1faeef3d1f37521085a .claude/rules/api.md
+00f3d12a76077894ba585725de5566a8413435a779ae31597826a8cff281ac60 scripts/hooks/git-hooks-wire.sh
 012ac355587d560c9056790ba7b22053750302aeba7be6d4e3c2f06a7848ee81 .claude/commands/qa/qa-a11y.md
 0164dd99a1646c274bdf38104c9df8a37c5954b059de52a860e26a4db1363603 .claude/skills/git-worktrees/SKILL.md
 0190680afabb090924a7dd9ac18c97afaeee0bd354cd504f4f594d449f26ec7b .claude/templates/opnsense/examples/orange-box-dmz/main.tf

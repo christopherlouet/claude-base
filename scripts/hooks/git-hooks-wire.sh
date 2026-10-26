@@ -50,6 +50,16 @@ TOPLEVEL=$(git rev-parse --show-toplevel 2>/dev/null || true)
 
 CURRENT=$(git config --local core.hooksPath 2>/dev/null || true)
 
+# The main checkout, not a linked worktree: its git dir IS the common dir.
+# The .husky rewrite below is decided from here only — from a worktree, its
+# own index would speak for a config every other checkout shares.
+in_main_checkout() {
+    local gd cd
+    gd=$(cd "$(git rev-parse --git-dir 2>/dev/null)" 2>/dev/null && pwd -P) || return 1
+    cd=$(cd "$(git rev-parse --git-common-dir 2>/dev/null)" 2>/dev/null && pwd -P) || return 1
+    [ "$gd" = "$cd" ]
+}
+
 if [ -n "$CURRENT" ]; then
     # A relative hooksPath resolves against the repo root, not the cwd; git
     # expands a leading ~ itself, so it is a home path, not a relative one.
@@ -58,25 +68,27 @@ if [ -n "$CURRENT" ]; then
         /*)
             RESOLVED="$CURRENT"
             # Same directory as our own .husky, by inode, so a symlinked or
-            # trailing-slash spelling counts; and tracked, so it exists in
-            # every worktree whose branch has it.
+            # trailing-slash spelling counts; tracked, so it exists in every
+            # worktree whose branch has it; and seen from the main checkout.
             if [ "$RESOLVED" -ef "$TOPLEVEL/.husky" ] \
-                && [ -n "$(git -C "$TOPLEVEL" ls-files -- .husky 2>/dev/null | head -n 1)" ]; then
-                git config --local core.hooksPath .husky 2>/dev/null || exit 0
-                echo "[INFO] git hooks path was absolute ($CURRENT) - made relative (.husky) so a repo move cannot break it"
-                exit 0
+                && [ -n "$(git -C "$TOPLEVEL" ls-files -- .husky 2>/dev/null | head -n 1)" ] \
+                && in_main_checkout; then
+                MESSAGE="git hooks path was absolute ($CURRENT) - made relative (.husky) so a repo move cannot break it"
             fi ;;
         "~")   RESOLVED="$HOME" ;;
         "~/"*) RESOLVED="$HOME/${CURRENT#"~/"}" ;;
         *)  RESOLVED="$TOPLEVEL/$CURRENT" ;;
     esac
     # Points somewhere real: honour it, whatever it is.
-    [ -d "$RESOLVED" ] && exit 0
-    REASON="stale (was: $CURRENT)"
+    if [ -z "${MESSAGE:-}" ]; then
+        [ -d "$RESOLVED" ] && exit 0
+        MESSAGE="git hooks were stale (was: $CURRENT) - wired to .husky (the pre-commit that keeps derived counts in sync now runs)"
+    fi
 else
-    REASON="unset"
+    MESSAGE="git hooks were unset - wired to .husky (the pre-commit that keeps derived counts in sync now runs)"
 fi
 
+# The one write: every repair ends on the relative .husky.
 git config --local core.hooksPath .husky 2>/dev/null || exit 0
-echo "[INFO] git hooks were $REASON - wired to .husky (the pre-commit that keeps derived counts in sync now runs)"
+echo "[INFO] $MESSAGE"
 exit 0

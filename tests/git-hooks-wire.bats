@@ -119,7 +119,13 @@ track_husky() {
 @test "git-hooks-wire: an ABSOLUTE hooksPath to another dir INSIDE the repo is left alone" {
     cd "$TEST_DIR"
     git init -q
-    mkdir .husky .githooks
+    # Both TRACKED, so only the "ONLY .husky" rule keeps it, not the tracked
+    # check or the inode one.
+    track_husky
+    mkdir .githooks
+    echo 'exit 0' > .githooks/pre-commit
+    git add .githooks
+    git -c user.email=t@example.invalid -c user.name=t commit -qm githooks
     local abs; abs="$(git rev-parse --show-toplevel)/.githooks"
     git config --local core.hooksPath "$abs"
     run bash "$WIRE"
@@ -167,6 +173,18 @@ make_repo_with_worktree() {
     run bash "$WIRE"
     [ "$status" -eq 0 ]
     [ "$(git -C "$TEST_DIR/main" config --local core.hooksPath)" = "$TEST_DIR/main/.localhooks" ]
+}
+
+# Decided from the main checkout only: a worktree's own index would speak for
+# a config every other checkout shares.
+@test "git-hooks-wire: from a linked worktree, an absolute .husky is not rewritten" {
+    make_repo_with_worktree
+    git config --local core.hooksPath "$TEST_DIR/wt/.husky"
+    cd "$TEST_DIR/wt"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = "$TEST_DIR/wt/.husky" ]
+    [ -z "$output" ]
 }
 
 # The tracked .husky exists in every worktree whose branch has it, so the
