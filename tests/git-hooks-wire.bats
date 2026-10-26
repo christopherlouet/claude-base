@@ -67,6 +67,66 @@ teardown() { teardown_test_dir; }
     [ "$(git config --local core.hooksPath)" = ".husky" ]
 }
 
+# --- An absolute path that still works is the next rename's breakage -----------
+#
+# The repo-moved case above is only repaired AFTER the move, once the path is
+# stale. An absolute value that still resolves to the repo's own .husky works
+# today and breaks silently on the next rename — observed on this very repo
+# after it moved, where the absolute value had been re-created at the new
+# location. It is unambiguous (it IS the foundation's hooks dir), so the hook
+# makes it relative before the move instead of after.
+
+@test "git-hooks-wire: an ABSOLUTE hooksPath to the repo's own .husky becomes relative" {
+    cd "$TEST_DIR"
+    git init -q
+    mkdir .husky
+    git config --local core.hooksPath "$(git rev-parse --show-toplevel)/.husky"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = ".husky" ]
+    [[ "$output" == *"absolute"* ]]
+}
+
+# Same directory reached through a symlink and a trailing slash: a string
+# comparison would miss it, the inode comparison does not.
+@test "git-hooks-wire: the repo's own .husky is recognised through a symlink" {
+    mkdir "$TEST_DIR/real"
+    ln -s "$TEST_DIR/real" "$TEST_DIR/link"
+    cd "$TEST_DIR/real"
+    git init -q
+    mkdir .husky
+    git config --local core.hooksPath "$TEST_DIR/link/.husky/"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = ".husky" ]
+}
+
+@test "git-hooks-wire: an ABSOLUTE hooksPath to some OTHER existing dir is left alone" {
+    cd "$TEST_DIR"
+    mkdir repo shared-hooks
+    cd repo
+    git init -q
+    mkdir .husky
+    git config --local core.hooksPath "$TEST_DIR/shared-hooks"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = "$TEST_DIR/shared-hooks" ]
+    [ -z "$output" ]
+}
+
+@test "git-hooks-wire: once made relative, a second run is silent" {
+    cd "$TEST_DIR"
+    git init -q
+    mkdir .husky
+    git config --local core.hooksPath "$(git rev-parse --show-toplevel)/.husky"
+    bash "$WIRE" >/dev/null
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+    # Silent because it was FIXED, not because nothing happened.
+    [ "$(git config --local core.hooksPath)" = ".husky" ]
+}
+
 # --- The discriminating case: do not hijack a deliberate choice ---------------
 
 @test "git-hooks-wire: an EXISTING non-.husky hooksPath is left alone" {
@@ -156,5 +216,15 @@ teardown() { teardown_test_dir; }
     run bash "$WIRE"
     [ "$status" -eq 0 ]
     [ -z "$output" ]
+    [ "$(git config --local core.hooksPath)" = ".husky" ]
+}
+
+# The state this checkout was actually found in: an absolute value pointing at
+# the real .husky. Ends on .husky, the state the test above leaves anyway.
+@test "git-hooks-wire: on the real foundation an absolute hooksPath converges to .husky" {
+    cd "$BASE_DIR"
+    git config --local core.hooksPath "$(git rev-parse --show-toplevel)/.husky"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
     [ "$(git config --local core.hooksPath)" = ".husky" ]
 }

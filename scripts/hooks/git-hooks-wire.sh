@@ -20,6 +20,8 @@
 # Deliberately narrow. It repairs only unambiguous breakage:
 #   unset + .husky present            -> wire it
 #   set, but the path does not exist  -> repair it
+#   ABSOLUTE path to this repo's own .husky -> make it relative: it works
+#                 today and is the repo-moved breakage on the next rename
 #   set to some OTHER existing dir    -> LEAVE ALONE (a deliberate choice)
 #
 # Silent on the happy path, one line when it repairs. Always exits 0: a session
@@ -43,6 +45,15 @@ if [ -n "$CURRENT" ]; then
     case "$CURRENT" in
         /*) RESOLVED="$CURRENT" ;;
         *)  RESOLVED="$TOPLEVEL/$CURRENT" ;;
+    esac
+    # Same directory as our own .husky (by inode, so a symlinked or
+    # trailing-slash spelling counts), but spelled absolute.
+    case "$CURRENT" in
+        /*) if [ "$RESOLVED" -ef "$TOPLEVEL/.husky" ]; then
+                git config --local core.hooksPath .husky 2>/dev/null || exit 0
+                echo "[INFO] git hooks path was absolute ($CURRENT) - made relative (.husky) so a repo move cannot break it"
+                exit 0
+            fi ;;
     esac
     # Points somewhere real: honour it, whatever it is.
     [ -d "$RESOLVED" ] && exit 0
