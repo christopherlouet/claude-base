@@ -2141,19 +2141,19 @@ print_next_steps() {
         case "$DETECTED_PKG_MANAGER" in
             bun)
                 echo -e "     ${YELLOW}bun add -d husky lint-staged @commitlint/cli @commitlint/config-conventional${NC}"
-                echo -e "     ${YELLOW}bunx husky install${NC}"
+                echo -e "     ${YELLOW}bunx husky${NC}"
                 ;;
             pnpm)
                 echo -e "     ${YELLOW}pnpm add -D husky lint-staged @commitlint/cli @commitlint/config-conventional${NC}"
-                echo -e "     ${YELLOW}pnpm exec husky install${NC}"
+                echo -e "     ${YELLOW}pnpm exec husky${NC}"
                 ;;
             yarn)
                 echo -e "     ${YELLOW}yarn add -D husky lint-staged @commitlint/cli @commitlint/config-conventional${NC}"
-                echo -e "     ${YELLOW}yarn husky install${NC}"
+                echo -e "     ${YELLOW}yarn husky${NC}"
                 ;;
             *)
                 echo -e "     ${YELLOW}npm install husky lint-staged @commitlint/cli @commitlint/config-conventional -D${NC}"
-                echo -e "     ${YELLOW}npx husky install${NC}"
+                echo -e "     ${YELLOW}npx husky${NC}"
                 ;;
         esac
         echo ""

@@ -277,11 +277,12 @@ edited; if it does not watch GitHub Actions, the install says so.
 
 `claude-base init --hooks` (or `--all`) installs two git hooks into `.husky/`: **auto-lint** on staged
 files (`lint-staged`, `pre-commit`) and **Conventional Commits validation** (`commitlint`,
-`commit-msg`). Each one runs only when its tool is installed in `node_modules/.bin` — a hook never
-downloads a tool. Without it the hook steps aside rather than refusing the commit, and in a Node
+`commit-msg`). Each one runs only when its tool is installed, in `node_modules/.bin` or on the
+`PATH` — a hook never downloads a tool. Without it the hook steps aside rather than refusing the commit, and in a Node
 project it says so on stderr, so a project that has not set up the tooling yet is not blocked by a
-hook it cannot feed, and a skipped check does not pass for a green one. To re-enable manually in an existing install: `npx husky install`
-(assumes husky + lint-staged + commitlint are in your project's devDependencies).
+hook it cannot feed, and a skipped check does not pass for a green one. To re-enable manually in an existing install: `npx husky`
+(assumes husky + lint-staged + commitlint are in your project's devDependencies; `husky install` is
+deprecated since husky v9, and `husky init` would overwrite the shipped `.husky/pre-commit`).
 
 The lint-staged config it ships, `.lintstagedrc.mjs`, adapts to what the project has: `prettier
 --write` once prettier is installed, `eslint --fix` once eslint is installed **and** configured

@@ -64,7 +64,7 @@ if [ -f package.json ] && grep -q "husky" package.json; then
   if [ ! -d node_modules/husky ] && [ ! -d .husky/_ ]; then
     echo "[WARN] Husky configured but not installed. Installing..."
     gate_run npm install --silent >/dev/null 2>&1 < /dev/null || true
-    gate_run npx husky install >/dev/null 2>&1 < /dev/null || true
+    gate_run npx husky >/dev/null 2>&1 < /dev/null || true
     [ ! -d node_modules/husky ] && echo "[WARN] Husky cannot be installed. Tests run manually."
   fi
 fi
