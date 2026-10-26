@@ -146,8 +146,21 @@ probe_commit() {
     git -C "$proj" add -A
     # Offline: an npx that falls back to a download must fail here, not reach
     # the network and turn the test slow and flaky.
-    npm_config_offline=true git -C "$proj" -c user.email=probe@example.invalid \
+    # $PROBE_PATH_PREFIX, when set, is put ahead of the PATH the hooks see.
+    PATH="${PROBE_PATH_PREFIX:+$PROBE_PATH_PREFIX:}$PATH" npm_config_offline=true \
+        git -C "$proj" -c user.email=probe@example.invalid \
         -c user.name=probe commit -m "$msg" >/dev/null 2>"$proj/commit.err" || true
+}
+
+# Puts a stub $2 exiting with $3 in $TEST_DIR/pathbin, outside the project,
+# and echoes that directory for PROBE_PATH_PREFIX.
+stub_on_path() {
+    local proj="$1" name="$2" code="$3" bin="$TEST_DIR/pathbin"
+    mkdir -p "$bin"
+    printf '#!/bin/sh\necho "%s $*" >> "%s/tool-calls.log"\nexit %s\n' \
+        "$name" "$proj" "$code" > "$bin/$name"
+    chmod +x "$bin/$name"
+    printf '%s' "$bin"
 }
 
 # Installs a Node project with hooks wired, and echoes its path.
@@ -174,6 +187,49 @@ stub_tool() {
     probe_commit "$proj" "test: no tools installed"
     run git -C "$proj" log --oneline
     [[ "$output" == *"no tools installed"* ]]
+}
+
+# Pins the original defect on any runner: the npx the old hooks called is
+# present and refuses, as `npx --no` did for a tool that was not installed.
+# Without it, a runner lacking npx made the old hooks no-op and this passed.
+@test "install --hooks: an npx that refuses does not block the commit" {
+    local proj; proj=$(install_node_project)
+    PROBE_PATH_PREFIX=$(stub_on_path "$proj" npx 1)
+    probe_commit "$proj" "test: npx refuses"
+    run git -C "$proj" log --oneline
+    [[ "$output" == *"npx refuses"* ]]
+}
+
+# A tool installed outside node_modules (npm -g, volta, nix, asdf) used to run
+# through npx; checking node_modules/.bin alone dropped the check silently.
+@test "install --hooks: tools found on the PATH are run" {
+    local proj; proj=$(install_node_project)
+    stub_on_path "$proj" commitlint 0 >/dev/null
+    PROBE_PATH_PREFIX=$(stub_on_path "$proj" lint-staged 0)
+    probe_commit "$proj" "test: tools on path"
+    run cat "$proj/tool-calls.log"
+    [[ "$output" == *"lint-staged"* ]]
+    [[ "$output" == *"commitlint --edit "*"COMMIT_EDITMSG"* ]]
+}
+
+@test "install --hooks: a failing commitlint on the PATH still refuses the commit" {
+    local proj; proj=$(install_node_project)
+    PROBE_PATH_PREFIX=$(stub_on_path "$proj" commitlint 1)
+    probe_commit "$proj" "test: rejected on path"
+    run git -C "$proj" log --oneline
+    [[ "$output" != *"rejected on path"* ]]
+}
+
+# Outside a Node project the hooks have nothing to say: a warning there would
+# fire on every commit of every non-Node repo.
+@test "install --hooks: a project without package.json skips silently" {
+    local proj; proj=$(install_with_hooks)
+    git -C "$proj" config core.hooksPath .husky
+    probe_commit "$proj" "test: no package.json"
+    run git -C "$proj" log --oneline
+    [[ "$output" == *"no package.json"* ]]
+    run cat "$proj/commit.err"
+    [[ "$output" != *"not installed"* ]]
 }
 
 @test "install --hooks: a skipped check says so on stderr" {

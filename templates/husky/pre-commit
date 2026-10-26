@@ -13,10 +13,13 @@
 # download it on a project that had not added it, which fails offline and
 # refuses the commit. A hook never downloads a tool; absent, it steps aside —
 # a gate nobody feeds must not block the work — and says so in a Node project,
-# so a skipped gate does not read as a passed one.
+# so a skipped gate does not read as a passed one. The project's own copy
+# wins; one on the PATH (npm -g, volta, nix, asdf) is installed too.
 
 if [ -x node_modules/.bin/lint-staged ]; then
   node_modules/.bin/lint-staged
+elif command -v lint-staged >/dev/null 2>&1; then
+  lint-staged
 elif [ -f package.json ]; then
   echo "pre-commit: lint-staged not installed in node_modules - staged lint skipped" >&2
 fi

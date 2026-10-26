@@ -8,9 +8,13 @@
 # project that had not added it yet `npx --no` refused to fetch it and every
 # commit was refused. A hook never downloads a tool; absent, it steps aside,
 # and says so in a Node project — a skipped gate must not read as a passed one.
+# The project's own copy wins; one on the PATH (npm -g, volta, nix, asdf) is
+# installed too, and dropping it would skip a check the user set up.
 
 if [ -x node_modules/.bin/commitlint ]; then
   node_modules/.bin/commitlint --edit "$1"
+elif command -v commitlint >/dev/null 2>&1; then
+  commitlint --edit "$1"
 elif [ -f package.json ]; then
   echo "commit-msg: commitlint not installed in node_modules - message check skipped" >&2
 fi
