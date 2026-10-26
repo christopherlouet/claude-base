@@ -200,31 +200,28 @@ stub_tool() {
     [[ "$output" == *"npx refuses"* ]]
 }
 
-# A tool installed outside node_modules (npm -g, volta, nix, asdf) used to run
-# through npx; checking node_modules/.bin alone dropped the check silently.
-@test "install --hooks: tools found on the PATH are run" {
+# Only the project's OWN install is a gate. A global tool (npm -g, volta, nix,
+# asdf) was tried as a fallback and reverted: it runs against the shipped
+# configs without their presets (commitlint refuses every commit when
+# @commitlint/config-conventional is not resolvable) and it fires in repos
+# that never set the tooling up. The stubs fail, so running them would show.
+@test "install --hooks: a tool only on the PATH is not run in a Node project" {
     local proj; proj=$(install_node_project)
-    stub_on_path "$proj" commitlint 0 >/dev/null
-    PROBE_PATH_PREFIX=$(stub_on_path "$proj" lint-staged 0)
-    probe_commit "$proj" "test: tools on path"
-    run cat "$proj/tool-calls.log"
-    [[ "$output" == *"lint-staged"* ]]
-    [[ "$output" == *"commitlint --edit "*"COMMIT_EDITMSG"* ]]
-}
-
-@test "install --hooks: a failing commitlint on the PATH still refuses the commit" {
-    local proj; proj=$(install_node_project)
-    PROBE_PATH_PREFIX=$(stub_on_path "$proj" commitlint 1)
-    probe_commit "$proj" "test: rejected on path"
+    stub_on_path "$proj" commitlint 1 >/dev/null
+    PROBE_PATH_PREFIX=$(stub_on_path "$proj" lint-staged 1)
+    probe_commit "$proj" "test: global tools ignored"
     run git -C "$proj" log --oneline
-    [[ "$output" != *"rejected on path"* ]]
+    [[ "$output" == *"global tools ignored"* ]]
+    [ ! -e "$proj/tool-calls.log" ]
 }
 
-# Outside a Node project the hooks have nothing to say: a warning there would
-# fire on every commit of every non-Node repo.
+# Outside a Node project the hooks have nothing to say and nothing to run: a
+# warning would fire on every commit of every non-Node repo, and a global tool
+# would gate a project that never set one up.
 @test "install --hooks: a project without package.json skips silently" {
     local proj; proj=$(install_with_hooks)
     git -C "$proj" config core.hooksPath .husky
+    PROBE_PATH_PREFIX=$(stub_on_path "$proj" commitlint 1)
     probe_commit "$proj" "test: no package.json"
     run git -C "$proj" log --oneline
     [[ "$output" == *"no package.json"* ]]
@@ -260,6 +257,9 @@ stub_tool() {
     probe_commit "$proj" "test: rejected by commitlint"
     run git -C "$proj" log --oneline
     [[ "$output" != *"rejected by commitlint"* ]]
+    # Refused BY commitlint, not by some other breakage in the hook.
+    run cat "$proj/tool-calls.log"
+    [[ "$output" == *"commitlint --edit"* ]]
 }
 
 @test "install --hooks: a failing lint-staged still refuses the commit" {
@@ -268,4 +268,6 @@ stub_tool() {
     probe_commit "$proj" "test: rejected by lint-staged"
     run git -C "$proj" log --oneline
     [[ "$output" != *"rejected by lint-staged"* ]]
+    run cat "$proj/tool-calls.log"
+    [[ "$output" == *"lint-staged"* ]]
 }

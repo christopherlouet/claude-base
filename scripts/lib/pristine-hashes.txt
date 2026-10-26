@@ -296,6 +296,7 @@
 26ddc5d7f96178342323d183301796d2aaa3039a09b79641cbf62d2e1c48a20b .claude/commands/qa/qa-neovim.md
 26de496ea5b08cf444ebeff3e68ae0c06b71aa5a2f61bb99cd991988bbd399ff .claude/commands/dev/dev-trpc.md
 26dee5f786ff5a1891f05502ebc411ebb0b1455b6d5aeecd5b3777c9b45a0181 .claude/skills/ops-standup/SKILL.md
+26f382df6c5e01ecb0da46de32a1d9d6949864fb23c821972904b1243bab6bc8 scripts/hooks/pre-commit-tests.sh
 26f53fb676c7fd0105cd45d5aa26aad6c09fbe07809d68b130dbc24efe51827d .claude/agents/doc-generate.md
 272656571bd37d23428bc5f7734b7a825f294e3fc74b357776b097059f99e10c .claude/skills/flutter-development/SKILL.md
 27a982ea62fb41b0d46907c233d307a1718356f7d72ceb963d7b612b3669d92e .claude/commands/dev/dev-error-handling.md
