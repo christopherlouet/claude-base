@@ -25,7 +25,24 @@ load 'test_helper'
 WIRE="$BASE_DIR/scripts/hooks/git-hooks-wire.sh"
 
 setup() { setup_test_dir; }
-teardown() { teardown_test_dir; }
+
+# The self-application tests write the developer's REAL local hooksPath; the
+# value they found is put back here, whether the test passed or not.
+teardown() {
+    if [ -n "${REAL_HOOKS_PATH_SAVED:-}" ]; then
+        if [ -n "${REAL_HOOKS_PATH:-}" ]; then
+            git -C "$BASE_DIR" config --local core.hooksPath "$REAL_HOOKS_PATH"
+        else
+            git -C "$BASE_DIR" config --local --unset core.hooksPath || true
+        fi
+    fi
+    teardown_test_dir
+}
+
+save_real_hooks_path() {
+    REAL_HOOKS_PATH=$(git -C "$BASE_DIR" config --local core.hooksPath || true)
+    REAL_HOOKS_PATH_SAVED=1
+}
 
 @test "git-hooks-wire: script exists and is executable" {
     [ -f "$WIRE" ]
@@ -84,7 +101,45 @@ teardown() { teardown_test_dir; }
     run bash "$WIRE"
     [ "$status" -eq 0 ]
     [ "$(git config --local core.hooksPath)" = ".husky" ]
-    [[ "$output" == *"absolute"* ]]
+    [[ "$output" == *"made relative (.husky)"* ]]
+}
+
+# Any directory inside the repo breaks the same way on a rename, not only
+# .husky: a deliberate .githooks keeps its target, only its spelling changes.
+@test "git-hooks-wire: an ABSOLUTE hooksPath to another dir INSIDE the repo becomes relative" {
+    cd "$TEST_DIR"
+    git init -q
+    mkdir .husky .githooks
+    git config --local core.hooksPath "$(git rev-parse --show-toplevel)/.githooks"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = ".githooks" ]
+}
+
+# What husky v9 itself points at.
+@test "git-hooks-wire: an ABSOLUTE hooksPath to husky v9's .husky/_ keeps its subdirectory" {
+    cd "$TEST_DIR"
+    git init -q
+    mkdir -p .husky/_
+    git config --local core.hooksPath "$(git rev-parse --show-toplevel)/.husky/_"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = ".husky/_" ]
+}
+
+# git expands a leading ~/ itself; read raw it looks relative to the repo,
+# and a working home directory was declared stale and replaced.
+@test "git-hooks-wire: a ~/ hooksPath to an existing dir is left alone" {
+    export HOME="$TEST_DIR/home"
+    mkdir -p "$HOME/.githooks" "$TEST_DIR/repo"
+    cd "$TEST_DIR/repo"
+    git init -q
+    mkdir .husky
+    git config --local core.hooksPath '~/.githooks'
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = '~/.githooks' ]
+    [ -z "$output" ]
 }
 
 # Same directory reached through a symlink and a trailing slash: a string
@@ -208,6 +263,7 @@ teardown() { teardown_test_dir; }
     #
     # What must hold on any checkout: the end state is .husky, and a second run
     # has nothing left to do.
+    save_real_hooks_path
     cd "$BASE_DIR"
     run bash "$WIRE"
     [ "$status" -eq 0 ]
@@ -222,6 +278,7 @@ teardown() { teardown_test_dir; }
 # The state this checkout was actually found in: an absolute value pointing at
 # the real .husky. Ends on .husky, the state the test above leaves anyway.
 @test "git-hooks-wire: on the real foundation an absolute hooksPath converges to .husky" {
+    save_real_hooks_path
     cd "$BASE_DIR"
     git config --local core.hooksPath "$(git rev-parse --show-toplevel)/.husky"
     run bash "$WIRE"
