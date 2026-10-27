@@ -89,6 +89,8 @@ NO_HOOKS=false
 NO_MCP=false
 NO_DOCKER=false
 # Set by the single-option flags only (not --all), to refuse --hooks --no-hooks.
+# With ALL_OPTIONS they also tell get_options which options a flag decided.
+ALL_OPTIONS=false
 ASKED_CICD=false
 ASKED_HOOKS=false
 ASKED_MCP=false
@@ -377,6 +379,7 @@ parse_args() {
                 shift
                 ;;
             --all)
+                ALL_OPTIONS=true
                 INCLUDE_CICD=true
                 INCLUDE_HOOKS=true
                 INCLUDE_MCP=true
@@ -447,7 +450,8 @@ parse_args() {
 
 # An explicit --no-* wins over whatever turned the option on: --all (end of
 # parse_args) and a preset default (load_preset). The interactive prompts are
-# not reconciled here: get_options skips the prompt of each option turned off.
+# not reconciled here: get_options skips the prompt of an option a flag turned
+# on or off (#664). An existing setup it detects still wins over --x, as with -y.
 apply_off_flags() {
     if $NO_CICD; then INCLUDE_CICD=false; fi
     if $NO_HOOKS; then INCLUDE_HOOKS=false; fi
@@ -1920,6 +1924,8 @@ get_options() {
             fi
             INCLUDE_CICD=false
         fi
+    elif $ASKED_CICD || $ALL_OPTIONS; then
+        echo -e "  ${DIM}GitHub Actions included ($($ASKED_CICD && echo --ci || echo --all))${NC}"
     else
         if $EXISTING_PROJECT; then
             prompt "Add GitHub Actions (CI/CD)? (Y/n)"
@@ -1937,6 +1943,8 @@ get_options() {
         INCLUDE_HOOKS=false
     elif $NO_HOOKS; then
         echo -e "  ${DIM}Pre-commit hooks left out (--no-hooks)${NC}"
+    elif $ASKED_HOOKS || $ALL_OPTIONS; then
+        echo -e "  ${DIM}Pre-commit hooks included ($($ASKED_HOOKS && echo --hooks || echo --all))${NC}"
     else
         if $EXISTING_PROJECT; then
             prompt "Add pre-commit hooks (husky)? (Y/n)"
@@ -1951,6 +1959,8 @@ get_options() {
     # MCP
     if $NO_MCP; then
         echo -e "  ${DIM}MCP configuration left out (--no-mcp)${NC}"
+    elif $ASKED_MCP || $ALL_OPTIONS; then
+        echo -e "  ${DIM}MCP configuration included ($($ASKED_MCP && echo --mcp || echo --all))${NC}"
     else
         prompt "Include MCP configuration? (y/N)"
         read -r -n 1 choice
@@ -1964,6 +1974,8 @@ get_options() {
         INCLUDE_DOCKER=false
     elif $NO_DOCKER; then
         echo -e "  ${DIM}Dockerfile left out (--no-docker)${NC}"
+    elif $ASKED_DOCKER || $ALL_OPTIONS; then
+        echo -e "  ${DIM}Dockerfile included ($($ASKED_DOCKER && echo --docker || echo --all))${NC}"
     else
         if $EXISTING_PROJECT; then
             prompt "Add Dockerfile? (y/N)"

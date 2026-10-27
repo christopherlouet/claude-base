@@ -130,20 +130,77 @@ init_all_on() {
     [ "$(ls "$proj/.github/workflows")" = "own.yml" ]
 }
 
-@test "off-flags: interactive options skip the prompt of an option turned off" {
+# interactive_options <answers> <flags...> — parse the flags, run the interactive
+# get_options on <answers>, and print the prompts followed by a STATE line.
+# EXISTING=false switches to the new-project wording ("Include …?").
+interactive_options() {
+    local answers="$1"; shift
     local proj="$TEST_DIR/interactive"
     mkdir -p "$proj"
-    # Four 'y' answers would turn every option on; --no-hooks must consume none.
-    run env BASE_DIR="$BASE_DIR" proj="$proj" bash -c '
+    run env BASE_DIR="$BASE_DIR" proj="$proj" answers="$answers" existing="${EXISTING:-true}" bash -c '
         source "$BASE_DIR/scripts/new-project.sh"
-        parse_args --no-hooks "$proj"
-        PROJECT_PATH="$proj"; PROJECT_TYPE="node-api"; EXISTING_PROJECT=true
-        get_options <<< "yyyy" 2>&1
+        parse_args "${@}" "$proj"
+        PROJECT_PATH="$proj"; PROJECT_TYPE="node-api"; EXISTING_PROJECT="$existing"
+        get_options <<< "$answers" 2>&1
         echo "HOOKS=$INCLUDE_HOOKS CI=$INCLUDE_CICD MCP=$INCLUDE_MCP DOCKER=$INCLUDE_DOCKER"
-    '
+    ' _ "$@"
+}
+
+@test "off-flags: interactive options skip the prompt of an option turned off" {
+    # Four 'y' answers would turn every option on; --no-hooks must consume none.
+    interactive_options "yyyy" --no-hooks
     [ "$status" -eq 0 ]
     [[ "$output" == *"HOOKS=false CI=true MCP=true DOCKER=true"* ]] || false
-    [[ "$output" != *"pre-commit hooks (husky)?"* ]] || false
+    [[ "$output" == *"left out (--no-hooks)"* ]] || false
+    [[ "$output" != *"pre-commit hooks (husky)?"* ]]
+}
+
+@test "off-flags: control - interactive answers turn each option on or off" {
+    interactive_options "yyyy"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"HOOKS=true CI=true MCP=true DOCKER=true"* ]] || false
+    interactive_options "nnnn"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"HOOKS=false CI=false MCP=false DOCKER=false"* ]] || false
+    [[ "$output" == *"pre-commit hooks (husky)?"* ]] || false
+}
+
+@test "off-flags: interactive options do not ask what --all already decided (#664)" {
+    # The old prompts asked, then ignored an 'n'. Four 'n' must change nothing.
+    local existing
+    for existing in true false; do
+        EXISTING=$existing interactive_options "nnnn" --all
+        [ "$status" -eq 0 ]
+        [[ "$output" == *"HOOKS=true CI=true MCP=true DOCKER=true"* ]] || false
+        [[ "$output" != *"(CI/CD)?"* && "$output" != *"(husky)?"* ]] || false
+        [[ "$output" != *"MCP configuration?"* && "$output" != *"Dockerfile?"* ]] || false
+        [ "$(grep -c 'included (--all)' <<< "$output")" -eq 4 ]
+    done
+}
+
+@test "off-flags: control - the new-project wording is asked without a flag" {
+    EXISTING=false interactive_options "nnnn"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"Include GitHub Actions (CI/CD)?"* ]] || false
+    [[ "$output" == *"Include pre-commit hooks (husky)?"* ]] || false
+    [[ "$output" == *"Include Dockerfile?"* ]]
+}
+
+@test "off-flags: a single flag skips only its own prompt" {
+    # --hooks decided; the three remaining answers go to CI, MCP, Docker.
+    interactive_options "nyn" --hooks
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"HOOKS=true CI=false MCP=true DOCKER=false"* ]] || false
+    [[ "$output" != *"(husky)?"* ]] || false
+    [[ "$output" == *"Pre-commit hooks included (--hooks)"* ]] || false
+    [[ "$output" == *"(CI/CD)?"* ]]
+}
+
+@test "off-flags: --all with a --no-* flag asks nothing for either" {
+    interactive_options "" --all --no-docker
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"HOOKS=true CI=true MCP=true DOCKER=false"* ]] || false
+    [[ "$output" != *"?"* ]]
 }
 
 @test "off-flags: --help documents the four --no-* flags" {
