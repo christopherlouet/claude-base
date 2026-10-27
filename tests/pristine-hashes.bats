@@ -226,6 +226,18 @@ _in_table() { grep -qx "$(sha_of "$1") scripts/hooks/guard.sh" "$REPO/$TABLE_REL
     [ ! -e "$REPO/$TABLE_REL.tmp" ]
 }
 
+@test "gen: keeps a line whose path holds a space, drops one outside the managed set" {
+    printf 'v1\n' > "$REPO/scripts/hooks/guard.sh"; commit_all one
+    run_gen
+    printf '%s .claude/skills/x/my notes.md\n' "$(sha_of $'n\n')" >> "$REPO/$TABLE_REL"
+    printf '%s README.md\n' "$(sha_of $'r\n')" >> "$REPO/$TABLE_REL"
+
+    run_gen
+    [ "$status" -eq 0 ]
+    grep -qx "$(sha_of $'n\n') .claude/skills/x/my notes.md" "$REPO/$TABLE_REL" || false
+    ! grep -q ' README.md$' "$REPO/$TABLE_REL" || false
+}
+
 @test "gen: output is deterministic" {
     printf 'a\n' > "$REPO/scripts/hooks/a.sh"
     printf 'b\n' > "$REPO/scripts/hooks/b.sh"
@@ -283,6 +295,24 @@ _in_table() { grep -qx "$(sha_of "$1") scripts/hooks/guard.sh" "$REPO/$TABLE_REL
 
     run_gen --check
     [ "$status" -eq 0 ]
+}
+
+@test "check: fails when the table lost a line main's table lists (append-only)" {
+    printf 'v1\n' > "$REPO/scripts/hooks/guard.sh"; commit_all one
+    git -C "$REPO" branch -M main
+    run_gen
+    printf '%s scripts/hooks/guard.sh\n' "$(sha_of $'gone\n')" >> "$REPO/$TABLE_REL"
+    commit_all table
+    git -C "$REPO" checkout -q -b feat
+    # Control: the branch still lists it, check passes.
+    run_gen --check
+    [ "$status" -eq 0 ]
+    # A rebuild from scratch (a conflict resolved by regenerating) loses it.
+    rm "$REPO/$TABLE_REL"; run_gen; commit_all rebuilt
+
+    run_gen --check
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"$(sha_of $'gone\n') scripts/hooks/guard.sh"* ]]
 }
 
 @test "check: never writes the table" {
