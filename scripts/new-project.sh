@@ -257,6 +257,7 @@ ${BOLD}PROJECT TYPES${NC}
     php         PHP (Laravel, Symfony)
     ruby        Ruby (Rails, Sinatra)
     csharp      C# / .NET (ASP.NET Core)
+    shell       Shell / Bash scripts (bats tests)
     generic     Other / Generic
 
 ${BOLD}INSTALLED FILES${NC}
@@ -322,8 +323,8 @@ parse_args() {
                 # rejects is a type auto-detection can never be asked to force.
                 case "$FORCE_TYPE" in
                     react|vue|node-api|python|go|rust|java|fullstack|flutter|neovim) ;;
-                    svelte|astro|php|ruby|csharp|generic) ;;
-                    *) error "Invalid --type value: '$FORCE_TYPE' (expected: react, vue, node-api, python, go, rust, java, fullstack, flutter, neovim, svelte, astro, php, ruby, csharp, or generic)" ;;
+                    svelte|astro|php|ruby|csharp|shell|generic) ;;
+                    *) error "Invalid --type value: '$FORCE_TYPE' (expected: react, vue, node-api, python, go, rust, java, fullstack, flutter, neovim, svelte, astro, php, ruby, csharp, shell, or generic)" ;;
                 esac
                 shift 2
                 ;;
@@ -727,11 +728,22 @@ load_preset() {
     [[ -z "$DESIGN_STYLE" && -n "$p_style" ]] && DESIGN_STYLE="$p_style"
     apply_off_flags
 
-    # Apply foundation type if user did not pass --type.
+    # Apply foundation type if user did not pass --type: the detected type when
+    # the preset lists it, else its first type. Taking appliesToTypes[0] alone
+    # gave every cli-tools install the Python rules, shell-only repos included.
+    # Detection runs in a subshell: only its verdict is wanted here, not its
+    # report or the DETECTED_* globals it resets.
     if [[ -z "$FORCE_TYPE" ]]; then
-        local first_type
+        local first_type detected_type="${DETECTED_TYPE:-}"
         first_type=$(jq -r '.appliesToTypes[0] // ""' "$file")
-        if [[ -n "$first_type" ]]; then
+        if [[ -z "$detected_type" && -n "$PROJECT_PATH" && -d "$PROJECT_PATH" ]]; then
+            detected_type=$(detect_stack "$PROJECT_PATH" >/dev/null 2>&1; printf '%s' "$DETECTED_TYPE")
+        fi
+        if [[ -n "$detected_type" ]] \
+            && jq -e --arg t "$detected_type" '.appliesToTypes // [] | index($t)' "$file" >/dev/null; then
+            FORCE_TYPE="$detected_type"
+            debug "Preset sets type from detection: $FORCE_TYPE"
+        elif [[ -n "$first_type" ]]; then
             FORCE_TYPE="$first_type"
             debug "Preset sets type: $FORCE_TYPE"
         fi

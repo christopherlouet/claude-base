@@ -273,7 +273,7 @@ help_project_types() {
     local types t
     types="$(help_project_types)"
 
-    for t in svelte astro php ruby csharp; do
+    for t in svelte astro php ruby csharp shell; do
         printf '%s\n' "$types" | grep -qx "$t" || {
             printf 'detected type %s is missing from the PROJECT TYPES help\n' "$t" >&2
             return 1

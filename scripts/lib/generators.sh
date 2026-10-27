@@ -105,6 +105,21 @@ EOF
 | `dotnet format` | Format the code |
 EOF
                 ;;
+            shell)
+                cat >> "$output_file" << 'EOF'
+| Command | Description |
+|---------|-------------|
+| `find . \( -name .git -o -name node_modules \) -prune -o -type f \( -name '*.sh' -o -name '*.bash' \) -exec shellcheck {} +` | Check the scripts |
+EOF
+                # Only a test dir that exists: a hardcoded one fails on the others.
+                local test_dir
+                for test_dir in tests test; do
+                    if [[ -d "$(dirname "$output_file")/$test_dir" ]]; then
+                        echo "| \`bats -r $test_dir\` | Run tests |" >> "$output_file"
+                        break
+                    fi
+                done
+                ;;
             python)
                 cat >> "$output_file" << 'EOF'
 | Command | Description |

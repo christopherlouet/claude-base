@@ -335,6 +335,30 @@ detect_flutter() {
     fi
 }
 
+# Shell is the LAST-RESORT type: it only claims a repo no other detector named.
+# A Node or Python project nearly always carries a few scripts, and its own type
+# says more about it than they do. Before this, a repo of shell scripts and bats
+# tests fell through to generic and was handed the TypeScript/React rules.
+# The scripts the foundation itself installs (.claude/, scripts/hooks/,
+# scripts/substance-check.sh) do not count: they made every installed project
+# re-detect as shell. -print -quit, not `| head -n 1`: under pipefail, find
+# killed by SIGPIPE on a large repo returned 141 and errexit aborted the init.
+detect_shell() {
+    local dir="$1"
+    [[ -z "$DETECTED_TYPE" ]] || return 0
+
+    local found
+    found=$(find "$dir" -maxdepth 3 \
+        \( -name .git -o -name node_modules -o -name .claude -o -path "$dir/scripts/hooks" \) -prune \
+        -o -type f \( -name '*.sh' -o -name '*.bash' -o -name '*.bats' \) \
+        ! -path "$dir/scripts/substance-check.sh" -print -quit 2>/dev/null) || true
+    [[ -n "$found" ]] || return 0
+
+    DETECTED_TYPE="shell"
+    DETECTED_FRAMEWORK="Shell"
+    DETECTED_DEPENDENCIES+=("Shell")
+}
+
 detect_neovim() {
     local dir="$1"
 
@@ -456,6 +480,7 @@ detect_stack() {
     detect_csharp "$dir"
     detect_flutter "$dir"
     detect_neovim "$dir"
+    detect_shell "$dir"
     detect_database "$dir"
     detect_cicd "$dir"
     detect_folder_structure "$dir"
@@ -562,6 +587,6 @@ detect_folder_structure() {
 # =============================================================================
 
 export -f detect_nodejs detect_python detect_go detect_rust detect_java
-export -f detect_flutter detect_neovim detect_database detect_cicd detect_stack
+export -f detect_flutter detect_neovim detect_shell detect_database detect_cicd detect_stack
 export -f detect_folder_structure
 export -f extract_npm_scripts extract_main_dependencies extract_python_dependencies

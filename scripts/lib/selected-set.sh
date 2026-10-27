@@ -46,7 +46,9 @@ get_rules_for_type() {
     # migration-safety is universal for the same reason as deploy-safety: its
     # target paths span the stacks (package.json/tsconfig/next.config AND
     # pyproject.toml AND go.mod), so it is cross-cutting, not web-specific.
-    local rules=("git.md" "workflow.md" "self-improvement.md" "vendor-precedence.md" "tdd-enforcement.md" "verification.md" "security.md" "testing.md" "lsp.md" "deploy-safety.md" "migration-safety.md" "research.md" "README.md")
+    # shell is universal for the same reason: almost every repo, whatever its
+    # stack, carries a few scripts, and the rule loads only when one is touched.
+    local rules=("git.md" "workflow.md" "self-improvement.md" "vendor-precedence.md" "tdd-enforcement.md" "verification.md" "security.md" "testing.md" "lsp.md" "deploy-safety.md" "migration-safety.md" "research.md" "shell.md" "README.md")
 
     # The web bundle — shared by every JS/TS-flavoured type. service-worker
     # belongs here (paths: sw.js, service-worker*) and nowhere else.

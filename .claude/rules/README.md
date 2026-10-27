@@ -17,7 +17,7 @@ paths:
 
 Modular rules applied automatically based on the modified files (path-specific rules).
 
-## Available rules (34)
+## Available rules (35)
 
 | Rule | Target paths | Description |
 |------|-------------|-------------|
@@ -45,6 +45,7 @@ Modular rules applied automatically based on the modified files (path-specific r
 | `security` | `**/auth/**`, `**/api/**`, `**/middleware/**` | XSS, SQL injection, CSRF, auth |
 | `self-improvement` | _(global)_ | Personal cross-project lessons referential — human-gated capture + sanitize, stored in `~/.claude/rules/lessons.md` |
 | `service-worker` | `**/sw.js`, `**/service-worker*` | NEVER cache HTML navigations, bump cache version |
+| `shell` | `**/*.sh`, `**/*.bash`, `**/*.bats` | Strict mode and its gaps, quoting, bash 3.2 portability, shellcheck, bats |
 | `base-maintenance` | `.claude/skills/**`, `.claude/agents/**`, `.claude/commands/**`, `.claude/rules/**`, `.claude/settings.json`, `scripts/hooks/**` | Sync counters, catalog, hook message when modifying the foundation |
 | `supabase` | `**/supabase/**`, `**/*supabase*` | RLS on every public table, `service_role` key server-side only, pooler — kept out of the `dev-supabase` pointer so they load whichever skill fires |
 | `svelte` | `**/*.svelte`, `**/*.svelte.ts`, `**/svelte.config.*` | Runes (Svelte 5), SvelteKit, form actions |
