@@ -18,14 +18,20 @@
 # skipped as customised while each was byte-identical to a release (2026-09-27).
 #
 # Sources: every blob those paths held in any commit reachable from HEAD, plus
-# the INDEX (so the pre-commit hook records a version before it is committed).
+# the INDEX (so the pre-commit hook records a version before it is committed),
+# plus every entry the table already lists. Append-only: a squash merge erases
+# a branch's intermediate commits, so a rebuild from history alone dropped
+# their entries on the next branch and the table churned on every PR (#662);
+# some of those versions also reached fleet projects (an update run from a
+# release branch), and forgetting one turns an unmodified copy into a
+# "customisation". Nothing is ever removed, so no PR shows a deletion.
 #
 # Modes:
 #   (default)  write the table
 #   --check    READ-ONLY: exit 1 if any shipped version is missing from the
-#              committed table. Extra entries are tolerated: a squash merge
-#              drops the intermediate commits a branch recorded, and an entry
-#              for foundation-authored content is harmless.
+#              committed table. Extra entries are tolerated: the table keeps
+#              versions a squash merge erased from history, and an entry for
+#              foundation-authored content is harmless.
 #
 # Exit 0 ok · 1 --check found missing versions · 2 shallow clone / usage error.
 #
@@ -112,6 +118,12 @@ if [ "$MODE" = "--check" ]; then
     exit 0
 fi
 
+# existing — the entries the table already lists (well-formed lines only).
+existing() {
+    [ -f "$TABLE" ] || return 0
+    grep -E '^[0-9a-f]{64} [^ ]+$' "$TABLE" || true
+}
+
 mkdir -p "$(dirname "$TABLE")"
-{ printf '%s\n' "$HEADER"; generate; } > "$TABLE.tmp"
+{ printf '%s\n' "$HEADER"; { generate; existing; } | LC_ALL=C sort -u; } > "$TABLE.tmp"
 mv "$TABLE.tmp" "$TABLE"

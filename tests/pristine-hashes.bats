@@ -162,6 +162,70 @@ TABLE_REL="scripts/lib/pristine-hashes.txt"
     grep -qx "$(sha_of $'v2\n') scripts/hooks/guard.sh" "$REPO/$TABLE_REL"
 }
 
+# --- Append-only (#662) ----------------------------------------------------------
+# The table used to be rebuilt from the branch's history alone: every PR added
+# its intermediate versions, a squash merge erased those commits, and the next
+# branch dropped the entries again. Keeping what the table already lists ends
+# the churn without forgetting a version a fleet project may still carry.
+
+_in_table() { grep -qx "$(sha_of "$1") scripts/hooks/guard.sh" "$REPO/$TABLE_REL"; }
+
+@test "gen: keeps the entries of the table it rewrites" {
+    printf 'v1\n' > "$REPO/scripts/hooks/guard.sh"; commit_all one
+    run_gen
+    # A version the history no longer holds (a squash merge erased its commit).
+    printf '%s scripts/hooks/guard.sh\n' "$(sha_of $'gone\n')" >> "$REPO/$TABLE_REL"
+    printf 'v2\n' > "$REPO/scripts/hooks/guard.sh"; commit_all two
+
+    run_gen
+    [ "$status" -eq 0 ]
+    _in_table $'gone\n' || false
+    _in_table $'v1\n' || false
+    _in_table $'v2\n' || false
+    [ "$(grep -c '^# Generated' "$REPO/$TABLE_REL")" -eq 1 ]
+}
+
+@test "gen: no table line is lost across a squash merge and the next branch" {
+    printf 'v1\n' > "$REPO/scripts/hooks/guard.sh"; commit_all one
+    git -C "$REPO" branch -M main
+    run_gen; commit_all table
+    # PR 1: two steps, the hook regenerating at each commit.
+    git -C "$REPO" checkout -q -b pr1
+    printf 'v2\n' > "$REPO/scripts/hooks/guard.sh"; run_gen; commit_all two
+    printf 'v3\n' > "$REPO/scripts/hooks/guard.sh"; run_gen; commit_all three
+    git -C "$REPO" checkout -q main
+    git -C "$REPO" merge -q --squash pr1; git -C "$REPO" commit -qm squash
+    cp "$REPO/$TABLE_REL" "$TEST_DIR/main-table"
+    # PR 2 touches another managed file.
+    git -C "$REPO" checkout -q -b pr2
+    printf 'x\n' > "$REPO/scripts/hooks/other.sh"; run_gen; commit_all other
+
+    # Only additions: nothing main's table lists is dropped.
+    [ -z "$(LC_ALL=C comm -23 <(LC_ALL=C sort "$TEST_DIR/main-table") <(LC_ALL=C sort "$REPO/$TABLE_REL"))" ]
+    _in_table $'v2\n'
+}
+
+@test "gen: ignores a malformed line in the table it rewrites" {
+    printf 'v1\n' > "$REPO/scripts/hooks/guard.sh"; commit_all one
+    run_gen
+    printf 'not a hash line\n\n' >> "$REPO/$TABLE_REL"
+
+    run_gen
+    [ "$status" -eq 0 ]
+    ! grep -q 'not a hash line' "$REPO/$TABLE_REL" || false
+    ! grep -qx '' "$REPO/$TABLE_REL" || false
+    _in_table $'v1\n'
+}
+
+@test "gen: rewrites a table that holds only its header" {
+    printf 'readme\n' > "$REPO/README.md"; commit_all one
+    run_gen
+    [ "$status" -eq 0 ]
+    run_gen
+    [ "$status" -eq 0 ]
+    [ ! -e "$REPO/$TABLE_REL.tmp" ]
+}
+
 @test "gen: output is deterministic" {
     printf 'a\n' > "$REPO/scripts/hooks/a.sh"
     printf 'b\n' > "$REPO/scripts/hooks/b.sh"
@@ -212,7 +276,7 @@ TABLE_REL="scripts/lib/pristine-hashes.txt"
     [ "$status" -eq 1 ]
 }
 
-@test "check: tolerates an extra entry (a squash merge drops intermediate commits)" {
+@test "check: tolerates an extra entry (the table keeps versions a squash merge erased)" {
     printf 'v1\n' > "$REPO/scripts/hooks/guard.sh"; commit_all one
     run_gen
     printf '%s scripts/hooks/guard.sh\n' "$(sha_of $'intermediate\n')" >> "$REPO/$TABLE_REL"
