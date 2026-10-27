@@ -734,9 +734,9 @@ load_preset() {
     # Detection runs in a subshell: only its verdict is wanted here, not its
     # report or the DETECTED_* globals it resets.
     if [[ -z "$FORCE_TYPE" ]]; then
-        local first_type detected_type=""
+        local first_type detected_type="${DETECTED_TYPE:-}"
         first_type=$(jq -r '.appliesToTypes[0] // ""' "$file")
-        if [[ -n "$PROJECT_PATH" && -d "$PROJECT_PATH" ]]; then
+        if [[ -z "$detected_type" && -n "$PROJECT_PATH" && -d "$PROJECT_PATH" ]]; then
             detected_type=$(detect_stack "$PROJECT_PATH" >/dev/null 2>&1; printf '%s' "$DETECTED_TYPE")
         fi
         if [[ -n "$detected_type" ]] \

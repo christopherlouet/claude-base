@@ -194,6 +194,19 @@ _pkg() {
     [[ "$output" == python\|* ]]
 }
 
+@test "detection: the scripts the foundation installs do not make a project shell" {
+    # Control first: the same layout with a script of the user's own is shell.
+    mkdir -p "$TEST_DIR/p/scripts/hooks" "$TEST_DIR/p/.claude/hooks"
+    printf 'echo hi\n' > "$TEST_DIR/p/scripts/hooks/guard.sh"
+    printf 'echo hi\n' > "$TEST_DIR/p/scripts/substance-check.sh"
+    printf 'echo hi\n' > "$TEST_DIR/p/.claude/hooks/x.sh"
+    run detect_in "$TEST_DIR/p"
+    [ "$output" = "|" ]
+    printf 'echo hi\n' > "$TEST_DIR/p/scripts/deploy.sh"
+    run detect_in "$TEST_DIR/p"
+    [[ "$output" == shell\|* ]]
+}
+
 @test "detection: shell files under .git or node_modules do not count" {
     mkdir -p "$TEST_DIR/p/.git/hooks" "$TEST_DIR/p/node_modules/x"
     printf 'echo hi\n' > "$TEST_DIR/p/.git/hooks/pre-commit.sh"

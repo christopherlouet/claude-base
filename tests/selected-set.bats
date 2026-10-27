@@ -260,15 +260,20 @@ rules_for() {
     [[ "$output" != *"vue.md"* ]]
 }
 
-@test "rules whitelist: a shell project gets shell.md and neither the web bundle nor python.md" {
+@test "rules whitelist: a shell project gets neither the web bundle nor python.md" {
     run rules_for shell
     [ "$status" -eq 0 ]
     [[ "$output" == *"shell.md"* ]] || false
-    [[ "$output" == *"security.md"* ]] || false
     [[ "$output" != *"typescript.md"* ]] || false
     [[ "$output" != *"python.md"* ]] || false
-    run rules_for generic
-    [[ "$output" != *"shell.md"* ]]
+}
+
+@test "rules whitelist: shell.md is universal (repos of every stack carry scripts)" {
+    local t
+    for t in react node-api python go generic shell ""; do
+        run rules_for "$t"
+        [[ "$output" == *"shell.md"* ]] || { echo "type '$t' lacks shell.md" >&2; false; }
+    done
 }
 
 @test "rules whitelist: migration-safety.md is universal (its paths span TS, Python, Go)" {

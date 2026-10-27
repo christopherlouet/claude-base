@@ -339,14 +339,19 @@ detect_flutter() {
 # A Node or Python project nearly always carries a few scripts, and its own type
 # says more about it than they do. Before this, a repo of shell scripts and bats
 # tests fell through to generic and was handed the TypeScript/React rules.
+# The scripts the foundation itself installs (.claude/, scripts/hooks/,
+# scripts/substance-check.sh) do not count: they made every installed project
+# re-detect as shell. -print -quit, not `| head -n 1`: under pipefail, find
+# killed by SIGPIPE on a large repo returned 141 and errexit aborted the init.
 detect_shell() {
     local dir="$1"
     [[ -z "$DETECTED_TYPE" ]] || return 0
 
     local found
-    found=$(find "$dir" -maxdepth 3 \( -name .git -o -name node_modules \) -prune \
-        -o -type f \( -name '*.sh' -o -name '*.bash' -o -name '*.bats' \) -print 2>/dev/null \
-        | head -n 1)
+    found=$(find "$dir" -maxdepth 3 \
+        \( -name .git -o -name node_modules -o -name .claude -o -path "$dir/scripts/hooks" \) -prune \
+        -o -type f \( -name '*.sh' -o -name '*.bash' -o -name '*.bats' \) \
+        ! -path "$dir/scripts/substance-check.sh" -print -quit 2>/dev/null) || true
     [[ -n "$found" ]] || return 0
 
     DETECTED_TYPE="shell"

@@ -218,3 +218,14 @@ assert_no_dead_pointers() {
 
     grep -q '^Style: editorial' "$TEST_DIR/p/CLAUDE.md"
 }
+
+@test "claude-md: a detected shell project gets commands for the test dir it has" {
+    mkdir -p "$TEST_DIR/p/bin" "$TEST_DIR/p/test" "$TEST_DIR/p/src"
+    printf 'echo hi\n' > "$TEST_DIR/p/bin/tool.sh"
+    printf '@test "x" { true; }\n' > "$TEST_DIR/p/test/x.bats"
+    install_into "$TEST_DIR/p"
+
+    grep -qF 'bats -r test`' "$TEST_DIR/p/CLAUDE.md"
+    ! grep -qF 'bats -r tests' "$TEST_DIR/p/CLAUDE.md" || false
+    grep -qF -- "-name '*.bash'" "$TEST_DIR/p/CLAUDE.md"
+}
