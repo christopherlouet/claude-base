@@ -82,6 +82,17 @@ INCLUDE_CICD=false
 INCLUDE_HOOKS=false
 INCLUDE_MCP=false
 INCLUDE_DOCKER=false
+# Set by --no-ci/--no-hooks/--no-mcp/--no-docker: an explicit "off" that wins
+# over a preset default and over --all (see apply_off_flags).
+NO_CICD=false
+NO_HOOKS=false
+NO_MCP=false
+NO_DOCKER=false
+# Set by the single-option flags only (not --all), to refuse --hooks --no-hooks.
+ASKED_CICD=false
+ASKED_HOOKS=false
+ASKED_MCP=false
+ASKED_DOCKER=false
 NON_INTERACTIVE=false
 FORCE_TYPE=""
 
@@ -178,6 +189,9 @@ ${BOLD}OPTIONS${NC}
     --mcp               Include MCP configuration
     --docker            Include Dockerfile
     --all               Include all options (ci, hooks, mcp, docker)
+    --no-ci, --no-hooks, --no-mcp, --no-docker
+                        Leave that option out, even when a preset or --all
+                        turns it on (--no-ci also leaves existing CI untouched)
     --style STYLE       Design direction (terminal, cockpit, vitality, editorial, glass, signal)
     --skip-prompts      Skip optional questions (use the provided flags)
     --simple            Simple install mode (equivalent to the old install.sh)
@@ -319,6 +333,11 @@ parse_args() {
                 ;;
             --ci)
                 INCLUDE_CICD=true
+                ASKED_CICD=true
+                shift
+                ;;
+            --no-ci)
+                NO_CICD=true
                 shift
                 ;;
             --ci-existing)
@@ -331,14 +350,29 @@ parse_args() {
                 ;;
             --hooks)
                 INCLUDE_HOOKS=true
+                ASKED_HOOKS=true
+                shift
+                ;;
+            --no-hooks)
+                NO_HOOKS=true
                 shift
                 ;;
             --mcp)
                 INCLUDE_MCP=true
+                ASKED_MCP=true
+                shift
+                ;;
+            --no-mcp)
+                NO_MCP=true
                 shift
                 ;;
             --docker)
                 INCLUDE_DOCKER=true
+                ASKED_DOCKER=true
+                shift
+                ;;
+            --no-docker)
+                NO_DOCKER=true
                 shift
                 ;;
             --all)
@@ -399,6 +433,25 @@ parse_args() {
                 ;;
         esac
     done
+
+    if $NO_CICD && $ASKED_CICD; then error "--ci and --no-ci cannot be used together"; fi
+    if $NO_HOOKS && $ASKED_HOOKS; then error "--hooks and --no-hooks cannot be used together"; fi
+    if $NO_MCP && $ASKED_MCP; then error "--mcp and --no-mcp cannot be used together"; fi
+    if $NO_DOCKER && $ASKED_DOCKER; then error "--docker and --no-docker cannot be used together"; fi
+    if $NO_CICD && [[ -n "$CI_EXISTING" ]]; then
+        error "--no-ci and --ci-existing cannot be used together"
+    fi
+    apply_off_flags
+}
+
+# An explicit --no-* wins over whatever turned the option on: --all, a preset
+# default, or an interactive answer. Called after each of those sources.
+apply_off_flags() {
+    if $NO_CICD; then INCLUDE_CICD=false; fi
+    if $NO_HOOKS; then INCLUDE_HOOKS=false; fi
+    if $NO_MCP; then INCLUDE_MCP=false; fi
+    if $NO_DOCKER; then INCLUDE_DOCKER=false; fi
+    return 0
 }
 
 # =============================================================================
@@ -656,12 +709,9 @@ load_preset() {
     info "Preset: $(jq -r '.displayName // .name' "$file") ($(jq -r '.status' "$file"))"
     debug "Preset file: $file"
 
-    # Apply preset defaults — but only if the user did not pass the flag.
-    # This way --preset nextjs --no-mcp would still respect the user's no-mcp
-    # (though --no-mcp doesn't exist; we use absence of --mcp as default).
-    # Convention: a flag is considered "user-set" if its global is true.
-    # For ci/hooks/mcp/docker, all default to false, so any true at this
-    # point came from the user.
+    # Apply preset defaults: a default can only turn an option on, and an
+    # explicit --no-* then turns it back off (apply_off_flags, below), so
+    # --preset cli-tools --no-hooks installs no hooks.
     local p_ci p_hooks p_mcp p_docker p_style
     p_ci=$(jq -r '.defaults.ci // false' "$file")
     p_hooks=$(jq -r '.defaults.hooks // false' "$file")
@@ -674,6 +724,7 @@ load_preset() {
     [[ "$INCLUDE_MCP" = "false" && "$p_mcp" = "true" ]] && INCLUDE_MCP=true
     [[ "$INCLUDE_DOCKER" = "false" && "$p_docker" = "true" ]] && INCLUDE_DOCKER=true
     [[ -z "$DESIGN_STYLE" && -n "$p_style" ]] && DESIGN_STYLE="$p_style"
+    apply_off_flags
 
     # Apply foundation type if user did not pass --type.
     if [[ -z "$FORCE_TYPE" ]]; then
@@ -1835,7 +1886,11 @@ get_options() {
     echo ""
 
     # CI/CD
-    if $DETECTED_CICD; then
+    if $NO_CICD; then
+        echo -e "  ${DIM}GitHub Actions left out (--no-ci)${NC}"
+        INCLUDE_CICD=false
+        CICD_ACTION="skip"
+    elif $DETECTED_CICD; then
         if $CICD_RESOLVED; then
             # Already decided by --ci-existing; do not prompt.
             INCLUDE_CICD=false
@@ -1867,6 +1922,8 @@ get_options() {
     if $DETECTED_HOOKS; then
         echo -e "  ${DIM}Pre-commit hooks already present${NC}"
         INCLUDE_HOOKS=false
+    elif $NO_HOOKS; then
+        echo -e "  ${DIM}Pre-commit hooks left out (--no-hooks)${NC}"
     else
         if $EXISTING_PROJECT; then
             prompt "Add pre-commit hooks (husky)? (Y/n)"
@@ -1879,15 +1936,21 @@ get_options() {
     fi
 
     # MCP
-    prompt "Include MCP configuration? (y/N)"
-    read -r -n 1 choice
-    echo
-    [[ $choice =~ ^[Yy]$ ]] && INCLUDE_MCP=true
+    if $NO_MCP; then
+        echo -e "  ${DIM}MCP configuration left out (--no-mcp)${NC}"
+    else
+        prompt "Include MCP configuration? (y/N)"
+        read -r -n 1 choice
+        echo
+        [[ $choice =~ ^[Yy]$ ]] && INCLUDE_MCP=true
+    fi
 
     # Docker
     if $DETECTED_DOCKER; then
         echo -e "  ${DIM}Docker already present${NC}"
         INCLUDE_DOCKER=false
+    elif $NO_DOCKER; then
+        echo -e "  ${DIM}Dockerfile left out (--no-docker)${NC}"
     else
         if $EXISTING_PROJECT; then
             prompt "Add Dockerfile? (y/N)"

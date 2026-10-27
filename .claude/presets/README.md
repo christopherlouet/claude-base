@@ -17,7 +17,7 @@ See `specs/presets/spec.md` for the full format specification and `specs/presets
 | Flag combination | Behavior |
 |---|---|
 | `--preset nextjs` (alone) | Apply preset's defaults (ci, hooks, mcp, docker, designStyle) and foundation filters |
-| `--preset nextjs --no-mcp` | Override one default — preset's other defaults still apply |
+| `--preset nextjs --no-mcp` | Turn one default off (`--no-ci`, `--no-hooks`, `--no-mcp`, `--no-docker`) — the preset's other defaults still apply. A `--no-*` also wins over `--all` |
 | `--preset nextjs --type fullstack` | Override the auto-resolved type |
 | `--preset nextjs --simple` | Skip preset's foundation filters; install flat with marketplace plugins only |
 

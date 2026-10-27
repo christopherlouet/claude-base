@@ -18,7 +18,7 @@
   "recommendedVendorSkills": [],
   "defaults": {
     "ci": true,
-    "hooks": true,
+    "hooks": false,
     "mcp": false,
     "docker": false,
     "designStyle": "terminal"
