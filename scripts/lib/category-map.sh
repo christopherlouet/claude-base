@@ -54,8 +54,8 @@ declare -A _CATEGORY_TYPES_MAP=(
     [game-interactive-media]="csharp generic"
     [data-database]="python generic"
     [infra-devops]="generic"
-    [cli-automation]="python ruby go rust generic"
-    [other-generic]="react vue node-api python go rust java fullstack flutter neovim svelte astro php ruby csharp generic"
+    [cli-automation]="shell python ruby go rust generic"
+    [other-generic]="react vue node-api python go rust java fullstack flutter neovim svelte astro php ruby csharp shell generic"
 )
 
 # print_category_menu [default_choice]

@@ -177,7 +177,7 @@ tags:
 |---|---|---|
 | Command | `/dev:dev-debug`, `/dev:dev-refactor` | Investigation and refactoring |
 | Skill auto | `dev-i18n` | Localization (next-intl, react-i18next, vue-i18n, flutter_localizations) |
-| Rules auto | `go.md`, `python.md`, `rust.md`, `ruby.md`, `java.md`, `csharp.md`, `php.md` | Activated by file extension |
+| Rules auto | `go.md`, `python.md`, `rust.md`, `ruby.md`, `java.md`, `csharp.md`, `php.md`, `shell.md` | Activated by file extension |
 
 ### External best practices
 

@@ -162,6 +162,46 @@ _pkg() {
     [[ "$output" == react\|* ]]
 }
 
+# --- Shell: the last-resort type (#656) ----------------------------------------
+
+@test "detection: a repo of shell scripts is type shell" {
+    mkdir -p "$TEST_DIR/p/bin"
+    printf '#!/usr/bin/env bash\necho hi\n' > "$TEST_DIR/p/bin/tool.sh"
+    run detect_in "$TEST_DIR/p"
+    [[ "$output" == shell\|* ]]
+}
+
+@test "detection: bats tests alone also make a repo shell" {
+    mkdir -p "$TEST_DIR/p/tests"
+    printf '@test "x" { true; }\n' > "$TEST_DIR/p/tests/x.bats"
+    run detect_in "$TEST_DIR/p"
+    [[ "$output" == shell\|* ]]
+}
+
+@test "detection: shell is a last resort - a Node project with scripts stays Node" {
+    _pkg "$TEST_DIR/p" '    "express": "^4.18.0"'
+    mkdir -p "$TEST_DIR/p/scripts"
+    printf 'echo hi\n' > "$TEST_DIR/p/scripts/setup.sh"
+    run detect_in "$TEST_DIR/p"
+    [[ "$output" == node-api\|* ]]
+}
+
+@test "detection: shell is a last resort - a Python project with scripts stays Python" {
+    mkdir -p "$TEST_DIR/p"
+    printf '[project]\nname = "x"\n' > "$TEST_DIR/p/pyproject.toml"
+    printf 'echo hi\n' > "$TEST_DIR/p/run.sh"
+    run detect_in "$TEST_DIR/p"
+    [[ "$output" == python\|* ]]
+}
+
+@test "detection: shell files under .git or node_modules do not count" {
+    mkdir -p "$TEST_DIR/p/.git/hooks" "$TEST_DIR/p/node_modules/x"
+    printf 'echo hi\n' > "$TEST_DIR/p/.git/hooks/pre-commit.sh"
+    printf 'echo hi\n' > "$TEST_DIR/p/node_modules/x/install.sh"
+    run detect_in "$TEST_DIR/p"
+    [ "$output" = "|" ]
+}
+
 # --- Every detectable type can select its rules -------------------------------
 
 @test "detection: each detectable type resolves a rules whitelist containing its own rule" {
@@ -170,7 +210,7 @@ _pkg() {
     local lib="$REPO_ROOT/scripts/lib/selected-set.sh"
     local t rule
     for pair in "astro:astro.md" "svelte:svelte.md" "php:php.md" \
-                "ruby:ruby.md" "csharp:csharp.md" "vue:vue.md"; do
+                "ruby:ruby.md" "csharp:csharp.md" "vue:vue.md" "shell:shell.md"; do
         t="${pair%%:*}"; rule="${pair#*:}"
         run bash -c ". '$lib'; get_rules_for_type '$t'"
         [ "$status" -eq 0 ]

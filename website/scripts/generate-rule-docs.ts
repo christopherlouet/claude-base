@@ -169,7 +169,7 @@ ${rulesTable}
 
 ### Languages
 
-${rules.filter((r) => ['typescript', 'python', 'go', 'rust', 'java', 'php', 'ruby', 'csharp'].includes(r.name)).map((r) => `- [${r.name}](/docs/rules/${r.name})`).join('\n')}
+${rules.filter((r) => ['typescript', 'python', 'go', 'rust', 'java', 'php', 'ruby', 'csharp', 'shell'].includes(r.name)).map((r) => `- [${r.name}](/docs/rules/${r.name})`).join('\n')}
 
 ### Frameworks
 

@@ -105,6 +105,14 @@ EOF
 | `dotnet format` | Format the code |
 EOF
                 ;;
+            shell)
+                cat >> "$output_file" << 'EOF'
+| Command | Description |
+|---------|-------------|
+| `find . -name '*.sh' -not -path './.git/*' -exec shellcheck {} +` | Check the scripts |
+| `bats tests/` | Run tests |
+EOF
+                ;;
             python)
                 cat >> "$output_file" << 'EOF'
 | Command | Description |

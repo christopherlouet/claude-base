@@ -1519,3 +1519,74 @@ _proj_cmd_count() {
     [ "$status" -eq 0 ]
     [[ "$output" == *"What are you building"* ]]
 }
+
+# =============================================================================
+# Preset type resolution (#656): a detected type the preset lists wins over
+# appliesToTypes[0]; --type still wins over both.
+# =============================================================================
+
+# installed_type <dir> — the projectType the install recorded.
+installed_type() { jq -r '.projectType // empty' "$1/.claude/foundation.json"; }
+
+@test "presets: cli-tools on a shell-only repo installs shell.md and no python.md" {
+    local target="$TEST_DIR/sh-only"
+    mkdir -p "$target/bin"
+    printf '#!/usr/bin/env bash\necho hi\n' > "$target/bin/tool.sh"
+    run "$NEW_PROJECT" -y --preset cli-tools "$target"
+    [ "$status" -eq 0 ]
+    [ -f "$target/.claude/rules/shell.md" ]
+    [ ! -e "$target/.claude/rules/python.md" ]
+    [ "$(installed_type "$target")" = "shell" ]
+}
+
+@test "presets: cli-tools on a Python repo still installs python.md" {
+    local target="$TEST_DIR/py"
+    mkdir -p "$target"
+    printf '[project]\nname = "x"\n' > "$target/pyproject.toml"
+    printf 'echo hi\n' > "$target/run.sh"
+    run "$NEW_PROJECT" -y --preset cli-tools "$target"
+    [ "$status" -eq 0 ]
+    [ -f "$target/.claude/rules/python.md" ]
+    [ "$(installed_type "$target")" = "python" ]
+}
+
+@test "presets: cli-tools on an empty repo falls back to shell, with no web rules" {
+    local target="$TEST_DIR/empty"
+    mkdir -p "$target"
+    run "$NEW_PROJECT" -y --preset cli-tools "$target"
+    [ "$status" -eq 0 ]
+    [ "$(installed_type "$target")" = "shell" ]
+    [ ! -e "$target/.claude/rules/typescript.md" ]
+    [ ! -e "$target/.claude/rules/python.md" ]
+}
+
+@test "presets: an explicit --type still wins over the detected type" {
+    local target="$TEST_DIR/forced"
+    mkdir -p "$target"
+    printf 'echo hi\n' > "$target/run.sh"
+    run "$NEW_PROJECT" -y --preset cli-tools -t python "$target"
+    [ "$status" -eq 0 ]
+    [ "$(installed_type "$target")" = "python" ]
+}
+
+@test "presets: a detected type the preset does not list falls back to appliesToTypes[0]" {
+    local preset_dir="$TEST_DIR/synthetic-presets" target="$TEST_DIR/go-repo"
+    mkdir -p "$preset_dir" "$target"
+    jq '.name = "py-first" | .appliesToTypes = ["python", "generic"]' \
+        "$BASE_DIR/.claude/presets/cli-tools.json" > "$preset_dir/py-first.json"
+    printf 'module x\n\ngo 1.22\n' > "$target/go.mod"
+    run "$NEW_PROJECT" -y --preset py-first --presets-dir "$preset_dir" "$target"
+    [ "$status" -eq 0 ]
+    [ "$(installed_type "$target")" = "python" ]
+}
+
+@test "presets: a detected type the preset lists second is picked over the first" {
+    local preset_dir="$TEST_DIR/synthetic-presets" target="$TEST_DIR/go-repo2"
+    mkdir -p "$preset_dir" "$target"
+    jq '.name = "py-then-go" | .appliesToTypes = ["python", "go"]' \
+        "$BASE_DIR/.claude/presets/cli-tools.json" > "$preset_dir/py-then-go.json"
+    printf 'module x\n\ngo 1.22\n' > "$target/go.mod"
+    run "$NEW_PROJECT" -y --preset py-then-go --presets-dir "$preset_dir" "$target"
+    [ "$status" -eq 0 ]
+    [ "$(installed_type "$target")" = "go" ]
+}

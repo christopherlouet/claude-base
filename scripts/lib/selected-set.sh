@@ -97,6 +97,9 @@ get_rules_for_type() {
         csharp)
             rules+=("csharp.md")
             ;;
+        shell)
+            rules+=("shell.md")
+            ;;
     esac
 
     # If type is unknown or generic, add TS/web by default (most common case)

@@ -17,7 +17,7 @@ fi
 # Standard project types in menu order. Index 0 → option (n_presets + 1).
 # New types are APPENDED before "Other / Generic" rather than grouped by family:
 # every existing option keeps its number, so only the generic entry moves.
-_MENU_STD_TYPES=(react vue node-api python go rust java fullstack flutter neovim svelte astro php ruby csharp generic)
+_MENU_STD_TYPES=(react vue node-api python go rust java fullstack flutter neovim svelte astro php ruby csharp shell generic)
 _MENU_STD_LABELS=(
     "React / Next.js"
     "Vue.js"
@@ -34,6 +34,7 @@ _MENU_STD_LABELS=(
     "PHP / Laravel"
     "Ruby / Rails"
     "C# / .NET"
+    "Shell / Bash"
     "Other / Generic"
 )
 
