@@ -215,6 +215,54 @@ _pkg() {
     [ "$output" = "|" ]
 }
 
+# --- Databases: named only when a config file mentions them (#665) -----------
+
+# deps_in <dir> — run detect_stack and echo DETECTED_DEPENDENCIES, one per line.
+deps_in() {
+    run bash -c "
+        set -uo pipefail
+        source '$REPO_ROOT/scripts/lib/common.sh' >/dev/null 2>&1
+        source '$REPO_ROOT/scripts/lib/detection.sh' >/dev/null 2>&1
+        detect_stack '$1' >/dev/null 2>&1
+        printf 'DEP|%s\n' \"\${DETECTED_DEPENDENCIES[@]}\"
+    "
+    [ "$status" -eq 0 ]
+    printf '%s\n' "$output" | sed -n 's/^DEP|//p'
+}
+
+@test "detection: a repo with no config file reports no database" {
+    mkdir -p "$TEST_DIR/p"
+    printf 'echo hi\n' > "$TEST_DIR/p/run.sh"
+    run deps_in "$TEST_DIR/p"
+    [[ "$output" == *Shell* ]]
+    [[ "$output" != *PostgreSQL* && "$output" != *MongoDB* && "$output" != *Redis* ]]
+}
+
+@test "detection: a config that names no database reports none" {
+    mkdir -p "$TEST_DIR/p"
+    printf '{"name": "x"}\n' > "$TEST_DIR/p/config.json"
+    run deps_in "$TEST_DIR/p"
+    [[ "$output" != *PostgreSQL* && "$output" != *MongoDB* && "$output" != *Redis* ]]
+}
+
+@test "detection: a compose file naming postgres reports PostgreSQL only" {
+    mkdir -p "$TEST_DIR/p"
+    printf 'services:\n  db:\n    image: postgres:16\n' > "$TEST_DIR/p/docker-compose.yml"
+    run deps_in "$TEST_DIR/p"
+    [[ "$output" == *PostgreSQL* ]]
+    [[ "$output" != *MongoDB* && "$output" != *Redis* ]]
+}
+
+@test "detection: mongo in a .env and redis in a spaced file name are both reported" {
+    mkdir -p "$TEST_DIR/p/config"
+    printf 'DB_URL=mongodb://localhost\n' > "$TEST_DIR/p/.env"
+    printf 'cache: redis\n' > "$TEST_DIR/p/config/my cache.yml"
+    run deps_in "$TEST_DIR/p"
+    [[ "$output" == *MongoDB* ]]
+    [[ "$output" == *Redis* ]]
+    [[ "$output" != *PostgreSQL* ]]
+}
+
 # --- Every detectable type can select its rules -------------------------------
 
 @test "detection: each detectable type resolves a rules whitelist containing its own rule" {
