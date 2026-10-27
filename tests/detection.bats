@@ -218,38 +218,50 @@ _pkg() {
 # --- Databases: named only when a config file mentions them (#665) -----------
 
 # deps_in <dir> — run detect_stack and echo DETECTED_DEPENDENCIES, one per line.
+# Fails when the detection run itself fails, so an absence check cannot pass on
+# an empty output; callers assert $status.
 deps_in() {
-    run bash -c "
+    local out
+    out=$(bash -c "
         set -uo pipefail
-        source '$REPO_ROOT/scripts/lib/common.sh' >/dev/null 2>&1
-        source '$REPO_ROOT/scripts/lib/detection.sh' >/dev/null 2>&1
-        detect_stack '$1' >/dev/null 2>&1
-        printf 'DEP|%s\n' \"\${DETECTED_DEPENDENCIES[@]}\"
-    "
-    [ "$status" -eq 0 ]
-    printf '%s\n' "$output" | sed -n 's/^DEP|//p'
+        source '$REPO_ROOT/scripts/lib/common.sh' >/dev/null 2>&1 || exit 3
+        source '$REPO_ROOT/scripts/lib/detection.sh' >/dev/null 2>&1 || exit 3
+        detect_stack '$1' >/dev/null 2>&1 || exit 3
+        printf 'DEP|%s\n' \${DETECTED_DEPENDENCIES[@]+\"\${DETECTED_DEPENDENCIES[@]}\"}
+    ") || return 1
+    printf '%s\n' "$out" | sed -n 's/^DEP|//p'
 }
+
+_no_db() { [[ "$1" != *PostgreSQL* && "$1" != *MongoDB* && "$1" != *Redis* ]]; }
 
 @test "detection: a repo with no config file reports no database" {
     mkdir -p "$TEST_DIR/p"
     printf 'echo hi\n' > "$TEST_DIR/p/run.sh"
     run deps_in "$TEST_DIR/p"
-    [[ "$output" == *Shell* ]]
-    [[ "$output" != *PostgreSQL* && "$output" != *MongoDB* && "$output" != *Redis* ]]
+    [ "$status" -eq 0 ]
+    [[ "$output" == *Shell* ]] || false
+    _no_db "$output"
 }
 
 @test "detection: a config that names no database reports none" {
+    # Control: the same file naming redis is detected, so the run reads it.
     mkdir -p "$TEST_DIR/p"
+    printf '{"cache": "redis"}\n' > "$TEST_DIR/p/config.json"
+    run deps_in "$TEST_DIR/p"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *Redis* ]] || false
     printf '{"name": "x"}\n' > "$TEST_DIR/p/config.json"
     run deps_in "$TEST_DIR/p"
-    [[ "$output" != *PostgreSQL* && "$output" != *MongoDB* && "$output" != *Redis* ]]
+    [ "$status" -eq 0 ]
+    _no_db "$output"
 }
 
 @test "detection: a compose file naming postgres reports PostgreSQL only" {
     mkdir -p "$TEST_DIR/p"
     printf 'services:\n  db:\n    image: postgres:16\n' > "$TEST_DIR/p/docker-compose.yml"
     run deps_in "$TEST_DIR/p"
-    [[ "$output" == *PostgreSQL* ]]
+    [ "$status" -eq 0 ]
+    [[ "$output" == *PostgreSQL* ]] || false
     [[ "$output" != *MongoDB* && "$output" != *Redis* ]]
 }
 
@@ -258,9 +270,49 @@ deps_in() {
     printf 'DB_URL=mongodb://localhost\n' > "$TEST_DIR/p/.env"
     printf 'cache: redis\n' > "$TEST_DIR/p/config/my cache.yml"
     run deps_in "$TEST_DIR/p"
-    [[ "$output" == *MongoDB* ]]
-    [[ "$output" == *Redis* ]]
+    [ "$status" -eq 0 ]
+    [[ "$output" == *MongoDB* ]] || false
+    [[ "$output" == *Redis* ]] || false
     [[ "$output" != *PostgreSQL* ]]
+}
+
+@test "detection: upper-case environment variables name their database" {
+    mkdir -p "$TEST_DIR/p"
+    printf 'POSTGRES_DB=app\nREDIS_HOST=cache\nMONGO_INITDB_ROOT_USERNAME=x\n' > "$TEST_DIR/p/.env.example"
+    run deps_in "$TEST_DIR/p"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *PostgreSQL* ]] || false
+    [[ "$output" == *Redis* ]] || false
+    [[ "$output" == *MongoDB* ]]
+}
+
+@test "detection: lock files, node_modules and .claude do not name a database" {
+    # Control: the same mention in a project config is detected.
+    mkdir -p "$TEST_DIR/p/node_modules" "$TEST_DIR/p/.claude"
+    printf '{"dependencies": {"ioredis": "5"}}\n' > "$TEST_DIR/p/app.json"
+    run deps_in "$TEST_DIR/p"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *Redis* ]] || false
+    rm "$TEST_DIR/p/app.json"
+    printf '{"packages": {"node_modules/ioredis": {}, "pg": "postgres", "mongo": 1}}\n' > "$TEST_DIR/p/package-lock.json"
+    printf 'packages:\n  ioredis: 5\n  mongodb: 6\n' > "$TEST_DIR/p/pnpm-lock.yaml"
+    printf '{"packages": {"node_modules/ioredis": {}}}\n' > "$TEST_DIR/p/node_modules/.package-lock.json"
+    printf '{"note": "postgres mongo redis"}\n' > "$TEST_DIR/p/.claude/settings.json"
+    run deps_in "$TEST_DIR/p"
+    [ "$status" -eq 0 ]
+    _no_db "$output"
+}
+
+@test "detection: a word that merely contains redis does not report Redis" {
+    mkdir -p "$TEST_DIR/p"
+    printf 'license: free to redistribute\n' > "$TEST_DIR/p/meta.yml"
+    run deps_in "$TEST_DIR/p"
+    [ "$status" -eq 0 ]
+    [[ "$output" != *Redis* ]] || false
+    printf 'cache: redis://localhost\n' >> "$TEST_DIR/p/meta.yml"
+    run deps_in "$TEST_DIR/p"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *Redis* ]]
 }
 
 # --- Every detectable type can select its rules -------------------------------

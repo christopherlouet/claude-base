@@ -407,14 +407,19 @@ detect_neovim() {
     fi
 }
 
-# _config_mentions <dir> <word> — true when a config file within two levels
-# mentions <word>. Tests grep's output, not find's status: when no file matches,
-# -exec never runs and find exits 0, which read as "every database" (#665).
-# -exec rather than xargs keeps file names with spaces safe.
+# _config_mentions <dir> <ere> — true when a project config file within two
+# levels matches <ere>, case-insensitively (POSTGRES_DB, REDIS_HOST). Tests
+# find's output, not its status: when no file matches, -exec never runs and
+# find exits 0, which read as "every database" (#665). Lock files and
+# node_modules list every transitive package, and .claude is the foundation's
+# own, so none of them speaks for the project. -exec rather than xargs keeps
+# file names with spaces safe; -print -quit stops at the first hit.
 _config_mentions() {
     local found
-    found=$(find "$1" -maxdepth 2 \( -name "*.json" -o -name "*.yml" -o -name "*.yaml" -o -name ".env*" -o -name "docker-compose*" \) \
-        -type f -exec grep -l -- "$2" {} + 2>/dev/null) || true
+    found=$(find "$1" -maxdepth 2 \( -name .git -o -name node_modules -o -name .claude \) -prune \
+        -o -type f \( -name "*.json" -o -name "*.yml" -o -name "*.yaml" -o -name ".env*" -o -name "docker-compose*" \) \
+        ! -name package-lock.json ! -name pnpm-lock.yaml \
+        -exec grep -qiE -- "$2" {} \; -print -quit 2>/dev/null) || true
     [[ -n "$found" ]]
 }
 
@@ -427,7 +432,7 @@ detect_database() {
     if _config_mentions "$dir" mongo; then
         DETECTED_DEPENDENCIES+=("MongoDB")
     fi
-    if _config_mentions "$dir" redis; then
+    if _config_mentions "$dir" 'redis([^t]|$)'; then
         DETECTED_DEPENDENCIES+=("Redis")
     fi
 }
