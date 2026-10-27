@@ -1108,7 +1108,7 @@ hook_uses_legacy_contract() {
 # replace it without --force. Anything else — edited, unknown path, no table,
 # no hash tool — returns 1, which keeps update's conservative skip. The table is
 # generated from the full history by scripts/gen-pristine-hashes.sh, because an
-# install is a depth-1 clone. Override the table with PRISTINE_HASHES_FILE.
+# install is a depth-1 clone, and only ever grows (#662). Override the table with PRISTINE_HASHES_FILE.
 is_known_foundation_copy() {
     local rel="$1" file="$2" table sha
     table="${PRISTINE_HASHES_FILE:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/pristine-hashes.txt}"
