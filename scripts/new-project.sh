@@ -444,8 +444,9 @@ parse_args() {
     apply_off_flags
 }
 
-# An explicit --no-* wins over whatever turned the option on: --all, a preset
-# default, or an interactive answer. Called after each of those sources.
+# An explicit --no-* wins over whatever turned the option on: --all (end of
+# parse_args) and a preset default (load_preset). The interactive prompts are
+# not reconciled here: get_options skips the prompt of each option turned off.
 apply_off_flags() {
     if $NO_CICD; then INCLUDE_CICD=false; fi
     if $NO_HOOKS; then INCLUDE_HOOKS=false; fi

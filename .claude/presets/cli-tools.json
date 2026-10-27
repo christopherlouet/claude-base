@@ -2,8 +2,8 @@
   "$schema": "https://github.com/christopherlouet/claude-base/blob/main/specs/presets/schema.json",
   "name": "cli-tools",
   "displayName": "CLI tools / automation scripts",
-  "description": "Python or Shell automation tools, GitHub API helpers, headless-friendly scripts. Targets developers building CLI utilities, dependency analyzers, code-mod tooling, or ops automation that runs in CI/cron without a UI. Filters out application/UI/mobile/infra-heavy skills (React, Next.js, Flutter, Proxmox, OPNsense, mobile-release, frontend-design, conversion optimization, UI testing). Bundles ZERO marketplace plugins at v1 — CLI-specific plugins (gh API helpers, packaging, distribution) will be added incrementally as validated. Defaults reflect headless usage (no Docker, no MCP).",
-  "version": "1.1.0",
+  "description": "Python or Shell automation tools, GitHub API helpers, headless-friendly scripts. Targets developers building CLI utilities, dependency analyzers, code-mod tooling, or ops automation that runs in CI/cron without a UI. Filters out application/UI/mobile/infra-heavy skills (React, Next.js, Flutter, Proxmox, OPNsense, mobile-release, frontend-design, conversion optimization, UI testing). Bundles ZERO marketplace plugins at v1 — CLI-specific plugins (gh API helpers, packaging, distribution) will be added incrementally as validated. Defaults reflect headless usage (no Docker, no MCP) and no husky hooks, which need a package.json these repos rarely have (pass --hooks to add them).",
+  "version": "1.2.0",
   "status": "maintainer-vouched",
   "author": {
     "name": "Chris",

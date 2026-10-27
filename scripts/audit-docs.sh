@@ -49,6 +49,7 @@ KNOWN_VERBS=(init update validate doctor lessons preset add remove modules unins
 # shellcheck disable=SC2034  # consumed by _audit_flags_pass via nameref
 KNOWN_INIT_FLAGS=(
     --verbose -v --ci --ci-existing --hooks --mcp --docker --all --style
+    --no-ci --no-hooks --no-mcp --no-docker
     --skip-prompts --minimal --preset --presets-dir --list-presets --detect-only
     --yes -y --type -t --simple --install-only
     --help -h --version --dry-run -n --quiet -q --path -p
