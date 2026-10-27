@@ -209,6 +209,8 @@ _in_table() { grep -qx "$(sha_of "$1") scripts/hooks/guard.sh" "$REPO/$TABLE_REL
     printf 'v1\n' > "$REPO/scripts/hooks/guard.sh"; commit_all one
     run_gen
     printf 'not a hash line\n\n' >> "$REPO/$TABLE_REL"
+    grep -q 'not a hash line' "$REPO/$TABLE_REL" || false
+    grep -qx '' "$REPO/$TABLE_REL" || false
 
     run_gen
     [ "$status" -eq 0 ]
@@ -231,6 +233,7 @@ _in_table() { grep -qx "$(sha_of "$1") scripts/hooks/guard.sh" "$REPO/$TABLE_REL
     run_gen
     printf '%s .claude/skills/x/my notes.md\n' "$(sha_of $'n\n')" >> "$REPO/$TABLE_REL"
     printf '%s README.md\n' "$(sha_of $'r\n')" >> "$REPO/$TABLE_REL"
+    grep -q ' README.md$' "$REPO/$TABLE_REL" || false
 
     run_gen
     [ "$status" -eq 0 ]
@@ -297,13 +300,39 @@ _in_table() { grep -qx "$(sha_of "$1") scripts/hooks/guard.sh" "$REPO/$TABLE_REL
     [ "$status" -eq 0 ]
 }
 
-@test "check: fails when the table lost a line main's table lists (append-only)" {
+# _lost_entry_setup <main-ref> — main's table lists a squash-erased version
+# 'gone'; then a branch "feat" is cut. With refs/remotes/origin/main, there is
+# no local main, as in CI's PR checkout.
+_lost_entry_setup() {
     printf 'v1\n' > "$REPO/scripts/hooks/guard.sh"; commit_all one
-    git -C "$REPO" branch -M main
+    git -C "$REPO" branch -M trunk
     run_gen
     printf '%s scripts/hooks/guard.sh\n' "$(sha_of $'gone\n')" >> "$REPO/$TABLE_REL"
     commit_all table
+    git -C "$REPO" update-ref "$1" HEAD
     git -C "$REPO" checkout -q -b feat
+}
+
+@test "check: fails when the table lost a line origin/main's table lists (CI layout)" {
+    _lost_entry_setup refs/remotes/origin/main
+    rm "$REPO/$TABLE_REL"; run_gen; commit_all rebuilt
+
+    run_gen --check
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"$(sha_of $'gone\n') scripts/hooks/guard.sh"* ]]
+}
+
+@test "check: warns when there is no main to compare removed entries with" {
+    printf 'v1\n' > "$REPO/scripts/hooks/guard.sh"; commit_all one
+    git -C "$REPO" branch -M trunk
+    run_gen
+    run_gen --check
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"removed entries not checked"* ]]
+}
+
+@test "check: fails when the table lost a line main's table lists (append-only)" {
+    _lost_entry_setup refs/heads/main
     # Control: the branch still lists it, check passes.
     run_gen --check
     [ "$status" -eq 0 ]

@@ -232,7 +232,7 @@ claude-base update --settings --hook-scripts ./my-project
 
 A hook script that is an unmodified copy of an older release is recognised by
 its hash (`scripts/lib/pristine-hashes.txt` lists every version the foundation
-ever committed, release branches included) and replaced without `--force` — by a plain `update` too, which also adds
+ever recorded on its way to `main`, release branches included) and replaced without `--force` — by a plain `update` too, which also adds
 any library the refreshed script sources; `--hook-scripts` additionally adds new
 hook scripts. One that matches no release is treated
 as a local customisation: it is skipped, and the advisory says so. Review it,
