@@ -264,7 +264,7 @@ Performs a complete security audit based on OWASP Top 10...
 - Parallelization
 - Token savings (haiku)
 
-## Rules (34 available)
+## Rules (35 available)
 
 ### Definition
 Constraints and conventions automatically injected based on file paths.
