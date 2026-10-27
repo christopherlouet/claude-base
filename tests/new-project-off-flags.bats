@@ -146,6 +146,56 @@ init_all_on() {
     [[ "$output" != *"pre-commit hooks (husky)?"* ]] || false
 }
 
+# interactive_options <answers> <flags...> — parse the flags, run the interactive
+# get_options on <answers>, and print the prompts followed by a STATE line.
+interactive_options() {
+    local answers="$1"; shift
+    local proj="$TEST_DIR/interactive"
+    mkdir -p "$proj"
+    run env BASE_DIR="$BASE_DIR" proj="$proj" answers="$answers" bash -c '
+        source "$BASE_DIR/scripts/new-project.sh"
+        parse_args "${@}" "$proj"
+        PROJECT_PATH="$proj"; PROJECT_TYPE="node-api"; EXISTING_PROJECT=true
+        get_options <<< "$answers" 2>&1
+        echo "HOOKS=$INCLUDE_HOOKS CI=$INCLUDE_CICD MCP=$INCLUDE_MCP DOCKER=$INCLUDE_DOCKER"
+    ' _ "$@"
+}
+
+@test "off-flags: control - interactive answers turn each option on or off" {
+    interactive_options "yyyy"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"HOOKS=true CI=true MCP=true DOCKER=true"* ]] || false
+    interactive_options "nnnn"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"HOOKS=false CI=false MCP=false DOCKER=false"* ]] || false
+    [[ "$output" == *"pre-commit hooks (husky)?"* ]] || false
+}
+
+@test "off-flags: interactive options do not ask what --all already decided (#664)" {
+    # The old prompts asked, then ignored an 'n'. Four 'n' must change nothing.
+    interactive_options "nnnn" --all
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"HOOKS=true CI=true MCP=true DOCKER=true"* ]] || false
+    [[ "$output" != *"(CI/CD)?"* && "$output" != *"(husky)?"* ]] || false
+    [[ "$output" != *"MCP configuration?"* && "$output" != *"Dockerfile?"* ]]
+}
+
+@test "off-flags: a single flag skips only its own prompt" {
+    # --hooks decided; the three remaining answers go to CI, MCP, Docker.
+    interactive_options "nyn" --hooks
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"HOOKS=true CI=false MCP=true DOCKER=false"* ]] || false
+    [[ "$output" != *"(husky)?"* ]] || false
+    [[ "$output" == *"(CI/CD)?"* ]]
+}
+
+@test "off-flags: --all with a --no-* flag asks nothing for either" {
+    interactive_options "" --all --no-docker
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"HOOKS=true CI=true MCP=true DOCKER=false"* ]] || false
+    [[ "$output" != *"?"* ]]
+}
+
 @test "off-flags: --help documents the four --no-* flags" {
     run "$NEW_PROJECT" --help
     [ "$status" -eq 0 ]

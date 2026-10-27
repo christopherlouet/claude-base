@@ -447,7 +447,8 @@ parse_args() {
 
 # An explicit --no-* wins over whatever turned the option on: --all (end of
 # parse_args) and a preset default (load_preset). The interactive prompts are
-# not reconciled here: get_options skips the prompt of each option turned off.
+# not reconciled here: get_options asks only about the options no flag decided,
+# on or off (#664).
 apply_off_flags() {
     if $NO_CICD; then INCLUDE_CICD=false; fi
     if $NO_HOOKS; then INCLUDE_HOOKS=false; fi
@@ -1920,6 +1921,8 @@ get_options() {
             fi
             INCLUDE_CICD=false
         fi
+    elif $INCLUDE_CICD; then
+        echo -e "  ${DIM}GitHub Actions included (flag)${NC}"
     else
         if $EXISTING_PROJECT; then
             prompt "Add GitHub Actions (CI/CD)? (Y/n)"
@@ -1937,6 +1940,8 @@ get_options() {
         INCLUDE_HOOKS=false
     elif $NO_HOOKS; then
         echo -e "  ${DIM}Pre-commit hooks left out (--no-hooks)${NC}"
+    elif $INCLUDE_HOOKS; then
+        echo -e "  ${DIM}Pre-commit hooks included (flag)${NC}"
     else
         if $EXISTING_PROJECT; then
             prompt "Add pre-commit hooks (husky)? (Y/n)"
@@ -1951,6 +1956,8 @@ get_options() {
     # MCP
     if $NO_MCP; then
         echo -e "  ${DIM}MCP configuration left out (--no-mcp)${NC}"
+    elif $INCLUDE_MCP; then
+        echo -e "  ${DIM}MCP configuration included (flag)${NC}"
     else
         prompt "Include MCP configuration? (y/N)"
         read -r -n 1 choice
@@ -1964,6 +1971,8 @@ get_options() {
         INCLUDE_DOCKER=false
     elif $NO_DOCKER; then
         echo -e "  ${DIM}Dockerfile left out (--no-docker)${NC}"
+    elif $INCLUDE_DOCKER; then
+        echo -e "  ${DIM}Dockerfile included (flag)${NC}"
     else
         if $EXISTING_PROJECT; then
             prompt "Add Dockerfile? (y/N)"
