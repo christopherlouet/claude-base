@@ -265,7 +265,8 @@ runs only that, so a fresh project's first push is green:
 There is no release workflow: how a project releases is its own decision. A workflow file the project
 already has is never overwritten, except by `--ci-existing replace`, which deletes the project's
 workflows before installing these three. `--ci-existing merge` adds only the missing ones and says
-when release automation or a secret scan is missing.
+when release automation or a secret scan is missing. `--no-ci` installs none of them and leaves
+existing workflows alone, even when a preset or `--all` turns CI on.
 
 Every action in these workflows is pinned to a commit SHA, its version in a trailing comment: a tag
 is a pointer its owner can move, and the workflows run with your repository's token. So that the
@@ -275,7 +276,8 @@ edited; if it does not watch GitHub Actions, the install says so.
 
 ### Pre-commit Hooks
 
-`claude-base init --hooks` (or `--all`) installs two git hooks into `.husky/`: **auto-lint** on staged
+`claude-base init --hooks` (or `--all`, or a preset that turns hooks on; `--no-hooks` overrides all
+three) installs two git hooks into `.husky/`: **auto-lint** on staged
 files (`lint-staged`, `pre-commit`) and **Conventional Commits validation** (`commitlint`,
 `commit-msg`). Each one runs only when its tool is installed in the project's `node_modules/.bin`
 — a hook never downloads a tool, and a global install does not count: it would run against the

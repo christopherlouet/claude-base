@@ -528,6 +528,19 @@ EOF
     [ -d "$target/.claude/skills/work-quick" ]
 }
 
+# Shell/Python repos have no package.json, so the husky hooks would only be
+# dead files there (#655). The --hooks control proves the test can fail.
+@test "presets: --preset cli-tools installs no husky hooks unless --hooks is passed" {
+    local target="$TEST_DIR/proj-cli" control="$TEST_DIR/proj-cli-hooks"
+    run "$NEW_PROJECT" -y --preset cli-tools "$target"
+    [ "$status" -eq 0 ]
+    [ ! -e "$target/.husky" ]
+    [ -d "$target/.github/workflows" ]
+    run "$NEW_PROJECT" -y --preset cli-tools --hooks "$control"
+    [ "$status" -eq 0 ]
+    [ -d "$control/.husky" ]
+}
+
 # =============================================================================
 # fastapi preset (4th maintainer-vouched preset — Python async backend)
 # =============================================================================

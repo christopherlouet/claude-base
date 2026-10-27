@@ -241,7 +241,8 @@ Full spec: [`specs/presets-vendor-pointer-tier/spec.md`](../presets-vendor-point
 | Existing flag | Behavior with `--preset` |
 |---|---|
 | `-t, --type` | If passed, overrides preset's `applies_to_types` |
-| `--ci` / `--hooks` / `--mcp` / `--docker` | If passed, overrides preset's `defaults` |
+| `--ci` / `--hooks` / `--mcp` / `--docker` | If passed, turns the option on whatever the preset's `defaults` say |
+| `--no-ci` / `--no-hooks` / `--no-mcp` / `--no-docker` | If passed, turns the option off — wins over the preset's `defaults` and over `--all` |
 | `--style <name>` | If passed, overrides preset's `defaults.design_style` |
 | `--simple` | Skips preset's `foundation.*` filters; installs flat (preset reduced to plugin install only) |
 | `--minimal` | Conflicts with `--preset`; one or the other |
