@@ -244,7 +244,7 @@ _in_table() { grep -qx "$(sha_of "$1") scripts/hooks/guard.sh" "$REPO/$TABLE_REL
 # --- Files init copies under another name (#657) -----------------------------
 # update refreshes an unmodified .husky hook, .commitlintrc.json and
 # .lintstagedrc.mjs. Each is keyed by its INSTALL path: templates/husky/<f> is
-# installed as .husky/<f>, and before #653 init copied the foundation's own
+# installed as .husky/<f>, and until #540 init copied the foundation's own
 # .husky/<f> verbatim, so both histories name versions an install can hold.
 
 @test "gen: records the husky templates and the foundation's own .husky under .husky/" {

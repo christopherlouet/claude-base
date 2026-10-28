@@ -192,7 +192,9 @@ ${BOLD}OPTIONS${NC}
                         Without it, update still replaces the ones that are unmodified
                         copies of an older release; a customised one needs this + --force
     --all               Update everything (commands, settings, skills, agents, rules, styles, templates, hook-scripts).
-                        Does NOT delete anything: add --clean explicitly for a wipe-and-replace (--all --clean)
+                        Deletes nothing you edited: add --clean explicitly for a wipe-and-replace
+                        (--all --clean). Any run retires two files older installs received, when
+                        unmodified: .husky/pre-push and .lintstagedrc.json
     --graduate-full     Deliberately convert a minimal install (tier "minimal" in
                         .claude/foundation.json) into a full install: performs the
                         full update and records tier "full"
@@ -625,8 +627,8 @@ MODULE_SKIP_MATCH=""
 #     what the real run will do after migration.
 #   - No manifest, no marker: no filter (nothing to be module-aware about).
 # Also warns about on-disk files of absent modules (stale state from an
-# interrupted remove or a hand-edited manifest): update never deletes user
-# files, so surface them with an adopt-or-remove hint instead.
+# interrupted remove or a hand-edited manifest): update never deletes a file
+# a user may have edited, so surface them with an adopt-or-remove hint instead.
 _load_module_filter() {
     local installed=""
     if [[ -f "$TARGET_DIR/.claude/foundation.json" ]]; then
@@ -1628,17 +1630,20 @@ refresh_unmodified_hook_scripts() {
     done
 }
 
-# refresh_unmodified_hook_configs
+# refresh_unmodified_hook_configs [--selected]
 # The hook configs init installs under another name than their source: the
 # .husky hooks (templates/husky/*), .commitlintrc.json and .lintstagedrc.mjs
 # (#657). init never overwrites them and update did not refresh them, so an
 # install kept a commit-msg hook and a commitlint config that refused every
 # commit after the fix shipped. Same rule as the hook scripts: only a copy the
 # project already has, that differs, and that is an unmodified older release
-# (_replaceable_without_force, keyed by install path) or --force. Never adds one.
-# Then the files init no longer ships (_retire_unmodified_hook_configs).
+# (_replaceable_without_force, keyed by install path). Never adds one. With
+# --selected (the run selected --hook-scripts), an edited one is reported, and
+# --force replaces it; a plain run leaves it alone, quietly, as it does an
+# edited hook script. Then the files init no longer ships.
 refresh_unmodified_hook_configs() {
-    local h pair src rel dest pairs=()
+    local selected=false h pair src rel dest pairs=()
+    [[ "${1:-}" == --selected ]] && selected=true
     for h in "$BASE_DIR"/templates/husky/*; do
         [[ -f "$h" ]] && pairs+=("templates/husky/${h##*/}:.husky/${h##*/}")
     done
@@ -1654,10 +1659,8 @@ refresh_unmodified_hook_configs() {
             fi
             continue
         fi
-        if ! $FORCE_UPDATE && ! _replaceable_without_force "$rel" "$dest"; then
-            if $DRY_RUN; then
-                DRY_RUN_CONFLICTS+=("$rel")
-            else
+        if ! { $selected && $FORCE_UPDATE; } && ! _replaceable_without_force "$rel" "$dest"; then
+            if $selected; then
                 warning "  $rel skipped (use --force to overwrite)"
                 ((SKIPPED++)) || true
             fi
@@ -1677,33 +1680,43 @@ refresh_unmodified_hook_configs() {
 
 # _retire_unmodified_hook_configs
 # Files init shipped once and no longer does (maintainer decision 2026-10-28):
-#   - .husky/pre-push, the foundation's own copied verbatim before #653: it
+#   - .husky/pre-push, the foundation's own, copied verbatim until #540: it
 #     runs scripts/preflight.sh, which no project receives, so every push
 #     failed once the hooks were wired. Removed.
-#   - .lintstagedrc.json, the fixed eslint + prettier config shipped before
+#   - .lintstagedrc.json, the fixed eslint + prettier config shipped until
 #     #654: it refuses every commit when either tool is missing. Replaced by the
-#     adaptive .lintstagedrc.mjs (added only when the project has none).
-# Only an unmodified copy (_replaceable_without_force). An edited one is the
-# project's: kept, even with --force, which never deletes, and said.
+#     adaptive .lintstagedrc.mjs, unless the project has a lint-staged config of
+#     its own in another form (has_lint_staged_config), which is then read.
+# Only an unmodified copy (_replaceable_without_force). Anything else is kept,
+# even with --force, which never deletes, and said: an edit, or a guard (a
+# symlink, an update older than the install) that withholds the verdict.
 _retire_unmodified_hook_configs() {
-    local rel dest mjs="$TARGET_DIR/.lintstagedrc.mjs"
+    local rel dest mjs="${TARGET_DIR:?}/.lintstagedrc.mjs" adds_mjs
     for rel in .husky/pre-push .lintstagedrc.json; do
-        dest="$TARGET_DIR/$rel"
+        dest="${TARGET_DIR:?}/$rel"
         [[ -f "$dest" ]] || continue
         if ! _replaceable_without_force "$rel" "$dest"; then
-            if ! $DRY_RUN; then
-                info "  $rel kept (edited; no longer shipped by the foundation - review it)"
+            info "  $rel kept (not an unmodified shipped copy, or update is older than the install; no longer shipped by the foundation - review it)"
+            continue
+        fi
+        adds_mjs=false
+        if [[ "$rel" == .lintstagedrc.json ]] \
+           && ! has_lint_staged_config "$TARGET_DIR" .lintstagedrc.json >/dev/null; then
+            adds_mjs=true
+        fi
+        if $DRY_RUN; then
+            if $adds_mjs; then
+                echo -e "${DIM}[DRY-RUN]${NC} Retire (unmodified, no longer shipped): $rel, add .lintstagedrc.mjs"
+            else
+                echo -e "${DIM}[DRY-RUN]${NC} Retire (unmodified, no longer shipped): $rel"
             fi
             continue
         fi
-        if $DRY_RUN; then
-            echo -e "${DIM}[DRY-RUN]${NC} Retire (unmodified, no longer shipped): $rel"
-            continue
-        fi
         rm -f -- "$dest"
-        if [[ "$rel" == .lintstagedrc.json && ! -e "$mjs" ]]; then
+        if $adds_mjs; then
             cp "$BASE_DIR/templates/lint-staged/.lintstagedrc.mjs" "$mjs"
             info "  $rel replaced by .lintstagedrc.mjs (unmodified copy of an older release)"
+            ((ADDED++)) || true
         else
             info "  $rel removed (unmodified copy of an older release, no longer shipped)"
         fi
@@ -2449,7 +2462,7 @@ main() {
                     # whenever the hook scripts themselves are refreshed.
                     if [[ "$arg1" == "hook_scripts" ]]; then
                         update_support_scripts
-                        refresh_unmodified_hook_configs
+                        refresh_unmodified_hook_configs --selected
                     fi
                     ;;
                 claude_md) upgrade_claude_md ;;

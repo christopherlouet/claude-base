@@ -1220,33 +1220,6 @@ install_cicd_files() {
     if $landed; then seed_dependabot_config "$target_dir"; fi
 }
 
-# Prints the project's own lint-staged config and returns 0 when it has one: a
-# regular file under a name lint-staged actually reads, or a TOP-LEVEL
-# "lint-staged" key in package.json. Only the top level counts — the same
-# string as a devDependency means installed, not configured, and taking it for
-# a config shipped none, so lint-staged refused every commit. Without jq the
-# key cannot be told apart and is not looked for: lint-staged reads
-# package.json first, so a config shipped beside one is dead, not blocking.
-#
-# Arguments:
-#   $1 - Target directory (absolute path)
-has_lint_staged_config() {
-    local dir="$1" name
-    # Exact names, not a glob: a .lintstagedrc.json.bak or an .example matched
-    # `.lintstagedrc.*`, read as a config, and shipped none — so lint-staged,
-    # which never reads them, refused every commit.
-    for name in .lintstagedrc .lintstagedrc.{json,yaml,yml,js,cjs,mjs,ts,cts,mts} \
-        lint-staged.config.{js,cjs,mjs,ts,cts,mts}; do
-        [[ -f "$dir/$name" ]] && { echo "$name"; return 0; }
-    done
-    if [[ -f "$dir/package.json" ]] && command -v jq >/dev/null 2>&1 \
-        && jq -e 'has("lint-staged")' "$dir/package.json" >/dev/null 2>&1; then
-        echo 'package.json "lint-staged"'
-        return 0
-    fi
-    return 1
-}
-
 # Install pre-commit hooks (husky)
 #
 # The source is templates/husky/, NOT the foundation's own .husky/. The

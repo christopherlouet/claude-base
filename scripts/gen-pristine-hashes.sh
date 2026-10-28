@@ -17,7 +17,7 @@
 # templates. The same trap held there: a real v5.4.0 install had all 52 skills
 # skipped as customised while each was byte-identical to a release (2026-09-27).
 # Also the files init copies under another name (#657), keyed by their INSTALL
-# path: templates/husky/<f> and, before #653 copied verbatim, the foundation's
+# path: templates/husky/<f> and, until #540 copied verbatim, the foundation's
 # own .husky/<f> as .husky/<f>; .commitlintrc.json; templates/lint-staged/
 # .lintstagedrc.mjs as .lintstagedrc.mjs; and .lintstagedrc.json, shipped
 # before #654 and retired since (update replaces an unmodified one).
