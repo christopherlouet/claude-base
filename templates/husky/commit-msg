@@ -9,27 +9,24 @@
 # commit was refused. A hook never downloads a tool; absent, it steps aside,
 # and says so in a Node project — a skipped gate must not read as a passed one.
 #
-# The shipped .commitlintrc.json extends @commitlint/config-conventional, which
-# commitlint resolves at run time: with only @commitlint/cli installed it
-# refused EVERY commit. Absent, the check steps aside and says so. A project's
-# own config is run as is. A package.json below the root (web/, frontend/) is
-# named, since the hook runs at the root and finds nothing to run.
+# The shipped .commitlintrc.json is self-contained: an `extends` of
+# @commitlint/config-conventional is resolved at run time, and with only
+# @commitlint/cli installed it refused EVERY commit. A package.json below the
+# root that sets commitlint up (web/, apps/web/) is named, since the hook runs at
+# the root and finds nothing to run; one that does not (a docs site) is not.
 # SKIP_COMMITLINT=1 turns the check off, silently.
 
 if [ "${SKIP_COMMITLINT:-0}" = "1" ]; then
   :
 elif [ -x node_modules/.bin/commitlint ]; then
-  if [ ! -d node_modules/@commitlint/config-conventional ] && [ -f .commitlintrc.json ] \
-     && grep -q '@commitlint/config-conventional' .commitlintrc.json; then
-    echo "commit-msg: @commitlint/config-conventional not installed (.commitlintrc.json extends it) - message check skipped" >&2
-  else
-    node_modules/.bin/commitlint --edit "$1"
-  fi
+  node_modules/.bin/commitlint --edit "$1"
 elif [ -f package.json ]; then
   echo "commit-msg: commitlint not installed in node_modules - message check skipped" >&2
 else
-  nested=$(find . -maxdepth 2 -path ./node_modules -prune -o -name package.json -print 2>/dev/null | head -n 1)
-  if [ -n "$nested" ]; then
-    echo "commit-msg: package.json is not at the repository root (${nested#./}) - message check skipped" >&2
+  parts=$(find . -maxdepth 3 \( -name node_modules -o -name .git \) -prune -o -name package.json -print 2>/dev/null \
+    | while IFS= read -r f; do grep -qE '"(@commitlint/cli|commitlint)"' "$f" && dirname "${f#./}"; done | sort | tr '\n' ' ')
+  parts=${parts% }
+  if [ -n "$parts" ]; then
+    echo "commit-msg: commitlint is set up in $parts, not at the repository root - message check skipped" >&2
   fi
 fi

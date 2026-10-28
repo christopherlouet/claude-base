@@ -295,13 +295,14 @@ shipped configs without their presets, and in repos that never set the tooling u
 project it says so on stderr, so a project that has not set up the tooling yet is not blocked by a
 hook it cannot feed, and a skipped check does not pass for a green one. To re-enable manually in an existing install: `npx husky install`
 (it works on husky v8 and v9, where it is only deprecated; bare `npx husky` wires nothing on v8, and
-`husky init` would overwrite the shipped `.husky/pre-commit`). It assumes husky, lint-staged,
-`@commitlint/cli` **and `@commitlint/config-conventional`** are in your project's devDependencies:
-the shipped `.commitlintrc.json` extends that preset, and commitlint without it refuses every commit,
-so the `commit-msg` hook skips the check and says so until the preset is installed (a config of your
-own is run as is). Both hooks run at the repository root: a `package.json` below it (`web/`,
-`frontend/`) is named on stderr rather than skipped in silence. `SKIP_COMMITLINT=1` or
-`SKIP_LINT_STAGED=1` turns one check off without a warning.
+`husky init` would overwrite the shipped `.husky/pre-commit`). It assumes husky, lint-staged
+and `@commitlint/cli` are in your project's devDependencies. The shipped `.commitlintrc.json` is
+self-contained, with its rules and header parser written out: it needs no
+`@commitlint/config-conventional`, whose `extends` commitlint resolves at run time and, when absent,
+refuses every commit. Both hooks run at the repository root: a `package.json` below it (`web/`,
+`apps/web/`) that sets the tool up is named on stderr rather than skipped in silence; one that does
+not, such as a docs site, says nothing. `SKIP_COMMITLINT=1` or `SKIP_LINT_STAGED=1` turns one check
+off without a warning.
 
 The lint-staged config it ships, `.lintstagedrc.mjs`, adapts to what the project has: `prettier
 --write` once prettier is installed, `eslint --fix` once eslint is installed **and** configured

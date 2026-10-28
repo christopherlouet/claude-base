@@ -163,14 +163,8 @@ write_stub() {
 }
 
 # Puts a stub tool in node_modules/.bin that logs its args and exits with $3.
-# commitlint comes with the preset the shipped .commitlintrc.json extends, as
-# `npm i -D @commitlint/cli @commitlint/config-conventional` installs it; pass
-# NO_PRESET=1 to leave it out.
 stub_tool() {
     write_stub "$1/node_modules/.bin" "$1" "$2" "$3"
-    if [ "$2" = commitlint ] && [ -z "${NO_PRESET:-}" ]; then
-        mkdir -p "$1/node_modules/@commitlint/config-conventional"
-    fi
 }
 
 # Puts a stub $2 exiting with $3 in $TEST_DIR/pathbin, outside the project,
@@ -292,55 +286,50 @@ install_node_project() {
 # below the root, and an explicit opt-out.
 # =============================================================================
 
-# Measured: commitlint resolves `extends` at run time, so an install with only
-# @commitlint/cli refuses EVERY commit ("Cannot find module
-# @commitlint/config-conventional"). The stub fails, so running it would show.
-@test "install --hooks: commitlint without the preset its config extends is skipped, and says so" {
+# Measured with @commitlint/cli 20.5.3 alone: a config that `extends`
+# @commitlint/config-conventional throws ("Cannot find module") and refuses
+# EVERY commit; the same rules written out pass a valid message and refuse a bad
+# one. The shipped config is therefore self-contained: it needs no preset.
+@test "install --hooks: the shipped commitlint config extends no preset" {
     local proj; proj=$(install_node_project)
-    grep -q 'config-conventional' "$proj/.commitlintrc.json" || false
-    NO_PRESET=1 stub_tool "$proj" commitlint 1
-    probe_commit "$proj" "test: preset missing"
-    run git -C "$proj" log --oneline
-    [[ "$output" == *"preset missing"* ]] || false
-    [ ! -e "$proj/tool-calls.log" ]
-    run cat "$proj/commit.err"
-    [[ "$output" == *"@commitlint/config-conventional not installed"* ]]
+    [ -f "$proj/.commitlintrc.json" ]
+    [ "$(jq -r 'has("extends")' "$proj/.commitlintrc.json")" = false ]
+    # Its own parser accepts the breaking-change marker the preset's did.
+    [ "$(jq -r '.parserPreset.parserOpts.headerPattern' "$proj/.commitlintrc.json")" != null ]
+    [ "$(jq -r '.rules["type-enum"][2] | index("feat") != null' "$proj/.commitlintrc.json")" = true ]
 }
 
-@test "install --hooks: a project's own commitlint config is run whatever it extends" {
-    local proj; proj=$(install_node_project)
-    echo '{"rules":{}}' > "$proj/.commitlintrc.json"
-    NO_PRESET=1 stub_tool "$proj" commitlint 1
-    probe_commit "$proj" "test: own config"
-    run git -C "$proj" log --oneline
-    [[ "$output" != *"own config"* ]] || false
-    run cat "$proj/tool-calls.log"
-    [[ "$output" == *"commitlint --edit"* ]]
+# A Node part below the root (web/, apps/web/) that set the tooling up: the
+# hooks run at the root and find nothing to run, so both checks were skipped
+# without a word. Only a package.json that declares the tooling is named: a
+# docs site (website/) with no hooks of its own must not warn on every commit.
+_tooling_pkg() {
+    mkdir -p "$(dirname "$1")"
+    echo '{"name":"part","devDependencies":{"husky":"^9","lint-staged":"^15","@commitlint/cli":"^20"}}' > "$1"
 }
 
-# A package.json below the root (web/, frontend/ + backend/): the hooks run at
-# the root and find none, so both checks were skipped without a word.
-@test "install --hooks: a package.json below the root says the checks are skipped" {
+@test "install --hooks: a package.json below the root that sets up the tooling is named" {
     local proj; proj=$(install_with_hooks)
     git -C "$proj" config core.hooksPath .husky
-    mkdir -p "$proj/web"
-    echo '{"name":"web","version":"0.0.0","private":true}' > "$proj/web/package.json"
+    _tooling_pkg "$proj/web/package.json"
+    _tooling_pkg "$proj/apps/api/package.json"
     probe_commit "$proj" "test: nested package"
     run git -C "$proj" log --oneline
     [[ "$output" == *"nested package"* ]] || false
     run cat "$proj/commit.err"
-    [[ "$output" == *"pre-commit: package.json is not at the repository root (web/package.json)"* ]] || false
-    [[ "$output" == *"commit-msg: package.json is not at the repository root (web/package.json)"* ]]
+    [[ "$output" == *"pre-commit: lint-staged is set up in apps/api web, not at the repository root"* ]] || false
+    [[ "$output" == *"commit-msg: commitlint is set up in apps/api web, not at the repository root"* ]]
 }
 
-@test "install --hooks: a package.json only under node_modules stays silent" {
+@test "install --hooks: a package.json below the root without the tooling stays silent" {
     local proj; proj=$(install_with_hooks)
     git -C "$proj" config core.hooksPath .husky
-    mkdir -p "$proj/node_modules/x"
-    echo '{"name":"x"}' > "$proj/node_modules/x/package.json"
-    probe_commit "$proj" "test: dependency only"
+    mkdir -p "$proj/website" "$proj/node_modules/x"
+    echo '{"name":"site","dependencies":{"@docusaurus/core":"^3"}}' > "$proj/website/package.json"
+    _tooling_pkg "$proj/node_modules/x/package.json"
+    probe_commit "$proj" "test: docs site only"
     run git -C "$proj" log --oneline
-    [[ "$output" == *"dependency only"* ]] || false
+    [[ "$output" == *"docs site only"* ]] || false
     [ ! -s "$proj/commit.err" ]
 }
 
@@ -353,6 +342,16 @@ install_node_project() {
     [[ "$output" == *"opted out"* ]] || false
     [ ! -e "$proj/tool-calls.log" ]
     [ ! -s "$proj/commit.err" ]
+}
+
+@test "install --hooks: control - SKIP_LINT_STAGED leaves commitlint running" {
+    local proj; proj=$(install_node_project)
+    stub_tool "$proj" commitlint 1
+    SKIP_LINT_STAGED=1 probe_commit "$proj" "test: only lint-staged off"
+    run git -C "$proj" log --oneline
+    [[ "$output" != *"only lint-staged off"* ]] || false
+    run cat "$proj/tool-calls.log"
+    [[ "$output" == *"commitlint --edit"* ]]
 }
 
 @test "install --hooks: control - SKIP_COMMITLINT leaves lint-staged running" {
