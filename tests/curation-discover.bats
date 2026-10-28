@@ -1553,6 +1553,47 @@ _rel() { jq -cn --arg t "$1" --arg d "$2" '{tag_name:$t, draft:false, prerelease
     ! grep -q 'tag of another package' "$TEST_DIR/out/proposals.md" || false
 }
 
+@test "discover: the flag survives a month as a pending proposal" {
+    monorepo_candidate "acme/mono" "packages/alpha/skills" \
+        "[$(_rel '@acme/beta@3.0.0' 2026-09-20T00:00:00Z)]" "@acme/beta@3.0.0"
+    CURATION_NOW=2026-10-01 run_discover --digest-dir "$TEST_DIR/out"
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.proposals | length')" -eq 1 ]
+    # Next month, undecided: listed as pending, not judged again.
+    CURATION_NOW=2026-11-01 run_discover --digest-dir "$TEST_DIR/out"
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.proposals | length')" -eq 0 ]
+    [[ "$(digest_json | jq -r '.pendingProposals[0].pinNote')" == *"@acme/beta"* ]] || false
+    grep -q '3\.0\.0 ⚠️ tag of another package' "$TEST_DIR/out/proposals.md"
+}
+
+@test "discover: control - a single package tagged after the repo is not flagged" {
+    monorepo_candidate "acme/tool" "skills" \
+        "[$(_rel 'tool@2.0.0' 2026-09-20T00:00:00Z)]" "tool@2.0.0"
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.proposals[0].pinnedRef')" = "tool@2.0.0" ]
+    [ "$(digest_json | jq -r '.proposals[0].pinNote')" = "null" ]
+}
+
+@test "discover: control - the package match ignores case" {
+    monorepo_candidate "acme/mono" "packages/Alpha/skills" \
+        "[$(_rel '@acme/alpha@1.5.0' 2026-09-20T00:00:00Z)]" "@acme/alpha@1.5.0"
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.proposals[0].pinnedRef')" = "@acme/alpha@1.5.0" ]
+    [ "$(digest_json | jq -r '.proposals[0].pinNote')" = "null" ]
+}
+
+@test "discover: control - the package match ignores case in the tag too" {
+    monorepo_candidate "acme/mono" "packages/alpha/skills" \
+        "[$(_rel 'Alpha@1.5.0' 2026-09-20T00:00:00Z)]" "Alpha@1.5.0"
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.proposals[0].pinnedRef')" = "Alpha@1.5.0" ]
+    [ "$(digest_json | jq -r '.proposals[0].pinNote')" = "null" ]
+}
+
 @test "discover: control - plain version tags are not flagged" {
     monorepo_candidate "acme/tool" "skills" \
         "[$(_rel 'v2.1.0' 2026-09-20T00:00:00Z),$(_rel 'v2.0.0' 2026-09-10T00:00:00Z)]" \

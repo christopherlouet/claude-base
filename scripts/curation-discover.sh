@@ -512,21 +512,26 @@ resolve_ref() {
     [ -n "$sha" ] && printf '%s\n' "$sha"
 }
 
-# _pin_note <ref> <subpath> — a warning for the digest when a path candidate is
-# pinned to a package tag (`@scope/pkg@1.0.0`, `pkg@1.0.0`) whose package name
-# (its last "/" segment) is none of the path's segments: a monorepo releasing
+# _pin_note <ref> <subpath> <owner/repo> — a warning for the digest when a path
+# candidate is pinned to a package tag (`@scope/pkg@1.0.0`, `pkg@1.0.0`) whose
+# package name (its last "/" segment) is neither one of the path's segments nor
+# the repo's name (a single package tagged after its repo), case-insensitively:
+# a monorepo releasing
 # per package, whose newest release names another package. The content judged
 # is still right; the label is not, and an accepted record would make the watch
 # follow that package's family. Choosing the pin automatically proved fragile
 # (a package named "skills", a release older than the skills), so the curator
 # fixes it on accepting. Empty when there is nothing to flag.
 _pin_note() {
-    local ref="$1" sub="$2" pkg seg
+    local ref="$1" sub="$2" root="${3:-}" pkg seg segs=()
     [ -n "$sub" ] || return 0
     [[ "$ref" =~ ^.+@[^@]+$ ]] || return 0
-    pkg="${ref%@*}"; pkg="${pkg##*/}"
-    local IFS=/
-    for seg in $sub; do [ "$seg" = "$pkg" ] && return 0; done
+    pkg="${ref%@*}"; pkg=$(printf '%s' "${pkg##*/}" | tr '[:upper:]' '[:lower:]')
+    # read -a, not an unquoted $sub: no pathname expansion of a segment.
+    IFS=/ read -ra segs <<< "$sub"
+    for seg in "${segs[@]}" "${root##*/}"; do
+        [ "$(printf '%s' "$seg" | tr '[:upper:]' '[:lower:]')" = "$pkg" ] && return 0
+    done
     printf 'tag of another package (%s): pick the release of the package under this path, or a commit, before accepting\n' "${ref%@*}"
 }
 
@@ -831,7 +836,7 @@ if [ "$n_candidates" -gt 0 ]; then
         [ -n "$grad_for" ] && graduation=$((graduation + 1))
         proposals_arr+=("$(jq -cn \
             --arg repo "$repo" --arg prov "${root%%/*}" --arg ref "$ref" \
-            --arg gradFor "$grad_for" --arg pinNote "$(_pin_note "$ref" "$sub")" \
+            --arg gradFor "$grad_for" --arg pinNote "$(_pin_note "$ref" "$sub" "$root")" \
             --argjson trust "$score" --argjson safety "$screen" --argjson judge "$verdict" \
             '{repo:$repo, provenance:$prov, pinnedRef:$ref, trustTrack:"community",
               trustVerdict:$trust.verdict, safetyVerdict:$safety.verdict,
@@ -881,7 +886,7 @@ pending_proposals() {
                      or any(. as $k | $k[0] == "P" and ($r | startswith($k[1] + "/")))
                      or any(.[0] == "R" and .[1] == $root)
                      or ($r == $root and any(.[0] == "A" and .[1] == $root))) | not)
-         | {repo, proposedAt:.judgedAt, pinnedRef, fit, reason}]' "$LEDGER" 2>/dev/null || echo '[]'
+         | {repo, proposedAt:.judgedAt, pinnedRef, fit, reason, pinNote}]' "$LEDGER" 2>/dev/null || echo '[]'
 }
 pending=$(pending_proposals)
 printf '%s' "$pending" | jq -e 'type == "array"' >/dev/null 2>&1 || pending='[]'
@@ -947,7 +952,7 @@ render_markdown() {
         printf 'Not judged again while pending. Add to the registry, or record a decline, to clear one.\n\n'
         printf '| Repo | Proposed | Pin | Fit | Rationale |\n|---|---|---|---|---|\n'
         printf '%s' "$pending" | jq -r "$_MD_DEFS"'
-            .[] | "| \(.repo|link) | \(.proposedAt|esc) | \(.pinnedRef|esc) | \(.fit|esc) | \(.reason|esc) |"'
+            .[] | "| \(.repo|link) | \(.proposedAt|esc) | \(.pinnedRef|esc)\(pinflag) | \(.fit|esc) | \(.reason|esc) |"'
         printf '\n'
     fi
     if [ "$graduation" -gt 0 ]; then
@@ -991,7 +996,7 @@ if [ -n "$DIGEST_DIR" ] && [ "$DRY_RUN" = false ]; then
     if [ -f "$LEDGER" ] && jq -e '.entries | arrays' "$LEDGER" >/dev/null 2>&1; then _prev=$(cat "$LEDGER"); fi
     if printf '%s' "$_prev" | jq --arg now "$NOW" --argjson days "$REJUDGE_DAYS" --argjson new "$rejections" --argjson props "$proposals" "$_LEDGER_DEFS"'
         (($new | map(select(.recorded) | {repo, gate, reason, judgedAt:$now}))
-         + ($props | map({repo, gate:"proposed", reason:.rationale, judgedAt:$now, pinnedRef, fit}))) as $add
+         + ($props | map({repo, gate:"proposed", reason:.rationale, judgedAt:$now, pinnedRef, fit, pinNote}))) as $add
         | ($add | map(.repo | ascii_downcase)) as $renewed
         | {version:"1.0.0",
            entries: ([.entries[] | select(fresh($now; $days))
