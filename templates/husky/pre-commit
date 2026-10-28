@@ -17,7 +17,8 @@
 #
 # A package.json below the root that sets lint-staged up (web/, apps/web/) is
 # named, since the hook runs at the root and finds nothing to run; one that does
-# not (a docs site) is not. SKIP_LINT_STAGED=1 turns the check off, silently.
+# not (a docs site), or that git does not track, is not. SKIP_LINT_STAGED=1
+# turns the check off, silently.
 
 if [ "${SKIP_LINT_STAGED:-0}" = "1" ]; then
   :
@@ -26,8 +27,9 @@ elif [ -x node_modules/.bin/lint-staged ]; then
 elif [ -f package.json ]; then
   echo "pre-commit: lint-staged not installed in node_modules - staged lint skipped" >&2
 else
-  parts=$(find . -maxdepth 3 \( -name node_modules -o -name .git \) -prune -o -name package.json -print 2>/dev/null \
-    | while IFS= read -r f; do grep -q '"lint-staged"' "$f" && dirname "${f#./}"; done | sort | tr '\n' ' ')
+  # Tracked files only: an ignored scratch clone is not the project.
+  parts=$(git ls-files -- '*/package.json' ':!:*node_modules/*' 2>/dev/null \
+    | while IFS= read -r f; do grep -q '"lint-staged"' "$f" 2>/dev/null && dirname "$f"; done | sort | tr '\n' ' ')
   parts=${parts% }
   if [ -n "$parts" ]; then
     echo "pre-commit: lint-staged is set up in $parts, not at the repository root - staged lint skipped" >&2

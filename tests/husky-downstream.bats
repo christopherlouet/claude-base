@@ -209,10 +209,11 @@ install_node_project() {
 }
 
 # Only the project's OWN install is a gate. A global tool (npm -g, volta, nix,
-# asdf) was tried as a fallback and reverted: it runs against the shipped
-# configs without their presets (commitlint refuses every commit when
-# @commitlint/config-conventional is not resolvable) and it fires in repos
-# that never set the tooling up. The stubs fail, so running them would show.
+# asdf) was tried as a fallback and reverted: it fires in repos that never set
+# the tooling up, and it runs whatever version happens to be global against the
+# project's configs (an install from before the self-contained
+# .commitlintrc.json still extends @commitlint/config-conventional, which a
+# global commitlint cannot resolve: every commit refused). The stubs fail, so running them would show.
 @test "install --hooks: a tool only on the PATH is not run in a Node project" {
     local proj; proj=$(install_node_project)
     stub_on_path "$proj" commitlint 1 >/dev/null
@@ -294,9 +295,23 @@ install_node_project() {
     local proj; proj=$(install_node_project)
     [ -f "$proj/.commitlintrc.json" ]
     [ "$(jq -r 'has("extends")' "$proj/.commitlintrc.json")" = false ]
-    # Its own parser accepts the breaking-change marker the preset's did.
-    [ "$(jq -r '.parserPreset.parserOpts.headerPattern' "$proj/.commitlintrc.json")" != null ]
     [ "$(jq -r '.rules["type-enum"][2] | index("feat") != null' "$proj/.commitlintrc.json")" = true ]
+}
+
+# The header parser replaces the preset's: run its patterns as commitlint does
+# (JavaScript RegExp), on a plain, a scoped and a breaking-change header.
+@test "install --hooks: the shipped header parser reads type, scope and subject, with '!'" {
+    command -v node >/dev/null 2>&1 || skip "node not installed"
+    local proj; proj=$(install_node_project)
+    run node -e '
+        const o = require(process.argv[1]).parserPreset.parserOpts;
+        const h = new RegExp(o.headerPattern), b = new RegExp(o.breakingHeaderPattern);
+        const p = s => { const m = h.exec(s); return m ? m.slice(1).map(x => x || "").join("|") : "none"; };
+        console.log([p("feat: add x"), p("fix(api): y"), p("feat(api)!: drop v1"),
+                     p("no colon here"), b.test("feat!: z"), b.test("feat: z")].join(" ; "));
+    ' "$proj/.commitlintrc.json"
+    [ "$status" -eq 0 ]
+    [ "$output" = "feat||add x ; fix|api|y ; feat|api|drop v1 ; none ; true ; false" ]
 }
 
 # A Node part below the root (web/, apps/web/) that set the tooling up: the
@@ -321,12 +336,27 @@ _tooling_pkg() {
     [[ "$output" == *"commit-msg: commitlint is set up in apps/api web, not at the repository root"* ]]
 }
 
+@test "install --hooks: an untracked package.json that sets up the tooling stays silent" {
+    # Only what the repo tracks: an ignored scratch clone is not the project.
+    local proj; proj=$(install_with_hooks)
+    git -C "$proj" config core.hooksPath .husky
+    echo 'sandbox/' >> "$proj/.gitignore"
+    _tooling_pkg "$proj/sandbox/other/package.json"
+    probe_commit "$proj" "test: ignored clone"
+    run git -C "$proj" log --oneline
+    [[ "$output" == *"ignored clone"* ]] || false
+    [ ! -s "$proj/commit.err" ]
+}
+
 @test "install --hooks: a package.json below the root without the tooling stays silent" {
     local proj; proj=$(install_with_hooks)
     git -C "$proj" config core.hooksPath .husky
     mkdir -p "$proj/website" "$proj/node_modules/x"
     echo '{"name":"site","dependencies":{"@docusaurus/core":"^3"}}' > "$proj/website/package.json"
     _tooling_pkg "$proj/node_modules/x/package.json"
+    # Tracked on purpose (vendored dependencies): a dependency's manifest is
+    # still not the project's.
+    git -C "$proj" add -f node_modules/x/package.json
     probe_commit "$proj" "test: docs site only"
     run git -C "$proj" log --oneline
     [[ "$output" == *"docs site only"* ]] || false
