@@ -241,8 +241,11 @@ without `-y` to resolve each one individually.
 
 The same rule covers the git hook configs `init --hooks` installs — `.husky/commit-msg`,
 `.husky/pre-commit`, `.commitlintrc.json` and `.lintstagedrc.mjs` — on a plain `update` or with
-`--hook-scripts`: an unmodified copy is replaced, an edited one is kept, a missing one is never
-added.
+`--hook-scripts`: an unmodified copy is replaced, an edited one is skipped and reported (`--force`
+replaces it), a missing one is never added. Two files older installs received are retired when
+unmodified: `.husky/pre-push`, which ran a script no project has and so refused every push, is
+removed, and the fixed `.lintstagedrc.json` is replaced by the adaptive `.lintstagedrc.mjs`. An
+edited one is kept and reported, even with `--force`.
 
 The same table covers the `.claude/` files `update` refreshes: commands on a
 plain `update`, plus skills, agents, rules, output-styles and templates with

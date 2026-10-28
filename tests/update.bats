@@ -1466,6 +1466,110 @@ _hooks_proj() { "$NEW_PROJECT_SCRIPT" --simple --hooks -y "$TEST_DIR/proj" >/dev
     cmp -s "$BASE_DIR/templates/husky/commit-msg" "$TEST_DIR/proj/.husky/commit-msg"
     [ "$(cat "$TEST_DIR/proj/.husky/pre-commit")" = $'#!/usr/bin/env sh\n# my own hook' ]
     [ "$(cat "$TEST_DIR/proj/.commitlintrc.json")" = '{"rules":{}}' ]
+    # Kept, and said: a silent skip read as "nothing to do".
+    [[ "$output" == *".husky/pre-commit skipped (use --force to overwrite)"* ]] || false
+    [[ "$output" == *".commitlintrc.json skipped (use --force to overwrite)"* ]]
+}
+
+@test "update.sh --force replaces an edited .husky hook" {
+    _hooks_proj
+    printf '#!/usr/bin/env sh\n# my own hook\n' > "$TEST_DIR/proj/.husky/pre-commit"
+    : > "$TEST_DIR/pristine.txt"
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y --force "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    cmp -s "$BASE_DIR/templates/husky/pre-commit" "$TEST_DIR/proj/.husky/pre-commit"
+}
+
+@test "update.sh (no flag) makes an up-to-date .husky hook executable again" {
+    _hooks_proj
+    : > "$TEST_DIR/pristine.txt"
+    cmp -s "$BASE_DIR/templates/husky/commit-msg" "$TEST_DIR/proj/.husky/commit-msg" || false
+    chmod -x "$TEST_DIR/proj/.husky/commit-msg"
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ -x "$TEST_DIR/proj/.husky/commit-msg" ]
+}
+
+# --- Files init no longer ships (#657) -----------------------------------------
+# Before #653 init copied the foundation's own .husky/pre-push, which runs
+# scripts/preflight.sh, a script no project receives: every push failed once the
+# hooks were wired. Before #654 it shipped a fixed .lintstagedrc.json (eslint +
+# prettier), which refuses every commit when either is missing. An unmodified
+# copy is retired (maintainer decision 2026-10-28); an edited one is kept, and
+# said.
+
+@test "update.sh (no flag) removes an unmodified .husky/pre-push init no longer ships" {
+    _hooks_proj
+    plant_old_copy .husky/pre-push $'#!/usr/bin/env sh\nbash scripts/preflight.sh --fast\n'
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ ! -e "$TEST_DIR/proj/.husky/pre-push" ]
+    [[ "$output" == *".husky/pre-push removed (unmodified"* ]]
+}
+
+@test "update.sh keeps an edited .husky/pre-push, even with --force, and says so" {
+    _hooks_proj
+    : > "$TEST_DIR/pristine.txt"
+    printf '#!/usr/bin/env sh\nnpm test\n' > "$TEST_DIR/proj/.husky/pre-push"
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y --force "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ "$(cat "$TEST_DIR/proj/.husky/pre-push")" = $'#!/usr/bin/env sh\nnpm test' ]
+    [[ "$output" == *".husky/pre-push kept"* ]]
+}
+
+@test "update.sh (no flag) replaces an unmodified .lintstagedrc.json with the adaptive .mjs" {
+    _hooks_proj
+    rm "$TEST_DIR/proj/.lintstagedrc.mjs"
+    plant_old_copy .lintstagedrc.json $'{"*.ts": ["eslint --fix", "prettier --write"]}\n'
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ ! -e "$TEST_DIR/proj/.lintstagedrc.json" ]
+    cmp -s "$BASE_DIR/templates/lint-staged/.lintstagedrc.mjs" "$TEST_DIR/proj/.lintstagedrc.mjs"
+    [[ "$output" == *".lintstagedrc.json replaced by .lintstagedrc.mjs"* ]]
+}
+
+@test "update.sh (no flag) retires an unmodified .lintstagedrc.json but keeps the project's own .mjs" {
+    _hooks_proj
+    printf 'export default {"*.py": "ruff check"}\n' > "$TEST_DIR/proj/.lintstagedrc.mjs"
+    plant_old_copy .lintstagedrc.json $'{"*": "old"}\n'
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ ! -e "$TEST_DIR/proj/.lintstagedrc.json" ]
+    [ "$(cat "$TEST_DIR/proj/.lintstagedrc.mjs")" = 'export default {"*.py": "ruff check"}' ]
+}
+
+@test "update.sh keeps an edited .lintstagedrc.json and adds no second config" {
+    _hooks_proj
+    rm "$TEST_DIR/proj/.lintstagedrc.mjs"
+    : > "$TEST_DIR/pristine.txt"
+    printf '{"*.py": "ruff check"}\n' > "$TEST_DIR/proj/.lintstagedrc.json"
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y --force "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ "$(cat "$TEST_DIR/proj/.lintstagedrc.json")" = '{"*.py": "ruff check"}' ]
+    [ ! -e "$TEST_DIR/proj/.lintstagedrc.mjs" ]
+    [[ "$output" == *".lintstagedrc.json kept"* ]]
+}
+
+@test "update.sh (no flag) --dry-run retires nothing" {
+    _hooks_proj
+    rm "$TEST_DIR/proj/.lintstagedrc.mjs"
+    plant_old_copy .husky/pre-push $'#!/usr/bin/env sh\nold\n'
+    plant_old_copy .lintstagedrc.json $'{"*": "old"}\n'
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -n -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ -e "$TEST_DIR/proj/.husky/pre-push" ]
+    [ -e "$TEST_DIR/proj/.lintstagedrc.json" ]
+    [ ! -e "$TEST_DIR/proj/.lintstagedrc.mjs" ]
+    [[ "$output" == *".husky/pre-push"* ]] || false
+    [[ "$output" == *".lintstagedrc.json"* ]]
 }
 
 @test "update.sh (no flag) never adds a .husky hook or a hook config the project does not have" {
@@ -1507,12 +1611,19 @@ _hooks_proj() { "$NEW_PROJECT_SCRIPT" --simple --hooks -y "$TEST_DIR/proj" >/dev
     _hooks_proj
     git -C "$BASE_DIR" show 'v5.3.0:.husky/pre-commit' > "$TEST_DIR/proj/.husky/pre-commit"
     git -C "$BASE_DIR" show 'v5.3.0:.commitlintrc.json' > "$TEST_DIR/proj/.commitlintrc.json"
+    git -C "$BASE_DIR" show 'v5.3.0:.husky/pre-push' > "$TEST_DIR/proj/.husky/pre-push"
+    git -C "$BASE_DIR" show 'v5.3.0:.lintstagedrc.json' > "$TEST_DIR/proj/.lintstagedrc.json"
+    rm "$TEST_DIR/proj/.lintstagedrc.mjs"
     grep -q 'config-conventional' "$TEST_DIR/proj/.commitlintrc.json" || false
+    grep -q 'preflight' "$TEST_DIR/proj/.husky/pre-push" || false
 
     run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
     [ "$status" -eq 0 ]
     cmp -s "$BASE_DIR/templates/husky/pre-commit" "$TEST_DIR/proj/.husky/pre-commit"
     cmp -s "$BASE_DIR/.commitlintrc.json" "$TEST_DIR/proj/.commitlintrc.json"
+    [ ! -e "$TEST_DIR/proj/.husky/pre-push" ]
+    [ ! -e "$TEST_DIR/proj/.lintstagedrc.json" ]
+    cmp -s "$BASE_DIR/templates/lint-staged/.lintstagedrc.mjs" "$TEST_DIR/proj/.lintstagedrc.mjs"
 }
 
 @test "update.sh (no flag) refreshes the REAL v5.3.0 security libraries" {

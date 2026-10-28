@@ -1630,28 +1630,82 @@ refresh_unmodified_hook_scripts() {
 
 # refresh_unmodified_hook_configs
 # The hook configs init installs under another name than their source: the
-# .husky hooks (templates/husky/), .commitlintrc.json and .lintstagedrc.mjs
+# .husky hooks (templates/husky/*), .commitlintrc.json and .lintstagedrc.mjs
 # (#657). init never overwrites them and update did not refresh them, so an
 # install kept a commit-msg hook and a commitlint config that refused every
 # commit after the fix shipped. Same rule as the hook scripts: only a copy the
 # project already has, that differs, and that is an unmodified older release
-# (_replaceable_without_force, keyed by install path). Never adds one.
+# (_replaceable_without_force, keyed by install path) or --force. Never adds one.
+# Then the files init no longer ships (_retire_unmodified_hook_configs).
 refresh_unmodified_hook_configs() {
-    local pair src rel dest
-    for pair in "templates/husky/commit-msg:.husky/commit-msg" \
-                "templates/husky/pre-commit:.husky/pre-commit" \
-                ".commitlintrc.json:.commitlintrc.json" \
-                "templates/lint-staged/.lintstagedrc.mjs:.lintstagedrc.mjs"; do
+    local h pair src rel dest pairs=()
+    for h in "$BASE_DIR"/templates/husky/*; do
+        [[ -f "$h" ]] && pairs+=("templates/husky/${h##*/}:.husky/${h##*/}")
+    done
+    pairs+=(".commitlintrc.json:.commitlintrc.json"
+            "templates/lint-staged/.lintstagedrc.mjs:.lintstagedrc.mjs")
+    for pair in "${pairs[@]}"; do
         src="$BASE_DIR/${pair%%:*}"; rel="${pair#*:}"; dest="$TARGET_DIR/$rel"
         [[ -f "$src" && -f "$dest" ]] || continue
-        if cmp -s "$src" "$dest"; then continue; fi
-        _replaceable_without_force "$rel" "$dest" || continue
+        if cmp -s "$src" "$dest"; then
+            # Up to date but not executable (a copy, a checkout): git skips it.
+            if [[ "$rel" == .husky/* && ! -x "$dest" ]] && ! $DRY_RUN; then
+                chmod +x "$dest" 2>/dev/null || true
+            fi
+            continue
+        fi
+        if ! $FORCE_UPDATE && ! _replaceable_without_force "$rel" "$dest"; then
+            if $DRY_RUN; then
+                DRY_RUN_CONFLICTS+=("$rel")
+            else
+                warning "  $rel skipped (use --force to overwrite)"
+                ((SKIPPED++)) || true
+            fi
+            continue
+        fi
         if $DRY_RUN; then
             echo -e "${DIM}[DRY-RUN]${NC} Update (unmodified older copy): $rel"
         else
             cp "$src" "$dest"
-            [[ "$rel" == .husky/* ]] && { chmod +x "$dest" 2>/dev/null || true; }
+            if [[ "$rel" == .husky/* ]]; then chmod +x "$dest" 2>/dev/null || true; fi
             info "  $rel updated (unmodified copy of an older release)"
+        fi
+        ((UPDATED++)) || true
+    done
+    _retire_unmodified_hook_configs
+}
+
+# _retire_unmodified_hook_configs
+# Files init shipped once and no longer does (maintainer decision 2026-10-28):
+#   - .husky/pre-push, the foundation's own copied verbatim before #653: it
+#     runs scripts/preflight.sh, which no project receives, so every push
+#     failed once the hooks were wired. Removed.
+#   - .lintstagedrc.json, the fixed eslint + prettier config shipped before
+#     #654: it refuses every commit when either tool is missing. Replaced by the
+#     adaptive .lintstagedrc.mjs (added only when the project has none).
+# Only an unmodified copy (_replaceable_without_force). An edited one is the
+# project's: kept, even with --force, which never deletes, and said.
+_retire_unmodified_hook_configs() {
+    local rel dest mjs="$TARGET_DIR/.lintstagedrc.mjs"
+    for rel in .husky/pre-push .lintstagedrc.json; do
+        dest="$TARGET_DIR/$rel"
+        [[ -f "$dest" ]] || continue
+        if ! _replaceable_without_force "$rel" "$dest"; then
+            if ! $DRY_RUN; then
+                info "  $rel kept (edited; no longer shipped by the foundation - review it)"
+            fi
+            continue
+        fi
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} Retire (unmodified, no longer shipped): $rel"
+            continue
+        fi
+        rm -f -- "$dest"
+        if [[ "$rel" == .lintstagedrc.json && ! -e "$mjs" ]]; then
+            cp "$BASE_DIR/templates/lint-staged/.lintstagedrc.mjs" "$mjs"
+            info "  $rel replaced by .lintstagedrc.mjs (unmodified copy of an older release)"
+        else
+            info "  $rel removed (unmodified copy of an older release, no longer shipped)"
         fi
         ((UPDATED++)) || true
     done

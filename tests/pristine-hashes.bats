@@ -276,6 +276,15 @@ _in_table() { grep -qx "$(sha_of "$1") scripts/hooks/guard.sh" "$REPO/$TABLE_REL
     grep -qx "$(sha_of $'export default {}\n') .lintstagedrc.mjs" "$REPO/$TABLE_REL"
 }
 
+@test "gen: records the retired .lintstagedrc.json (shipped before #654)" {
+    printf '{"*": "old"}\n' > "$REPO/.lintstagedrc.json"; commit_all one
+    git -C "$REPO" rm -q .lintstagedrc.json; commit_all two
+
+    run_gen
+    [ "$status" -eq 0 ]
+    grep -qx "$(sha_of $'{"*": "old"}\n') .lintstagedrc.json" "$REPO/$TABLE_REL"
+}
+
 @test "gen: output is deterministic" {
     printf 'a\n' > "$REPO/scripts/hooks/a.sh"
     printf 'b\n' > "$REPO/scripts/hooks/b.sh"

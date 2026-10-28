@@ -294,8 +294,9 @@ refuses every commit. Both hooks run at the repository root: a `package.json` be
 not, such as a docs site, says nothing. `SKIP_COMMITLINT=1` or `SKIP_LINT_STAGED=1` turns one check
 off without a warning. `init` never overwrites `.husky/*`, `.commitlintrc.json` or
 `.lintstagedrc.mjs`; `claude-base update` replaces each one that is an unmodified copy of an older
-release (an older config that still `extends` the preset included) and keeps one you edited, which
-then still needs `@commitlint/config-conventional` installed if it extends it.
+release (an older config that still `extends` the preset included), and retires the `.husky/pre-push`
+and `.lintstagedrc.json` older installs received; one you edited is kept and reported (see the
+troubleshooting guide).
 
 The lint-staged config it ships, `.lintstagedrc.mjs`, adapts to what the project has: `prettier
 --write` once prettier is installed, `eslint --fix` once eslint is installed **and** configured

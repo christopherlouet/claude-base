@@ -19,7 +19,8 @@
 # Also the files init copies under another name (#657), keyed by their INSTALL
 # path: templates/husky/<f> and, before #653 copied verbatim, the foundation's
 # own .husky/<f> as .husky/<f>; .commitlintrc.json; templates/lint-staged/
-# .lintstagedrc.mjs as .lintstagedrc.mjs.
+# .lintstagedrc.mjs as .lintstagedrc.mjs; and .lintstagedrc.json, shipped
+# before #654 and retired since (update replaces an unmodified one).
 #
 # Sources: every blob those paths held in any commit reachable from HEAD, plus
 # the INDEX (so the pre-commit hook records a version before it is committed),
@@ -71,7 +72,7 @@ sha256_stdin() {
 }
 
 # Word-split on purpose: none of these paths holds a space.
-MANAGED_PATHS="scripts/hooks scripts/substance-check.sh .claude/skills .claude/agents .claude/rules .claude/commands .claude/output-styles .claude/templates .husky templates/husky templates/lint-staged/.lintstagedrc.mjs .commitlintrc.json"
+MANAGED_PATHS="scripts/hooks scripts/substance-check.sh .claude/skills .claude/agents .claude/rules .claude/commands .claude/output-styles .claude/templates .husky templates/husky templates/lint-staged/.lintstagedrc.mjs .lintstagedrc.json .commitlintrc.json"
 
 # install_path <path> — the path a file is installed at in a project.
 install_path() {
@@ -90,7 +91,7 @@ is_managed() {
         .claude/skills/*|.claude/agents/*|.claude/rules/*|.claude/commands/*) return 0 ;;
         .claude/output-styles/*|.claude/templates/*) return 0 ;;
         .husky/*/*) return 1 ;;
-        .husky/*|.commitlintrc.json|.lintstagedrc.mjs) return 0 ;;
+        .husky/*|.commitlintrc.json|.lintstagedrc.mjs|.lintstagedrc.json) return 0 ;;
     esac
     return 1
 }
