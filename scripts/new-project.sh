@@ -2228,19 +2228,19 @@ print_next_steps() {
         echo -e "  ${CYAN}$( $EXISTING_PROJECT && echo "3" || echo "4" ).${NC} Enable the hooks (optional):"
         case "$DETECTED_PKG_MANAGER" in
             bun)
-                echo -e "     ${YELLOW}bun add -d husky lint-staged @commitlint/cli @commitlint/config-conventional${NC}"
+                echo -e "     ${YELLOW}bun add -d husky lint-staged @commitlint/cli${NC}"
                 echo -e "     ${YELLOW}bunx husky install${NC}"
                 ;;
             pnpm)
-                echo -e "     ${YELLOW}pnpm add -D husky lint-staged @commitlint/cli @commitlint/config-conventional${NC}"
+                echo -e "     ${YELLOW}pnpm add -D husky lint-staged @commitlint/cli${NC}"
                 echo -e "     ${YELLOW}pnpm exec husky install${NC}"
                 ;;
             yarn)
-                echo -e "     ${YELLOW}yarn add -D husky lint-staged @commitlint/cli @commitlint/config-conventional${NC}"
+                echo -e "     ${YELLOW}yarn add -D husky lint-staged @commitlint/cli${NC}"
                 echo -e "     ${YELLOW}yarn husky install${NC}"
                 ;;
             *)
-                echo -e "     ${YELLOW}npm install husky lint-staged @commitlint/cli @commitlint/config-conventional -D${NC}"
+                echo -e "     ${YELLOW}npm install husky lint-staged @commitlint/cli -D${NC}"
                 echo -e "     ${YELLOW}npx husky install${NC}"
                 ;;
         esac

@@ -1,5 +1,15 @@
 {
-  "extends": ["@commitlint/config-conventional"],
+  "parserPreset": {
+    "parserOpts": {
+      "headerPattern": "^(\\w*)(?:\\((.*)\\))?!?: (.*)$",
+      "breakingHeaderPattern": "^(\\w*)(?:\\((.*)\\))?!: (.*)$",
+      "headerCorrespondence": [
+        "type",
+        "scope",
+        "subject"
+      ]
+    }
+  },
   "rules": {
     "type-enum": [
       2,
@@ -18,12 +28,55 @@
         "release"
       ]
     ],
-    "type-case": [2, "always", "lower-case"],
-    "type-empty": [2, "never"],
-    "subject-empty": [2, "never"],
-    "subject-case": [2, "always", "lower-case"],
-    "subject-full-stop": [2, "never", "."],
-    "header-max-length": [2, "always", 100],
-    "body-max-line-length": [2, "always", 200]
+    "type-case": [
+      2,
+      "always",
+      "lower-case"
+    ],
+    "type-empty": [
+      2,
+      "never"
+    ],
+    "subject-empty": [
+      2,
+      "never"
+    ],
+    "subject-case": [
+      2,
+      "always",
+      "lower-case"
+    ],
+    "subject-full-stop": [
+      2,
+      "never",
+      "."
+    ],
+    "header-max-length": [
+      2,
+      "always",
+      100
+    ],
+    "body-max-line-length": [
+      2,
+      "always",
+      200
+    ],
+    "body-leading-blank": [
+      1,
+      "always"
+    ],
+    "footer-leading-blank": [
+      1,
+      "always"
+    ],
+    "footer-max-line-length": [
+      2,
+      "always",
+      100
+    ],
+    "header-trim": [
+      2,
+      "always"
+    ]
   }
 }

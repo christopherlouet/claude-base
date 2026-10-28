@@ -8,9 +8,27 @@
 # project that had not added it yet `npx --no` refused to fetch it and every
 # commit was refused. A hook never downloads a tool; absent, it steps aside,
 # and says so in a Node project — a skipped gate must not read as a passed one.
+#
+# The shipped .commitlintrc.json is self-contained: an `extends` of
+# @commitlint/config-conventional is resolved at run time, and with only
+# @commitlint/cli installed it refused EVERY commit. A package.json below the
+# root that sets commitlint up (web/, apps/web/) is named, since the hook runs at
+# the root and finds nothing to run; one that does not (a docs site), or that
+# git does not track, is not.
+# SKIP_COMMITLINT=1 turns the check off, silently.
 
-if [ -x node_modules/.bin/commitlint ]; then
+if [ "${SKIP_COMMITLINT:-0}" = "1" ]; then
+  :
+elif [ -x node_modules/.bin/commitlint ]; then
   node_modules/.bin/commitlint --edit "$1"
 elif [ -f package.json ]; then
   echo "commit-msg: commitlint not installed in node_modules - message check skipped" >&2
+else
+  # Tracked files only: an ignored scratch clone is not the project.
+  parts=$(git ls-files -- '*/package.json' ':!:*node_modules/*' 2>/dev/null \
+    | while IFS= read -r f; do grep -qE '"(@commitlint/cli|commitlint)"' "$f" 2>/dev/null && dirname "$f"; done | sort | tr '\n' ' ')
+  parts=${parts% }
+  if [ -n "$parts" ]; then
+    echo "commit-msg: commitlint is set up in $parts, not at the repository root - message check skipped" >&2
+  fi
 fi
