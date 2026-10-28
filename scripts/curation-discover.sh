@@ -512,6 +512,24 @@ resolve_ref() {
     [ -n "$sha" ] && printf '%s\n' "$sha"
 }
 
+# _pin_note <ref> <subpath> — a warning for the digest when a path candidate is
+# pinned to a package tag (`@scope/pkg@1.0.0`, `pkg@1.0.0`) whose package name
+# (its last "/" segment) is none of the path's segments: a monorepo releasing
+# per package, whose newest release names another package. The content judged
+# is still right; the label is not, and an accepted record would make the watch
+# follow that package's family. Choosing the pin automatically proved fragile
+# (a package named "skills", a release older than the skills), so the curator
+# fixes it on accepting. Empty when there is nothing to flag.
+_pin_note() {
+    local ref="$1" sub="$2" pkg seg
+    [ -n "$sub" ] || return 0
+    [[ "$ref" =~ ^.+@[^@]+$ ]] || return 0
+    pkg="${ref%@*}"; pkg="${pkg##*/}"
+    local IFS=/
+    for seg in $sub; do [ "$seg" = "$pkg" ] && return 0; done
+    printf 'tag of another package (%s): pick the release of the package under this path, or a commit, before accepting\n' "${ref%@*}"
+}
+
 # shipped_skills <repo> <ref> — the SKILL.md paths the repo holds at <ref>, one
 # per skill: identical copies (one blob sha, e.g. .claude/skills/x beside
 # skills/x) are kept once, at the shortest path; paths under a hidden directory
@@ -813,13 +831,14 @@ if [ "$n_candidates" -gt 0 ]; then
         [ -n "$grad_for" ] && graduation=$((graduation + 1))
         proposals_arr+=("$(jq -cn \
             --arg repo "$repo" --arg prov "${root%%/*}" --arg ref "$ref" \
-            --arg gradFor "$grad_for" \
+            --arg gradFor "$grad_for" --arg pinNote "$(_pin_note "$ref" "$sub")" \
             --argjson trust "$score" --argjson safety "$screen" --argjson judge "$verdict" \
             '{repo:$repo, provenance:$prov, pinnedRef:$ref, trustTrack:"community",
               trustVerdict:$trust.verdict, safetyVerdict:$safety.verdict,
               adviceNeutrality:$judge.neutrality, fit:$judge.fit,
               rationale:$judge.rationale,
-              graduationFor:(if $gradFor == "" then null else $gradFor end)}')")
+              graduationFor:(if $gradFor == "" then null else $gradFor end),
+              pinNote:(if $pinNote == "" then null else $pinNote end)}')")
     else
         _reject "$repo" "$([ "$neutrality" = "pass" ] && echo fit || echo neutrality)" \
             "$(printf '%s' "$verdict" | jq -r '.rationale // ""')" true
@@ -897,6 +916,7 @@ digest=$(jq -cn \
 _MD_DEFS='def esc: tostring | gsub("[\r\n]+"; " ") | gsub("\\\\"; "\\\\") | gsub("://"; ":/\u200b/") | gsub("&"; "&amp;") | gsub("<"; "&lt;") | gsub(">"; "&gt;")
     | gsub("\\|"; "\\|") | gsub("\\["; "\\[") | gsub("\\]"; "\\]") | gsub("`"; "\\`") | gsub("@"; "@\u200b")
     | if length > 300 then .[0:300] + "…" else . end;
+  def pinflag: if (.pinNote // "") == "" then "" else " ⚠️ \(.pinNote|esc)" end;
   def link: (split("/")) as $p
     | if ($p | length) > 2 then "[\(.)](https://github.com/\($p[0])/\($p[1])/tree/HEAD/\($p[2:] | join("/")))"
       else "[\(.)](https://github.com/\(.))" end;'
@@ -919,7 +939,7 @@ render_markdown() {
         printf '## Proposed candidates\n\n'
         printf '| Repo | Provenance | Pin | Fit | Rationale |\n|---|---|---|---|---|\n'
         printf '%s' "$proposals" | jq -r "$_MD_DEFS"'
-            .[] | "| \(.repo|link) | \(.provenance|esc) | \(.pinnedRef|esc) | \(.fit|esc) | \(.rationale|esc) |"'
+            .[] | "| \(.repo|link) | \(.provenance|esc) | \(.pinnedRef|esc)\(pinflag) | \(.fit|esc) | \(.rationale|esc) |"'
         printf '\n'
     fi
     if [ "$(printf '%s' "$pending" | jq 'length')" -gt 0 ]; then
@@ -936,7 +956,7 @@ render_markdown() {
         printf '| Repo | Graduates | Pin | Fit | Rationale |\n|---|---|---|---|---|\n'
         printf '%s' "$proposals" | jq -r "$_MD_DEFS"'
             .[] | select(.graduationFor != null) |
-            "| \(.repo|link) | \(.graduationFor|esc) | \(.pinnedRef|esc) | \(.fit|esc) | \(.rationale|esc) |"'
+            "| \(.repo|link) | \(.graduationFor|esc) | \(.pinnedRef|esc)\(pinflag) | \(.fit|esc) | \(.rationale|esc) |"'
         printf '\n'
     fi
     if [ "$moat" -gt 0 ]; then
