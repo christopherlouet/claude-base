@@ -241,6 +241,41 @@ _in_table() { grep -qx "$(sha_of "$1") scripts/hooks/guard.sh" "$REPO/$TABLE_REL
     ! grep -q ' README.md$' "$REPO/$TABLE_REL" || false
 }
 
+# --- Files init copies under another name (#657) -----------------------------
+# update refreshes an unmodified .husky hook, .commitlintrc.json and
+# .lintstagedrc.mjs. Each is keyed by its INSTALL path: templates/husky/<f> is
+# installed as .husky/<f>, and before #653 init copied the foundation's own
+# .husky/<f> verbatim, so both histories name versions an install can hold.
+
+@test "gen: records the husky templates and the foundation's own .husky under .husky/" {
+    mkdir -p "$REPO/templates/husky" "$REPO/.husky/_"
+    printf 't1\n' > "$REPO/templates/husky/pre-commit"
+    printf 'own1\n' > "$REPO/.husky/pre-commit"
+    printf 'internal\n' > "$REPO/.husky/_/h"
+    commit_all one
+    printf 't2\n' > "$REPO/templates/husky/pre-commit"; commit_all two
+
+    run_gen
+    [ "$status" -eq 0 ]
+    grep -qx "$(sha_of $'t1\n') .husky/pre-commit" "$REPO/$TABLE_REL" || false
+    grep -qx "$(sha_of $'t2\n') .husky/pre-commit" "$REPO/$TABLE_REL" || false
+    grep -qx "$(sha_of $'own1\n') .husky/pre-commit" "$REPO/$TABLE_REL" || false
+    ! grep -q ' templates/husky/' "$REPO/$TABLE_REL" || false
+    ! grep -q ' .husky/_/' "$REPO/$TABLE_REL" || false
+}
+
+@test "gen: records .commitlintrc.json and the lint-staged template under their install path" {
+    mkdir -p "$REPO/templates/lint-staged"
+    printf '{}\n' > "$REPO/.commitlintrc.json"
+    printf 'export default {}\n' > "$REPO/templates/lint-staged/.lintstagedrc.mjs"
+    commit_all one
+
+    run_gen
+    [ "$status" -eq 0 ]
+    grep -qx "$(sha_of $'{}\n') .commitlintrc.json" "$REPO/$TABLE_REL" || false
+    grep -qx "$(sha_of $'export default {}\n') .lintstagedrc.mjs" "$REPO/$TABLE_REL"
+}
+
 @test "gen: output is deterministic" {
     printf 'a\n' > "$REPO/scripts/hooks/a.sh"
     printf 'b\n' > "$REPO/scripts/hooks/b.sh"
@@ -372,10 +407,11 @@ _pristine_trigger() {
              .claude/skills/dev-tdd/SKILL.md .claude/skills/x/references/r.md \
              .claude/agents/qa-audit.md .claude/rules/testing.md \
              .claude/commands/work/work-quick.md .claude/output-styles/o.md \
-             .claude/templates/t/f.md; do
+             .claude/templates/t/f.md .husky/pre-commit templates/husky/commit-msg \
+             .commitlintrc.json templates/lint-staged/.lintstagedrc.mjs; do
         printf '%s\n' "$p" | grep -qE "$re" || { echo "does not fire: $p" >&2; return 1; }
     done
-    for p in .claude/settings.json scripts/hooks/lib/x.sh README.md; do
+    for p in .claude/settings.json scripts/hooks/lib/x.sh README.md .husky/_/h; do
         if printf '%s\n' "$p" | grep -qE "$re"; then echo "fires: $p" >&2; return 1; fi
     done
 }

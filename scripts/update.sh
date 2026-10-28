@@ -1628,6 +1628,35 @@ refresh_unmodified_hook_scripts() {
     done
 }
 
+# refresh_unmodified_hook_configs
+# The hook configs init installs under another name than their source: the
+# .husky hooks (templates/husky/), .commitlintrc.json and .lintstagedrc.mjs
+# (#657). init never overwrites them and update did not refresh them, so an
+# install kept a commit-msg hook and a commitlint config that refused every
+# commit after the fix shipped. Same rule as the hook scripts: only a copy the
+# project already has, that differs, and that is an unmodified older release
+# (_replaceable_without_force, keyed by install path). Never adds one.
+refresh_unmodified_hook_configs() {
+    local pair src rel dest
+    for pair in "templates/husky/commit-msg:.husky/commit-msg" \
+                "templates/husky/pre-commit:.husky/pre-commit" \
+                ".commitlintrc.json:.commitlintrc.json" \
+                "templates/lint-staged/.lintstagedrc.mjs:.lintstagedrc.mjs"; do
+        src="$BASE_DIR/${pair%%:*}"; rel="${pair#*:}"; dest="$TARGET_DIR/$rel"
+        [[ -f "$src" && -f "$dest" ]] || continue
+        if cmp -s "$src" "$dest"; then continue; fi
+        _replaceable_without_force "$rel" "$dest" || continue
+        if $DRY_RUN; then
+            echo -e "${DIM}[DRY-RUN]${NC} Update (unmodified older copy): $rel"
+        else
+            cp "$src" "$dest"
+            [[ "$rel" == .husky/* ]] && { chmod +x "$dest" 2>/dev/null || true; }
+            info "  $rel updated (unmodified copy of an older release)"
+        fi
+        ((UPDATED++)) || true
+    done
+}
+
 # C2 audit — support scripts outside scripts/hooks/. The hook
 # scripts/hooks/substance-check.sh requires the detector at
 # $TARGET_DIR/scripts/substance-check.sh and silently no-ops when it is
@@ -2366,12 +2395,14 @@ main() {
                     # whenever the hook scripts themselves are refreshed.
                     if [[ "$arg1" == "hook_scripts" ]]; then
                         update_support_scripts
+                        refresh_unmodified_hook_configs
                     fi
                     ;;
                 claude_md) upgrade_claude_md ;;
             esac
         elif [[ "$entry_type" == "dir" && "$arg1" == "hook_scripts" ]]; then
             refresh_unmodified_hook_scripts
+            refresh_unmodified_hook_configs
         fi
     done
 

@@ -1426,6 +1426,95 @@ plant_old_copy() {
     [[ "$output" == *"_policy-secrets.sh"* ]]
 }
 
+# --- Hook configs init installs (#657) ------------------------------------------
+# init never overwrites .husky/*, .commitlintrc.json or .lintstagedrc.mjs, and
+# update did not refresh them: an install kept a commit-msg hook and a
+# commitlint config that refuse every commit once a fix had shipped. An
+# unmodified copy is now refreshed, by the same rule as the hook scripts.
+
+_hooks_proj() { "$NEW_PROJECT_SCRIPT" --simple --hooks -y "$TEST_DIR/proj" >/dev/null 2>&1; }
+
+@test "update.sh (no flag) refreshes unmodified .husky hooks and hook configs" {
+    _hooks_proj
+    plant_old_copy .husky/commit-msg $'#!/usr/bin/env sh\nnpx --no -- commitlint --edit "$1"\n'
+    plant_old_copy .husky/pre-commit $'#!/usr/bin/env sh\nnpx lint-staged\n'
+    plant_old_copy .commitlintrc.json $'{"extends":["@commitlint/config-conventional"]}\n'
+    plant_old_copy .lintstagedrc.mjs $'export default {"*.ts": "eslint --fix"}\n'
+    # A hook that lost its x bit (a copy, a checkout) is executable again.
+    chmod -x "$TEST_DIR/proj/.husky/commit-msg"
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    cmp -s "$BASE_DIR/templates/husky/commit-msg" "$TEST_DIR/proj/.husky/commit-msg"
+    cmp -s "$BASE_DIR/templates/husky/pre-commit" "$TEST_DIR/proj/.husky/pre-commit"
+    cmp -s "$BASE_DIR/.commitlintrc.json" "$TEST_DIR/proj/.commitlintrc.json"
+    cmp -s "$BASE_DIR/templates/lint-staged/.lintstagedrc.mjs" "$TEST_DIR/proj/.lintstagedrc.mjs"
+    [ -x "$TEST_DIR/proj/.husky/commit-msg" ]
+    [[ "$output" == *".husky/commit-msg updated (unmodified"* ]]
+}
+
+@test "update.sh (no flag) leaves a customised .husky hook and commitlint config alone" {
+    _hooks_proj
+    printf '#!/usr/bin/env sh\n# my own hook\n' > "$TEST_DIR/proj/.husky/pre-commit"
+    printf '{"rules":{}}\n' > "$TEST_DIR/proj/.commitlintrc.json"
+    : > "$TEST_DIR/pristine.txt"
+    # Control in the same run: an unmodified one next to them is refreshed.
+    plant_old_copy .husky/commit-msg $'#!/usr/bin/env sh\nold\n'
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    cmp -s "$BASE_DIR/templates/husky/commit-msg" "$TEST_DIR/proj/.husky/commit-msg"
+    [ "$(cat "$TEST_DIR/proj/.husky/pre-commit")" = $'#!/usr/bin/env sh\n# my own hook' ]
+    [ "$(cat "$TEST_DIR/proj/.commitlintrc.json")" = '{"rules":{}}' ]
+}
+
+@test "update.sh (no flag) never adds a .husky hook or a hook config the project does not have" {
+    "$NEW_PROJECT_SCRIPT" --simple -y "$TEST_DIR/proj" >/dev/null 2>&1
+    : > "$TEST_DIR/pristine.txt"
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ ! -e "$TEST_DIR/proj/.husky" ]
+    [ ! -e "$TEST_DIR/proj/.commitlintrc.json" ]
+    [ ! -e "$TEST_DIR/proj/.lintstagedrc.mjs" ]
+}
+
+@test "update.sh (no flag) --dry-run reports an unmodified .husky hook without writing" {
+    _hooks_proj
+    plant_old_copy .husky/commit-msg $'#!/usr/bin/env sh\nold\n'
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -n -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    [ "$(cat "$TEST_DIR/proj/.husky/commit-msg")" = $'#!/usr/bin/env sh\nold' ]
+    [[ "$output" == *".husky/commit-msg"* ]]
+}
+
+@test "update.sh --hook-scripts refreshes an unmodified .husky hook too" {
+    _hooks_proj
+    plant_old_copy .husky/commit-msg $'#!/usr/bin/env sh\nold\n'
+
+    PRISTINE_HASHES_FILE="$TEST_DIR/pristine.txt" run "$UPDATE_SCRIPT" -y --hook-scripts "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    cmp -s "$BASE_DIR/templates/husky/commit-msg" "$TEST_DIR/proj/.husky/commit-msg"
+}
+
+@test "update.sh (no flag) refreshes a REAL pre-#653 .husky hook and pre-#672 commitlint config" {
+    # The real table, real old copies: the foundation's own .husky/pre-commit
+    # that v5.3.0 copied verbatim (it calls foundation-only scripts), and the
+    # .commitlintrc.json that still extended the preset.
+    git -C "$BASE_DIR" rev-parse -q --verify 'v5.3.0^{commit}' >/dev/null 2>&1 \
+        || skip "tag v5.3.0 not available in this clone"
+    _hooks_proj
+    git -C "$BASE_DIR" show 'v5.3.0:.husky/pre-commit' > "$TEST_DIR/proj/.husky/pre-commit"
+    git -C "$BASE_DIR" show 'v5.3.0:.commitlintrc.json' > "$TEST_DIR/proj/.commitlintrc.json"
+    grep -q 'config-conventional' "$TEST_DIR/proj/.commitlintrc.json" || false
+
+    run "$UPDATE_SCRIPT" -y "$TEST_DIR/proj"
+    [ "$status" -eq 0 ]
+    cmp -s "$BASE_DIR/templates/husky/pre-commit" "$TEST_DIR/proj/.husky/pre-commit"
+    cmp -s "$BASE_DIR/.commitlintrc.json" "$TEST_DIR/proj/.commitlintrc.json"
+}
+
 @test "update.sh (no flag) refreshes the REAL v5.3.0 security libraries" {
     git -C "$BASE_DIR" rev-parse -q --verify 'v5.3.0^{commit}' >/dev/null 2>&1 \
         || skip "tag v5.3.0 not available in this clone"

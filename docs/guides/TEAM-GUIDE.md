@@ -292,9 +292,10 @@ self-contained, with its rules and header parser written out: it needs no
 refuses every commit. Both hooks run at the repository root: a `package.json` below it (`web/`,
 `apps/web/`) that sets the tool up is named on stderr rather than skipped in silence; one that does
 not, such as a docs site, says nothing. `SKIP_COMMITLINT=1` or `SKIP_LINT_STAGED=1` turns one check
-off without a warning. A project installed before these changes keeps its own copies: `init` never
-overwrites `.husky/*` or `.commitlintrc.json`, so an older config that still `extends` the preset
-needs `@commitlint/config-conventional` installed, or the file replaced by the current one.
+off without a warning. `init` never overwrites `.husky/*`, `.commitlintrc.json` or
+`.lintstagedrc.mjs`; `claude-base update` replaces each one that is an unmodified copy of an older
+release (an older config that still `extends` the preset included) and keeps one you edited, which
+then still needs `@commitlint/config-conventional` installed if it extends it.
 
 The lint-staged config it ships, `.lintstagedrc.mjs`, adapts to what the project has: `prettier
 --write` once prettier is installed, `eslint --fix` once eslint is installed **and** configured

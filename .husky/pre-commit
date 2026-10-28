@@ -33,7 +33,7 @@ fi
 # Disable with SKIP_PRISTINE_HASHES=1.
 if [ "${SKIP_PRISTINE_HASHES:-0}" != "1" ]; then
   if git diff --cached --name-only \
-       | grep -qE '^scripts/hooks/[^/]+\.sh$|^scripts/substance-check\.sh$|^\.claude/(skills|agents|rules|commands|output-styles|templates)/'; then
+       | grep -qE '^scripts/hooks/[^/]+\.sh$|^scripts/substance-check\.sh$|^\.claude/(skills|agents|rules|commands|output-styles|templates)/|^\.husky/[^/]+$|^templates/husky/|^templates/lint-staged/\.lintstagedrc\.mjs$|^\.commitlintrc\.json$'; then
     rc=0
     bash scripts/gen-pristine-hashes.sh || rc=$?
     if [ "$rc" -eq 0 ]; then

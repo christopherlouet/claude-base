@@ -239,6 +239,11 @@ as a local customisation: it is skipped, and the advisory says so. Review it,
 then add `--force`, which discards the edit, or run `update --hook-scripts`
 without `-y` to resolve each one individually.
 
+The same rule covers the git hook configs `init --hooks` installs — `.husky/commit-msg`,
+`.husky/pre-commit`, `.commitlintrc.json` and `.lintstagedrc.mjs` — on a plain `update` or with
+`--hook-scripts`: an unmodified copy is replaced, an edited one is kept, a missing one is never
+added.
+
 The same table covers the `.claude/` files `update` refreshes: commands on a
 plain `update`, plus skills, agents, rules, output-styles and templates with
 their flags (`--skills`, `--agents`, `--rules`…). An unmodified copy of an older
