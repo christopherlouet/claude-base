@@ -17,7 +17,13 @@ load 'test_helper'
 
 SETUP="$BASE_DIR/scripts/hooks/setup-deps.sh"
 
-setup() { setup_test_dir; }
+# The wiring reads every git config layer: keep the developer's own global or
+# system core.hooksPath out of these repos.
+setup() {
+    setup_test_dir
+    export GIT_CONFIG_GLOBAL="$TEST_DIR/global.gitconfig" GIT_CONFIG_NOSYSTEM=1
+    : > "$GIT_CONFIG_GLOBAL"
+}
 teardown() { teardown_test_dir; }
 
 # --- Wiring: relative core.hooksPath -----------------------------------------

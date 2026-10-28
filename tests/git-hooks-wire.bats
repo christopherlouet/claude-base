@@ -24,25 +24,15 @@ load 'test_helper'
 
 WIRE="$BASE_DIR/scripts/hooks/git-hooks-wire.sh"
 
-setup() { setup_test_dir; }
-
-# The self-application tests write the developer's REAL local hooksPath; the
-# value they found is put back here, whether the test passed or not.
-teardown() {
-    if [ -n "${REAL_HOOKS_PATH_SAVED:-}" ]; then
-        if [ -n "${REAL_HOOKS_PATH:-}" ]; then
-            git -C "$BASE_DIR" config --local core.hooksPath "$REAL_HOOKS_PATH"
-        else
-            git -C "$BASE_DIR" config --local --unset core.hooksPath || true
-        fi
-    fi
-    teardown_test_dir
+# The script reads EVERY config layer, so the developer's own global or system
+# hooksPath must not leak into these repos.
+setup() {
+    setup_test_dir
+    export GIT_CONFIG_GLOBAL="$TEST_DIR/global.gitconfig" GIT_CONFIG_NOSYSTEM=1
+    : > "$GIT_CONFIG_GLOBAL"
 }
 
-save_real_hooks_path() {
-    REAL_HOOKS_PATH=$(git -C "$BASE_DIR" config --local core.hooksPath || true)
-    REAL_HOOKS_PATH_SAVED=1
-}
+teardown() { teardown_test_dir; }
 
 @test "git-hooks-wire: script exists and is executable" {
     [ -f "$WIRE" ]
@@ -72,6 +62,7 @@ save_real_hooks_path() {
     [ "$status" -eq 0 ]
     [ "$(git config --local core.hooksPath)" = ".husky" ]
     [[ "$output" == *"stale"* ]]
+    [[ "$output" == *"(was: /gone/old/checkout/.husky)"* ]]   # the local layer goes unnamed
 }
 
 @test "git-hooks-wire: stale RELATIVE hooksPath pointing nowhere is repaired" {
@@ -232,6 +223,199 @@ make_repo_with_worktree() {
     [ -z "$output" ]
 }
 
+# git expands ~user/ and %(prefix)/ too (#662); read raw they looked relative
+# to the repo, and a working directory was declared stale and replaced.
+@test "git-hooks-wire: a ~user hooksPath to an existing dir is left alone" {
+    local v; v="~$(id -un)"
+    [ -d "$(git config --type=path --file /dev/stdin core.hooksPath <<<"[core]
+hooksPath = $v")" ]                             # control: git resolves it to a real dir
+    cd "$TEST_DIR"; git init -q; mkdir .husky
+    git config --local core.hooksPath "$v"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = "$v" ]
+    [ -z "$output" ]
+}
+
+@test "git-hooks-wire: a %(prefix)/ hooksPath to an existing dir is left alone" {
+    local v='%(prefix)/'
+    [ -d "$(git config --type=path --file /dev/stdin core.hooksPath <<<"[core]
+hooksPath = $v")" ]                             # control: git resolves it to a real dir
+    cd "$TEST_DIR"; git init -q; mkdir .husky
+    git config --local core.hooksPath "$v"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ "$(git config --local core.hooksPath)" = "$v" ]
+    [ -z "$output" ]
+}
+
+# A global hooksPath (a secret scanner in ~/.githooks) is the user's choice for
+# every repo; a local .husky would silently take it over.
+# Left alone, but not silently: the .husky pre-commit then does not run here.
+@test "git-hooks-wire: a working GLOBAL hooksPath is left alone, and said so" {
+    mkdir -p "$TEST_DIR/global-hooks" "$TEST_DIR/repo"
+    git config --global core.hooksPath "$TEST_DIR/global-hooks"
+    cd "$TEST_DIR/repo"; git init -q; mkdir .husky
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"global config"*"do not run"*"instead of those"* ]]
+    run git config --local core.hooksPath
+    [ "$status" -eq 1 ]
+}
+
+@test "git-hooks-wire: an EMPTY global hooksPath is named as empty" {
+    mkdir -p "$TEST_DIR/repo"
+    git config --global core.hooksPath ''
+    cd "$TEST_DIR/repo"; git init -q; mkdir .husky
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"global config (empty)"* ]]
+}
+
+# Not the local layer: making it relative would mean a LOCAL write over the
+# user's global choice, announced as if the global value had changed.
+@test "git-hooks-wire: an ABSOLUTE global hooksPath to this repo's .husky is left alone" {
+    make_repo_with_worktree
+    git config --global core.hooksPath "$TEST_DIR/main/.husky"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+    run git config --local core.hooksPath
+    [ "$status" -eq 1 ]
+}
+
+# Pointing at this repo's own .husky, the global value runs those hooks.
+@test "git-hooks-wire: a GLOBAL hooksPath that is this repo's .husky stays quiet" {
+    mkdir -p "$TEST_DIR/repo"
+    git config --global core.hooksPath .husky
+    cd "$TEST_DIR/repo"; git init -q; mkdir .husky
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "git-hooks-wire: a working SYSTEM hooksPath is left alone, and said so" {
+    mkdir -p "$TEST_DIR/system-hooks" "$TEST_DIR/repo"
+    unset GIT_CONFIG_NOSYSTEM
+    export GIT_CONFIG_SYSTEM="$TEST_DIR/system.gitconfig"
+    git config --system core.hooksPath "$TEST_DIR/system-hooks"
+    cd "$TEST_DIR/repo"; git init -q; mkdir .husky
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"system config"*"do not run"* ]]
+    run git config --local core.hooksPath
+    [ "$status" -eq 1 ]
+}
+
+# A value from an [include]d file outranks the write, which lands before the
+# include: claiming a repair would repeat, false, on every session.
+@test "git-hooks-wire: a repair git does not read back is a warning, not a claim" {
+    cd "$TEST_DIR"; git init -q; mkdir .husky
+    printf '[core]\n\thooksPath = /gone\n' > "$TEST_DIR/shared.gitconfig"
+    git config --local include.path "$TEST_DIR/shared.gitconfig"
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"WARN"*"could not be repaired"* ]]
+    [[ "$output" != *"wired to .husky"* ]] || false
+}
+
+# git -c / GIT_CONFIG_* outrank every file: a --local write changes nothing,
+# and announcing a repair would be false on every session.
+@test "git-hooks-wire: a command-line hooksPath is not 'repaired'" {
+    cd "$TEST_DIR"; git init -q; mkdir .husky
+    export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.hooksPath GIT_CONFIG_VALUE_0=/gone
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+    run git config --local core.hooksPath
+    [ "$status" -eq 1 ]
+}
+
+# An explicitly empty value is set, not unset: locally it cancels a global
+# value (git resolves it to the work tree).
+@test "git-hooks-wire: an explicitly EMPTY hooksPath is left alone" {
+    cd "$TEST_DIR"; git init -q; mkdir .husky
+    git config --local core.hooksPath ''
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+    [ "$(git config --local core.hooksPath)" = '' ]
+}
+
+# A git older than --show-scope (2.26) still gets the local repairs.
+@test "git-hooks-wire: without --show-scope it falls back to the local value" {
+    local real; real=$(command -v git)
+    mkdir "$TEST_DIR/bin"
+    printf '#!/bin/sh\nfor a; do [ "$a" = --show-scope ] && exit 129; done\nexec "%s" "$@"\n' "$real" > "$TEST_DIR/bin/git"
+    chmod +x "$TEST_DIR/bin/git"
+    mkdir "$TEST_DIR/repo"; cd "$TEST_DIR/repo"; git init -q; mkdir .husky
+    git config --local core.hooksPath /gone/old/.husky
+    PATH="$TEST_DIR/bin:$PATH" run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"stale"* ]]
+    [ "$(git config --local core.hooksPath)" = ".husky" ]
+}
+
+@test "git-hooks-wire: without --show-scope a working global value is not taken over" {
+    local real; real=$(command -v git)
+    mkdir "$TEST_DIR/bin" "$TEST_DIR/global-hooks"
+    printf '#!/bin/sh\nfor a; do [ "$a" = --show-scope ] && exit 129; done\nexec "%s" "$@"\n' "$real" > "$TEST_DIR/bin/git"
+    chmod +x "$TEST_DIR/bin/git"
+    git config --global core.hooksPath "$TEST_DIR/global-hooks"
+    mkdir "$TEST_DIR/repo"; cd "$TEST_DIR/repo"; git init -q; mkdir .husky
+    PATH="$TEST_DIR/bin:$PATH" run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    run git config --local core.hooksPath
+    [ "$status" -eq 1 ]
+}
+
+@test "git-hooks-wire: a STALE global hooksPath gets the local .husky" {
+    mkdir -p "$TEST_DIR/repo"
+    git config --global core.hooksPath "$TEST_DIR/gone"
+    cd "$TEST_DIR/repo"; git init -q; mkdir .husky
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"stale"* ]]
+    [ "$(git config --local core.hooksPath)" = ".husky" ]
+}
+
+# With extensions.worktreeConfig, a config.worktree value overrides the common
+# one: a repair written to --local would not change the hooks git runs.
+@test "git-hooks-wire: a stale per-worktree hooksPath is repaired in that layer" {
+    cd "$TEST_DIR"; git init -q; mkdir .husky
+    git config --local extensions.worktreeConfig true
+    git config --worktree core.hooksPath /gone/old/.husky
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"stale"* ]]
+    [ "$(git config core.hooksPath)" = ".husky" ]      # the EFFECTIVE value
+    [ "$(git config --worktree core.hooksPath)" = ".husky" ]
+}
+
+@test "git-hooks-wire: a working per-worktree hooksPath is left alone" {
+    cd "$TEST_DIR"; git init -q; mkdir .husky .wthooks
+    git config --local extensions.worktreeConfig true
+    git config --worktree core.hooksPath .wthooks
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+    run git config --local core.hooksPath
+    [ "$status" -eq 1 ]
+}
+
+# Absolute or relative is git's call, per platform: on Windows C:/x is
+# absolute, here it is relative to the work tree. Asking git keeps both right.
+# Run from a subdirectory: judged against the cwd, the dir would look missing.
+@test "git-hooks-wire: a drive-letter hooksPath is resolved the way git resolves it" {
+    cd "$TEST_DIR"; git init -q; mkdir -p .husky 'C:/hooks' sub
+    git config --local core.hooksPath 'C:/hooks'
+    cd sub
+    run bash "$WIRE"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+    [ "$(git config --local core.hooksPath)" = 'C:/hooks' ]
+}
+
 # Untracked (or gitignored) .husky is missing in every linked worktree, so
 # relativising it would turn their hooks off: the absolute value is kept.
 @test "git-hooks-wire: an ABSOLUTE hooksPath to an UNTRACKED .husky is left alone" {
@@ -367,8 +551,13 @@ make_repo_with_worktree() {
     #
     # What must hold on any checkout: the end state is .husky, and a second run
     # has nothing left to do.
-    save_real_hooks_path
-    cd "$BASE_DIR"
+    #
+    # On a throwaway clone (#662): the real checkout's config is shared by its
+    # linked worktrees, and a killed run would have left it rewritten.
+    # safe.directory: a CI image may own the checkout as another user, and the
+    # isolated global config no longer says it is trusted.
+    git -c safe.directory='*' clone -q "$BASE_DIR" "$TEST_DIR/foundation"
+    cd "$TEST_DIR/foundation"
     run bash "$WIRE"
     [ "$status" -eq 0 ]
     [ "$(git config --local core.hooksPath)" = ".husky" ]
@@ -378,10 +567,8 @@ make_repo_with_worktree() {
     [ -z "$output" ]
     [ "$(git config --local core.hooksPath)" = ".husky" ]
 
-    # Then from the state this checkout was actually found in: an absolute
-    # value pointing at the real .husky. Kept in THIS test, not a second one:
-    # bats --jobs runs a file's tests in parallel, and two tests writing the
-    # same real config key would race (and restore each other's values).
+    # Then from the state a real checkout was found in: an absolute value
+    # pointing at its own .husky.
     git config --local core.hooksPath "$(git rev-parse --show-toplevel)/.husky"
     run bash "$WIRE"
     [ "$status" -eq 0 ]

@@ -103,7 +103,7 @@
         ]
       },
       {
-        "description": "Repair a broken core.hooksPath so the .husky pre-commit (counts self-heal) actually runs. Both ways it breaks — a fresh clone, which does not carry local config, and a repo rename leaving a stale absolute path — happen AFTER init, so the equivalent block in setup-deps.sh (Setup/init only) cannot catch them. Silent no-op unless it repairs. An absolute hooksPath to the repo's own .husky is made relative before the next rename breaks it, only when .husky is tracked (linked worktrees share the config); a hooksPath to any other existing directory is left alone.",
+        "description": "Repair a broken core.hooksPath so the .husky pre-commit (counts self-heal) actually runs. Both ways it breaks — a fresh clone, which does not carry local config, and a repo rename leaving a stale absolute path — happen AFTER init, so the equivalent block in setup-deps.sh (Setup/init only) cannot catch them. Judges the value git uses, from every config layer, resolved by git. Silent unless it repairs, or a working global/system hooksPath keeps .husky from running (one INFO line per session, never overridden); a repair git does not read back is a WARN. A local absolute hooksPath to the repo's own .husky is made relative before the next rename breaks it, only when .husky is tracked (linked worktrees share the config); a hooksPath to any other existing directory is left alone.",
         "hooks": [
           {
             "type": "command",
