@@ -1503,6 +1503,107 @@ More guidance."
     grep -q 'Path: skills' "$TEST_DIR/prompt.1"
 }
 
+# --- Monorepo pins: flag another package's tag --------------------------------
+# Discovery pins a candidate to the repo's newest stable release. In a monorepo
+# releasing one tag per package that is usually ANOTHER package's tag
+# (packages/alpine-table pinned to @tanstack/vue-table-devtools@9.2.5): the
+# content is right, the label is not, and an accepted record would make the
+# watch follow that package's family. Choosing a pin automatically proved
+# fragile, so the digest flags it and the curator fixes the pin on accepting.
+
+# monorepo_candidate <repo> <sub> <releases-json> <ref-judged>
+monorepo_candidate() {
+    local repo="$1" sub="$2" releases="$3" ref="$4"
+    jq -cn --arg r "$repo" --arg p "$sub" '{version:"1.0.0", sources:[{domain:"tools", kind:"path", repo:$r, path:$p}]}' \
+        > "$TEST_DIR/sources.json"
+    gh_fixture "repos/$repo" "$(repo_meta 50000 '2026-09-30T00:00:00Z' false MIT)"
+    gh_fixture "repos/$repo/releases?per_page=100" "$releases"
+    tree_fixture "$repo" "$ref" "$sub/a/SKILL.md"
+    content_fixture "$repo" "$ref" "$sub/a/SKILL.md" "---
+name: a
+description: Skill A for the tool.
+---
+Use the tool's API carefully."
+    llm_response '{"neutrality":"pass","fit":5,"rationale":"deep","borderline":false,"tokensUsed":50}'
+}
+
+_rel() { jq -cn --arg t "$1" --arg d "$2" '{tag_name:$t, draft:false, prerelease:false, published_at:$d}'; }
+
+@test "discover: a path pinned to another package's tag is flagged in the digest, pin unchanged" {
+    monorepo_candidate "acme/mono" "packages/alpha/skills" \
+        "[$(_rel '@acme/beta@3.0.0' 2026-09-20T00:00:00Z),$(_rel '@acme/alpha@1.5.0' 2026-09-10T00:00:00Z)]" \
+        "@acme/beta@3.0.0"
+    run_discover --digest-dir "$TEST_DIR/out"
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.proposals[0].pinnedRef')" = "@acme/beta@3.0.0" ]
+    [[ "$(digest_json | jq -r '.proposals[0].pinNote')" == *"@acme/beta"* ]] || false
+    # The table cell: pin, then the flag (esc breaks "@" with a zero-width space).
+    grep -q '3\.0\.0 ⚠️ tag of another package' "$TEST_DIR/out/proposals.md"
+}
+
+@test "discover: control - a package tag named in the path is not flagged (shadcn@ for skills/shadcn)" {
+    monorepo_candidate "acme/ui" "skills/shadcn" \
+        "[$(_rel 'shadcn@4.21.0' 2026-09-20T00:00:00Z),$(_rel '@shadcn/react@0.2.1' 2026-09-10T00:00:00Z)]" \
+        "shadcn@4.21.0"
+    run_discover --digest-dir "$TEST_DIR/out"
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.proposals[0].pinnedRef')" = "shadcn@4.21.0" ]
+    [ "$(digest_json | jq -r '.proposals[0].pinNote')" = "null" ]
+    grep -q '4\.21\.0' "$TEST_DIR/out/proposals.md" || false
+    ! grep -q 'tag of another package' "$TEST_DIR/out/proposals.md" || false
+}
+
+@test "discover: the flag survives a month as a pending proposal" {
+    monorepo_candidate "acme/mono" "packages/alpha/skills" \
+        "[$(_rel '@acme/beta@3.0.0' 2026-09-20T00:00:00Z)]" "@acme/beta@3.0.0"
+    CURATION_NOW=2026-10-01 run_discover --digest-dir "$TEST_DIR/out"
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.proposals | length')" -eq 1 ]
+    # Next month, undecided: listed as pending, not judged again.
+    CURATION_NOW=2026-11-01 run_discover --digest-dir "$TEST_DIR/out"
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.proposals | length')" -eq 0 ]
+    [[ "$(digest_json | jq -r '.pendingProposals[0].pinNote')" == *"@acme/beta"* ]] || false
+    grep -q '3\.0\.0 ⚠️ tag of another package' "$TEST_DIR/out/proposals.md"
+}
+
+@test "discover: control - a single package tagged after the repo is not flagged" {
+    monorepo_candidate "acme/tool" "skills" \
+        "[$(_rel 'tool@2.0.0' 2026-09-20T00:00:00Z)]" "tool@2.0.0"
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.proposals[0].pinnedRef')" = "tool@2.0.0" ]
+    [ "$(digest_json | jq -r '.proposals[0].pinNote')" = "null" ]
+}
+
+@test "discover: control - the package match ignores case" {
+    monorepo_candidate "acme/mono" "packages/Alpha/skills" \
+        "[$(_rel '@acme/alpha@1.5.0' 2026-09-20T00:00:00Z)]" "@acme/alpha@1.5.0"
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.proposals[0].pinnedRef')" = "@acme/alpha@1.5.0" ]
+    [ "$(digest_json | jq -r '.proposals[0].pinNote')" = "null" ]
+}
+
+@test "discover: control - the package match ignores case in the tag too" {
+    monorepo_candidate "acme/mono" "packages/alpha/skills" \
+        "[$(_rel 'Alpha@1.5.0' 2026-09-20T00:00:00Z)]" "Alpha@1.5.0"
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.proposals[0].pinnedRef')" = "Alpha@1.5.0" ]
+    [ "$(digest_json | jq -r '.proposals[0].pinNote')" = "null" ]
+}
+
+@test "discover: control - plain version tags are not flagged" {
+    monorepo_candidate "acme/tool" "skills" \
+        "[$(_rel 'v2.1.0' 2026-09-20T00:00:00Z),$(_rel 'v2.0.0' 2026-09-10T00:00:00Z)]" \
+        "v2.1.0"
+    run_discover
+    [ "$status" -eq 0 ]
+    [ "$(digest_json | jq -r '.proposals[0].pinnedRef')" = "v2.1.0" ]
+    [ "$(digest_json | jq -r '.proposals[0].pinNote')" = "null" ]
+}
+
 @test "discover: a monorepo's files outside the path never reach the safety screen" {
     # 300 scripts outside skills/ would put a whole-repo screen over its cap
     # (a recorded reject); scoped to the path, the candidate is screened clean.
