@@ -14,9 +14,20 @@
 # refuses the commit. A hook never downloads a tool; absent, it steps aside —
 # a gate nobody feeds must not block the work — and says so in a Node project,
 # so a skipped gate does not read as a passed one.
+#
+# A package.json below the root (web/, frontend/) is named, since the hook runs
+# at the root and finds nothing to run. SKIP_LINT_STAGED=1 turns the check off,
+# silently.
 
-if [ -x node_modules/.bin/lint-staged ]; then
+if [ "${SKIP_LINT_STAGED:-0}" = "1" ]; then
+  :
+elif [ -x node_modules/.bin/lint-staged ]; then
   node_modules/.bin/lint-staged
 elif [ -f package.json ]; then
   echo "pre-commit: lint-staged not installed in node_modules - staged lint skipped" >&2
+else
+  nested=$(find . -maxdepth 2 -path ./node_modules -prune -o -name package.json -print 2>/dev/null | head -n 1)
+  if [ -n "$nested" ]; then
+    echo "pre-commit: package.json is not at the repository root (${nested#./}) - staged lint skipped" >&2
+  fi
 fi

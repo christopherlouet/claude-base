@@ -163,8 +163,14 @@ write_stub() {
 }
 
 # Puts a stub tool in node_modules/.bin that logs its args and exits with $3.
+# commitlint comes with the preset the shipped .commitlintrc.json extends, as
+# `npm i -D @commitlint/cli @commitlint/config-conventional` installs it; pass
+# NO_PRESET=1 to leave it out.
 stub_tool() {
     write_stub "$1/node_modules/.bin" "$1" "$2" "$3"
+    if [ "$2" = commitlint ] && [ -z "${NO_PRESET:-}" ]; then
+        mkdir -p "$1/node_modules/@commitlint/config-conventional"
+    fi
 }
 
 # Puts a stub $2 exiting with $3 in $TEST_DIR/pathbin, outside the project,
@@ -277,6 +283,84 @@ install_node_project() {
     probe_commit "$proj" "test: rejected by lint-staged"
     run git -C "$proj" log --oneline
     [[ "$output" != *"rejected by lint-staged"* ]] || false
+    run cat "$proj/tool-calls.log"
+    [[ "$output" == *"lint-staged"* ]]
+}
+
+# =============================================================================
+# #657: a commitlint without the preset its config extends, a package.json
+# below the root, and an explicit opt-out.
+# =============================================================================
+
+# Measured: commitlint resolves `extends` at run time, so an install with only
+# @commitlint/cli refuses EVERY commit ("Cannot find module
+# @commitlint/config-conventional"). The stub fails, so running it would show.
+@test "install --hooks: commitlint without the preset its config extends is skipped, and says so" {
+    local proj; proj=$(install_node_project)
+    grep -q 'config-conventional' "$proj/.commitlintrc.json" || false
+    NO_PRESET=1 stub_tool "$proj" commitlint 1
+    probe_commit "$proj" "test: preset missing"
+    run git -C "$proj" log --oneline
+    [[ "$output" == *"preset missing"* ]] || false
+    [ ! -e "$proj/tool-calls.log" ]
+    run cat "$proj/commit.err"
+    [[ "$output" == *"@commitlint/config-conventional not installed"* ]]
+}
+
+@test "install --hooks: a project's own commitlint config is run whatever it extends" {
+    local proj; proj=$(install_node_project)
+    echo '{"rules":{}}' > "$proj/.commitlintrc.json"
+    NO_PRESET=1 stub_tool "$proj" commitlint 1
+    probe_commit "$proj" "test: own config"
+    run git -C "$proj" log --oneline
+    [[ "$output" != *"own config"* ]] || false
+    run cat "$proj/tool-calls.log"
+    [[ "$output" == *"commitlint --edit"* ]]
+}
+
+# A package.json below the root (web/, frontend/ + backend/): the hooks run at
+# the root and find none, so both checks were skipped without a word.
+@test "install --hooks: a package.json below the root says the checks are skipped" {
+    local proj; proj=$(install_with_hooks)
+    git -C "$proj" config core.hooksPath .husky
+    mkdir -p "$proj/web"
+    echo '{"name":"web","version":"0.0.0","private":true}' > "$proj/web/package.json"
+    probe_commit "$proj" "test: nested package"
+    run git -C "$proj" log --oneline
+    [[ "$output" == *"nested package"* ]] || false
+    run cat "$proj/commit.err"
+    [[ "$output" == *"pre-commit: package.json is not at the repository root (web/package.json)"* ]] || false
+    [[ "$output" == *"commit-msg: package.json is not at the repository root (web/package.json)"* ]]
+}
+
+@test "install --hooks: a package.json only under node_modules stays silent" {
+    local proj; proj=$(install_with_hooks)
+    git -C "$proj" config core.hooksPath .husky
+    mkdir -p "$proj/node_modules/x"
+    echo '{"name":"x"}' > "$proj/node_modules/x/package.json"
+    probe_commit "$proj" "test: dependency only"
+    run git -C "$proj" log --oneline
+    [[ "$output" == *"dependency only"* ]] || false
+    [ ! -s "$proj/commit.err" ]
+}
+
+@test "install --hooks: SKIP_COMMITLINT and SKIP_LINT_STAGED turn a check off, silently" {
+    local proj; proj=$(install_node_project)
+    stub_tool "$proj" commitlint 1
+    stub_tool "$proj" lint-staged 1
+    SKIP_COMMITLINT=1 SKIP_LINT_STAGED=1 probe_commit "$proj" "test: opted out"
+    run git -C "$proj" log --oneline
+    [[ "$output" == *"opted out"* ]] || false
+    [ ! -e "$proj/tool-calls.log" ]
+    [ ! -s "$proj/commit.err" ]
+}
+
+@test "install --hooks: control - SKIP_COMMITLINT leaves lint-staged running" {
+    local proj; proj=$(install_node_project)
+    stub_tool "$proj" lint-staged 1
+    SKIP_COMMITLINT=1 probe_commit "$proj" "test: only commitlint off"
+    run git -C "$proj" log --oneline
+    [[ "$output" != *"only commitlint off"* ]] || false
     run cat "$proj/tool-calls.log"
     [[ "$output" == *"lint-staged"* ]]
 }

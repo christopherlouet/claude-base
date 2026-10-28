@@ -287,7 +287,11 @@ hook it cannot feed, and a skipped check does not pass for a green one. To re-en
 (it works on husky v8 and v9, where it is only deprecated; bare `npx husky` wires nothing on v8, and
 `husky init` would overwrite the shipped `.husky/pre-commit`). It assumes husky, lint-staged,
 `@commitlint/cli` **and `@commitlint/config-conventional`** are in your project's devDependencies:
-the shipped `.commitlintrc.json` extends that preset, and commitlint without it refuses every commit.
+the shipped `.commitlintrc.json` extends that preset, and commitlint without it refuses every commit,
+so the `commit-msg` hook skips the check and says so until the preset is installed (a config of your
+own is run as is). Both hooks run at the repository root: a `package.json` below it (`web/`,
+`frontend/`) is named on stderr rather than skipped in silence. `SKIP_COMMITLINT=1` or
+`SKIP_LINT_STAGED=1` turns one check off without a warning.
 
 The lint-staged config it ships, `.lintstagedrc.mjs`, adapts to what the project has: `prettier
 --write` once prettier is installed, `eslint --fix` once eslint is installed **and** configured
