@@ -19,6 +19,7 @@ Classification values:
 | `_policy-triggers.sh` | core | commit/push/deploy trigger detection |
 | `_policy-zsh-pipestatus.sh` | core | `shell_is_zsh` + `has_pipestatus_expansion` (quote/heredoc-aware lexer) |
 | `_sensitive-paths.sh` | core | pre-existing: protected-config / secret-file classifiers |
+| `_lessons-store.sh` | core | lessons store path + byte budget, shared with `scripts/lessons.sh` |
 | `_vendor-precedence-hint.sh` | core | pre-existing: pure-shell vendor-skill detection |
 | `_hook-helpers.sh` | assistant-only | rewriter sentinel/envelope helpers; re-exports the core strip for compat |
 | `command-validator.sh` | shell+core | fail-closed on missing core |
@@ -32,6 +33,7 @@ Classification values:
 | `pre-deploy-build.sh` | shell-env | trigger from core; body = run the prod build |
 | `main-branch-guard.sh` | shell-env | git-state guard (branch creation); no pattern tables |
 | `config-protection.sh` | shell+core | policy already lives in `_sensitive-paths.sh` |
+| `lessons-budget-guard.sh` | shell+core | store + budget from `_lessons-store.sh`; payload sizing (jq) stays in shell; fail-open |
 | `log-event.sh` | assistant-only | lifecycle event log (harness event names and payload fields); writes a private per-user log |
 | `prompt-context.sh` | assistant-only | context injection via the harness envelope; candidate for a later slice |
 | `post-edit-typecheck-and-lint.sh` | assistant-only | output-rewriter envelope (CLI 2.1.121+) |

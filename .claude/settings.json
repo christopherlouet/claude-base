@@ -246,6 +246,18 @@
         ]
       },
       {
+        "description": "Refuses a write that takes the personal lessons store (~/.claude/rules/lessons.md) over LESSONS_BUDGET bytes and makes it grow - consolidate first (disable with SKIP_LESSONS_BUDGET_GUARD=1)",
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/scripts/hooks/lessons-budget-guard.sh\"",
+            "timeout": 30,
+            "onFailure": "block"
+          }
+        ]
+      },
+      {
         "description": "Confirm+backup before destructive DDL in a migration file (DROP/TRUNCATE; disable with SKIP_DESTRUCTIVE_CHECK=1)",
         "matcher": "Edit|Write|MultiEdit|NotebookEdit",
         "hooks": [

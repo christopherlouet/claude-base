@@ -14,6 +14,12 @@
 #   2. an EXISTING secrets/credentials file → clobbering .env/*.pem/… via Bash.
 #   3. a TRACKED repo file while on main/master → parity with main-branch-guard
 #      (blocks; create a feature branch. New/untracked files stay allowed).
+#   4. the personal lessons store (~/.claude/rules/lessons.md), existing or not
+#      → lessons-budget-guard.sh measures an Edit/Write against the store's
+#      budget, and a shell write cannot be measured before it runs. A relative
+#      target is also resolved against the command's last `cd`, and a copy
+#      into the store's directory counts when the command names lessons.md.
+#      Not seen: an interpreter's write, a `~user/` path.
 #
 # Claude Code SHELL of the core/shell split (specs/agnostic-core/): target
 # EXTRACTION lives in _policy-write-targets.sh, target CLASSIFICATION in
@@ -49,6 +55,9 @@ else
   echo >&2 "[bash-write-guard] policy core _policy-write-targets.sh missing - Bash write guard DISABLED. Run 'claude-base update' to restore."
   exit 0
 fi
+# Optional: without it, only case 4 (the lessons store) is skipped.
+# shellcheck source=scripts/hooks/_lessons-store.sh
+[ -f "$_dir/_lessons-store.sh" ] && . "$_dir/_lessons-store.sh"
 
 command -v jq >/dev/null 2>&1 || exit 0
 CMD=$(cat 2>/dev/null | jq -r '.tool_input.command // empty' 2>/dev/null || true)
@@ -63,11 +72,36 @@ _exists() { [ -e "$1" ] || { [ -n "${CLAUDE_PROJECT_DIR:-}" ] && [ -e "$CLAUDE_P
 BRANCH=""
 command -v git >/dev/null 2>&1 && BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)
 
+# The command's last `cd`, for a relative target reached after it (case 4).
+CD_DIR=$(printf '%s\n' "$CMD" | grep -oE '(^|[;&|(]|[[:space:]])cd[[:space:]]+[^;&|()[:space:]]+' \
+  | tail -n 1 | sed -E 's/^.*cd[[:space:]]+//' | tr -d "\"'" || true)
+[ -n "$CD_DIR" ] && declare -F lessons_expand_path >/dev/null 2>&1 && CD_DIR=$(lessons_expand_path "$CD_DIR")
+
+# _is_store_write <target> — case 4.
+_is_store_write() {
+  declare -F is_lessons_store >/dev/null 2>&1 || return 1
+  is_lessons_store "$1" && return 0
+  case "$1" in
+    /*|'~'*|'$'*) ;;
+    *) [ -n "$CD_DIR" ] && is_lessons_store "$1" "$CD_DIR" && return 0 ;;
+  esac
+  case "$CMD" in *lessons.md*) ;; *) return 1 ;; esac
+  is_lessons_store_dir "$1" && return 0
+  case "$1" in
+    /*|'~'*|'$'*) return 1 ;;
+  esac
+  [ -n "$CD_DIR" ] && is_lessons_store_dir "$1" "$CD_DIR"
+}
+
 while IFS= read -r t; do
   [ -n "$t" ] || continue
   case "$t" in /dev/*|/proc/*|/sys/*) continue ;; esac
   b=$(basename "$t")
 
+  if _is_store_write "$t"; then
+    echo >&2 "BLOCKED: Bash write to the lessons store '$t' - write it with Edit/Write, so lessons-budget-guard can measure it against the budget. (Bypass: SKIP_BASH_WRITE_GUARD=1.)"
+    exit 2
+  fi
   if is_protected_config "$b" && _exists "$t"; then
     echo >&2 "BLOCKED: Bash write to the linter/formatter config '$b' — fix the code instead of relaxing the rules via a shell redirect. (Bypass: SKIP_BASH_WRITE_GUARD=1.)"
     exit 2
