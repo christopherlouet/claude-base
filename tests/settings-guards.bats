@@ -311,6 +311,7 @@ WRONG_ONFAILURE="$GUARDS_FILTER | select(if (.s | IN(\$open[])) then .o != \"con
         "{\"tool_name\":\"Write\",\"tool_input\":{\"file_path\":\"k.txt\",\"content\":\"$fake_key\"}}"
         '{"tool_name":"Bash","tool_input":{"command":"./deploy.sh production"}}'
         '{"tool_name":"Bash","tool_input":{"command":"false | true; echo \"${PIPESTATUS[0]}\""}}'
+        '{"tool_name":"Write","tool_input":{"file_path":"~/.claude/rules/lessons.md","content":"- a lesson"}}'
     )
     while IFS= read -r script; do
         ran=$((ran + 1))
@@ -319,8 +320,10 @@ WRONG_ONFAILURE="$GUARDS_FILTER | select(if (.s | IN(\$open[])) then .o != \"con
             for input in "${payloads[@]}"; do
                 rc=0
                 # A zsh Bash tool, so the zsh guard's trigger path runs; SHELL is
-                # read by name only, zsh need not be installed.
-                (cd "$dir" && printf '%s' "$input" | env -u CLAUDE_CODE_SHELL CLAUDE_PROJECT_DIR="$dir" SHELL=/bin/zsh bash "$BASE_DIR/$script" >/dev/null 2>&1) || rc=$?
+                # read by name only, zsh need not be installed. A one-byte
+                # lessons budget under a scratch HOME makes the lessons guard
+                # block without reading the real store.
+                (cd "$dir" && printf '%s' "$input" | env -u CLAUDE_CODE_SHELL CLAUDE_PROJECT_DIR="$dir" SHELL=/bin/zsh HOME="$BATS_TEST_TMPDIR/home" LESSONS_BUDGET=1 bash "$BASE_DIR/$script" >/dev/null 2>&1) || rc=$?
                 if [ "$rc" -eq 2 ]; then blocked=1; fi
                 if [ "$rc" -ne 0 ] && [ "$rc" -ne 2 ]; then bad="$bad $script(exit $rc in ${dir##*/} on '${input:0:40}')"; fi
             done

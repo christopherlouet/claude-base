@@ -247,3 +247,10 @@ EOF
     [[ "$output" == *"OK"* ]]
     [[ "$output" != *"DUP:"* ]]
 }
+
+@test "lessons.sh prune-check: an inherited LESSONS_STORE_LOADED does not break it" {
+    printf -- '- a lesson\n' > "$TEST_DIR/l.md"
+    LESSONS_STORE_LOADED=1 run "$LESSONS" prune-check "$TEST_DIR/l.md" 100
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"OK"* ]]
+}

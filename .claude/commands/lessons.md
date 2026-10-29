@@ -59,10 +59,14 @@ Seed the store from lessons you already accumulated, so you don't start from scr
 1. Run `claude-base lessons prune-check` — its budget is the user's
    `LESSONS_BUDGET` if set (from `settings.json` `env` in a Claude session), else
    4000 (prints `OK`/`OVER size/budget`, `DUP:`
-   lines for duplicates — section-aware, so `## Topic` headings and a lesson's
-   `(seen N times)` twin are handled — and `RECUR N:` for the most-repeated
-   lessons).
-2. If `OVER` or duplicates exist, propose merges (near-duplicates, incl. folding
+   lines for IDENTICAL lessons — section-aware, so `## Topic` headings and a
+   lesson's `(seen N times)` twin are handled — and `RECUR N:` for the
+   most-repeated lessons).
+2. `DUP:` only sees identical text; real redundancy is semantic. The store is
+   already in your context: read it and name the near-duplicate pairs yourself
+   (two lessons with one principle and different words), plus any lesson a
+   path-scoped `~/.claude/rules/lessons-*.md` already carries.
+3. If `OVER` or duplicates exist, propose merges (near-duplicates, incl. folding
    a duplicate into a single `(seen N times)` line) and drops (superseded
    lessons). Surface the high-`RECUR` lessons as keepers. **Never delete without
    explicit confirmation.**

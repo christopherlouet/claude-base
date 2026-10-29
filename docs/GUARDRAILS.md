@@ -49,6 +49,7 @@ tests-first, an audit report, a clean PR) are things a native session never make
 | **Destructive-migration** | destructive DDL written into a migration *file* | PreToolUse `destructive-migration.sh` | No |
 | **Config-protection** | weakening a linter/formatter config (ESLint, Prettier, Biome, Ruff, markdownlint — not tsconfig or pyproject) to silence a check | PreToolUse `config-protection.sh` | No |
 | **Bash-write guard** | dodging the guards above by writing via Bash (`>`/`tee`/`sed -i`) to a lint config, a secrets file, or a tracked file on `main` | PreToolUse `bash-write-guard.sh` | No |
+| **Lessons budget** | the personal lessons store (`~/.claude/rules/lessons.md`, loaded into every session) growing past its byte budget — a capture must merge or drop first; a `(seen N times)` bump and any shrink always pass | PreToolUse `lessons-budget-guard.sh` (+ `bash-write-guard.sh` refuses shell writes to it) | No |
 | **Pre-deploy build** | deploying when the prod build is broken | PreToolUse deploy guard | No |
 
 ### The native layer beside them: `permissions.deny`, and what it cannot express

@@ -6,7 +6,7 @@ A **personal memory of lessons** that carries across **all your projects** (and 
 
 ## How it works
 
-- **The store** is a single file: `~/.claude/rules/lessons.md`. It is created the first time you confirm a lesson. Each lesson is a one-line `- ` bullet, optionally grouped under a `## Topic` heading so the file stays readable as it grows.
+- **The store** is `~/.claude/rules/lessons.md`, loaded everywhere (a lesson that only matters for one kind of file can live in a [path-scoped sibling](#lessons-for-one-kind-of-file-path-scoped) instead). It is created the first time you confirm a lesson. Each lesson is a one-line `- ` bullet, optionally grouped under a `## Topic` heading so the file stays readable as it grows.
 - **Recall is automatic.** Claude Code loads everything under `~/.claude/rules/` into *every* project session, so a lesson you confirm once is in context everywhere — no import, no command.
 - **Capture is a human-gated reflex.** After a genuinely instructive moment (a fix that took several attempts, an explicit correction from you, a non-obvious root cause), the assistant proposes **one** short, generalized, sanitized lesson and asks you to keep / edit / discard it. Nothing is stored without your confirmation.
 - **Recurring mistakes are counted, not duplicated.** If the same lesson comes up again, you are offered to bump a `(seen N times)` marker on the existing line instead of adding a second copy — so the most-repeated lessons are easy to spot and prioritize.
@@ -47,9 +47,57 @@ matches characters for mostly-ASCII text.
 > moved to 4,000 in 2026-09. It is still a starting point, not an optimum: whether a lesson in
 > context actually changes behaviour is the open measurement.
 
+## The bound refuses an over-budget write
+
+Reporting `OVER` was not enough: nothing refused the next append, so the one real store drifted
+past its bound between every pruning pass. In a project set up with claude-base, two guards now
+hold it:
+
+- **lessons-budget-guard** refuses an Edit, Write or MultiEdit that takes `~/.claude/rules/lessons.md`
+  over the budget **and** makes it grow. The capture then has to make room first: merge two
+  lessons or drop a superseded one. A write that keeps the size or shrinks it always passes, so a
+  store already over budget can be pruned one edit at a time, and so does a write that changes
+  nothing but `(seen N times)` markers (one per line): bumping a recurring lesson is never refused.
+- **bash-write-guard** refuses the shell writes to the store it can see: a redirect, `tee`,
+  `sed -i`, `cp`/`mv`/`install` or `dd of=` onto the store's path, by any spelling of `~` or
+  `$HOME`, relative after a `cd`, or a copy of a `lessons.md` into its directory. A shell write
+  cannot be measured before it runs, so the store is written through Edit/Write only.
+
+Both use the budget `prune-check` uses (`LESSONS_BUDGET`, else 4,000). Limits: they are project
+hooks, so a session outside a claude-base project is not guarded, and a write by an interpreter
+(`python -c "open(...)"`) is not seen, nor is a `~user/` spelling of the path.
+`SKIP_LESSONS_BUDGET_GUARD=1` lifts the budget guard.
+
+## Lessons for one kind of file (path-scoped)
+
+A lesson about Terraform state does nothing in a Python service, yet the single store pays for it
+in every session. Claude Code applies a rule's `paths:` frontmatter to user-level rules too, so such
+a lesson can move to a sibling file that loads only when the session touches a matching file:
+
+```markdown
+---
+paths:
+  - "**/*.tf"
+  - "**/*.tfvars"
+---
+
+# Lessons — terraform
+
+- …
+```
+
+Save it as `~/.claude/rules/lessons-<topic>.md`. The patterns are relative to the session's main
+working directory; the file loads on a Read, Write or Edit of a matching file (verified with two
+fresh sessions: present after reading a `.tf`, absent after reading a `.txt`). Path-scoped files
+carry no budget, since they are not in every session.
+
+Two limits. A lesson triggered by an *action* (a commit, a command) rather than a file cannot be
+scoped and stays in the main store. And a scoped file is not in context until it loads, so before
+proposing a lesson, read the scoped files too: the recurrence check must see them.
+
 ## Privacy
 
-- Lessons are **personal**. They are written only to `~/.claude/rules/lessons.md` — **never** into a project repo, the foundation, or any committed file.
+- Lessons are **personal**. They are written only to `~/.claude/rules/lessons.md` and its `lessons-*.md` siblings — **never** into a project repo, the foundation, or any committed file.
 - Every lesson is **sanitized** before it is written: project names, file paths, URLs, identifiers, and secrets are stripped. A lesson is a reusable *principle*, not an incident.
 - If you sync the store (below), prefer a **private** destination.
 
@@ -69,19 +117,19 @@ It scans your existing per-project memories and proposes candidates (each genera
 /lessons --prune
 ```
 
-Reports whether the store is over budget and proposes merges (near-duplicates) and drops (superseded lessons); nothing deleted without your confirmation.
+Reports whether the store is over budget and proposes merges (near-duplicates) and drops (superseded lessons); nothing deleted without your confirmation. The script's `DUP:` lines only catch IDENTICAL lessons; near-duplicates in different words are found by the assistant, which has the store in context.
 
 ## Syncing across machines (bring your own transport)
 
-`~/.claude/` is local to each machine — Claude Code does not sync it. claude-base does **not** provide a sync service; the store is just one file, so point any transport at it. Recommended, in order of fit:
+`~/.claude/` is local to each machine — Claude Code does not sync it. claude-base does **not** provide a sync service; the store is one file (plus any path-scoped siblings), so point any transport at it. Recommended, in order of fit:
 
 | Transport | Cloud? | Repo? | Notes |
 |-----------|--------|-------|-------|
-| **Private git repo** (recommended) | optional | yes (private) | Versioned history of your lessons; free on GitHub/GitLab. Track only `~/.claude/rules/lessons.md` (and any other files you want), keep the repo **private**. |
+| **Private git repo** (recommended) | optional | yes (private) | Versioned history of your lessons; free on GitHub/GitLab. Track only `~/.claude/rules/lessons*.md` (and any other files you want), keep the repo **private**. |
 | **Syncthing** | no | no | Peer-to-peer folder sync between your machines, no cloud, no repo, encrypted in transit. Best fit for "private, multi-machine, no repo, no cloud". |
 | **Cloud-drive folder** (iCloud / Dropbox / Drive) | yes | no | Simplest if you already use one; the provider handles conflicts. |
 
-Whatever you choose, the store stays a single relocatable file — the transport owns conflict resolution. Because the file is append-mostly, conflicts are rare.
+Whatever you choose, the store stays a few relocatable files — the transport owns conflict resolution. Because the file is append-mostly, conflicts are rare.
 
 ## When a lesson keeps recurring (opt-in hook)
 

@@ -299,3 +299,120 @@ mk_git_main_reqs() {
     run_in "$TEST_DIR/proj" 'git commit -m "safe note" && echo x > .env'
     [ "$status" -eq 2 ]
 }
+
+# --- the personal lessons store (#504) ----------------------------------------
+# lessons-budget-guard.sh measures an Edit/Write against the store's budget; a
+# shell write cannot be measured before it runs, so every Bash write to the
+# store is refused and the store is written through Edit/Write only.
+
+mk_store() {
+    export HOME="$TEST_DIR/home"
+    mkdir -p "$HOME/.claude/rules"
+    printf -- '- a lesson\n' > "$HOME/.claude/rules/lessons.md"
+}
+
+@test "bash-write-guard: blocks an append to the lessons store via ~" {
+    mk_store
+    run_in "$TEST_DIR" 'echo "- new lesson" >> ~/.claude/rules/lessons.md'
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"lessons store"* ]]
+}
+
+@test "bash-write-guard: blocks a write to the lessons store via \$HOME and \${HOME}" {
+    mk_store
+    run_in "$TEST_DIR" 'printf x | tee -a "$HOME/.claude/rules/lessons.md"'
+    [ "$status" -eq 2 ]
+    run_in "$TEST_DIR" 'sed -i s/a/b/ ${HOME}/.claude/rules/lessons.md'
+    [ "$status" -eq 2 ]
+}
+
+@test "bash-write-guard: blocks a write to the lessons store by absolute and relative path" {
+    mk_store
+    run_in "$TEST_DIR" "cp /dev/null $HOME/.claude/rules/lessons.md"
+    [ "$status" -eq 2 ]
+    run_in "$HOME/.claude/rules" 'echo x > lessons.md'
+    [ "$status" -eq 2 ]
+}
+
+@test "bash-write-guard: blocks creating the lessons store via Bash" {
+    export HOME="$TEST_DIR/home"
+    mkdir -p "$HOME/.claude/rules"
+    run_in "$TEST_DIR" 'echo "- first" > ~/.claude/rules/lessons.md'
+    [ "$status" -eq 2 ]
+    # Relative, from its own directory: no file yet for -ef to resolve.
+    run_in "$HOME/.claude/rules" 'echo "- first" > lessons.md'
+    [ "$status" -eq 2 ]
+}
+
+@test "bash-write-guard: blocks a relative write to the store after a cd into its directory" {
+    mk_store
+    run_in "$TEST_DIR" 'cd ~/.claude/rules && echo "- x" >> lessons.md'
+    [ "$status" -eq 2 ]
+    run_in "$TEST_DIR" 'cd ${HOME:?}/.claude/rules; tee -a lessons.md < /dev/null'
+    [ "$status" -eq 2 ]
+}
+
+@test "bash-write-guard: blocks a write to the store via \${HOME:?}" {
+    mk_store
+    run_in "$TEST_DIR" 'echo x >> ${HOME:?}/.claude/rules/lessons.md'
+    [ "$status" -eq 2 ]
+}
+
+@test "bash-write-guard: an unset HOME does not crash it" {
+    run_in "$TEST_DIR" 'echo x > ~/notes'
+    json=$(jq -n --arg c 'echo x > ~/notes' '{tool_name:"Bash", tool_input:{command:$c}}')
+    printf '%s' "$json" > "$TEST_DIR/input.json"
+    run bash -c "cd '$TEST_DIR' && env -u HOME bash '$HOOK' < '$TEST_DIR/input.json'"
+    [ "$status" -eq 0 ]
+}
+
+@test "bash-write-guard: blocks a relative write resolved against the command's cd" {
+    mk_store
+    run_in "$TEST_DIR" 'cd ~/.claude && echo x >> rules/lessons.md'
+    [ "$status" -eq 2 ]
+    run_in "$TEST_DIR" 'cd ~/.claude/rules; echo x >> ./lessons.md'
+    [ "$status" -eq 2 ]
+}
+
+@test "bash-write-guard: blocks a copy of lessons.md into the store's directory" {
+    mk_store
+    run_in "$TEST_DIR" 'cp /tmp/lessons.md ~/.claude/rules/'
+    [ "$status" -eq 2 ]
+}
+
+@test "bash-write-guard: blocks a non-normalised store path before it exists" {
+    export HOME="$TEST_DIR/home"
+    mkdir -p "$HOME/.claude/rules"
+    run_in "$TEST_DIR" 'echo x >> ~/.claude/rules/./lessons.md'
+    [ "$status" -eq 2 ]
+    run_in "$TEST_DIR" 'echo x >> ~/.claude//rules/lessons.md'
+    [ "$status" -eq 2 ]
+}
+
+@test "bash-write-guard: a project-local lessons.md is not the store" {
+    mk_store
+    mkdir -p "$TEST_DIR/proj"
+    run_in "$TEST_DIR/proj" 'sed -i "s#~/.claude/rules/lessons.md#the store#" lessons.md'
+    [ "$status" -eq 0 ]
+    run_in "$TEST_DIR/proj" 'git diff -- .claude/rules > /tmp/p; echo hi > lessons.md'
+    [ "$status" -eq 0 ]
+    run_in "$TEST_DIR/proj" 'cp notes.md ~/.claude/rules/'
+    [ "$status" -eq 0 ]
+}
+
+@test "bash-write-guard: control - reading the store and writing a scoped lessons file pass" {
+    mk_store
+    run_in "$TEST_DIR" 'cat ~/.claude/rules/lessons.md > /dev/null'
+    [ "$status" -eq 0 ]
+    run_in "$TEST_DIR" 'echo x >> ~/.claude/rules/lessons-shell.md'
+    [ "$status" -eq 0 ]
+    run_in "$TEST_DIR" 'echo x > lessons.md'
+    [ "$status" -eq 0 ]
+}
+
+@test "bash-write-guard: blocks ~/ to the store even before its directory exists" {
+    export HOME="$TEST_DIR/home-empty"
+    mkdir -p "$HOME"
+    run_in "$TEST_DIR" 'mkdir -p ~/.claude/rules && echo "- first" > ~/.claude/rules/lessons.md'
+    [ "$status" -eq 2 ]
+}

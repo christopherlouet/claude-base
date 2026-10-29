@@ -12,8 +12,9 @@
 #                                   MEMORY_ROOT defaults to ~/.claude.
 #   prune-check    [STORE] [BUDGET] Check the lessons store against a byte budget;
 #                                   prints "OK size/budget" or "OVER size/budget"
-#                                   (non-zero), plus "DUP: <line>" for duplicate
-#                                   lessons and "RECUR N: <line>" for lessons that
+#                                   (non-zero), plus "DUP: <line>" for IDENTICAL
+#                                   lessons (text only: a near-duplicate in other
+#                                   words is the /lessons --prune pass's job) and "RECUR N: <line>" for lessons that
 #                                   carry a "(seen N times)" recurrence marker.
 #                                   Section-aware: "## " topic headings are never
 #                                   treated as lessons, and "foo" / "foo (seen N
@@ -26,9 +27,13 @@
 
 set -euo pipefail
 
+# The store's path and budget are shared with lessons-budget-guard.sh, which
+# refuses an over-budget write: one definition, so the two never disagree.
+# shellcheck source=scripts/hooks/_lessons-store.sh
+. "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/hooks/_lessons-store.sh"
+
 DEFAULT_MEMORY_ROOT="${HOME}/.claude"
-DEFAULT_STORE="${HOME}/.claude/rules/lessons.md"
-DEFAULT_BUDGET=4000
+DEFAULT_STORE=$(lessons_store_path)
 
 # Extract a top-level frontmatter scalar (e.g. name:, description:), unquoted.
 _fm() {
@@ -59,15 +64,11 @@ cmd_bootstrap_scan() {
 
 cmd_prune_check() {
     local store="${1:-$DEFAULT_STORE}"
-    local budget="${2:-${LESSONS_BUDGET:-$DEFAULT_BUDGET}}"
-
-    # Digits only, and at most 18 of them: a longer value overflows `[ -gt ]`,
-    # whose error then reads as "not over" and prints OK.
-    case "$budget" in
-        ''|*[!0-9]*|???????????????????*)
-            printf 'Invalid budget: %s (expected a whole number of bytes)\n' "$budget" >&2
-            return 2 ;;
-    esac
+    local budget
+    if ! budget=$(lessons_budget "${2:-}"); then
+        printf 'Invalid budget: %s (expected a whole number of bytes)\n' "${2:-${LESSONS_BUDGET:-}}" >&2
+        return 2
+    fi
 
     local size=0
     [ -f "$store" ] && size=$(wc -c < "$store" | tr -d '[:space:]')
