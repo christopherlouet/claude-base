@@ -8,6 +8,24 @@
       "decidedAt": "2026-06-24",
       "absorbedInto": "#391",
       "ref": "issue-378"
+    },
+    {
+      "repo": "prisma/orm",
+      "reason": "Duplicate: the Prisma ORM codebase itself, not an agent skill. dev-prisma already points at the vendor's own skills repo (prisma/skills, registry).",
+      "decidedAt": "2026-10-29",
+      "ref": "issue-539"
+    },
+    {
+      "repo": "awesome-selfhosted/awesome-selfhosted",
+      "reason": "A link catalogue of self-hosted apps, not a skill: nothing to install or follow. Same fit gate that rejected the other awesome-lists of the same run; this fit-4 verdict was the outlier.",
+      "decidedAt": "2026-10-29",
+      "ref": "issue-539"
+    },
+    {
+      "repo": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "reason": "Overlaps dev-frontend-design, which already points at the tool maker's own frontend-design skill (anthropics/claude-code plugin). Vendor-vs-vendor: authority over community (vendor-precedence).",
+      "decidedAt": "2026-10-29",
+      "ref": "issue-539"
     }
   ]
 }
