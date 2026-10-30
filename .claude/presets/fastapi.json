@@ -61,20 +61,20 @@
       "url": "https://github.com/grafana/skills",
       "rationale": "Grafana, LGTM stack (Loki/Tempo/Mimir), k6 perf testing",
       "condition": "if using Grafana / observability stack",
-      "pinnedRef": "1ccacf29049fde66637fe01ab93a83a772da323b",
+      "pinnedRef": "8fb72a527961f05e708f53d2a0500709e12d7970",
       "trustTrack": "authority",
       "provenance": "Grafana Labs",
-      "lastVerified": "2026-09-25"
+      "lastVerified": "2026-10-30"
     },
     {
       "id": "antonbabenko/terraform-skill",
       "url": "https://github.com/antonbabenko/terraform-skill",
       "rationale": "Comprehensive Terraform/OpenTofu patterns",
       "condition": "if deploying via Terraform/OpenTofu",
-      "pinnedRef": "v1.17.1",
+      "pinnedRef": "v1.17.2",
       "trustTrack": "community",
       "provenance": "Anton Babenko (community)",
-      "lastVerified": "2026-06-13"
+      "lastVerified": "2026-10-30"
     }
   ],
   "defaults": {

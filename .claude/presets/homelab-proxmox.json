@@ -62,40 +62,40 @@
       "url": "https://github.com/antonbabenko/terraform-skill",
       "rationale": "Comprehensive Terraform/OpenTofu patterns (the de-facto community skill)",
       "condition": "always (Terraform is core to this preset)",
-      "pinnedRef": "v1.17.1",
+      "pinnedRef": "v1.17.2",
       "trustTrack": "community",
       "provenance": "Anton Babenko (community)",
-      "lastVerified": "2026-06-13"
+      "lastVerified": "2026-10-30"
     },
     {
       "id": "pulumi/agent-skills",
       "url": "https://github.com/pulumi/agent-skills",
       "rationale": "Pulumi authoring + migration workflows (Terraform→Pulumi)",
       "condition": "if using Pulumi instead of Terraform",
-      "pinnedRef": "9b794aec9c4169f137285c2763c06064d247dd47",
+      "pinnedRef": "2517e28e4bc029424e9c9ee48016394296be0f6a",
       "trustTrack": "authority",
       "provenance": "Pulumi",
-      "lastVerified": "2026-09-16"
+      "lastVerified": "2026-10-30"
     },
     {
       "id": "grafana/skills",
       "url": "https://github.com/grafana/skills",
       "rationale": "Grafana, LGTM stack for monitoring and observability",
       "condition": "if using Grafana / Prometheus stack",
-      "pinnedRef": "1ccacf29049fde66637fe01ab93a83a772da323b",
+      "pinnedRef": "8fb72a527961f05e708f53d2a0500709e12d7970",
       "trustTrack": "authority",
       "provenance": "Grafana Labs",
-      "lastVerified": "2026-09-25"
+      "lastVerified": "2026-10-30"
     },
     {
       "id": "homeassistant-ai/skills (skills/home-assistant-best-practices)",
       "url": "https://github.com/homeassistant-ai/skills/tree/main/skills/home-assistant-best-practices",
       "rationale": "Idiomatic Home Assistant configuration: native triggers over templates, entity_id over device_id, automation modes",
       "condition": "if the project holds a Home Assistant configuration",
-      "pinnedRef": "6ac284a581ad996cdc2b49174539f37504385ba7",
+      "pinnedRef": "166defa51c606b3c77d45a9b29a459d1f993f357",
       "trustTrack": "community",
       "provenance": "homeassistant-ai (community — the official Home Assistant org publishes no skills)",
-      "lastVerified": "2026-10-05"
+      "lastVerified": "2026-10-30"
     }
   ],
   "defaults": {
