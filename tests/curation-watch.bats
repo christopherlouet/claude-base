@@ -1805,6 +1805,20 @@ delivery() { jq -r ".delivery.$1 // \"absent\"" "$TEST_DIR/digest/digest.json"; 
     [ "$(delivery pr)" = "none" ]
 }
 
+@test "delivery: a re-pin demoted only because no archive reader ran is failed" {
+    # #678: an archive with no python3 on the box is an outage, not a verdict.
+    setup_emit_fakes
+    registry_one "acme/x" "v1.0.0" authority
+    gh_fixture "repos/acme/x" "$(repo_meta 82 '2026-06-12T00:00:00Z' false MIT)"
+    gh_fixture "repos/acme/x/releases/latest" '{"tag_name":"v1.2.0"}'
+    content_fixture acme/x v1.2.0 SKILL.md "# a clean skill"
+    gh_fixture "repos/acme/x/git/trees/v1.2.0?recursive=1" \
+        '{"tree":[{"path":"pkg/a.zip","type":"blob","mode":"100644"}],"truncated":false}'
+    content_fixture acme/x v1.2.0 pkg/a.zip "zip bytes"
+    run_watch_env CURATION_SAFETY_PYTHON=/nonexistent/python3 -- --emit-pr --draft
+    [ "$(delivery pr)" = "failed" ]
+}
+
 @test "delivery: a re-pin that matched no record (nothing to commit) is failed" {
     # It will never be re-pinned, night after night: nothing delivered that should have been.
     setup_emit_fakes
