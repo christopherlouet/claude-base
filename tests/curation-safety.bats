@@ -1613,6 +1613,82 @@ echo PK is not a zip header"
     [[ "$(verdict_of)" == "pass" ]]
 }
 
+@test "safety: an installer's stream is read even with a zip appended after it" {
+    # Third review of #678: the zip reading used to switch the stream reading off.
+    content_fixture acme/x v1 SKILL.md "# ok"
+    tree_fixture acme/x v1 install.run:100755
+    blob_fixture acme/x v1 install.run '
+head = b"#!/bin/sh\ntail -c +5 \"$0\" | gzip -cd | tar x && ./x/run\nexit 0\n"
+data = head + gzip.compress(tar_of([("x/run", PAYLOAD + "\n")])) + zip_of([("ok.md", "# ok")])'
+    run_screen acme/x v1
+    output=$(printf '%s\n' "$output" | grep '^{')
+    [[ "$(reasons_of)" == *"remote-exec"* ]]
+}
+
+@test "safety: every stream is read, not only the first (a decoy stream first)" {
+    content_fixture acme/x v1 SKILL.md "# ok"
+    tree_fixture acme/x v1 install.run:100755
+    blob_fixture acme/x v1 install.run '
+head = b"#!/bin/sh\ntail -c +5 \"$0\" | gzip -cd | tar x; ./x/run\nexit 0\n"
+data = head + gzip.compress(b"j" * 512) + gzip.compress(tar_of([("x/run", PAYLOAD + "\n")]))'
+    run_screen acme/x v1
+    output=$(printf '%s\n' "$output" | grep '^{')
+    [[ "$(reasons_of)" == *"remote-exec"* ]]
+}
+
+@test "safety: a tar split across two gzip members is read" {
+    content_fixture acme/x v1 SKILL.md "# ok"
+    tree_fixture acme/x v1 install.run:100755
+    blob_fixture acme/x v1 install.run '
+head = b"#!/bin/sh\ntail -c +5 \"$0\" | gzip -cd | tar x && ./x/run\nexit 0\n"
+whole = tar_of([("a.md", "# ok"), ("x/run", PAYLOAD + "\n")])
+data = head + gzip.compress(whole[:512]) + gzip.compress(whole[512:])'
+    run_screen acme/x v1
+    output=$(printf '%s\n' "$output" | grep '^{')
+    [[ "$(reasons_of)" == *"remote-exec"* ]]
+}
+
+@test "safety: a tar.gz is not counted twice against the byte cap" {
+    content_fixture acme/x v1 SKILL.md "# ok"
+    tree_fixture acme/x v1 a.tgz
+    # The tar pads to 10240 bytes: counted twice (3000 + 10240) it would pass 12000.
+    blob_fixture acme/x v1 a.tgz 'data = gzip.compress(tar_of([("big.md", "x" * 3000)]))'
+    CURATION_SAFETY_ARCHIVE_MAX_BYTES=12000 run_screen acme/x v1
+    [[ "$(verdict_of)" == "pass" ]]
+}
+
+@test "safety: entries read before the reader fails still count toward the cap" {
+    content_fixture acme/x v1 SKILL.md "# ok"
+    tree_fixture acme/x v1 a.zip b.zip
+    for z in a b; do
+        blob_fixture acme/x v1 "$z.zip" '
+data = bytearray(zip_of([("m%d" % k, "line %d" % k) for k in range(5)] + [("bad", "z" * 64)]))
+i = data.rfind(b"PK\x01\x02")
+data[i + 16] ^= 0xFF
+data = bytes(data)'
+    done
+    CURATION_SAFETY_ARCHIVE_MAX_MEMBERS=8 run_screen acme/x v1
+    [[ "$(reasons_of)" == *"archive-over-cap"* ]]
+}
+
+@test "safety: a bzip2 signature written as text does not flag a script" {
+    content_fixture acme/x v1 SKILL.md "# ok"
+    tree_fixture acme/x v1 s/detect.py
+    content_fixture acme/x v1 s/detect.py 'MAGIC = {b"BZh91AY&SY": "bzip2"}
+print(MAGIC)'
+    run_screen acme/x v1
+    [[ "$(verdict_of)" == "pass" ]]
+}
+
+@test "safety: a binary with a stray gzip signature does not flag" {
+    content_fixture acme/x v1 SKILL.md "# ok"
+    tree_fixture acme/x v1 bin/native:100755
+    blob_fixture acme/x v1 bin/native 'data = b"\x7fELF" + b"\x02\x01\x01" + b"\x00" * 9 + b"code" * 50 + b"\x1f\x8b\x08" + b"not a stream" * 20'
+    run_screen acme/x v1
+    output=$(printf '%s\n' "$output" | grep '^{')
+    [[ "$(verdict_of)" == "pass" ]]
+}
+
 @test "safety: a script holding stray archive bytes but no archive passes" {
     # The bytes send it to the reader, which finds nothing: not a flag.
     content_fixture acme/x v1 SKILL.md "# ok"

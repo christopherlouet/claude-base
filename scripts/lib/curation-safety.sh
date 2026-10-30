@@ -25,7 +25,11 @@
 # all fail toward human review: a download executed in a separate statement, a
 # hook command referencing a script outside the scanned surface, and a plugin
 # manifest pointing its hooks at a custom-named file are not caught — see
-# _SAFETY_PATTERNS. A flag only ever routes to review.)
+# _SAFETY_PATTERNS. A flag only ever routes to review. Archives, likewise not
+# caught: a payload encoded as text (base64, uuencode) and decoded at run time;
+# a stream in a format the standard library cannot open (zstd, lz4, lzip, .Z,
+# raw lzma); an installer kept as a member of another archive; an archive in a
+# non-exec file whose name is not an archive's, unpacked by a script.)
 #
 # Fail-safe (EF-012): anything that cannot be confirmed safe is FLAGGED, never
 # silently passed. Reasons: content-unfetchable (no doc), doc-unreadable (the doc
@@ -447,16 +451,24 @@ _curation_fetch_raw() {
 # no archive was found in the file at all.
 #
 # A blob may be several things at once, and each reading is taken: a tar whose
-# last member is a zip also reads as a zip, and a compressed stream may start
-# after a shell stub (makeself) or be a tar (tar.gz). So: the tar members
-# (reading past an invalid header, as GNU tar does), the zip members, and the
-# first compressed stream — decompressed and scanned whole (a tar's tail, a
-# single .gz), its tar members read when it holds a tar and no tar was read yet.
+# last member is a zip also reads as a zip, and compressed streams may follow a
+# shell stub (makeself) or be a tar (tar.gz). So: the tar members (reading past
+# an invalid header, as GNU tar does), the zip members, and EVERY compressed
+# stream found in the file (up to 64) — each decompressed and scanned whole (a
+# tar's tail, a single .gz), and read as a tar when it holds one. A decoy
+# stream before the real one, or a zip appended after it, hides nothing. A
+# stream that fails to decompress is a false signature unless it starts the
+# file of a non-embedded read (a .gz that is not one is archive-corrupt).
 # A zip entry whose offset holds no local header is archive-corrupt (an entry
 # can lie about where it starts). A nested archive is reported, not unpacked;
 # the other members are still read. A link or device member is reported (unzip
 # and tar recreate it, and a link can point out of the install directory).
-# Every entry, a directory included, counts toward the member cap.
+# Every entry, a directory included, counts toward the member cap, and the
+# count is printed even when the read fails. Members and streams have a byte
+# cap each, so a tar.gz is not counted twice.
+# Embedded mode (argv 7): the file is a script or binary that merely holds
+# archive bytes; anything that does not parse is "no archive found" (exit 3),
+# never corrupt — a native binary or a signature written as text is not one.
 # The raw bytes outside any member (a zip comment, a stub, a tar's tail) are the
 # caller's to scan: it scans the whole file as text.
 _CURATION_PY_ARCHIVE='
@@ -464,18 +476,19 @@ import bz2, io, lzma, os, re, stat, sys, tarfile, zipfile, zlib
 blob, name, out = sys.argv[1], sys.argv[2], sys.argv[3]
 max_members, max_bytes = int(sys.argv[4]), int(sys.argv[5])
 ARCHIVE = re.compile(sys.argv[6], re.I)
+embedded = sys.argv[7] == "embedded"
 MAGIC = (b"PK\x03\x04", b"PK\x05\x06", b"\x1f\x8b", b"\x1f\x9d", b"BZh", b"\xfd7zXZ\x00",
          b"7z\xbc\xaf\x27\x1c", b"Rar!", b"\x28\xb5\x2f\xfd", b"\x04\x22\x4d\x18", b"LZIP")
 STREAMS = ((re.compile(rb"\x1f\x8b\x08"), lambda: zlib.decompressobj(31)),
            (re.compile(rb"BZh[1-9]1AY&SY"), bz2.BZ2Decompressor),
            (re.compile(rb"\xfd7zXZ\x00"), lzma.LZMADecompressor))
-reasons, state = set(), {"n": 0, "bytes": 0, "stop": False}
+reasons, state = set(), {"n": 0, "bytes": 0, "raw": 0, "stop": False}
 
 def over():
     reasons.add("archive-over-cap"); state["stop"] = True
 
-def room():
-    return max_bytes - state["bytes"] + 1
+def room(key="bytes"):
+    return max_bytes - state[key] + 1
 
 def count():
     state["n"] += 1
@@ -484,8 +497,9 @@ def count():
     return not state["stop"]
 
 def take(member, data, raw=False):
-    state["bytes"] += len(data)
-    if state["bytes"] > max_bytes:
+    key = "raw" if raw else "bytes"
+    state[key] += len(data)
+    if state[key] > max_bytes:
         over(); return
     if data.startswith(MAGIC) or (not raw and (ARCHIVE.search(member) or data[257:262] == b"ustar")):
         reasons.add("archive-nested"); return
@@ -506,7 +520,8 @@ def read_zip(z, data):
     for i in z.infolist():
         if not count(): return
         if data[i.header_offset:i.header_offset + 4] != b"PK\x03\x04":
-            reasons.add("archive-corrupt"); continue
+            if not embedded: reasons.add("archive-corrupt")
+            continue
         if i.is_dir(): continue
         kind = stat.S_IFMT(i.external_attr >> 16)
         if kind and kind != stat.S_IFREG: reasons.add("archive-unsupported"); continue
@@ -514,40 +529,54 @@ def read_zip(z, data):
         with z.open(i) as s:
             take(i.filename, s.read(room()))
 
+def read_streams(data, tar_read):
+    found = False
+    hits = sorted(((m.start(), mk) for rx, mk in STREAMS for m in rx.finditer(data)), key=lambda h: h[0])
+    for off, mk in hits[:64]:
+        if state["stop"]: break
+        try:
+            stream = mk().decompress(data[off:], room("raw"))
+        except Exception:
+            if off == 0 and not embedded: raise
+            continue
+        if not stream or not count(): continue
+        found = True
+        single = re.search(r"\.(gz|bz2|xz)$", name, re.I) if off == 0 else None
+        label = os.path.basename(name)[:-len(single.group(0))] if single else "<stream@%d>" % off
+        take(label, stream, raw=True)
+        if stream[257:262] == b"ustar" and not (off == 0 and tar_read) and not state["stop"]:
+            try:
+                with tarfile.open(fileobj=io.BytesIO(stream), ignore_zeros=True) as t:
+                    read_tar(t)
+            except Exception:
+                if off == 0 and not embedded: raise
+    return found
+
 try:
     with open(blob, "rb") as f:
         data = f.read()
-    tar_read = zip_read = False
-    if tarfile.is_tarfile(blob):
-        with tarfile.open(blob, ignore_zeros=True) as t:
-            read_tar(t)
-        tar_read = True
-    if not state["stop"] and zipfile.is_zipfile(blob):
-        with zipfile.ZipFile(blob) as z:
-            read_zip(z, data)
-        zip_read = True
-    hits = [(m.start(), mk) for rx, mk in STREAMS for m in [rx.search(data)] if m]
-    if hits and not state["stop"]:
-        off, mk = min(hits, key=lambda h: h[0])
-        if (off == 0 or not (tar_read or zip_read)) and count():
-            stream = mk().decompress(data[off:], room())
-            single = re.search(r"\.(gz|bz2|xz)$", name, re.I) if off == 0 else None
-            label = os.path.basename(name)[:-len(single.group(0))] if single else "<stream>"
-            take(label, stream, raw=True)
-            if not tar_read and stream[257:262] == b"ustar" and not state["stop"]:
-                with tarfile.open(fileobj=io.BytesIO(stream), ignore_zeros=True) as t:
-                    read_tar(t)
-            tar_read = True
-    if not (tar_read or zip_read):
+    read = False
+    try:
+        tar_read = tarfile.is_tarfile(blob)
+        if tar_read:
+            with tarfile.open(blob, ignore_zeros=True) as t:
+                read_tar(t)
+        if not state["stop"] and zipfile.is_zipfile(blob):
+            with zipfile.ZipFile(blob) as z:
+                read_zip(z, data)
+            read = True
+        read = read_streams(data, tar_read) or read or tar_read
+    except Exception:
+        sys.exit(3 if embedded else 2)
+    if not read:
         if re.search(r"\.(zst|7z|rar)$", name, re.I):
             reasons.add("archive-unsupported")
         else:
             sys.exit(3)
-except Exception:
-    sys.exit(2)
-for r in sorted(reasons):
-    print("R\t" + r)
-print("N\t%d" % state["n"])
+finally:
+    for r in sorted(reasons):
+        print("R\t" + r)
+    print("N\t%d" % state["n"])
 '
 
 # _curation_scan_archive <path> [embedded] — read the archive at <path> member
@@ -592,7 +621,7 @@ _curation_scan_archive() {
     if [ "$rc" -eq 0 ]; then
         [ -n "$embedded" ] || _curation_screen_scan "$path" < <(LC_ALL=C tr -d '\000' < "$dir/blob")
         out=$("$py" -I -c "$_CURATION_PY_ARCHIVE" "$dir/blob" "$path" "$dir" "$left" "$max_b" \
-            "$_CURATION_ARCHIVE_RE" 2>/dev/null); rc=$?
+            "$_CURATION_ARCHIVE_RE" "${embedded:-archive}" 2>/dev/null); rc=$?
         case "$rc" in
             0) ;;
             2) reasons+=("archive-corrupt") ;;
