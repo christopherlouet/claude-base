@@ -40,10 +40,10 @@
       "url": "https://github.com/vercel-labs/agent-skills",
       "rationale": "Canonical react-best-practices and Next.js patterns from Vercel Engineering",
       "condition": "always",
-      "pinnedRef": "063bee94c3f4df8453406c830b0a7df0f2860278",
+      "pinnedRef": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62",
       "trustTrack": "authority",
       "provenance": "Vercel",
-      "lastVerified": "2026-09-16"
+      "lastVerified": "2026-10-30"
     },
     {
       "id": "frontend-design@claude-plugins-official",
@@ -70,20 +70,20 @@
       "url": "https://github.com/prisma/skills",
       "rationale": "Prisma ORM patterns, especially v7 (ESM-only, driver adapters)",
       "condition": "if using Prisma",
-      "pinnedRef": "be16a8740d01363d13552b317042431ee8dfc581",
+      "pinnedRef": "8ea289b730c2e89f7ff1f518af128b113d842a92",
       "trustTrack": "authority",
       "provenance": "Prisma",
-      "lastVerified": "2026-10-03"
+      "lastVerified": "2026-10-30"
     },
     {
       "id": "shadcn-ui/ui (skills/shadcn)",
       "url": "https://github.com/shadcn-ui/ui/tree/main/skills/shadcn",
       "rationale": "shadcn/ui CLI v4, Radix + Base UI primitives, theming patterns",
       "condition": "if using shadcn/ui",
-      "pinnedRef": "shadcn@4.21.0",
+      "pinnedRef": "shadcn@4.23.0",
       "trustTrack": "authority",
       "provenance": "shadcn",
-      "lastVerified": "2026-09-07"
+      "lastVerified": "2026-10-30"
     },
     {
       "id": "apollographql/skills",
