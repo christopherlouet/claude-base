@@ -17,7 +17,9 @@
 # anything with the git executable bit (mode 100755, e.g. an extensionless
 # `bin/install`), Claude settings hook command blocks (settings*.json), MCP
 # server configs (.mcp.json / mcp.json) and the plugin format's own declarations
-# (hooks/hooks.json, .claude-plugin/plugin.json, marketplace.json). The same
+# (hooks/hooks.json, .claude-plugin/plugin.json, marketplace.json), and the
+# members of any ARCHIVE in the tree (.zip, .skill, .tar.gz, …: #678 — a zip
+# once carried two unscanned shell scripts past a clean verdict). The same
 # high-signal danger patterns apply to every file; a JSON file is also scanned
 # one line per declared command, "command" joined with its "args". (Limitations,
 # all fail toward human review: a download executed in a separate statement, a
@@ -53,6 +55,12 @@
 # exec-surface-over-cap (more exec files than the cap), scan-error (a pattern
 # grep failed, so the text could not be confirmed clean), scan-blind (the scan
 # answered "no match" about a text that demonstrably holds characters).
+# Archives (see _curation_scan_archive): archive-unreadable (corrupt, encrypted,
+# or no python3 to read it — an outage), archive-nested (an archive inside one,
+# not unpacked), archive-over-cap (more members or bytes than the caps),
+# archive-unsupported (a format the screen cannot read, e.g. .7z, or a member
+# that is a link or a device). The last three are properties of the archive,
+# recorded like a finding.
 #
 # Nothing on the verdict path travels through a here-string: bash serves one
 # from a temp file in /tmp above the pipe buffer, and at EVERY size on the bash
@@ -78,6 +86,9 @@
 #           "clean" on a pass.
 #   exit:   0 always (a verdict is always produced; failures become a flag).
 #   env:    CURATION_SAFETY_MAX_FILES — exec-surface file cap (default 250).
+#           CURATION_SAFETY_ARCHIVE_MAX_MEMBERS / _MAX_BYTES — what one archive
+#           may hold before it is archive-over-cap (2000 members / 64 MiB).
+#           CURATION_SAFETY_PYTHON — the interpreter that reads archives (python3).
 #           CURATION_SAFETY_DETAIL_MAX / CURATION_SAFETY_LINE_MAX — how many
 #           findings, and how much of each line, the output shows (25 / 240).
 # =============================================================================
@@ -394,6 +405,119 @@ _curation_json_commands() {
     jq -r "$_CURATION_JQ_COMMANDS commands" 2>/dev/null || true
 }
 
+# What counts as an archive, by name (jq/ERE, matched case-insensitively). A
+# .skill is a zip; .gz/.bz2/.xz also cover their .tar.* forms.
+_CURATION_ARCHIVE_RE='\.(zip|skill|jar|whl|vsix|xpi|tar|tgz|tbz2?|txz|gz|bz2|xz|7z|rar)$'
+
+# _curation_fetch_raw <repo> <ref> <path> <dest> — write the file's BYTES to
+# <dest> (an archive cannot ride a shell variable: it holds NUL bytes). Same
+# answers as _curation_fetch_one: 1 = could not ask, 2 = present but unreadable
+# (an empty body is what GitHub serves for a blob over 1 MB).
+_curation_fetch_raw() {
+    local body
+    body=$(curation_gh_api "repos/$1/contents/$3?ref=$2" 2>/dev/null) || return 1
+    printf '%s' "$body" | jq -r '.content // empty' 2>/dev/null | _curation_b64decode > "$4" || return 2
+    [ -s "$4" ] || return 2
+}
+
+# The archive reader. Never extracts under a member's own name (no path is
+# trusted): member N's bytes go to <dir>/m<N>, NUL bytes dropped so the shell
+# can read them. Prints one line per member written ("M<TAB>m<N><TAB>name",
+# control characters in the name replaced) and one per finding about the
+# archive itself ("R<TAB>reason"). Exit 2 = the archive could not be read at all.
+# A nested archive is reported, not unpacked; the other members are still read.
+_CURATION_PY_ARCHIVE='
+import os, re, sys, tarfile, zipfile
+blob, name, out, max_members, max_bytes = sys.argv[1], sys.argv[2], sys.argv[3], int(sys.argv[4]), int(sys.argv[5])
+ARCHIVE = re.compile(sys.argv[6], re.I)
+MAGIC = (b"PK\x03\x04", b"PK\x05\x06", b"\x1f\x8b", b"BZh", b"\xfd7zXZ\x00", b"7z\xbc\xaf\x27\x1c", b"Rar!")
+reasons, state = set(), {"n": 0, "bytes": 0}
+
+def is_archive(member, head):
+    return bool(ARCHIVE.search(member)) or head.startswith(MAGIC) or head[257:262] == b"ustar"
+
+def take(member, stream, size):
+    if state["n"] >= max_members or state["bytes"] + size > max_bytes:
+        reasons.add("archive-over-cap")
+        return False
+    data = stream.read(max_bytes - state["bytes"] + 1)
+    state["bytes"] += len(data)
+    if state["bytes"] > max_bytes:
+        reasons.add("archive-over-cap")
+        return False
+    state["n"] += 1
+    if is_archive(member, data[:512]):
+        reasons.add("archive-nested")
+        return True
+    idx = "m%05d" % state["n"]
+    with open(os.path.join(out, idx), "wb") as f:
+        f.write(data.replace(b"\x00", b""))
+    print("M\t%s\t%s" % (idx, re.sub(r"[\x00-\x1f\x7f]", "?", member)))
+    return True
+
+try:
+    if zipfile.is_zipfile(blob):
+        with zipfile.ZipFile(blob) as z:
+            for i in z.infolist():
+                if i.is_dir():
+                    continue
+                with z.open(i) as s:
+                    if not take(i.filename, s, i.file_size):
+                        break
+    elif tarfile.is_tarfile(blob):
+        with tarfile.open(blob) as t:
+            for i in t:
+                if i.isdir():
+                    continue
+                if not i.isreg():
+                    reasons.add("archive-unsupported")
+                    continue
+                if not take(i.name, t.extractfile(i), i.size):
+                    break
+    elif re.search(r"\.(7z|rar|gz|bz2|xz)$", name, re.I):
+        reasons.add("archive-unsupported")
+    else:
+        sys.exit(2)
+except Exception:
+    sys.exit(2)
+for r in sorted(reasons):
+    print("R\t" + r)
+'
+
+# _curation_scan_archive <path> — read the archive at <path> member by member
+# and scan each member like any exec file, as "<path>!<member>". Runs inside
+# curation_safety_screen: uses its repo, ref, scratch and reasons. A flag, never
+# a pass, whenever the members could not all be read: no scratch or python3 to
+# read them, a corrupt archive (archive-unreadable), and the reasons the reader
+# reports itself (nested, over-cap, unsupported).
+_curation_scan_archive() {
+    local path="$1" dir out rc kind a b
+    local py="${CURATION_SAFETY_PYTHON:-python3}"
+    local max_m max_b
+    max_m=$(_curation_cap CURATION_SAFETY_ARCHIVE_MAX_MEMBERS 2000)
+    max_b=$(_curation_cap CURATION_SAFETY_ARCHIVE_MAX_BYTES 67108864)
+    # A missing interpreter needs no check of its own: it exits non-zero below.
+    if [ -z "$scratch" ]; then
+        reasons+=("archive-unreadable")
+        return 0
+    fi
+    dir=$(mktemp -d "$scratch/archive.XXXXXX" 2>/dev/null) || { reasons+=("archive-unreadable"); return 0; }
+    _curation_fetch_raw "$repo" "$ref" "$path" "$dir/blob" || { reasons+=("exec-file-unfetchable"); return 0; }
+    out=$("$py" -I -c "$_CURATION_PY_ARCHIVE" "$dir/blob" "$path" "$dir" "$max_m" "$max_b" \
+        "$_CURATION_ARCHIVE_RE" 2>/dev/null); rc=$?
+    if [ "$rc" -ne 0 ]; then
+        reasons+=("archive-unreadable")
+        return 0
+    fi
+    while IFS="$(printf '\t')" read -r kind a b; do
+        case "$kind" in
+            M) _curation_screen_scan "$path!$b" < "$dir/$a" ;;
+            R) reasons+=("$a") ;;
+        esac
+    done < <(printf '%s\n' "$out")
+    return 0
+}
+
 # _curation_list_exec_surface <repo> <ref> — echo the candidate's executable-
 # surface paths (one per line) from the recursive git tree at <ref>: scripts,
 # exec-bit files, Claude settings hook blocks (settings*.json), MCP server
@@ -421,10 +545,11 @@ _curation_list_exec_surface() {
     printf '%s' "$body" | jq -e '.tree | type == "array"' >/dev/null 2>&1 || return 1
     local truncated all count
     truncated=$(printf '%s' "$body" | jq -r '.truncated // false')
-    all=$(printf '%s' "$body" | jq -r '
+    all=$(printf '%s' "$body" | jq -r --arg archive "$_CURATION_ARCHIVE_RE" '
         .tree[] | select(.type == "blob")
         | select(
             (.path | test("\\.(sh|bash|zsh|py|js|mjs|cjs|rb|pl|php)$"))
+            or (.path | test($archive; "i"))
             or (.mode == "100755")
             or (.path | split("/")[-1] | (test("^settings.*\\.json$") or test("^\\.?mcp\\.json$")
                 or test("^(hooks|plugin|marketplace)\\.json$")))
@@ -615,7 +740,9 @@ curation_safety_screen() {
             # A doc that is also exec surface (an executable README) is scanned
             # again here; the rendering dedups its findings. Skipping it instead
             # once let a crafted file name go unscanned.
-            if ftext=$(_curation_fetch_one "$repo" "$ref" "$path"); then
+            if printf '%s' "$path" | LC_ALL=C grep -qiE "$_CURATION_ARCHIVE_RE"; then
+                _curation_scan_archive "$path"
+            elif ftext=$(_curation_fetch_one "$repo" "$ref" "$path"); then
                 _curation_screen_scan "$path" < <(printf '%s\n' "$ftext")
                 # The commands a JSON config declares, rebuilt one per line, are
                 # scanned apart: they exist nowhere in the file, so no line number.
