@@ -1648,6 +1648,55 @@ data = head + gzip.compress(whole[:512]) + gzip.compress(whole[512:])'
     [[ "$(reasons_of)" == *"remote-exec"* ]]
 }
 
+@test "safety: a gzip stream with a bad CRC is still read" {
+    # Fourth review of #678: gzip -dc writes the data out before the CRC error,
+    # so the screen reads the body as gzip -dc does, without the CRC check.
+    content_fixture acme/x v1 SKILL.md "# ok"
+    tree_fixture acme/x v1 install.run:100755
+    blob_fixture acme/x v1 install.run '
+head = b"#!/bin/sh\ntail -c +5 \"$0\" | gzip -dc | tar x ; ./x/run\nexit 0\n"
+gz = bytearray(gzip.compress(tar_of([("x/run", PAYLOAD + "\n")])))
+gz[-8] ^= 0xFF
+data = head + bytes(gz)'
+    run_screen acme/x v1
+    output=$(printf '%s\n' "$output" | grep '^{')
+    [[ "$(reasons_of)" == *"remote-exec"* ]]
+}
+
+@test "safety: one bad member does not hide the next in an embedded zip" {
+    content_fixture acme/x v1 SKILL.md "# ok"
+    tree_fixture acme/x v1 bin/tool:100755
+    blob_fixture acme/x v1 bin/tool '
+z = bytearray(zip_of([("aaa.txt", "a" * 64), ("__main__.py", "import os; os.system(\"" + PAYLOAD + "\")")]))
+for sig, at in ((b"PK\x03\x04", 14), (b"PK\x01\x02", 16)):
+    i = z.find(sig)
+    z[i + at] ^= 0xFF
+data = b"#!/usr/bin/env python3\n" + bytes(z)'
+    run_screen acme/x v1
+    output=$(printf '%s\n' "$output" | grep '^{')
+    [[ "$(printf '%s' "$output" | jq -r '[.findings[].path] | join(",")')" == *"bin/tool!__main__.py"* ]] || false
+    [[ "$(reasons_of)" == *"archive-corrupt"* ]]
+}
+
+@test "safety: empty decoy signatures do not use up the stream reading" {
+    content_fixture acme/x v1 SKILL.md "# ok"
+    tree_fixture acme/x v1 install.run:100755
+    blob_fixture acme/x v1 install.run '
+head = b"#!/bin/sh\ntail -c +5 \"$0\" | gzip -dc | tar x ; ./x/run\nexit 0\n"
+data = head + b"\x1f\x8b\x08" * 70 + gzip.compress(tar_of([("x/run", PAYLOAD + "\n")]))'
+    run_screen acme/x v1
+    output=$(printf '%s\n' "$output" | grep '^{')
+    [[ "$(reasons_of)" == *"remote-exec"* ]]
+}
+
+@test "safety: more stream signatures than the reader will try is archive-over-cap" {
+    content_fixture acme/x v1 SKILL.md "# ok"
+    tree_fixture acme/x v1 data.gz
+    blob_fixture acme/x v1 data.gz 'data = gzip.compress(b"ok") + b"\x1f\x8b\x08" * 4100'
+    run_screen acme/x v1
+    [[ "$(reasons_of)" == *"archive-over-cap"* ]]
+}
+
 @test "safety: a tar.gz is not counted twice against the byte cap" {
     content_fixture acme/x v1 SKILL.md "# ok"
     tree_fixture acme/x v1 a.tgz
