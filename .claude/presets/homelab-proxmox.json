@@ -72,10 +72,10 @@
       "url": "https://github.com/pulumi/agent-skills",
       "rationale": "Pulumi authoring + migration workflows (Terraform→Pulumi)",
       "condition": "if using Pulumi instead of Terraform",
-      "pinnedRef": "2517e28e4bc029424e9c9ee48016394296be0f6a",
+      "pinnedRef": "82f222a529a499e8005a820000148cc5e28c934c",
       "trustTrack": "authority",
       "provenance": "Pulumi",
-      "lastVerified": "2026-10-30"
+      "lastVerified": "2026-10-31"
     },
     {
       "id": "grafana/skills",
