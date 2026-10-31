@@ -683,7 +683,7 @@ if [ "$DRY_RUN" = false ]; then
         # after night. An unreadable summary is failed: unknown, not quiet.
         DELIVERY_PR=$(printf '%s' "$repin_summary" | jq -r '
             def unscreened: [.safety.reasons[]?] as $r | ($r | length) > 0
-                and all($r[]; IN("content-unfetchable","doc-unreadable","scan-error","scan-blind","screen-output-invalid"));
+                and all($r[]; IN("content-unfetchable","doc-unreadable","scan-error","scan-blind","screen-output-invalid","archive-unreadable"));
             if (.drafted | length) > 0 then "ok"
             elif (.skipped // "") | IN("no-git","no-repo","dirty-tree","branch","no-commit","push","pr-create","no-changes") then "failed"
             elif any(.demoted[]?; unscreened) then "failed"
