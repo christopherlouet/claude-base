@@ -15,7 +15,7 @@ An **output style** defines how Claude formats its responses. It allows you to a
 ```
 ┌────────────────────────────────────────────────────────────────┐
 │                                                                │
-│  Without style (default)          With "concise" style         │
+│  Without style (default)          With "Concise" style         │
 │  ─────────────────────            ─────────────────────        │
 │                                                                │
 │  "Here is a detailed              "The function computes       │
@@ -24,7 +24,7 @@ An **output style** defines how Claude formats its responses. It allows you to a
 │  takes two parameters and                                      │
 │  performs a computation..."                                    │
 │                                                                │
-│  With "teaching" style            With "technical" style       │
+│  With "Learning" style            With "technical" style       │
 │  ─────────────────────            ──────────────────────       │
 │                                                                │
 │  "Let's start by understanding   "O(n) implementation.         │
@@ -35,16 +35,28 @@ An **output style** defines how Claude formats its responses. It allows you to a
 └────────────────────────────────────────────────────────────────┘
 ```
 
+## Native styles first
+
+Claude Code ships built-in styles ([docs](https://code.claude.com/docs/en/output-styles)). The foundation does not duplicate them:
+
+| Need | Built-in style |
+|------|----------------|
+| Short answers, result first, no recap | **Concise** |
+| Explain the choices behind the code (`Insight` blocks) | **Explanatory** |
+| Learn by doing: explanations plus small pieces of code left for you (`TODO(human)`) | **Learning** |
+| Start work without asking about routine decisions | **Proactive** |
+
+> Recommended by Boris Cherny: "Enable 'Explanatory' output style in /config for understanding rationale behind changes."
+
+In a settings file the value is case-sensitive: `"outputStyle": "Learning"`. The foundation's own styles below cover the formats the built-in ones do not.
+
 ## File structure
 
-Output styles live in `.claude/output-styles/`:
+The foundation's styles live in `.claude/output-styles/`:
 
 ```
 .claude/output-styles/
 ├── README.md           # Documentation
-├── teaching.md         # Teaching mode
-├── explanatory.md      # Detailed reasoning (recommended by Boris)
-├── concise.md          # Brief responses
 ├── technical.md        # Technical details
 ├── review.md           # Code review
 ├── emoji.md            # With emojis
@@ -60,7 +72,7 @@ Output styles live in `.claude/output-styles/`:
 
 ```bash
 # In Claude Code
-/output-style teaching
+/output-style technical
 ```
 
 ### Return to the default style
@@ -69,97 +81,9 @@ Output styles live in `.claude/output-styles/`:
 /output-style default
 ```
 
-## Available styles
+## Foundation styles
 
-### Teaching
-
-**When to use:** Learning, explanations, onboarding
-
-```markdown
-## Characteristics
-
-- Step-by-step explanations
-- Analogies and metaphors
-- Questions to verify understanding
-- Progressive examples
-
-## Example response
-
-"Let's start by understanding what a Promise is.
-
-Imagine you order a coffee. The server gives you a
-ticket (the Promise) that represents your future coffee.
-
-The ticket can be:
-- Pending — the coffee is being prepared
-- Fulfilled — your coffee is ready
-- Rejected — no more coffee available
-
-Now, let's look at the code..."
-```
-
-### Explanatory (Detailed reasoning)
-
-**When to use:** Understanding the reasoning, learning, onboarding
-
-> Recommended by Boris Cherny: "Enable 'Explanatory' output style in /config for understanding rationale behind changes."
-
-```markdown
-## Characteristics
-
-- Explains the WHY before the HOW
-- Shows the reasoning step by step
-- Compares alternatives and justifies the choice
-- Anticipates "but why not X?" questions
-
-## Example response
-
-"## Problem analysis
-
-This component recomputes filteredItems on every render, even when
-the inputs have not changed.
-
-## Options considered
-
-### Option A: useMemo
-Memoize the result. Recomputes only if deps change.
-
-### Option B: Move into the parent
-Simpler but couples the parent to the logic.
-
-## Chosen option: useMemo
-
-**Main reason**: Simplest solution for our case (1-5k items).
-
-## Key takeaways
-
-1. useMemo avoids expensive recomputations, not renders
-2. Always measure BEFORE optimizing
-3. The dependency list must be exhaustive"
-```
-
-### Concise (Brief)
-
-**When to use:** Quick responses, experienced users
-
-```markdown
-## Characteristics
-
-- Direct answers
-- No introduction
-- Minimum words
-- Code without verbose comments
-
-## Example response
-
-"Use `useMemo`:
-
-\`\`\`tsx
-const value = useMemo(() => compute(data), [data]);
-\`\`\`
-
-Deps: dependency array. Recomputes on change."
-```
+For Concise, Explanatory and Learning, use the built-in styles above.
 
 ### Technical
 
@@ -404,7 +328,7 @@ Example response with this style.
 
 ## Best practices
 
-1. **Style suited to context**: Teaching to learn, Concise to produce
+1. **Style suited to context**: Learning (built-in) to learn, Concise (built-in) to produce
 2. **Consistency**: Keep the same style within a session
 3. **Don't overuse**: The default style is often enough
 4. **Document**: Explain when to use each style
@@ -413,10 +337,10 @@ Example response with this style.
 
 | Situation | Style |
 |-----------|-------|
-| Onboarding new dev | `teaching` |
-| Understanding a technical choice | `explanatory` |
+| Onboarding new dev | Learning (built-in) |
+| Understanding a technical choice | Explanatory (built-in) |
 | PR code review | `review` |
-| Quick debug | `concise` |
+| Quick debug | Concise (built-in) |
 | Architecture discussion | `technical` |
 | Audit report | `structured` |
 | Team communication | `emoji` |

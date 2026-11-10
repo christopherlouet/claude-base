@@ -155,13 +155,10 @@ The foundation provides an [agent-teams skill](/docs/skills/agent-teams) and a [
 
 ## Output Styles
 
-Customized interaction modes in `.claude/output-styles/` (10 styles):
+Use Claude Code's built-in styles first: **Concise**, **Explanatory**, **Learning** and **Proactive** (`/output-style <style>`). The foundation adds the formats they do not cover, in `.claude/output-styles/` (7 styles):
 
 | Style | Usage | Command |
 |-------|-------------|----------|
-| `teaching` | Pedagogical mode with explanations | `/output-style teaching` |
-| `explanatory` | Detailed reasoning, understand the why | `/output-style explanatory` |
-| `concise` | Brief and direct responses | `/output-style concise` |
 | `technical` | In-depth technical details | `/output-style technical` |
 | `review` | Structured code review | `/output-style review` |
 | `emoji` | Responses enriched with emojis | `/output-style emoji` |

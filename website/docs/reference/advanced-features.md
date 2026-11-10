@@ -1,7 +1,7 @@
 ---
 sidebar_position: 10
 title: "Advanced Features"
-description: "10 interaction modes in `.claude/output-styles/`: `teaching`, `explanatory` (recommended), `concise`, `technical`, `review`, `emoji`, `minimal`, `stru"
+description: "Use Claude Code's built-in styles first: **Concise**, **Explanatory**, **Learning** and **Proactive** (`/output-style style`). The foundation adds 7 f"
 tags:
   - "reference"
 ---
@@ -12,7 +12,7 @@ tags:
 
 ## Output Styles
 
-10 interaction modes in `.claude/output-styles/`: `teaching`, `explanatory` (recommended), `concise`, `technical`, `review`, `emoji`, `minimal`, `structured`, `debug`, `metrics`.
+Use Claude Code's built-in styles first: **Concise**, **Explanatory**, **Learning** and **Proactive** (`/output-style <style>`). The foundation adds 7 formats they do not cover, in `.claude/output-styles/`: `technical`, `review`, `emoji`, `minimal`, `structured`, `debug`, `metrics`.
 
 ## Specification Templates
 
