@@ -4,13 +4,25 @@
 
 **Output Styles** allow you to customize the format of Claude Code responses based on the context and user preferences.
 
-## Available Styles
+## Native styles first
+
+Claude Code ships built-in styles ([docs](https://code.claude.com/docs/en/output-styles)). The foundation does not duplicate them — pick them with `/output-style <style>` or `/config` → **Output style**:
+
+| Need | Built-in style |
+|------|----------------|
+| Short answers, result first, no recap | **Concise** |
+| Explain the choices behind the code (`Insight` blocks) | **Explanatory** |
+| Learn by doing: explanations plus small pieces of code left for you (`TODO(human)`) | **Learning** |
+| Start work without asking about routine decisions | **Proactive** |
+
+In a settings file the value is case-sensitive: `"outputStyle": "Learning"`.
+
+The styles below are the foundation's delta: formats the built-in ones do not cover.
+
+## Foundation Styles
 
 | Style | Command | Description | Use case |
 |-------|---------|-------------|----------|
-| **teaching** | `/output-style teaching` | Pedagogical mode | Learning, training, explanations |
-| **explanatory** | `/output-style explanatory` | Detailed reasoning | Understanding the why, onboarding, debug |
-| **concise** | `/output-style concise` | Brief and direct | Experienced devs, speed |
 | **technical** | `/output-style technical` | In-depth technical | Architecture, technical decisions |
 | **review** | `/output-style review` | Code review | Code review, PR, audits |
 | **emoji** | `/output-style emoji` | Enriched with emojis | Presentations, documentation |
@@ -25,17 +37,17 @@
 
 | Level | Recommended style |
 |-------|-------------------|
-| Beginner | teaching |
+| Beginner | Learning (built-in) |
 | Intermediate | technical |
-| Expert | concise or minimal |
+| Expert | Concise (built-in) or minimal |
 
 ### By task type
 
 | Task | Recommended style |
 |------|-------------------|
-| Learning a concept | teaching |
-| Understanding existing code | explanatory |
-| Quick fix | concise |
+| Learning a concept | Learning (built-in) |
+| Understanding existing code | Explanatory (built-in) |
+| Quick fix | Concise (built-in) |
 | Architecture decisions | technical |
 | Code review | review |
 | README documentation | emoji |
@@ -43,14 +55,14 @@
 | CI/CD script | minimal |
 | Complex debug | debug |
 | Performance report | metrics |
-| Onboarding new dev | explanatory |
+| Onboarding new dev | Explanatory (built-in) |
 
 ### By context
 
 | Context | Recommended style |
 |---------|-------------------|
-| Pair programming | teaching |
-| Tight deadline | concise |
+| Pair programming | Learning (built-in) |
+| Tight deadline | Concise (built-in) |
 | Technical planning | technical |
 | Pull Request | review |
 | Client demo | emoji |
@@ -62,43 +74,6 @@
 ## Comparative Examples
 
 ### Question: "How to implement pagination?"
-
----
-
-#### Teaching Mode
-```markdown
-## Concept: Pagination
-
-### What is it?
-Pagination splits large lists of data into smaller pages
-to improve performance and UX.
-
-### Why is it useful?
-- Reduces server load (less data per request)
-- Improves loading time
-- Lets the user navigate easily
-
-### How does it work?
-We use two parameters: `page` (page number) and `limit`
-(items per page). The server computes the `offset` like this:
-offset = (page - 1) * limit
-
-### Practical example
-[Detailed code with comments...]
-
-### Key points to remember
-- Always define a default limit
-- Validate parameters server-side
-- Return the total for page calculation
-```
-
----
-
-#### Concise Mode
-```typescript
-const paginate = <T>(items: T[], page = 1, limit = 10) =>
-  items.slice((page - 1) * limit, page * limit);
-```
 
 ---
 
@@ -204,8 +179,8 @@ keep-coding-instructions: true
 
 | Workflow | Styles |
 |----------|--------|
-| Onboarding | teaching → technical |
-| Bug fix | concise → review |
+| Onboarding | Learning (built-in) → technical |
+| Bug fix | Concise (built-in) → review |
 | Feature | technical → review |
 | Release | structured → emoji |
 | Audit | technical → structured |
