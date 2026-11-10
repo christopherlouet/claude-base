@@ -55,6 +55,16 @@ install_hook() { # <source under BASE_DIR> <hook name>
 
 stage_file() { echo "$1" > "$REPO/f"; git -C "$REPO" add f; }
 
+# A recursion would never return: bound the command. macOS has no timeout(1),
+# so fall back to gtimeout, then to perl's alarm (both runners ship perl).
+bounded() { # <seconds> <command...>
+    local s=$1; shift
+    if command -v timeout >/dev/null 2>&1; then timeout "$s" "$@"
+    elif command -v gtimeout >/dev/null 2>&1; then gtimeout "$s" "$@"
+    else perl -e 'alarm shift; exec @ARGV or exit 127' "$s" "$@"
+    fi
+}
+
 # =============================================================================
 # Every shipped hook carries the chain for its OWN name (real files, no fixture)
 # =============================================================================
@@ -109,8 +119,11 @@ stage_file() { echo "$1" > "$REPO/f"; git -C "$REPO" add f; }
     install_hook templates/husky/pre-commit pre-commit
     git config --global core.hooksPath "$REPO/.husky"
     stage_file one
-    run timeout 20 git -C "$REPO" commit -qm one
-    [ "$status" -eq 0 ]
+    # Output to a file, not run's pipe: a runaway chain of hooks would hold the
+    # pipe open long after the bound killed git.
+    bounded 20 git -C "$REPO" commit -qm one > "$TEST_DIR/commit.out" 2>&1 \
+        || { cat "$TEST_DIR/commit.out"; false; }
+    git -C "$REPO" rev-parse --verify -q HEAD
 }
 
 # =============================================================================
