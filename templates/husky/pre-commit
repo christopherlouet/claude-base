@@ -20,6 +20,15 @@
 # not (a docs site), or that git does not track, is not. SKIP_LINT_STAGED=1
 # turns the check off, silently.
 
+# The user's GLOBAL pre-commit runs first. This repository's local
+# core.hooksPath shadows a global one, so a personal guard installed with
+# `git config --global core.hooksPath <dir>` would otherwise never run here.
+# No global value, no such hook, or the global hook IS this file: nothing to do.
+_global_hooks=$(git config --global --path core.hooksPath 2>/dev/null || true)
+if [ -n "$_global_hooks" ] && [ -x "$_global_hooks/pre-commit" ] && ! [ "$_global_hooks/pre-commit" -ef "$0" ]; then
+  "$_global_hooks/pre-commit" "$@" || exit 1
+fi
+
 if [ "${SKIP_LINT_STAGED:-0}" = "1" ]; then
   :
 elif [ -x node_modules/.bin/lint-staged ]; then

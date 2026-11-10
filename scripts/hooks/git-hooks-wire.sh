@@ -106,7 +106,7 @@ if $SET; then
     # the .husky hooks then do not run here: say so.
     if [ -z "${MESSAGE:-}" ] && [ -d "$RESOLVED" ]; then
         [ "$RESOLVED" -ef "$TOPLEVEL/.husky" ] || case "$SCOPE" in
-            global|system) echo "[INFO] git hooks come from $SCOPE config (${CURRENT:-empty}) - this repo's .husky hooks do not run; to use them here instead of those: git config core.hooksPath .husky" ;;
+            global|system) echo "[INFO] git hooks come from $SCOPE config (${CURRENT:-empty}) - this repo's .husky hooks do not run; to run them here (the foundation's hooks also call the global hook of the same name): git config core.hooksPath .husky" ;;
         esac
         exit 0
     fi

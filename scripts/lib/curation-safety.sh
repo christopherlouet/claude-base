@@ -17,13 +17,19 @@
 # anything with the git executable bit (mode 100755, e.g. an extensionless
 # `bin/install`), Claude settings hook command blocks (settings*.json), MCP
 # server configs (.mcp.json / mcp.json) and the plugin format's own declarations
-# (hooks/hooks.json, .claude-plugin/plugin.json, marketplace.json). The same
+# (hooks/hooks.json, .claude-plugin/plugin.json, marketplace.json), and the
+# members of any ARCHIVE in the tree (.zip, .skill, .tar.gz, …: #678 — a zip
+# once carried two unscanned shell scripts past a clean verdict). The same
 # high-signal danger patterns apply to every file; a JSON file is also scanned
 # one line per declared command, "command" joined with its "args". (Limitations,
 # all fail toward human review: a download executed in a separate statement, a
 # hook command referencing a script outside the scanned surface, and a plugin
 # manifest pointing its hooks at a custom-named file are not caught — see
-# _SAFETY_PATTERNS. A flag only ever routes to review.)
+# _SAFETY_PATTERNS. A flag only ever routes to review. Archives, likewise not
+# caught: a payload encoded as text (base64, uuencode) and decoded at run time;
+# a stream in a format the standard library cannot open (zstd, lz4, lzip, .Z,
+# raw lzma); an installer kept as a member of another archive; an archive in a
+# non-exec file whose name is not an archive's, unpacked by a script.)
 #
 # Fail-safe (EF-012): anything that cannot be confirmed safe is FLAGGED, never
 # silently passed. Reasons: content-unfetchable (no doc), doc-unreadable (the doc
@@ -53,6 +59,13 @@
 # exec-surface-over-cap (more exec files than the cap), scan-error (a pattern
 # grep failed, so the text could not be confirmed clean), scan-blind (the scan
 # answered "no match" about a text that demonstrably holds characters).
+# Archives (see _curation_scan_archive): archive-unreadable (the reader could
+# not run, e.g. no python3 — an outage), archive-corrupt (the archive does not
+# parse, or is encrypted), archive-nested (an archive inside one, not unpacked),
+# archive-over-cap (more members or bytes than the caps, or a body over the
+# 1 MB GitHub serves), archive-unsupported (a format the screen cannot read,
+# e.g. .7z, or a member that is a link or a device). All but the first are
+# properties of the archive, recorded like a finding.
 #
 # Nothing on the verdict path travels through a here-string: bash serves one
 # from a temp file in /tmp above the pipe buffer, and at EVERY size on the bash
@@ -78,6 +91,10 @@
 #           "clean" on a pass.
 #   exit:   0 always (a verdict is always produced; failures become a flag).
 #   env:    CURATION_SAFETY_MAX_FILES — exec-surface file cap (default 250).
+#           CURATION_SAFETY_ARCHIVE_MAX_MEMBERS — archive entries read in the
+#           whole run before archive-over-cap (2000); _MAX_BYTES — the bytes one
+#           archive may decompress to (16 MiB).
+#           CURATION_SAFETY_PYTHON — the interpreter that reads archives (python3).
 #           CURATION_SAFETY_DETAIL_MAX / CURATION_SAFETY_LINE_MAX — how many
 #           findings, and how much of each line, the output shows (25 / 240).
 # =============================================================================
@@ -394,6 +411,316 @@ _curation_json_commands() {
     jq -r "$_CURATION_JQ_COMMANDS commands" 2>/dev/null || true
 }
 
+# What counts as an archive, by name (jq/ERE, matched case-insensitively): zip
+# containers under their many names (a .skill is a zip, so are .jar, .whl, .egg,
+# .pyz, .nupkg, .apk, .crx…), tar and its compressions, single compressed files,
+# and the formats the reader cannot open (.zst, .7z, .rar — flagged, not
+# skipped). An archive under any other name is caught by its bytes when it is
+# in the surface for another reason (a script, an exec-bit file: see the scan
+# loop); a non-exec file of an unknown name is not in the surface at all.
+_CURATION_ARCHIVE_RE='\.(zip|skill|jar|war|ear|aar|apk|ipa|egg|whl|pyz|pyzw|nupkg|vsix|xpi|crx|tar|tgz|tbz2?|txz|gz|bz2|xz|zst|7z|rar)$'
+
+# The byte sequences that start an archive or compressed stream INSIDE a file
+# the shell already read as text (NUL bytes dropped): a zip local header or end
+# record, a deflated gzip header, a bzip2 block, an xz header. One found
+# anywhere sends the file to the archive reader — a zipapp behind a shebang or
+# a makeself installer is a script whose payload the text scan cannot see.
+_CURATION_EMBEDDED_RE="PK$(printf '\003\004')|PK$(printf '\005\006')|$(printf '\037\213\010')|BZh[1-9]1AY&SY|$(printf '\375')7zXZ"
+
+# _curation_fetch_raw <repo> <ref> <path> <dest> — write the file's BYTES to
+# <dest> (an archive cannot ride a shell variable: it holds NUL bytes).
+# 0 = written; 1 = could not ask (as _curation_fetch_one); 2 = present but its
+# body could not be decoded; 3 = GitHub withheld the body of a non-empty file
+# (what it does over 1 MB); 4 = the file is empty.
+_curation_fetch_raw() {
+    local body size
+    body=$(curation_gh_api "repos/$1/contents/$3?ref=$2" 2>/dev/null) || return 1
+    printf '%s' "$body" | jq -r '.content // empty' 2>/dev/null | _curation_b64decode > "$4" || return 2
+    [ -s "$4" ] && return 0
+    size=$(printf '%s' "$body" | jq -r '.size // 0' 2>/dev/null)
+    case "$size" in '' | *[!0-9]*) return 2 ;; 0) return 4 ;; esac
+    return 3
+}
+
+# The archive reader (python3, standard library only). It never extracts under
+# a member's own name — no path is trusted: member N's bytes go to <dir>/m<N>,
+# NUL bytes dropped so the shell can read them. It prints one line per member
+# written ("M<TAB>m<N><TAB>name", control characters in the name replaced), one
+# per finding about the archive itself ("R<TAB>reason") and the number of
+# entries it counted ("N<TAB>n"). Exit 2 = the archive does not parse; exit 3 =
+# no archive was found in the file at all.
+#
+# A blob may be several things at once, and each reading is taken: a tar whose
+# last member is a zip also reads as a zip, and compressed streams may follow a
+# shell stub (makeself) or be a tar (tar.gz). So: the tar members (reading past
+# an invalid header, as GNU tar does), the zip members, and EVERY compressed
+# stream signature found in the file — each decompressed and scanned whole (a
+# tar's tail, a single .gz), and read as a tar when it holds one. A decoy
+# stream before the real one, or a zip appended after it, hides nothing; more
+# than 4096 signatures is archive-over-cap. A signature that yields no bytes is
+# not a stream; one that yields bytes and then fails (a bad CRC) is kept, as
+# gzip -dc keeps it, and is archive-corrupt — so is a zip member that fails its
+# CRC (its bytes are kept, the next members still read) and a zip entry whose
+# offset holds no local header (an entry can lie about where it starts).
+# A nested archive is reported, not unpacked;
+# the other members are still read. A link or device member is reported (unzip
+# and tar recreate it, and a link can point out of the install directory).
+# Every entry, a directory included, counts toward the member cap, and the
+# count is printed even when the read fails. Members and streams have a byte
+# cap each, so a tar.gz is not counted twice.
+# Embedded mode (argv 7): the file is a script or binary that merely holds
+# archive bytes; when NOTHING could be read from them it is "no archive found"
+# (exit 3), never corrupt — a native binary or a signature written as text is
+# not one. Once anything was read, damage is archive-corrupt there too.
+# The raw bytes outside any member (a zip comment, a stub, a tar's tail) are the
+# caller's to scan: it scans the whole file as text.
+_CURATION_PY_ARCHIVE='
+import bz2, io, lzma, os, re, stat, sys, tarfile, zipfile, zlib
+blob, name, out = sys.argv[1], sys.argv[2], sys.argv[3]
+max_members, max_bytes = int(sys.argv[4]), int(sys.argv[5])
+ARCHIVE = re.compile(sys.argv[6], re.I)
+embedded = sys.argv[7] == "embedded"
+MAGIC = (b"PK\x03\x04", b"PK\x05\x06", b"\x1f\x8b", b"\x1f\x9d", b"BZh", b"\xfd7zXZ\x00",
+         b"7z\xbc\xaf\x27\x1c", b"Rar!", b"\x28\xb5\x2f\xfd", b"\x04\x22\x4d\x18", b"LZIP")
+def gzip_header(buf):
+    # Length of a gzip member header, or None. The body is then inflated as raw
+    # deflate: no CRC check, so a stream whose trailer lies still yields its
+    # bytes (gzip -dc writes them before it complains).
+    if len(buf) < 10: return None
+    flags, h = buf[3], 10
+    if flags & 4:
+        if len(buf) < h + 2: return None
+        h += 2 + buf[h] + 256 * buf[h + 1]
+    for bit in (8, 16):
+        if flags & bit:
+            end = bytes(buf[h:h + 65536]).find(b"\x00")
+            if end < 0: return None
+            h += end + 1
+    if flags & 2: h += 2
+    return h if h <= len(buf) else None
+STREAMS = ((re.compile(rb"\x1f\x8b\x08"), "gzip"),
+           (re.compile(rb"BZh[1-9]1AY&SY"), bz2.BZ2Decompressor),
+           (re.compile(rb"\xfd7zXZ\x00"), lzma.LZMADecompressor))
+MAX_SIGNATURES, CHUNK = 4096, 65536
+# got: something was really read (a member, a non-empty stream). damaged: a
+# member or stream failed part-way. Damage is archive-corrupt — unless, in
+# embedded mode, nothing at all was read: then the bytes were never an archive.
+reasons = set()
+state = {"n": 0, "bytes": 0, "raw": 0, "stop": False, "got": False, "damaged": False}
+
+def over():
+    reasons.add("archive-over-cap"); state["stop"] = True
+
+def room(key="bytes"):
+    return max_bytes - state[key] + 1
+
+def count():
+    state["n"] += 1
+    if state["n"] > max_members:
+        over()
+    return not state["stop"]
+
+def take(member, data, raw=False):
+    key = "raw" if raw else "bytes"
+    state[key] += len(data)
+    if state[key] > max_bytes:
+        over(); return
+    state["got"] = True
+    if data.startswith(MAGIC) or (not raw and (ARCHIVE.search(member) or data[257:262] == b"ustar")):
+        reasons.add("archive-nested"); return
+    idx = "m%05d" % state["n"]
+    with open(os.path.join(out, idx), "wb") as f:
+        f.write(data.replace(b"\x00", b""))
+    print("M\t%s\t%s" % (idx, re.sub(r"[\x00-\x1f\x7f]", "?", member)))
+
+def inflate(buf, mk, limit):
+    # Fed in chunks, so what a stream yields before a CRC or format error is
+    # kept: gzip -dc writes it out too, and tar extracts it.
+    if mk == "gzip":
+        h = gzip_header(buf)
+        if h is None: return b"", False
+        buf, d = buf[h:], zlib.decompressobj(-15)
+    else:
+        d = mk()
+    parts, size = [], 0
+    try:
+        for k in range(0, len(buf), CHUNK):
+            if getattr(d, "eof", False) or size > limit:
+                break
+            p = d.decompress(buf[k:k + CHUNK])
+            parts.append(p); size += len(p)
+        return b"".join(parts), True
+    except Exception:
+        return b"".join(parts), False
+
+def read_tar(t):
+    for i in t:
+        if not count(): return
+        if i.isdir(): continue
+        if not i.isreg(): reasons.add("archive-unsupported"); continue
+        if i.size >= room(): over(); return
+        take(i.name, t.extractfile(i).read(room()))
+
+def read_zip(z, data):
+    for i in z.infolist():
+        if not count(): return
+        if data[i.header_offset:i.header_offset + 4] != b"PK\x03\x04":
+            state["damaged"] = True; continue
+        if i.is_dir(): continue
+        kind = stat.S_IFMT(i.external_attr >> 16)
+        if kind and kind != stat.S_IFREG: reasons.add("archive-unsupported"); continue
+        if i.file_size >= room(): over(); return
+        # A member that fails its CRC still yields its bytes, and one bad member
+        # must not hide the next (zipimport never checks the others).
+        part = b""
+        try:
+            with z.open(i) as s:
+                part = s.read(max(i.file_size - 1, 0))
+                part += s.read(room() - len(part))
+        except Exception:
+            state["damaged"] = True
+        if part or i.file_size == 0:
+            take(i.filename, part)
+
+def read_streams(data, tar_read):
+    view = memoryview(data)
+    hits = sorted(((m.start(), mk) for rx, mk in STREAMS for m in rx.finditer(data)), key=lambda h: h[0])
+    if len(hits) > MAX_SIGNATURES:
+        over(); hits = hits[:MAX_SIGNATURES]
+    found = False
+    for off, mk in hits:
+        if state["stop"]: break
+        stream, ok = inflate(view[off:], mk, room("raw"))
+        if not stream:
+            # A signature that yields nothing is not a stream (a decoy, a
+            # signature in text) — except where the file claims to be one.
+            if not ok and off == 0 and not embedded: state["damaged"] = True
+            continue
+        if not ok: state["damaged"] = True
+        if not count(): break
+        found = True
+        single = re.search(r"\.(gz|bz2|xz)$", name, re.I) if off == 0 else None
+        label = os.path.basename(name)[:-len(single.group(0))] if single else "<stream@%d>" % off
+        take(label, stream, raw=True)
+        if stream[257:262] == b"ustar" and not (off == 0 and tar_read) and not state["stop"]:
+            try:
+                with tarfile.open(fileobj=io.BytesIO(stream), ignore_zeros=True) as t:
+                    read_tar(t)
+            except Exception:
+                state["damaged"] = True
+    return found
+
+rc = 0
+try:
+    with open(blob, "rb") as f:
+        data = f.read()
+    # Each reading on its own: one that fails (a tar.gz with trailing bytes
+    # breaks is_tarfile) must not skip the others.
+    tar_read = zip_read = streams_read = False
+    try:
+        tar_read = tarfile.is_tarfile(blob)
+        if tar_read:
+            with tarfile.open(blob, ignore_zeros=True) as t:
+                read_tar(t)
+    except Exception:
+        state["damaged"] = True
+    try:
+        if not state["stop"] and zipfile.is_zipfile(blob):
+            zip_read = True
+            with zipfile.ZipFile(blob) as z:
+                read_zip(z, data)
+    except Exception:
+        state["damaged"] = True
+    try:
+        if not state["stop"]:
+            streams_read = read_streams(data, tar_read)
+    except Exception:
+        state["damaged"] = True
+    read = tar_read or zip_read or streams_read
+    if state["damaged"]:
+        if embedded and not state["got"]:
+            rc = 3
+        else:
+            reasons.add("archive-corrupt")
+    elif not read and not state["got"]:
+        if re.search(r"\.(zst|7z|rar)$", name, re.I):
+            reasons.add("archive-unsupported")
+        else:
+            rc = 3
+except Exception:
+    rc = 2
+finally:
+    for r in sorted(reasons):
+        print("R\t" + r)
+    print("N\t%d" % state["n"])
+sys.exit(rc)
+'
+
+# _curation_scan_archive <path> [embedded] — read the archive at <path> member
+# by member and scan each member like any exec file, as "<path>!<member>". The
+# whole file is ALSO scanned as raw text: bytes no member holds (a zip comment,
+# a stub before the first entry, data after a tar's end) are what an exec-bit
+# archive runs first. "embedded" = the caller already text-scanned the file and
+# found archive bytes inside it: no second raw scan, and finding no archive
+# after all is not a flag.
+#
+# Runs inside curation_safety_screen: uses its repo, ref, scratch, reasons and
+# archive_entries — the member cap bounds the whole run, not each archive, so a
+# repo of many archives cannot multiply the scan cost. Two kinds of reason, as
+# discovery and the nightly watch tell them apart: archive-unreadable is an
+# OUTAGE (no scratch, no interpreter, a reader that crashed — a re-run may
+# succeed); archive-corrupt, -over-cap (incl. a body GitHub withholds, over
+# 1 MB), -nested and -unsupported are properties of the archive, which a re-run
+# would meet again.
+_curation_scan_archive() {
+    local path="$1" embedded="${2:-}" dir out rc kind a b left
+    local py="${CURATION_SAFETY_PYTHON:-python3}"
+    local max_m max_b
+    max_m=$(_curation_cap CURATION_SAFETY_ARCHIVE_MAX_MEMBERS 2000)
+    max_b=$(_curation_cap CURATION_SAFETY_ARCHIVE_MAX_BYTES 16777216)
+    left=$((max_m - ${archive_entries:-0}))
+    if [ "$left" -le 0 ]; then
+        reasons+=("archive-over-cap")
+        return 0
+    fi
+    if [ -z "$scratch" ]; then
+        reasons+=("archive-unreadable")
+        return 0
+    fi
+    dir=$(mktemp -d "$scratch/archive.XXXXXX" 2>/dev/null) || { reasons+=("archive-unreadable"); return 0; }
+    _curation_fetch_raw "$repo" "$ref" "$path" "$dir/blob"; rc=$?
+    case "$rc" in
+        0) ;;
+        3) reasons+=("archive-over-cap") ;;
+        4) ;;
+        *) reasons+=("exec-file-unfetchable") ;;
+    esac
+    if [ "$rc" -eq 0 ]; then
+        [ -n "$embedded" ] || _curation_screen_scan "$path" < <(LC_ALL=C tr -d '\000' < "$dir/blob")
+        out=$("$py" -I -c "$_CURATION_PY_ARCHIVE" "$dir/blob" "$path" "$dir" "$left" "$max_b" \
+            "$_CURATION_ARCHIVE_RE" "${embedded:-archive}" 2>/dev/null); rc=$?
+        case "$rc" in
+            0) ;;
+            2) reasons+=("archive-corrupt") ;;
+            3) [ -n "$embedded" ] || reasons+=("archive-corrupt") ;;
+            *)
+                reasons+=("archive-unreadable")
+                curation_warn "archive reader '$py' did not run (exit $rc): $path was not read"
+                ;;
+        esac
+        while IFS="$(printf '\t')" read -r kind a b; do
+            case "$kind" in
+                M) _curation_screen_scan "$path!$b" < "$dir/$a" ;;
+                R) reasons+=("$a") ;;
+                N) archive_entries=$(( ${archive_entries:-0} + a )) ;;
+            esac
+        done < <(printf '%s\n' "${out:-}")
+    fi
+    # Members may weigh up to the byte cap each archive: never let them pile up.
+    rm -rf -- "${dir:?}"
+    return 0
+}
+
 # _curation_list_exec_surface <repo> <ref> — echo the candidate's executable-
 # surface paths (one per line) from the recursive git tree at <ref>: scripts,
 # exec-bit files, Claude settings hook blocks (settings*.json), MCP server
@@ -421,10 +748,11 @@ _curation_list_exec_surface() {
     printf '%s' "$body" | jq -e '.tree | type == "array"' >/dev/null 2>&1 || return 1
     local truncated all count
     truncated=$(printf '%s' "$body" | jq -r '.truncated // false')
-    all=$(printf '%s' "$body" | jq -r '
+    all=$(printf '%s' "$body" | jq -r --arg archive "$_CURATION_ARCHIVE_RE" '
         .tree[] | select(.type == "blob")
         | select(
             (.path | test("\\.(sh|bash|zsh|py|js|mjs|cjs|rb|pl|php)$"))
+            or (.path | test($archive; "i"))
             or (.mode == "100755")
             or (.path | split("/")[-1] | (test("^settings.*\\.json$") or test("^\\.?mcp\\.json$")
                 or test("^(hooks|plugin|marketplace)\\.json$")))
@@ -503,7 +831,7 @@ _curation_subpaths_resolve() {
 # surface scan are scoped to those subpaths — never the whole monorepo.
 curation_safety_screen() {
     local repo="$1" ref="$2" subpaths="${3:-}"
-    local reasons=() text r doc detail_lost=0
+    local reasons=() text r doc detail_lost=0 archive_entries=0
     local cap_n cap_w
     cap_n=$(_curation_cap CURATION_SAFETY_DETAIL_MAX 25)
     cap_w=$(_curation_cap CURATION_SAFETY_LINE_MAX 240)
@@ -615,8 +943,16 @@ curation_safety_screen() {
             # A doc that is also exec surface (an executable README) is scanned
             # again here; the rendering dedups its findings. Skipping it instead
             # once let a crafted file name go unscanned.
-            if ftext=$(_curation_fetch_one "$repo" "$ref" "$path"); then
+            if printf '%s' "$path" | LC_ALL=C grep -qiE "$_CURATION_ARCHIVE_RE"; then
+                _curation_scan_archive "$path"
+            elif ftext=$(_curation_fetch_one "$repo" "$ref" "$path"); then
                 _curation_screen_scan "$path" < <(printf '%s\n' "$ftext")
+                # A file whose bytes hold an archive (an extensionless zip, a
+                # zipapp behind a shebang, a makeself installer): its text scan
+                # saw compressed bytes, so read the archive too.
+                if printf '%s' "$ftext" | LC_ALL=C grep -qaE "$_CURATION_EMBEDDED_RE"; then
+                    _curation_scan_archive "$path" embedded
+                fi
                 # The commands a JSON config declares, rebuilt one per line, are
                 # scanned apart: they exist nowhere in the file, so no line number.
                 case "$path" in

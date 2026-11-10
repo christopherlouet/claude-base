@@ -1813,13 +1813,14 @@ Copy the `github` block from `.mcp.json.example` into `.mcp.json`. Configure `GI
 
 **Output Styles** allow you to adapt the format of Claude Code's responses to your context: learning, code review, report production, debugging.
 
-#### The 10 available styles
+#### Built-in styles first
+
+Claude Code ships **Concise** (experienced dev, quick fix), **Explanatory** (understand the why), **Learning** (learn by writing small pieces of code yourself) and **Proactive**. Pick one with `/output-style <style>`; the foundation does not duplicate them.
+
+#### The 7 foundation styles
 
 | Style | Command | Use case |
 |-------|----------|-------------|
-| `teaching` | `/output-style teaching` | Learning, training, onboarding |
-| `explanatory` | `/output-style explanatory` | Understand the why, deep debug |
-| `concise` | `/output-style concise` | Experienced dev, quick fix |
 | `technical` | `/output-style technical` | Architecture, technical decisions |
 | `review` | `/output-style review` | Code review, PR, audits |
 | `emoji` | `/output-style emoji` | Presentations, client documentation |
@@ -1828,7 +1829,7 @@ Copy the `github` block from `.mcp.json.example` into `.mcp.json`. Configure `GI
 | `debug` | `/output-style debug` | Methodical debugging |
 | `metrics` | `/output-style metrics` | Performance, benchmarks |
 
-The `explanatory` style is recommended by Boris Cherny for learning phases: it forces Claude to explain the reasoning behind each decision.
+The built-in **Explanatory** style is recommended by Boris Cherny for learning phases: it forces Claude to explain the reasoning behind each decision.
 
 #### Create a project-specific style
 
