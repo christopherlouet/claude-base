@@ -1,5 +1,14 @@
 #!/usr/bin/env sh
 
+# The user's GLOBAL pre-commit runs first. This repository's local
+# core.hooksPath shadows a global one, so a personal guard installed with
+# `git config --global core.hooksPath <dir>` would otherwise never run here.
+# No global value, no such hook, or the global hook IS this file: nothing to do.
+_global_hooks=$(git config --global --path core.hooksPath 2>/dev/null || true)
+if [ -n "$_global_hooks" ] && [ -x "$_global_hooks/pre-commit" ] && ! [ "$_global_hooks/pre-commit" -ef "$0" ]; then
+  "$_global_hooks/pre-commit" "$@" || exit 1
+fi
+
 # Privacy gate: this repo is PUBLIC and is developed against real personal
 # projects, so their names leak into docs, specs and fixtures by accident. The
 # protected-name list lives OUTSIDE the repo (~/.claude/private-names by

@@ -5,5 +5,19 @@
 # instead of in CI. Mirrors .github/workflows/ci.yml. Fast (~seconds); the full
 # bats suite is `scripts/preflight.sh --full`. Bypass once with SKIP_PREFLIGHT=1.
 # See scripts/preflight.sh.
+
+# The user's GLOBAL pre-push runs first, with the refs git sent on stdin (a
+# temp file, so both readers see them). This repository's local core.hooksPath
+# shadows a global one, so a personal guard installed with
+# `git config --global core.hooksPath <dir>` would otherwise never run here.
+# No global value, no such hook, or the global hook IS this file: nothing to do.
+_global_hooks=$(git config --global --path core.hooksPath 2>/dev/null || true)
+if [ -n "$_global_hooks" ] && [ -x "$_global_hooks/pre-push" ] && ! [ "$_global_hooks/pre-push" -ef "$0" ]; then
+  _refs=$(mktemp) || exit 1
+  cat > "$_refs"
+  "$_global_hooks/pre-push" "$@" < "$_refs" || { rm -f "$_refs"; exit 1; }
+  rm -f "$_refs"
+fi
+
 [ "${SKIP_PREFLIGHT:-0}" = "1" ] && exit 0
 exec bash scripts/preflight.sh --fast
