@@ -308,6 +308,14 @@ release (an older config that still `extends` the preset included), and retires 
 and `.lintstagedrc.json` older installs received; one you edited is kept and reported (see the
 troubleshooting guide).
 
+Each shipped hook first runs your **global** hook of the same name, when
+`git config --global core.hooksPath` points at a directory that has one, and stops if it fails.
+git reads a single hooks directory and the repository's local `.husky` value shadows the global
+one, so a personal guard set globally (a secret or private-name scanner) would otherwise never run
+in a husky repository. No global value, no hook of that name, or a global value pointing at this
+`.husky`: nothing changes. The foundation's own `.husky/pre-push` does the same, and passes the
+pushed refs on stdin.
+
 The lint-staged config it ships, `.lintstagedrc.mjs`, adapts to what the project has: `prettier
 --write` once prettier is installed, `eslint --fix` once eslint is installed **and** configured
 (`eslint.config.*`; below eslint 9 also `.eslintrc*` or an `eslintConfig` key, which eslint 9

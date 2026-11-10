@@ -258,7 +258,7 @@ hooksPath = $v")" ]                             # control: git resolves it to a 
     cd "$TEST_DIR/repo"; git init -q; mkdir .husky
     run bash "$WIRE"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"global config"*"do not run"*"instead of those"* ]]
+    [[ "$output" == *"global config"*"do not run"*"also call the global hook"* ]]
     run git config --local core.hooksPath
     [ "$status" -eq 1 ]
 }
