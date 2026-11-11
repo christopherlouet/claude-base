@@ -11,12 +11,16 @@
 #       and, with --apply, deletes them after ONE confirmation per repository.
 #       REPO defaults to the current directory.
 #
-#   A branch is deletable when its content is in the base by any route:
+#   A branch is deletable when its CONTENT is in the base:
 #     - its tip is an ancestor of the base (empty, fast-forward, merge commit);
-#     - every commit has an equivalent patch in the base (rebase, cherry-pick);
-#     - merging it into the base would change nothing (squash merge).
-#   The last test is conservative: if the base has since changed the same
-#   lines, the merge conflicts and the branch is kept.
+#     - or merging it into the base would change nothing (rebase, cherry-pick,
+#       squash merge): `git merge-tree --write-tree` gives the base's tree.
+#   Patch-ids (`git cherry`) are deliberately NOT a criterion: they skip merge
+#   commits (an evil merge's content), ignore whitespace, and still match a
+#   patch the base took and then reverted — three ways to delete real work.
+#   The merge test is conservative: if the base has since changed the same
+#   lines, the merge conflicts and the branch is kept; on git < 2.38 it is
+#   unavailable and only the ancestor test applies.
 #
 #   Never deleted, whatever their content:
 #     - the current branch, and any branch checked out in a worktree;
@@ -41,34 +45,18 @@ USAGE
 EOF
 }
 
-# in_base <base> <base-tree> <ref> — succeeds when <ref>'s content is already
-# in <base>; prints how on stdout. Every git failure answers "not in base".
+# in_base <base-ref> <base-tree> <ref> — succeeds when <ref>'s content is
+# already in the base; prints how on stdout. Every git failure answers "not in
+# base". The base is a FULL ref: a tag named main would win over the branch.
 in_base() {
-    local base="$1" tree="$2" ref="$3" cherry merged
+    local base="$1" tree="$2" ref="$3" merged
     if git merge-base --is-ancestor "$ref" "$base" 2>/dev/null; then
-        echo "contained in $base"
+        echo "contained in ${base#refs/heads/}"
         return 0
     fi
-    # Capture first, test after. `git cherry | grep -q '^+'` under pipefail
-    # inverted on a long branch: grep exits on the first match, cherry dies
-    # of SIGPIPE past one pipe buffer (~96 commits), and the negated pipeline
-    # read "nothing unmerged" — a branch full of work listed for deletion.
-    if cherry=$(git cherry "$base" "$ref" 2>/dev/null) && [ -n "$cherry" ]; then
-        case "
-$cherry" in
-            *"
-+"*) ;;
-            *)
-                echo "every patch already in $base"
-                return 0
-                ;;
-        esac
-    fi
-    # merge-tree --write-tree needs git >= 2.38; an older git fails here and
-    # the branch is kept, which is the safe direction.
     if merged=$(git merge-tree --write-tree "$base" "$ref" 2>/dev/null) &&
-        [ "$(printf '%s\n' "$merged" | head -n1)" = "$tree" ]; then
-        echo "content already in $base (squash)"
+        [ "${merged%%$'\n'*}" = "$tree" ]; then
+        echo "content already in ${base#refs/heads/} (rebase or squash)"
         return 0
     fi
     return 1
@@ -77,7 +65,7 @@ $cherry" in
 # prune_repo <dir> <apply:0|1> — returns non-zero on a repository error.
 prune_repo() {
     local dir="$1" apply="$2"
-    local base tree current held b up reason ahead failed=0
+    local base ref tree current held sha b up reason ahead failed=0
     local deletable="" n_delete=0 n_keep=0
 
     if ! git -C "$dir" rev-parse --git-dir >/dev/null 2>&1; then
@@ -96,13 +84,18 @@ prune_repo() {
     fi
 
     echo "== $dir (base: $base)"
-    tree=$(git rev-parse "$base^{tree}")
+    # Full ref from here on: a TAG named main resolves before the branch.
+    ref="refs/heads/$base"
+    tree=$(git rev-parse "$ref^{tree}")
 
     current=$(git symbolic-ref -q --short HEAD 2>/dev/null || true)
     held=$(git worktree list --porcelain 2>/dev/null |
         sed -n 's|^branch refs/heads/||p')
 
-    while IFS= read -r b; do
+    # One query: tip, upstream and name, ':'-separated (a ref name cannot hold
+    # one). lstrip=2, never :short, which prefixes "heads/" when a tag shares
+    # the name. The tip is kept so the deletion can refuse a branch that moved.
+    while IFS=: read -r sha up b; do
         [ -n "$b" ] || continue
         if [ "$b" = "$current" ]; then
             echo "  keep    $b  (current branch)"
@@ -114,27 +107,24 @@ prune_repo() {
             n_keep=$((n_keep + 1))
             continue
         fi
-        # %(upstream) of the full ref: `<name>@{upstream}` is ambiguous when a
-        # tag shares the name, and `refs/heads/<name>@{upstream}` never resolves.
-        up=$(git for-each-ref --format='%(upstream)' "refs/heads/$b")
         if [ -n "$up" ] && git rev-parse -q --verify "$up" >/dev/null &&
-            ! in_base "$base" "$tree" "$up" >/dev/null; then
+            ! in_base "$ref" "$tree" "$up" >/dev/null; then
             echo "  keep    $b  (upstream ${up#refs/remotes/} has work not in $base)"
             n_keep=$((n_keep + 1))
             continue
         fi
-        if reason=$(in_base "$base" "$tree" "refs/heads/$b"); then
+        if reason=$(in_base "$ref" "$tree" "$sha"); then
             echo "  delete  $b  ($reason)"
-            deletable="$deletable$b
+            deletable="$deletable$sha $b
 "
             n_delete=$((n_delete + 1))
         else
-            ahead=$(git rev-list --count "$base..refs/heads/$b")
+            ahead=$(git rev-list --count "$ref..$sha")
             echo "  keep    $b  ($ahead commit(s) not in $base)"
             n_keep=$((n_keep + 1))
         fi
     done <<EOF
-$(git for-each-ref --format='%(refname:lstrip=2)' 'refs/heads/feature/auto-*')
+$(git for-each-ref --format='%(objectname):%(upstream):%(refname:lstrip=2)' 'refs/heads/feature/auto-*')
 EOF
 
     if [ $((n_delete + n_keep)) -eq 0 ]; then
@@ -157,14 +147,17 @@ EOF
             ;;
     esac
 
-    # Checked one by one: set -e does not hold in a subshell whose status the
-    # caller tests, so an unchecked failure would still print "deleted".
-    while IFS= read -r b; do
+    # Deleted only if the tip is still the one judged above: the prompt may
+    # wait while another session commits to the branch. Checked one by one:
+    # set -e does not hold in a subshell whose status the caller tests, so an
+    # unchecked failure would still print "deleted".
+    while IFS=' ' read -r sha b; do
         [ -n "$b" ] || continue
-        if git branch -q -D "$b"; then
+        if git update-ref -d "refs/heads/$b" "$sha" 2>/dev/null; then
+            git config --remove-section "branch.$b" 2>/dev/null || true
             echo "  deleted $b"
         else
-            echo "  FAILED to delete $b" >&2
+            echo "  FAILED to delete $b (moved or locked since the scan)" >&2
             failed=1
         fi
     done <<EOF

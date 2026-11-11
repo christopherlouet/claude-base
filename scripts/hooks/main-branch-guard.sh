@@ -105,38 +105,46 @@ if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
   # Same semantics, none of the cost.
   target_is_outside_repo && exit 0
 
-  # Reuse today's auto branch when it still points at the commit we are on:
-  # switching to it moves nothing but the branch name (uncommitted work comes
-  # along), and one branch per write left dozens of empty feature/auto-* per
-  # repository. A tip anywhere else — behind main — is never reused: that
-  # switch would change the working tree under the edit. Nor is a branch that
-  # ever carried work: its tip can equal HEAD after a fast-forward merge, so
-  # it must never have moved since creation (ONE reflog entry; no reflog
-  # reads as moved) and have no upstream (a pushed branch may back a PR).
-  # A checkout that fails (the branch is held by another worktree) falls
-  # through to the next candidate, then to a fresh branch. Names come from
-  # lstrip=2, never :short, which prefixes "heads/" when a tag shares the
-  # name — and checking that out detaches HEAD.
+  # Reuse today's auto branch while it is exactly as this hook created it:
+  # one branch per write left dozens of empty feature/auto-* per repository.
+  # On creation the hook records the commit in branch.<name>.autoBase; a
+  # candidate is reused only if its tip is still that commit AND the one we
+  # are on, so switching moves nothing but the branch name (uncommitted work
+  # comes along). Never reused: a branch behind main (the switch would change
+  # the working tree under the edit), one that carried work (after a
+  # fast-forward merge its tip equals HEAD again, but no longer autoBase), one
+  # with an upstream (it may back a PR), one this hook did not create. A
+  # checkout that fails (another worktree holds the branch) falls through to
+  # the next candidate, then to a fresh branch. One query gives tip, upstream
+  # and name, ':'-separated (a ref name cannot hold one); names come from
+  # lstrip=2, never :short, which prefixes "heads/" when a tag shares the name
+  # — and checking that out detaches HEAD.
   _head=$(git rev-parse -q --verify HEAD 2>/dev/null || true)
   if [ -n "$_head" ]; then
-    while IFS=' ' read -r _sha _b; do
-      [ "$_sha" = "$_head" ] || continue
-      [ -z "$(git for-each-ref --format='%(upstream)' "refs/heads/$_b" 2>/dev/null)" ] || continue
-      _moves=$(git reflog show --format=%H "refs/heads/$_b" 2>/dev/null | wc -l | tr -d ' ')
-      [ "$_moves" = "1" ] || continue
+    while IFS=: read -r _sha _up _b; do
+      [ -n "$_b" ] && [ "$_sha" = "$_head" ] && [ -z "$_up" ] || continue
+      [ "$(git config --get "branch.$_b.autoBase" 2>/dev/null || true)" = "$_head" ] || continue
       if git checkout -q "$_b" 2>/dev/null; then
         echo "Switched to today's branch $_b (you were on $BRANCH)."
         echo "Tip: rename it with git branch -m feature/descriptive-name"
         exit 0
       fi
     done <<EOF
-$(git for-each-ref --sort=-refname --format='%(objectname) %(refname:lstrip=2)' \
+$(git for-each-ref --sort=-refname --format='%(objectname):%(upstream):%(refname:lstrip=2)' \
     "refs/heads/feature/auto-$(date +%Y%m%d)-*" 2>/dev/null || true)
 EOF
   fi
 
+  # Named to the second; a second write within that second (another worktree,
+  # a branch the reuse test turned down) would collide and block the edit.
   NEW_BRANCH="feature/auto-$(date +%Y%m%d-%H%M%S)"
+  _stem=$NEW_BRANCH _n=1
+  while [ "$_n" -lt 10 ] && git show-ref -q --verify "refs/heads/$NEW_BRANCH" 2>/dev/null; do
+    _n=$((_n + 1))
+    NEW_BRANCH="$_stem-$_n"
+  done
   if git checkout -b "$NEW_BRANCH" 2>/dev/null; then
+    [ -n "$_head" ] && git config "branch.$NEW_BRANCH.autoBase" "$_head" 2>/dev/null || true
     echo "Branch $NEW_BRANCH created automatically (you were on $BRANCH)."
     echo "Tip: rename it with git branch -m feature/descriptive-name"
     exit 0

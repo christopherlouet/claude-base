@@ -204,6 +204,72 @@ R() { echo "$TEST_DIR/repo"; }
     has_branch "$(R)" feature/auto-20260101-000000
 }
 
+@test "prune-auto: work living only in a MERGE commit is kept" {
+    # git cherry skips merge commits: an evil merge's content is invisible to
+    # patch-ids, so "every patch already in main" deleted it.
+    init_repo "$(R)"
+    git -C "$(R)" checkout -q -b side
+    commit_on "$(R)" side.txt s
+    git -C "$(R)" checkout -q -b feature/auto-20260101-000000 main
+    git -C "$(R)" merge -q --no-ff --no-commit side
+    echo evil > "$(R)/evil.txt"; git -C "$(R)" add -A; git -C "$(R)" commit -qm "merge side"
+    git -C "$(R)" checkout -q main
+    commit_on "$(R)" other.txt o   # main moved on: the pick gets a new id
+    git -C "$(R)" cherry-pick side >/dev/null
+    run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
+    [ "$status" -eq 0 ]
+    has_branch "$(R)" feature/auto-20260101-000000
+}
+
+@test "prune-auto: a patch main took then REVERTED is kept" {
+    init_repo "$(R)"
+    git -C "$(R)" checkout -q -b feature/auto-20260101-000000
+    commit_on "$(R)" g.txt g
+    git -C "$(R)" checkout -q main
+    commit_on "$(R)" other.txt o
+    git -C "$(R)" cherry-pick feature/auto-20260101-000000 >/dev/null
+    git -C "$(R)" revert --no-edit HEAD >/dev/null
+    run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
+    [ "$status" -eq 0 ]
+    has_branch "$(R)" feature/auto-20260101-000000
+}
+
+@test "prune-auto: a change main has only up to WHITESPACE is kept" {
+    init_repo "$(R)"
+    printf 'def f():\n  x()\n' > "$(R)/p.py"; git -C "$(R)" add -A; git -C "$(R)" commit -qm py
+    git -C "$(R)" checkout -q -b feature/auto-20260101-000000
+    printf 'def f():\n    x()\n' > "$(R)/p.py"; git -C "$(R)" commit -qam spaces
+    git -C "$(R)" checkout -q main
+    printf 'def f():\n\tx()\n' > "$(R)/p.py"; git -C "$(R)" commit -qam tab
+    run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
+    [ "$status" -eq 0 ]
+    has_branch "$(R)" feature/auto-20260101-000000
+}
+
+@test "prune-auto: a TAG named main does not stand in for the main branch" {
+    init_repo "$(R)"
+    git -C "$(R)" checkout -q -b feature/auto-20260101-000000
+    commit_on "$(R)" unique.txt only-here
+    git -C "$(R)" tag main     # the tag holds the work; the branch main does not
+    git -C "$(R)" checkout -q -f refs/heads/main 2>/dev/null || git -C "$(R)" symbolic-ref HEAD refs/heads/main
+    git -C "$(R)" reset -q --hard refs/heads/main
+    run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
+    [ "$status" -eq 0 ]
+    has_branch "$(R)" feature/auto-20260101-000000
+}
+
+@test "prune-auto: a branch that MOVES while the prompt waits is not deleted" {
+    init_repo "$(R)"
+    git -C "$(R)" branch feature/auto-20260101-000000
+    git -C "$(R)" checkout -q -b side
+    commit_on "$(R)" late.txt committed-during-the-prompt
+    git -C "$(R)" checkout -q main
+    run bash -c "{ sleep 2; git -C '$(R)' update-ref refs/heads/feature/auto-20260101-000000 refs/heads/side; echo y; } | bash '$SCRIPT' prune-auto --apply '$(R)' 2>&1"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"FAILED"*"feature/auto-20260101-000000"* ]]
+    [ "$(git -C "$(R)" rev-parse feature/auto-20260101-000000)" = "$(git -C "$(R)" rev-parse side)" ]
+}
+
 @test "prune-auto: a squash that took only PART of the branch keeps it" {
     init_repo "$(R)"
     git -C "$(R)" checkout -q -b feature/auto-20260101-000000
