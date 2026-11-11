@@ -3,3 +3,4 @@ npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supp
 added 247 packages, and audited 248 packages in 12s
 found 0 vulnerabilities
 (exit code: 0)
+[output filtered: 5 of 9 lines kept; rerun with SKIP_BASH_OUTPUT_FILTER=1 to see everything]

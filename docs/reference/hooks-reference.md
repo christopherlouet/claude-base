@@ -96,7 +96,7 @@ The exact retry bound and the failure-classification heuristics are tuned upstre
 | **Auto-format Rust** | PostToolUse (Edit/Write) | rustfmt on .rs files |
 | **Auto-format Dart** | PostToolUse (Edit/Write) | dart format on .dart files |
 | **Auto-format Lua** | PostToolUse (Edit/Write) | stylua on .lua files |
-| **Inline edit errors (output rewriter)** | PostToolUse (Edit/Write) | Runs tsc + eslint on edited TS/JS files and appends errors to the tool result envelope (CLI 2.1.121+). Disable: `SKIP_INLINE_EDIT_ERRORS=1`. Replaces the former inline tsc + eslint blocks. |
+| **Inline edit errors (output rewriter)** | PostToolUse (Edit/Write) | Runs tsc + eslint on edited TS/JS files and adds what they report on that file to Claude's context (`additionalContext`); the tool result is left untouched. Disable: `SKIP_INLINE_EDIT_ERRORS=1`. Replaces the former inline tsc + eslint blocks. |
 | **Auto-install** | PostToolUse (Edit package.json) | npm/yarn/pnpm/bun install |
 | **Auto-sync Python** | PostToolUse (Edit pyproject.toml) | uv sync or pip install |
 | **Auto pub get** | PostToolUse (Edit pubspec.yaml) | flutter/dart pub get |
@@ -164,15 +164,15 @@ read-only `validate-counts.sh` instead (no regeneration, no staging).
 
 ## Output rewriter (CLI 2.1.121+)
 
-Three coordinated hooks that exploit `hookSpecificOutput.updatedToolOutput` to tighten Claude's feedback loop on PostToolUse Bash and Edit/Write events.
+Three coordinated hooks that tighten Claude's feedback loop on PostToolUse Bash and Edit/Write events. A replacement (`hookSpecificOutput.updatedToolOutput`) must match the tool's own result shape — Claude Code drops a mismatch **without an error**. Measured: for Bash, the object `{stdout, stderr, interrupted, isImage, noOutputExpected}` replaces the output and a string is ignored; Edit/Write return a structured object with no text field, so a hook ADDS to them through `additionalContext` instead.
 
 | Hook | Event | Role |
 |------|-------|------|
 | `check-cli-version.sh` | SessionStart | Probes `claude --version` and writes `/tmp/claude-rewriter-supported` (`1` if >= 2.1.121, `0` otherwise). On unsupported CLI, prints a one-line notice. |
-| `bash-output-filter.sh` | PostToolUse (Bash) | Trims allowlisted noisy command outputs (`npm`/`pnpm`/`yarn`/`bun` install/audit/test/build, `pytest`, `go test`/`build`, `cargo build`/`test`/`check`) to actionable lines. Outputs below 30 lines pass through unchanged. |
-| `post-edit-typecheck-and-lint.sh` | PostToolUse (Edit\|Write) | Replaces the former inline tsc + eslint blocks. Runs `tsc --noEmit` (TS/TSX) + `eslint` (TS/TSX/JS/JSX), grep filters for the just-edited file, appends errors as a delimited section to the Edit/Write tool result envelope. Status stays SUCCESS. |
+| `bash-output-filter.sh` | PostToolUse (Bash) | Trims allowlisted noisy command outputs (`npm`/`pnpm`/`yarn`/`bun` install/audit/test/build, `pytest`, `go test`/`build`, `cargo build`/`test`/`check`) to actionable lines. Outputs below 30 lines pass through unchanged. Reads stdout and stderr together and puts the digest in `stdout` (stderr emptied, the flags kept), inside Bash's own result object; it fires only on success, since a failed command emits `PostToolUseFailure` instead. |
+| `post-edit-typecheck-and-lint.sh` | PostToolUse (Edit\|Write) | Replaces the former inline tsc + eslint blocks. Runs `tsc --noEmit` (TS/TSX) + `eslint` (TS/TSX/JS/JSX), grep filters for the just-edited file, adds the errors to Claude's context (`additionalContext`) in delimited sections. The tool result itself is left untouched. Status stays SUCCESS. |
 
-All three hooks bail out silently if the sentinel reports unsupported, if `jq` is absent, or if their respective opt-out env var is set. The Bash filter and inline-edit hook share the helpers in `_hook-helpers.sh` (sourced, not registered).
+The Bash filter bails out silently if the sentinel reports unsupported (only `updatedToolOutput` needs it), and every hook does if `jq` is absent or its opt-out env var is set. A digest ends with a line saying how many lines it kept and how to see everything; a digest that would keep nothing is not applied, so the output passes unchanged. The Bash filter and inline-edit hook share the helpers in `_hook-helpers.sh` (sourced, not registered).
 
 Migration path: existing projects must run `claude-base update -f --all <project>` to get the consolidated `.claude/settings.json`. If only `--hook-scripts` ran, `post-edit-typecheck-and-lint.sh` will detect the legacy state at runtime (old `npx tsc --noEmit` references in `.claude/settings.json`) and emit a one-line notice once per session.
 

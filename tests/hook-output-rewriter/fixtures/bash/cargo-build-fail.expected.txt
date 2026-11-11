@@ -7,3 +7,4 @@ error[E0277]: the trait bound `String: From<u32>` is not satisfied
 error: aborting due to 2 previous errors; 1 warning emitted
 error: could not compile `myapp` (bin "myapp") due to 2 previous errors; 1 warning emitted
 (exit code: 1)
+[output filtered: 9 of 41 lines kept; rerun with SKIP_BASH_OUTPUT_FILTER=1 to see everything]

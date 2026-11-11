@@ -305,7 +305,7 @@
         ]
       },
       {
-        "description": "Output rewriter — runs tsc + eslint after Edit/Write on TS/JS files and appends errors to the tool result envelope (CLI 2.1.121+). Replaces the former inline tsc + eslint blocks. Disable: SKIP_INLINE_EDIT_ERRORS=1.",
+        "description": "Runs tsc + eslint after Edit/Write on TS/JS files and adds what they report on that file to Claude's context (additionalContext). Replaces the former inline tsc + eslint blocks. Disable: SKIP_INLINE_EDIT_ERRORS=1.",
         "matcher": "Edit|Write",
         "hooks": [
           {
