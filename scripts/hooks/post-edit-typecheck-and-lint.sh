@@ -31,8 +31,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=_hook-helpers.sh
 source "$SCRIPT_DIR/_hook-helpers.sh"
 
-# Bail-out chain
-hook_bail_if_unsupported
+# Bail-out chain. No hook_bail_if_unsupported: that sentinel says whether the
+# CLI applies updatedToolOutput, and this hook only adds additionalContext.
 hook_bail_if_disabled SKIP_INLINE_EDIT_ERRORS
 command -v jq >/dev/null 2>&1 || exit 0
 
@@ -94,7 +94,7 @@ fi
 # -----------------------------------------------------------------------------
 # Build the context: one section per tool that found something
 # -----------------------------------------------------------------------------
-ANNOTATED="Errors in $REL_PATH after this edit:"
+ANNOTATED="tsc/eslint findings in $REL_PATH after this edit:"
 
 if [ -n "$TSC_OUTPUT" ]; then
     ANNOTATED="$ANNOTATED

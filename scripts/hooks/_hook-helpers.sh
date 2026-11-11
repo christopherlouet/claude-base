@@ -87,14 +87,26 @@ hook_emit_envelope() {
 # Any other shape (Edit's structured result has no text field) is never
 # guessed: nothing is printed and it returns 1, so the caller can tell that
 # no replacement happened. To add to such a result, use additionalContext.
+#
+# A third argument `clear-stderr` also empties a `stderr` field: for a caller
+# whose <text> already digests stdout AND stderr together.
+# The text reaches jq through a file, never argv: one argument is capped at
+# 128 KB on Linux, and past it the exec failed and nothing was emitted.
 hook_emit_updated_output() {
-    local input="$1" text="$2"
-    printf '%s' "$input" | jq -ce --arg text "$text" '
+    local input="$1" text="$2" clear="${3:-}" tmp rc
+    tmp=$(mktemp "${TMPDIR:-/tmp}/hook-output.XXXXXX") || return 1
+    printf '%s' "$text" > "$tmp"
+    printf '%s' "$input" | jq -ce --rawfile text "$tmp" --arg clear "$clear" '
         .tool_response as $r
         | if ($r | type) == "string" then $text
-          elif ($r | type) == "object" and ($r | has("stdout")) then $r + {stdout: $text}
+          elif ($r | type) == "object" and ($r | has("stdout")) then
+            $r + {stdout: $text}
+              + (if $clear == "clear-stderr" and ($r | has("stderr")) then {stderr: ""} else {} end)
           else empty end
         | {hookSpecificOutput: {hookEventName: "PostToolUse", updatedToolOutput: .}}' 2>/dev/null
+    rc=$?
+    rm -f "$tmp"
+    return "$rc"
 }
 
 # strip_msg_values now lives in _core-helpers.sh — the harness-neutral CORE

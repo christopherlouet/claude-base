@@ -31,8 +31,20 @@ INPUT=$(cat 2>/dev/null || true)
 CMD=$(printf '%s' "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null) || exit 0
 [ -z "$CMD" ] && exit 0
 
-OUTPUT=$(printf '%s' "$INPUT" | jq -r '.tool_response.output // .tool_response.stdout // .tool_response.content // empty' 2>/dev/null)
-EXIT_CODE=$(printf '%s' "$INPUT" | jq -r '.tool_response.exit_code // .tool_response.exitCode // 0' 2>/dev/null)
+# Bash's result is {stdout, stderr, interrupted, isImage, noOutputExpected}
+# (measured). The filter reads stdout AND stderr together — cargo writes all of
+# its output to stderr, npm its warnings — and replaces them with one digest
+# in stdout (stderr emptied): reading one field and writing another would
+# duplicate or lose lines. A plain-string result is read, and replaced, as is.
+# An interrupted command is left untouched. The result carries no exit code (a
+# failed command fires PostToolUseFailure, not this hook), so none is invented:
+# it is reported only when a field provides it.
+OUTPUT=$(printf '%s' "$INPUT" | jq -r '.tool_response
+    | if type == "string" then .
+      elif type == "object" then [.stdout, .stderr] | map(select(type == "string" and . != "")) | join("\n")
+      else empty end' 2>/dev/null)
+[ "$(printf '%s' "$INPUT" | jq -r '.tool_response | objects | .interrupted // false' 2>/dev/null)" = "true" ] && exit 0
+EXIT_CODE=$(printf '%s' "$INPUT" | jq -r '.tool_response | objects | (.exit_code // .exitCode) // empty' 2>/dev/null)
 
 # -----------------------------------------------------------------------------
 # Allowlist
@@ -72,7 +84,7 @@ CLEAN=$(printf '%s' "$OUTPUT" | hook_strip_ansi)
 append_fail_context() {
     # Append last 20 lines as "Failure context" if exit_code != 0.
     local output="$1" exit_code="$2"
-    if [ "$exit_code" != "0" ]; then
+    if [ -n "$exit_code" ] && [ "$exit_code" != "0" ]; then
         echo ""
         echo "--- Failure context (last 20 lines) ---"
         printf '%s\n' "$output" | tail -20
@@ -143,8 +155,10 @@ dispatch_extract() {
 }
 
 TRIMMED=$(dispatch_extract "$CMD" "$CLEAN" "$EXIT_CODE")
-TRIMMED="${TRIMMED}
+if [ -n "$EXIT_CODE" ]; then
+    TRIMMED="${TRIMMED}
 (exit code: $EXIT_CODE)"
+fi
 
 # -----------------------------------------------------------------------------
 # Verbose mode: keep both views
@@ -159,7 +173,7 @@ fi
 # In Bash's own result shape (stdout replaced, stderr and flags kept): a string
 # here was dropped by Claude Code without a word (#685). No replacement it can
 # apply means no reduction to report, so the metric log is skipped too.
-hook_emit_updated_output "$INPUT" "$TRIMMED" || exit 0
+hook_emit_updated_output "$INPUT" "$TRIMMED" clear-stderr || exit 0
 
 # -----------------------------------------------------------------------------
 # Metric log (best effort)

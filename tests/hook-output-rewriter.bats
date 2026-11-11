@@ -543,7 +543,7 @@ bash_response() {
     grep -qE "tool=Bash.*orig=[0-9]+.*filtered=[0-9]+" "$METRIC_LOG"
 }
 
-@test "Phase 2: the envelope replaces Bash's stdout and keeps its other fields" {
+@test "Phase 2: the envelope keeps Bash's result object (stdout digested, stderr folded in)" {
     enable_rewriter
     local in_file="$FIXTURES/bash/npm-install-clean.in.txt"
     local stdin_json
@@ -554,8 +554,73 @@ bash_response() {
     unset BASH_OUTPUT_FILTER_THRESHOLD
     printf '%s' "$result" | jq -e '
         (.hookSpecificOutput.updatedToolOutput | type) == "object"
-        and .hookSpecificOutput.updatedToolOutput.stderr == "npm notice kept"
+        and .hookSpecificOutput.updatedToolOutput.stderr == ""
+        and .hookSpecificOutput.updatedToolOutput.interrupted == false
+        and .hookSpecificOutput.updatedToolOutput.isImage == false
+        and (.hookSpecificOutput.updatedToolOutput | has("noOutputExpected"))
         and (.hookSpecificOutput.updatedToolOutput.stdout | length) > 0' >/dev/null
+}
+
+# real_bash <stdout> <stderr> [interrupted] — the Bash result as Claude Code
+# sends it: no exit-code field (a failed command fires PostToolUseFailure).
+real_bash() {
+    jq -n --arg out "$1" --arg err "$2" --argjson intr "${3:-false}" \
+        '{tool_name: "Bash", tool_input: {command: "cargo build"},
+          tool_response: {stdout: $out, stderr: $err, interrupted: $intr,
+                          isImage: false, noOutputExpected: false}}'
+}
+
+@test "Phase 2: a LARGE output still gets its envelope (no argv limit)" {
+    # Passing the text as a jq argument hit Linux's 128 KB per-argument limit:
+    # the hook then printed nothing, silently.
+    enable_rewriter
+    local big
+    big=$(for i in $(seq 1 6000); do printf 'npm warn deprecated package-%05d@1.0.0: no longer supported\n' "$i"; done)
+    [ "${#big}" -gt 200000 ]
+    printf '%s' "$big" > "$TEST_DIR/big.txt"
+    local stdin_json
+    stdin_json=$(jq -n --rawfile out "$TEST_DIR/big.txt" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {stdout: $out, stderr: "", interrupted: false, isImage: false, noOutputExpected: false}}')
+    local result
+    result=$(printf '%s' "$stdin_json" | BASH_OUTPUT_FILTER_VERBOSE=1 "$BASH_FILTER")
+    printf '%s' "$result" | jq -e '(.hookSpecificOutput.updatedToolOutput.stdout | length) > 200000' >/dev/null
+}
+
+@test "Phase 2: no exit-code field in the result: no invented exit code" {
+    enable_rewriter
+    local out; out=$(seq 1 40 | sed 's/^/error[E0001]: line /')
+    local result
+    result=$(real_bash "$out" "" | "$BASH_FILTER")
+    local text; text=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput.stdout')
+    [ -n "$text" ]
+    [[ "$text" != *"exit code"* ]]
+}
+
+@test "Phase 2: an interrupted command is passed through untouched" {
+    enable_rewriter
+    local out; out=$(seq 1 40)
+    run bash -c "printf '%s' \"\$1\" | '$BASH_FILTER'" _ "$(real_bash "$out" "" true)"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "Phase 2: output written to STDERR is filtered too (cargo writes there)" {
+    enable_rewriter
+    local err
+    err=$( { for i in $(seq 1 40); do echo "   Compiling crate-$i v0.1.0"; done; echo "error[E0425]: cannot find value \`x\`"; echo "  --> src/main.rs:2:5"; } )
+    local result
+    result=$(real_bash "" "$err" | "$BASH_FILTER")
+    printf '%s' "$result" | jq -e '
+        (.hookSpecificOutput.updatedToolOutput.stdout | test("E0425"))
+        and (.hookSpecificOutput.updatedToolOutput.stdout | test("Compiling") | not)
+        and .hookSpecificOutput.updatedToolOutput.stderr == ""' >/dev/null
+}
+
+@test "Phase 2: a plain-string result is filtered and stays a string" {
+    enable_rewriter
+    local out; out=$(seq 1 40 | sed 's/^/error[E0001]: line /')
+    local result
+    result=$(jq -n --arg out "$out" '{tool_name: "Bash", tool_input: {command: "cargo build"}, tool_response: $out}' | "$BASH_FILTER")
+    printf '%s' "$result" | jq -e '(.hookSpecificOutput.updatedToolOutput | type) == "string"' >/dev/null
 }
 
 @test "Phase 2: a result with no stdout field: no envelope, and NO reduction logged" {
@@ -622,7 +687,9 @@ bash_response() {
     [ -x "$INLINE_EDIT" ]
 }
 
-@test "Phase 3: skips when capability sentinel is missing" {
+@test "Phase 3: reports errors even WITHOUT the updatedToolOutput sentinel" {
+    # The sentinel says "this CLI applies updatedToolOutput"; this hook now adds
+    # additionalContext, which needs no such capability, so it must not gate on it.
     rm -f "$SENTINEL_FILE"
     setup_fake_ts_project "$FIXTURES/inline-edit/tsc-single-error.tsc.txt" ""
     local stdin_json
@@ -630,7 +697,19 @@ bash_response() {
     cd "$TEST_DIR"
     run bash -c "printf '%s' '$stdin_json' | '$INLINE_EDIT'"
     [ "$status" -eq 0 ]
-    [ -z "$output" ]
+    printf '%s' "$output" | jq -e '.hookSpecificOutput.additionalContext | test("Type errors")' >/dev/null
+}
+
+@test "Phase 3: the context header does not call warnings errors" {
+    enable_rewriter
+    setup_fake_ts_project "$FIXTURES/inline-edit/tsc-single-error.tsc.txt" ""
+    local stdin_json
+    stdin_json=$(edit_stdin_json "$TEST_DIR/src/foo.ts")
+    cd "$TEST_DIR"
+    local ctx
+    ctx=$(printf '%s' "$stdin_json" | "$INLINE_EDIT" | jq -r '.hookSpecificOutput.additionalContext')
+    [[ "$(printf '%s' "$ctx" | head -1)" == *"findings"* ]] || false
+    [[ "$(printf '%s' "$ctx" | head -1)" != *"Errors"* ]]
 }
 
 @test "Phase 3: skips when SKIP_INLINE_EDIT_ERRORS=1" {
