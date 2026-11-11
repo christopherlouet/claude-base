@@ -28,3 +28,4 @@ Snapshots:   0 total
 Time:        4.213 s
 Ran all test suites.
 (exit code: 1)
+[output filtered: 30 of 43 lines kept; rerun with SKIP_BASH_OUTPUT_FILTER=1 to see everything]

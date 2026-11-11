@@ -90,23 +90,25 @@ hook_emit_envelope() {
 #
 # A third argument `clear-stderr` also empties a `stderr` field: for a caller
 # whose <text> already digests stdout AND stderr together.
-# The text reaches jq through a file, never argv: one argument is capped at
-# 128 KB on Linux, and past it the exec failed and nothing was emitted.
+# Both values reach jq on stdin — the hook input, then <text> encoded as one
+# JSON string — never argv (one argument is capped at 128 KB on Linux; past
+# it nothing was emitted), never a temp file (a hook cut by its timeout would
+# leave the command's output behind), and without --rawfile (jq >= 1.6).
 hook_emit_updated_output() {
-    local input="$1" text="$2" clear="${3:-}" tmp rc
-    tmp=$(mktemp "${TMPDIR:-/tmp}/hook-output.XXXXXX") || return 1
-    printf '%s' "$text" > "$tmp"
-    printf '%s' "$input" | jq -ce --rawfile text "$tmp" --arg clear "$clear" '
-        .tool_response as $r
+    local input="$1" text="$2" clear="${3:-}"
+    {
+        printf '%s' "$input"
+        printf '\n'
+        printf '%s' "$text" | jq -Rs .
+    } | jq -cse --arg clear "$clear" '
+        .[0].tool_response as $r
+        | .[1] as $text
         | if ($r | type) == "string" then $text
           elif ($r | type) == "object" and ($r | has("stdout")) then
             $r + {stdout: $text}
               + (if $clear == "clear-stderr" and ($r | has("stderr")) then {stderr: ""} else {} end)
           else empty end
         | {hookSpecificOutput: {hookEventName: "PostToolUse", updatedToolOutput: .}}' 2>/dev/null
-    rc=$?
-    rm -f "$tmp"
-    return "$rc"
 }
 
 # strip_msg_values now lives in _core-helpers.sh — the harness-neutral CORE

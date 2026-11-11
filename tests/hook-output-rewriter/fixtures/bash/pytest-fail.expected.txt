@@ -10,3 +10,4 @@ FAILED tests/test_user.py::test_user_create_invalid - AssertionError: DID NOT RA
 FAILED tests/test_user.py::test_user_delete_cascade - AttributeError: 'User' object has no attribute 'delete'
 ========================= 2 failed, 22 passed in 1.37s =========================
 (exit code: 1)
+[output filtered: 12 of 30 lines kept; rerun with SKIP_BASH_OUTPUT_FILTER=1 to see everything]

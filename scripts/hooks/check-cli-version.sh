@@ -64,5 +64,5 @@ fi
 
 # Unsupported — visible notice + sentinel = 0
 write_sentinel "0"
-echo "[INFO] Hook output rewriter requires Claude Code ${MIN_MAJOR}.${MIN_MINOR}.${MIN_PATCH}+ (current: ${SEMVER}) — feature disabled, sessions will work as before. Upgrade: npm install -g @anthropic-ai/claude-code@latest"
+echo "[INFO] The Bash output filter requires Claude Code ${MIN_MAJOR}.${MIN_MINOR}.${MIN_PATCH}+ (current: ${SEMVER}) — filter disabled, outputs reach Claude unchanged. Upgrade: npm install -g @anthropic-ai/claude-code@latest"
 exit 0

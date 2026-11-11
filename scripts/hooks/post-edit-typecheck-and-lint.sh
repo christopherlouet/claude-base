@@ -99,14 +99,14 @@ ANNOTATED="tsc/eslint findings in $REL_PATH after this edit:"
 if [ -n "$TSC_OUTPUT" ]; then
     ANNOTATED="$ANNOTATED
 
---- Type errors (tsc) ---
+--- Type check (tsc) ---
 $TSC_OUTPUT"
 fi
 
 if [ -n "$ESLINT_OUTPUT" ]; then
     ANNOTATED="$ANNOTATED
 
---- Lint errors (eslint) ---
+--- Lint (eslint) ---
 $ESLINT_OUTPUT"
 fi
 

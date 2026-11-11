@@ -31,21 +31,6 @@ INPUT=$(cat 2>/dev/null || true)
 CMD=$(printf '%s' "$INPUT" | jq -r '.tool_input.command // empty' 2>/dev/null) || exit 0
 [ -z "$CMD" ] && exit 0
 
-# Bash's result is {stdout, stderr, interrupted, isImage, noOutputExpected}
-# (measured). The filter reads stdout AND stderr together — cargo writes all of
-# its output to stderr, npm its warnings — and replaces them with one digest
-# in stdout (stderr emptied): reading one field and writing another would
-# duplicate or lose lines. A plain-string result is read, and replaced, as is.
-# An interrupted command is left untouched. The result carries no exit code (a
-# failed command fires PostToolUseFailure, not this hook), so none is invented:
-# it is reported only when a field provides it.
-OUTPUT=$(printf '%s' "$INPUT" | jq -r '.tool_response
-    | if type == "string" then .
-      elif type == "object" then [.stdout, .stderr] | map(select(type == "string" and . != "")) | join("\n")
-      else empty end' 2>/dev/null)
-[ "$(printf '%s' "$INPUT" | jq -r '.tool_response | objects | .interrupted // false' 2>/dev/null)" = "true" ] && exit 0
-EXIT_CODE=$(printf '%s' "$INPUT" | jq -r '.tool_response | objects | (.exit_code // .exitCode) // empty' 2>/dev/null)
-
 # -----------------------------------------------------------------------------
 # Allowlist
 # -----------------------------------------------------------------------------
@@ -63,6 +48,22 @@ is_allowlisted() {
 }
 
 is_allowlisted "$CMD" || exit 0
+
+# Bash's result is {stdout, stderr, interrupted, isImage, noOutputExpected}
+# (measured). The filter reads stdout AND stderr together — cargo writes all of
+# its output to stderr, npm its warnings — and replaces them with one digest
+# in stdout (stderr emptied): reading one field and writing another would
+# duplicate or lose lines. A plain-string result is read, and replaced, as is.
+# An interrupted command is left untouched. The result carries no exit code (a
+# failed command fires PostToolUseFailure, not this hook), so none is invented:
+# it is reported only when a field provides it.
+OUTPUT=$(printf '%s' "$INPUT" | jq -r '.tool_response
+    | if type == "string" then .
+      elif type == "object" then [.stdout, .stderr] | map(select(type == "string" and . != "")) | join("\n")
+      else empty end' 2>/dev/null)
+[ "$(printf '%s' "$INPUT" | jq -r '.tool_response | objects | .interrupted // false' 2>/dev/null)" = "true" ] && exit 0
+EXIT_CODE=$(printf '%s' "$INPUT" | jq -r '.tool_response | objects | (.exit_code // .exitCode) // empty' 2>/dev/null)
+
 
 # -----------------------------------------------------------------------------
 # Threshold guard
@@ -155,10 +156,25 @@ dispatch_extract() {
 }
 
 TRIMMED=$(dispatch_extract "$CMD" "$CLEAN" "$EXIT_CODE")
+# Nothing kept means nothing to replace: an empty digest would hand Claude a
+# blank result for a build whose lines merely matched no pattern (its stderr
+# warnings with it), and say nothing about it.
+if ! printf '%s\n' "$TRIMMED" | grep -q '[^[:space:]]'; then
+    exit 0
+fi
 if [ -n "$EXIT_CODE" ]; then
     TRIMMED="${TRIMMED}
 (exit code: $EXIT_CODE)"
 fi
+
+# A digest says it is one, and how to get the whole output back. One that is
+# not shorter than the output (the failure context repeats its last lines) is
+# not applied: it would only hide the original order.
+KEPT=$(printf '%s\n' "$TRIMMED" | wc -l | tr -d ' ')
+TOTAL=$(printf '%s\n' "$CLEAN" | wc -l | tr -d ' ')
+[ "$KEPT" -lt "$TOTAL" ] || exit 0
+TRIMMED="${TRIMMED}
+[output filtered: ${KEPT} of ${TOTAL} lines kept; rerun with SKIP_BASH_OUTPUT_FILTER=1 to see everything]"
 
 # -----------------------------------------------------------------------------
 # Verbose mode: keep both views
@@ -170,8 +186,11 @@ fi
 # -----------------------------------------------------------------------------
 # Emit envelope
 # -----------------------------------------------------------------------------
-# In Bash's own result shape (stdout replaced, stderr and flags kept): a string
-# here was dropped by Claude Code without a word (#685). No replacement it can
+# In Bash's own result shape: the digest of stdout+stderr goes to stdout,
+# stderr is emptied (it is in the digest), the flags are kept. A string here
+# was dropped by Claude Code without a word (#685). The two streams arrive
+# separately, so the digest lists stdout's lines before stderr's: their real
+# interleaving is not recoverable. No replacement it can
 # apply means no reduction to report, so the metric log is skipped too.
 hook_emit_updated_output "$INPUT" "$TRIMMED" clear-stderr || exit 0
 

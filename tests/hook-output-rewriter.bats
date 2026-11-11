@@ -448,7 +448,9 @@ bash_response() {
 @test "Phase 2: filter respects custom BASH_OUTPUT_FILTER_THRESHOLD" {
     enable_rewriter
     local stdin_json
-    stdin_json=$(jq -n --arg out "$(seq 1 15)" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {stdout: $out, stderr: "", interrupted: false, isImage: false, noOutputExpected: false}}')
+    # 15 lines, one the install extractor keeps: a digest that keeps nothing
+    # is not applied, so the input must hold something worth keeping.
+    stdin_json=$(jq -n --arg out "$(seq 1 14; echo 'added 3 packages in 1s')" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {stdout: $out, stderr: "", interrupted: false, isImage: false, noOutputExpected: false}}')
     BASH_OUTPUT_FILTER_THRESHOLD=5 run bash -c "printf '%s' '$stdin_json' | '$BASH_FILTER'"
     [ "$status" -eq 0 ]
     # Above threshold of 5 → should produce envelope
@@ -477,7 +479,9 @@ bash_response() {
 
 @test "Phase 2: fixture go-test-fail — go extractor keeps FAIL/ok lines + failure context" {
     enable_rewriter
-    assert_bash_fixture "go-test-fail" "go test ./..." 1
+    # Exit code 0: Bash results carry none and a failure never reaches this
+    # hook, and with the failure context the digest outgrew the output.
+    assert_bash_fixture "go-test-fail" "go test ./..." 0
 }
 
 @test "Phase 2: fixture cargo-build-fail — cargo extractor keeps error[E*] blocks" {
@@ -623,6 +627,45 @@ real_bash() {
     printf '%s' "$result" | jq -e '(.hookSpecificOutput.updatedToolOutput | type) == "string"' >/dev/null
 }
 
+@test "Phase 2: a digest that keeps NOTHING passes the output through untouched" {
+    # A successful build whose lines match no extractor pattern used to be
+    # replaced by an EMPTY result, stderr warnings included, with nothing
+    # saying so. Nothing kept means nothing to replace.
+    enable_rewriter
+    rm -f "$METRIC_LOG"
+    local out; out=$(for i in $(seq 1 40); do echo "transforming module $i"; done)
+    run bash -c "printf '%s' \"\$1\" | '$BASH_FILTER'" _ "$(jq -n --arg out "$out" '{tool_name: "Bash", tool_input: {command: "npm run build"}, tool_response: {stdout: $out, stderr: "(!) Some chunks are larger than 500 kB", interrupted: false, isImage: false, noOutputExpected: false}}')"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+    [ ! -s "$METRIC_LOG" ]
+}
+
+@test "Phase 2: a digest says it is one, and how to see everything" {
+    enable_rewriter
+    local out; out=$(seq 1 40 | sed 's/^/error[E0001]: line /')
+    local text
+    text=$(real_bash "$out" "" | "$BASH_FILTER" | jq -r '.hookSpecificOutput.updatedToolOutput.stdout')
+    [[ "$text" == *"filtered"* ]] || false
+    [[ "$text" == *"SKIP_BASH_OUTPUT_FILTER=1"* ]]
+}
+
+@test "Phase 2: the replacement leaves no temporary file behind" {
+    enable_rewriter
+    mkdir -p "$TEST_DIR/tmp"
+    local out; out=$(seq 1 40 | sed 's/^/error[E0001]: line /')
+    real_bash "$out" "" | TMPDIR="$TEST_DIR/tmp" "$BASH_FILTER" >/dev/null
+    [ -z "$(ls -A "$TEST_DIR/tmp")" ]
+}
+
+@test "Phase 2: a digest no shorter than the output is not applied" {
+    enable_rewriter
+    # 6 lines all kept, plus a failure context repeating them: longer than input.
+    local out; out=$(for i in $(seq 1 6); do echo "error: line $i"; done)
+    run bash -c "printf '%s' \"\$1\" | BASH_OUTPUT_FILTER_THRESHOLD=5 '$BASH_FILTER'" _ "$(jq -n --arg out "$out" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {stdout: $out, stderr: "", interrupted: false, isImage: false, noOutputExpected: false, exit_code: 1}}')"
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
 @test "Phase 2: a result with no stdout field: no envelope, and NO reduction logged" {
     # A reduction the tool cannot apply must not be reported as one: the old
     # log recorded orig=41 filtered=2 while Claude received all 41 lines.
@@ -697,7 +740,7 @@ real_bash() {
     cd "$TEST_DIR"
     run bash -c "printf '%s' '$stdin_json' | '$INLINE_EDIT'"
     [ "$status" -eq 0 ]
-    printf '%s' "$output" | jq -e '.hookSpecificOutput.additionalContext | test("Type errors")' >/dev/null
+    printf '%s' "$output" | jq -e '.hookSpecificOutput.additionalContext | test("Type check")' >/dev/null
 }
 
 @test "Phase 3: the context header does not call warnings errors" {
@@ -756,7 +799,7 @@ real_bash() {
     # there is ignored (measured), so the hook ADDS context and replaces nothing.
     printf '%s' "$result" | jq -e '.hookSpecificOutput | has("updatedToolOutput") | not' >/dev/null
     [[ "$trimmed" != *"Edit OK"* ]] || false
-    [[ "$trimmed" == *"--- Type errors (tsc) ---"* ]]
+    [[ "$trimmed" == *"--- Type check (tsc) ---"* ]]
     [[ "$trimmed" == *"TS2304"* ]]
     [[ "$trimmed" == *"foo.ts"* ]]
 }
@@ -824,9 +867,9 @@ real_bash() {
     # Edit's result is a structured object with no text field: a replacement
     # there is ignored (measured), so the hook ADDS context and replaces nothing.
     printf '%s' "$result" | jq -e '.hookSpecificOutput | has("updatedToolOutput") | not' >/dev/null
-    [[ "$trimmed" == *"--- Lint errors (eslint) ---"* ]]
+    [[ "$trimmed" == *"--- Lint (eslint) ---"* ]]
     [[ "$trimmed" == *"no-unused-vars"* ]]
-    [[ "$trimmed" != *"--- Type errors (tsc) ---"* ]]
+    [[ "$trimmed" != *"--- Type check (tsc) ---"* ]]
 }
 
 # BUG 7: the eslint-output grep must use -F. A Next.js path like src/[id]/page.tsx
@@ -857,7 +900,7 @@ real_bash() {
     # Edit's result is a structured object with no text field: a replacement
     # there is ignored (measured), so the hook ADDS context and replaces nothing.
     printf '%s' "$result" | jq -e '.hookSpecificOutput | has("updatedToolOutput") | not' >/dev/null
-    [[ "$trimmed" == *"--- Lint errors (eslint) ---"* ]]
+    [[ "$trimmed" == *"--- Lint (eslint) ---"* ]]
     # The per-file branch (grep -F -B1 -A2) includes the header path line, which
     # carries the bracketed path; the coarse fallback (keyword grep) would not.
     [[ "$trimmed" == *"[id]/page.tsx"* ]]
@@ -891,11 +934,11 @@ real_bash() {
     # Edit's result is a structured object with no text field: a replacement
     # there is ignored (measured), so the hook ADDS context and replaces nothing.
     printf '%s' "$result" | jq -e '.hookSpecificOutput | has("updatedToolOutput") | not' >/dev/null
-    [[ "$trimmed" == *"--- Type errors (tsc) ---"* ]]
-    [[ "$trimmed" == *"--- Lint errors (eslint) ---"* ]]
+    [[ "$trimmed" == *"--- Type check (tsc) ---"* ]]
+    [[ "$trimmed" == *"--- Lint (eslint) ---"* ]]
     local tsc_pos eslint_pos
-    tsc_pos=$(printf '%s' "$trimmed" | grep -n -- "--- Type errors" | head -1 | cut -d: -f1)
-    eslint_pos=$(printf '%s' "$trimmed" | grep -n -- "--- Lint errors" | head -1 | cut -d: -f1)
+    tsc_pos=$(printf '%s' "$trimmed" | grep -n -- "--- Type check" | head -1 | cut -d: -f1)
+    eslint_pos=$(printf '%s' "$trimmed" | grep -n -- "--- Lint (eslint)" | head -1 | cut -d: -f1)
     [ "$tsc_pos" -lt "$eslint_pos" ]
 }
 
