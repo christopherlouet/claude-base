@@ -481,7 +481,15 @@ during_prompt() {
     local before after
     before=$(git -C "$BASE_DIR" for-each-ref --format='%(refname) %(objectname)' refs/heads)
     run bash "$SCRIPT" prune-auto "$BASE_DIR" </dev/null
-    [ "$status" -eq 0 ]
+    # A CI checkout is a detached HEAD with no local main nor master: the
+    # script must then refuse cleanly — and still touch nothing.
+    if git -C "$BASE_DIR" show-ref -q --verify refs/heads/main ||
+        git -C "$BASE_DIR" show-ref -q --verify refs/heads/master; then
+        [ "$status" -eq 0 ]
+    else
+        [ "$status" -eq 1 ]
+        [[ "$output" == *"no main nor master"* ]] || false
+    fi
     after=$(git -C "$BASE_DIR" for-each-ref --format='%(refname) %(objectname)' refs/heads)
     [ "$before" = "$after" ]
 }
