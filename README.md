@@ -277,6 +277,9 @@ claude-base add nextjs /path/to/project
 claude-base lessons bootstrap-scan
 /lessons --bootstrap    # the guided flow, from inside Claude Code
 
+# List the feature/auto-* branches already in main; --apply deletes them (asks per repo)
+claude-base branches prune-auto /path/to/project
+
 # Uninstall
 claude-base uninstall /path/to/project
 ```
@@ -382,7 +385,7 @@ Concrete signals rather than a self-assessment score :
 - **Private names**: a pre-commit gate stops an end user's private project names from reaching this public repo, in staged paths *or* staged content. The protected list is deliberately kept **outside** the repository (`~/.claude/private-names`, or `CLAUDE_BASE_PRIVATE_NAMES`), so it is never itself published — and no list means a silent no-op, so a fresh clone is never blocked. Scans only what a commit **adds**; bypass once with `SKIP_PRIVATE_NAMES=1`. See [`docs/GUARDRAILS.md`](docs/GUARDRAILS.md)
 - **ShellCheck**: bash linting on all `scripts/` (CI workflow `security.yml`, severity warning)
 - **Deny list**: `rm -rf /` and `sudo` are refused by the command validator; `git push --force` / `-f` is refused only by the permission deny list, in its literal leading form (`git push --force…`, `git push origin --force…`) — a flag placed later is not caught
-- **Protection hooks**: keeps Edit/Write edits off main/master by moving them to a new `feature/auto-*` branch (refused if that branch cannot be created); a Bash write to a tracked file on main is refused
+- **Protection hooks**: keeps Edit/Write edits off main/master by moving them to a `feature/auto-*` branch — today's, when it is still empty, else a new one (refused if that branch cannot be created; `claude-base branches prune-auto` clears the merged ones); a Bash write to a tracked file on main is refused
 - **GitHub Secret Scanning**: enabled on the public repo
 - **Not protected: reading secrets.** Nothing stops the agent from reading `.env` or another secrets file (`cat .env`, the Read tool); what it reads reaches the session transcript. The guards cover secrets being *written* into files, and a secrets file being overwritten through Bash
 - **GitHub Code Scanning** (CodeQL): JavaScript/TypeScript security analysis (Default Setup — repo-wide)
