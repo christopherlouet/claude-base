@@ -3,9 +3,11 @@
 # post-edit-typecheck-and-lint.sh — PostToolUse Edit|Write hook
 # =============================================================================
 # Replaces the foundation's two former inline tsc + eslint hooks with a single
-# script that ANNOTATES the Edit/Write tool result envelope (hookSpecificOutput
-# .updatedToolOutput, CLI 2.1.121+) instead of emitting tsc/eslint output as
-# separate side messages.
+# script that ADDS the errors found in the just-edited file to Claude's context
+# (hookSpecificOutput.additionalContext). It used to replace the tool result
+# (updatedToolOutput) with an annotated string, which Claude Code drops
+# silently: Edit/Write return a structured object with no text field, and a
+# replacement must match that shape (measured, #685).
 #
 # Status semantics: the rewriter never downgrades the tool result to FAILURE;
 # the edit happened on disk, errors are co-located annotations Claude can act on
@@ -90,11 +92,9 @@ if [ -z "$TSC_OUTPUT" ] && [ -z "$ESLINT_OUTPUT" ]; then
 fi
 
 # -----------------------------------------------------------------------------
-# Build annotated tool_response
+# Build the context: one section per tool that found something
 # -----------------------------------------------------------------------------
-ORIG_RESPONSE=$(printf '%s' "$INPUT" | jq -r '.tool_response // "" | if type == "string" then . else tojson end' 2>/dev/null)
-
-ANNOTATED="$ORIG_RESPONSE"
+ANNOTATED="Errors in $REL_PATH after this edit:"
 
 if [ -n "$TSC_OUTPUT" ]; then
     ANNOTATED="$ANNOTATED
@@ -111,8 +111,8 @@ $ESLINT_OUTPUT"
 fi
 
 # -----------------------------------------------------------------------------
-# Emit envelope (status stays SUCCESS — co-located annotations only)
+# Emit envelope (status stays SUCCESS — the edit happened; context only)
 # -----------------------------------------------------------------------------
-hook_emit_envelope "PostToolUse" "updatedToolOutput" "$ANNOTATED"
+hook_emit_envelope "PostToolUse" "additionalContext" "$ANNOTATED"
 
 exit 0

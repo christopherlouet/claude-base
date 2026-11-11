@@ -174,13 +174,13 @@ read-only `validate-counts.sh` instead (no regeneration, no staging).
 
 ## Output rewriter (CLI 2.1.121+)
 
-Three coordinated hooks that exploit `hookSpecificOutput.updatedToolOutput` to tighten Claude's feedback loop on PostToolUse Bash and Edit/Write events.
+Three coordinated hooks that tighten Claude's feedback loop on PostToolUse Bash and Edit/Write events. A replacement (`hookSpecificOutput.updatedToolOutput`) must match the tool's own result shape — Claude Code drops a mismatch **without an error**. Measured: for Bash, the object `{stdout, stderr, interrupted, isImage, noOutputExpected}` replaces the output and a string is ignored; Edit/Write return a structured object with no text field, so a hook ADDS to them through `additionalContext` instead.
 
 | Hook | Event | Role |
 |------|-------|------|
 | `check-cli-version.sh` | SessionStart | Probes `claude --version` and writes `/tmp/claude-rewriter-supported` (`1` if >= 2.1.121, `0` otherwise). On unsupported CLI, prints a one-line notice. |
-| `bash-output-filter.sh` | PostToolUse (Bash) | Trims allowlisted noisy command outputs (`npm`/`pnpm`/`yarn`/`bun` install/audit/test/build, `pytest`, `go test`/`build`, `cargo build`/`test`/`check`) to actionable lines. Outputs below 30 lines pass through unchanged. |
-| `post-edit-typecheck-and-lint.sh` | PostToolUse (Edit\\|Write) | Replaces the former inline tsc + eslint blocks. Runs `tsc --noEmit` (TS/TSX) + `eslint` (TS/TSX/JS/JSX), grep filters for the just-edited file, appends errors as a delimited section to the Edit/Write tool result envelope. Status stays SUCCESS. |
+| `bash-output-filter.sh` | PostToolUse (Bash) | Trims allowlisted noisy command outputs (`npm`/`pnpm`/`yarn`/`bun` install/audit/test/build, `pytest`, `go test`/`build`, `cargo build`/`test`/`check`) to actionable lines. Outputs below 30 lines pass through unchanged. Replaces `stdout` inside Bash's own result object (stderr and flags kept); it fires only on success, since a failed command emits `PostToolUseFailure` instead. |
+| `post-edit-typecheck-and-lint.sh` | PostToolUse (Edit\\|Write) | Replaces the former inline tsc + eslint blocks. Runs `tsc --noEmit` (TS/TSX) + `eslint` (TS/TSX/JS/JSX), grep filters for the just-edited file, adds the errors to Claude's context (`additionalContext`) in delimited sections. The tool result itself is left untouched. Status stays SUCCESS. |
 
 All three hooks bail out silently if the sentinel reports unsupported, if `jq` is absent, or if their respective opt-out env var is set. The Bash filter and inline-edit hook share the helpers in `_hook-helpers.sh` (sourced, not registered).
 

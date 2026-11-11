@@ -107,7 +107,7 @@ assert_bash_fixture() {
 
     local stdin_json
     stdin_json=$(jq -n --arg cmd "$cmd" --argjson code "$exit_code" --rawfile out "$in_file" \
-        '{tool_name: "Bash", tool_input: {command: $cmd}, tool_response: {output: $out, exit_code: $code}}')
+        '{tool_name: "Bash", tool_input: {command: $cmd}, tool_response: {stdout: $out, stderr: "", interrupted: false, isImage: false, noOutputExpected: false, exit_code: $code}}')
 
     # Lower threshold so artificial short fixtures still trigger the filter.
     # Threshold behavior itself is covered by dedicated tests.
@@ -117,7 +117,7 @@ assert_bash_fixture() {
     unset BASH_OUTPUT_FILTER_THRESHOLD
 
     local trimmed
-    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput')
+    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput.stdout')
 
     local expected
     expected=$(cat "$expected_file")
@@ -228,23 +228,78 @@ assert_bash_fixture() {
 @test "Phase 1: hook_emit_envelope produces valid JSON with hookSpecificOutput" {
     run bash -c "
         source '$HELPERS'
-        hook_emit_envelope 'PostToolUse' 'updatedToolOutput' 'hello world'
+        hook_emit_envelope 'PostToolUse' 'additionalContext' 'hello world'
     "
     [ "$status" -eq 0 ]
     echo "$output" | jq -e '.hookSpecificOutput.hookEventName == "PostToolUse"' >/dev/null
-    echo "$output" | jq -e '.hookSpecificOutput.updatedToolOutput == "hello world"' >/dev/null
+    echo "$output" | jq -e '.hookSpecificOutput.additionalContext == "hello world"' >/dev/null
 }
 
 @test "Phase 1: hook_emit_envelope handles multi-line values" {
     run bash -c "
         source '$HELPERS'
         printf 'line1\nline2\nline3' | xargs -I {} echo {} > /dev/null  # no-op, keeps subshell
-        hook_emit_envelope 'PostToolUse' 'updatedToolOutput' \"\$(printf 'line1\nline2')\"
+        hook_emit_envelope 'PostToolUse' 'additionalContext' \"\$(printf 'line1\nline2')\"
     "
     [ "$status" -eq 0 ]
     local val
-    val=$(echo "$output" | jq -r '.hookSpecificOutput.updatedToolOutput')
+    val=$(echo "$output" | jq -r '.hookSpecificOutput.additionalContext')
     [ "$val" = "$(printf 'line1\nline2')" ]
+}
+
+# #685: a STRING updatedToolOutput is ignored by Claude Code, silently — the
+# value must match the tool's own result shape (measured: Bash takes the
+# object, a string is dropped; Edit's result is structured, a string dropped
+# too). The string helper must refuse that key so the bug cannot come back.
+@test "Phase 1: hook_emit_envelope REFUSES updatedToolOutput (a string there is ignored)" {
+    run bash -c "
+        source '$HELPERS'
+        hook_emit_envelope 'PostToolUse' 'updatedToolOutput' 'text'
+    "
+    [ "$status" -ne 0 ]
+    [[ "$output" != *'hookSpecificOutput'* ]] || false
+}
+
+# bash_response <stdout> — a Bash tool_response as Claude Code sends it.
+bash_response() {
+    jq -n --arg out "$1" \
+        '{tool_name: "Bash", tool_input: {command: "npm test"},
+          tool_response: {stdout: $out, stderr: "warn: kept", interrupted: false,
+                          isImage: false, noOutputExpected: false}}'
+}
+
+@test "Phase 1: hook_emit_updated_output keeps the tool's object, replaces stdout only" {
+    local input; input=$(bash_response "long original")
+    run bash -c "source '$HELPERS'; hook_emit_updated_output \"\$1\" 'short'" _ "$input"
+    [ "$status" -eq 0 ]
+    printf '%s' "$output" | jq -e '
+        .hookSpecificOutput.hookEventName == "PostToolUse"
+        and (.hookSpecificOutput.updatedToolOutput | type) == "object"
+        and .hookSpecificOutput.updatedToolOutput.stdout == "short"
+        and .hookSpecificOutput.updatedToolOutput.stderr == "warn: kept"
+        and .hookSpecificOutput.updatedToolOutput.interrupted == false
+        and .hookSpecificOutput.updatedToolOutput.isImage == false
+        and .hookSpecificOutput.updatedToolOutput.noOutputExpected == false' >/dev/null
+    # Same keys as the original: nothing invented, nothing dropped.
+    [ "$(printf '%s' "$output" | jq -c '.hookSpecificOutput.updatedToolOutput | keys')" = \
+      "$(printf '%s' "$input" | jq -c '.tool_response | keys')" ]
+}
+
+@test "Phase 1: hook_emit_updated_output keeps a string result a string" {
+    local input
+    input=$(jq -n '{tool_name: "X", tool_response: "original text"}')
+    run bash -c "source '$HELPERS'; hook_emit_updated_output \"\$1\" 'short'" _ "$input"
+    [ "$status" -eq 0 ]
+    printf '%s' "$output" | jq -e '.hookSpecificOutput.updatedToolOutput == "short"' >/dev/null
+}
+
+@test "Phase 1: hook_emit_updated_output emits NOTHING for an object without stdout" {
+    # An unknown shape is never guessed: it would be dropped silently.
+    local input
+    input=$(jq -n '{tool_name: "Edit", tool_response: {filePath: "/x", structuredPatch: []}}')
+    run bash -c "source '$HELPERS'; hook_emit_updated_output \"\$1\" 'short'" _ "$input"
+    [ "$status" -ne 0 ]
+    [ -z "$output" ]
 }
 
 @test "Phase 1: hook_emit_envelope handles UserPromptSubmit + additionalContext" {
@@ -357,7 +412,7 @@ assert_bash_fixture() {
 @test "Phase 2: filter exits 0 with no envelope when sentinel is missing" {
     rm -f "$SENTINEL_FILE"
     local stdin_json
-    stdin_json=$(jq -n '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: "x\ny\n", exit_code: 0}}')
+    stdin_json=$(jq -n '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {stdout: "x\ny\n", stderr: "", interrupted: false, isImage: false, noOutputExpected: false}}')
     run bash -c "printf '%s' '$stdin_json' | '$BASH_FILTER'"
     [ "$status" -eq 0 ]
     [ -z "$output" ]
@@ -366,7 +421,7 @@ assert_bash_fixture() {
 @test "Phase 2: filter exits 0 with no envelope when SKIP_BASH_OUTPUT_FILTER=1" {
     enable_rewriter
     local stdin_json
-    stdin_json=$(jq -n '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: "x\ny\n", exit_code: 0}}')
+    stdin_json=$(jq -n '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {stdout: "x\ny\n", stderr: "", interrupted: false, isImage: false, noOutputExpected: false}}')
     SKIP_BASH_OUTPUT_FILTER=1 run bash -c "printf '%s' '$stdin_json' | '$BASH_FILTER'"
     [ "$status" -eq 0 ]
     [ -z "$output" ]
@@ -375,7 +430,7 @@ assert_bash_fixture() {
 @test "Phase 2: filter passes through commands not in allowlist (ls -la)" {
     enable_rewriter
     local stdin_json
-    stdin_json=$(jq -n --arg out "$(seq 1 50)" '{tool_name: "Bash", tool_input: {command: "ls -la"}, tool_response: {output: $out, exit_code: 0}}')
+    stdin_json=$(jq -n --arg out "$(seq 1 50)" '{tool_name: "Bash", tool_input: {command: "ls -la"}, tool_response: {stdout: $out, stderr: "", interrupted: false, isImage: false, noOutputExpected: false}}')
     run bash -c "printf '%s' '$stdin_json' | '$BASH_FILTER'"
     [ "$status" -eq 0 ]
     [ -z "$output" ]
@@ -384,7 +439,7 @@ assert_bash_fixture() {
 @test "Phase 2: filter passes through outputs below threshold (< 30 lines)" {
     enable_rewriter
     local stdin_json
-    stdin_json=$(jq -n --arg out "$(seq 1 10)" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: $out, exit_code: 0}}')
+    stdin_json=$(jq -n --arg out "$(seq 1 10)" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {stdout: $out, stderr: "", interrupted: false, isImage: false, noOutputExpected: false}}')
     run bash -c "printf '%s' '$stdin_json' | '$BASH_FILTER'"
     [ "$status" -eq 0 ]
     [ -z "$output" ]
@@ -393,7 +448,7 @@ assert_bash_fixture() {
 @test "Phase 2: filter respects custom BASH_OUTPUT_FILTER_THRESHOLD" {
     enable_rewriter
     local stdin_json
-    stdin_json=$(jq -n --arg out "$(seq 1 15)" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: $out, exit_code: 0}}')
+    stdin_json=$(jq -n --arg out "$(seq 1 15)" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {stdout: $out, stderr: "", interrupted: false, isImage: false, noOutputExpected: false}}')
     BASH_OUTPUT_FILTER_THRESHOLD=5 run bash -c "printf '%s' '$stdin_json' | '$BASH_FILTER'"
     [ "$status" -eq 0 ]
     # Above threshold of 5 → should produce envelope
@@ -434,11 +489,11 @@ assert_bash_fixture() {
     enable_rewriter
     local in_file="$FIXTURES/bash/npm-audit-vulns.in.txt"
     local stdin_json
-    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm audit"}, tool_response: {output: $out, exit_code: 0}}')
+    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm audit"}, tool_response: {stdout: $out, stderr: "", interrupted: false, isImage: false, noOutputExpected: false}}')
     local result
     result=$(printf '%s' "$stdin_json" | "$BASH_FILTER")
     local trimmed
-    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput')
+    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput.stdout')
     local lines
     lines=$(printf '%s\n' "$trimmed" | wc -l)
     [ "$lines" -le 25 ]
@@ -448,14 +503,14 @@ assert_bash_fixture() {
     enable_rewriter
     local in_file="$FIXTURES/bash/npm-install-clean.in.txt"
     local stdin_json
-    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: $out, exit_code: 0}}')
+    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {stdout: $out, stderr: "", interrupted: false, isImage: false, noOutputExpected: false}}')
     export BASH_OUTPUT_FILTER_VERBOSE=1
     export BASH_OUTPUT_FILTER_THRESHOLD=5
     local result
     result=$(printf '%s' "$stdin_json" | "$BASH_FILTER")
     unset BASH_OUTPUT_FILTER_VERBOSE BASH_OUTPUT_FILTER_THRESHOLD
     local trimmed
-    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput')
+    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput.stdout')
     [[ "$trimmed" == *"--- Original output ---"* ]]
     [[ "$trimmed" == *"npm warn deprecated inflight"* ]]
 }
@@ -467,11 +522,11 @@ assert_bash_fixture() {
     raw=$(printf '\x1b[31madded \x1b[1;32m247 packages\x1b[0m, and audited 248 packages in 12s\nfound 0 vulnerabilities\n')
     # Make output long enough to pass threshold
     raw="$raw$(seq 1 35)"
-    stdin_json=$(jq -n --arg out "$raw" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: $out, exit_code: 0}}')
+    stdin_json=$(jq -n --arg out "$raw" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {stdout: $out, stderr: "", interrupted: false, isImage: false, noOutputExpected: false}}')
     local result
     result=$(printf '%s' "$stdin_json" | "$BASH_FILTER")
     local trimmed
-    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput')
+    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput.stdout')
     [[ "$trimmed" != *$'\x1b['* ]]
 }
 
@@ -480,12 +535,43 @@ assert_bash_fixture() {
     rm -f "$METRIC_LOG"
     local in_file="$FIXTURES/bash/npm-install-clean.in.txt"
     local stdin_json
-    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: $out, exit_code: 0}}')
+    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {stdout: $out, stderr: "", interrupted: false, isImage: false, noOutputExpected: false}}')
     export BASH_OUTPUT_FILTER_THRESHOLD=5
     printf '%s' "$stdin_json" | "$BASH_FILTER" >/dev/null
     unset BASH_OUTPUT_FILTER_THRESHOLD
     [ -f "$METRIC_LOG" ]
     grep -qE "tool=Bash.*orig=[0-9]+.*filtered=[0-9]+" "$METRIC_LOG"
+}
+
+@test "Phase 2: the envelope replaces Bash's stdout and keeps its other fields" {
+    enable_rewriter
+    local in_file="$FIXTURES/bash/npm-install-clean.in.txt"
+    local stdin_json
+    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {stdout: $out, stderr: "npm notice kept", interrupted: false, isImage: false, noOutputExpected: false}}')
+    export BASH_OUTPUT_FILTER_THRESHOLD=5
+    local result
+    result=$(printf '%s' "$stdin_json" | "$BASH_FILTER")
+    unset BASH_OUTPUT_FILTER_THRESHOLD
+    printf '%s' "$result" | jq -e '
+        (.hookSpecificOutput.updatedToolOutput | type) == "object"
+        and .hookSpecificOutput.updatedToolOutput.stderr == "npm notice kept"
+        and (.hookSpecificOutput.updatedToolOutput.stdout | length) > 0' >/dev/null
+}
+
+@test "Phase 2: a result with no stdout field: no envelope, and NO reduction logged" {
+    # A reduction the tool cannot apply must not be reported as one: the old
+    # log recorded orig=41 filtered=2 while Claude received all 41 lines.
+    enable_rewriter
+    rm -f "$METRIC_LOG"
+    local in_file="$FIXTURES/bash/npm-install-clean.in.txt"
+    local stdin_json
+    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: $out}}')
+    export BASH_OUTPUT_FILTER_THRESHOLD=5
+    run bash -c "printf '%s' \"\$1\" | '$BASH_FILTER'" _ "$stdin_json"
+    unset BASH_OUTPUT_FILTER_THRESHOLD
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+    [ ! -s "$METRIC_LOG" ]
 }
 
 @test "Phase 2: the default metric log is private (it holds the start of each command)" {
@@ -495,7 +581,7 @@ assert_bash_fixture() {
     unset HOOK_REWRITER_METRIC_LOG
     local in_file="$FIXTURES/bash/npm-install-clean.in.txt"
     local stdin_json
-    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: $out, exit_code: 0}}')
+    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {stdout: $out, stderr: "", interrupted: false, isImage: false, noOutputExpected: false}}')
     printf '%s' "$stdin_json" | (umask 002; XDG_STATE_HOME="$TEST_DIR/xdg" BASH_OUTPUT_FILTER_THRESHOLD=5 "$BASH_FILTER" >/dev/null)
     local log="$TEST_DIR/xdg/claude-base/rewriter.log"
     [ -f "$log" ]
@@ -509,7 +595,7 @@ assert_bash_fixture() {
     unset HOOK_REWRITER_METRIC_LOG
     local in_file="$FIXTURES/bash/npm-install-clean.in.txt"
     local stdin_json
-    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {output: $out, exit_code: 0}}')
+    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm install"}, tool_response: {stdout: $out, stderr: "", interrupted: false, isImage: false, noOutputExpected: false}}')
     run bash -c "printf '%s' \"\$1\" | env -u HOME -u XDG_STATE_HOME '$BASH_FILTER'" _ "$stdin_json"
     [ "$status" -eq 0 ]
     [[ "$output" != *"unbound"* ]] && [[ "$output" != *"liaison"* ]]
@@ -519,7 +605,7 @@ assert_bash_fixture() {
     enable_rewriter
     local in_file="$FIXTURES/bash/npm-audit-vulns.in.txt"
     local stdin_json
-    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm audit"}, tool_response: {output: $out, exit_code: 0}}')
+    stdin_json=$(jq -n --rawfile out "$in_file" '{tool_name: "Bash", tool_input: {command: "npm audit"}, tool_response: {stdout: $out, stderr: "", interrupted: false, isImage: false, noOutputExpected: false}}')
     local start_ms end_ms
     start_ms=$(now_ms)
     printf '%s' "$stdin_json" | "$BASH_FILTER" >/dev/null
@@ -586,8 +672,11 @@ assert_bash_fixture() {
     local result
     result=$(printf '%s' "$stdin_json" | "$INLINE_EDIT")
     local trimmed
-    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput')
-    [[ "$trimmed" == *"Edit OK"* ]]
+    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')
+    # Edit's result is a structured object with no text field: a replacement
+    # there is ignored (measured), so the hook ADDS context and replaces nothing.
+    printf '%s' "$result" | jq -e '.hookSpecificOutput | has("updatedToolOutput") | not' >/dev/null
+    [[ "$trimmed" != *"Edit OK"* ]] || false
     [[ "$trimmed" == *"--- Type errors (tsc) ---"* ]]
     [[ "$trimmed" == *"TS2304"* ]]
     [[ "$trimmed" == *"foo.ts"* ]]
@@ -612,7 +701,10 @@ assert_bash_fixture() {
     local result
     result=$(printf '%s' "$stdin_json" | "$INLINE_EDIT")
     local trimmed
-    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput')
+    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')
+    # Edit's result is a structured object with no text field: a replacement
+    # there is ignored (measured), so the hook ADDS context and replaces nothing.
+    printf '%s' "$result" | jq -e '.hookSpecificOutput | has("updatedToolOutput") | not' >/dev/null
     [[ "$trimmed" == *"TS2322"* ]]
     [[ "$trimmed" == *"TS2552"* ]]
     [[ "$trimmed" == *"TS2554"* ]]
@@ -649,7 +741,10 @@ assert_bash_fixture() {
     local result
     result=$(printf '%s' "$stdin_json" | "$INLINE_EDIT")
     local trimmed
-    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput')
+    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')
+    # Edit's result is a structured object with no text field: a replacement
+    # there is ignored (measured), so the hook ADDS context and replaces nothing.
+    printf '%s' "$result" | jq -e '.hookSpecificOutput | has("updatedToolOutput") | not' >/dev/null
     [[ "$trimmed" == *"--- Lint errors (eslint) ---"* ]]
     [[ "$trimmed" == *"no-unused-vars"* ]]
     [[ "$trimmed" != *"--- Type errors (tsc) ---"* ]]
@@ -679,7 +774,10 @@ assert_bash_fixture() {
     local result
     result=$(printf '%s' "$stdin_json" | "$INLINE_EDIT")
     local trimmed
-    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput')
+    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')
+    # Edit's result is a structured object with no text field: a replacement
+    # there is ignored (measured), so the hook ADDS context and replaces nothing.
+    printf '%s' "$result" | jq -e '.hookSpecificOutput | has("updatedToolOutput") | not' >/dev/null
     [[ "$trimmed" == *"--- Lint errors (eslint) ---"* ]]
     # The per-file branch (grep -F -B1 -A2) includes the header path line, which
     # carries the bracketed path; the coarse fallback (keyword grep) would not.
@@ -710,7 +808,10 @@ assert_bash_fixture() {
     local result
     result=$(printf '%s' "$stdin_json" | "$INLINE_EDIT")
     local trimmed
-    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.updatedToolOutput')
+    trimmed=$(printf '%s' "$result" | jq -r '.hookSpecificOutput.additionalContext')
+    # Edit's result is a structured object with no text field: a replacement
+    # there is ignored (measured), so the hook ADDS context and replaces nothing.
+    printf '%s' "$result" | jq -e '.hookSpecificOutput | has("updatedToolOutput") | not' >/dev/null
     [[ "$trimmed" == *"--- Type errors (tsc) ---"* ]]
     [[ "$trimmed" == *"--- Lint errors (eslint) ---"* ]]
     local tsc_pos eslint_pos

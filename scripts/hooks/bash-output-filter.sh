@@ -156,7 +156,10 @@ fi
 # -----------------------------------------------------------------------------
 # Emit envelope
 # -----------------------------------------------------------------------------
-hook_emit_envelope "PostToolUse" "updatedToolOutput" "$TRIMMED"
+# In Bash's own result shape (stdout replaced, stderr and flags kept): a string
+# here was dropped by Claude Code without a word (#685). No replacement it can
+# apply means no reduction to report, so the metric log is skipped too.
+hook_emit_updated_output "$INPUT" "$TRIMMED" || exit 0
 
 # -----------------------------------------------------------------------------
 # Metric log (best effort)

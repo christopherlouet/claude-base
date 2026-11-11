@@ -62,11 +62,39 @@ hook_strip_ansi() {
 # hook_emit_envelope <event_name> <key> <value>
 # Writes a hookSpecificOutput JSON envelope to stdout:
 #   {"hookSpecificOutput":{"hookEventName":<event>,<key>:<value>}}
-# <value> is treated as a string (jq -Rs).
+# <value> is treated as a string (jq -Rs): for string-valued fields such as
+# additionalContext. It REFUSES updatedToolOutput: that value must match the
+# tool's own result shape, and Claude Code drops a mismatch silently — the
+# string this helper used to emit there was ignored for every tool (#685).
+# Use hook_emit_updated_output instead.
 hook_emit_envelope() {
     local event="$1" key="$2" value="$3"
+    if [ "$key" = "updatedToolOutput" ]; then
+        echo "hook_emit_envelope: updatedToolOutput needs the tool's shape; use hook_emit_updated_output" >&2
+        return 1
+    fi
     printf '%s' "$value" | jq -Rs --arg event "$event" --arg key "$key" \
         '{hookSpecificOutput: ({hookEventName: $event} + {($key): .})}'
+}
+
+# hook_emit_updated_output <hook-input-json> <text>
+# Replaces a PostToolUse tool result with <text>, in the result's OWN shape —
+# the only form Claude Code applies (a mismatch is dropped without an error):
+#   - an object with a `stdout` field (Bash: stdout, stderr, interrupted,
+#     isImage, noOutputExpected) -> the same object, stdout replaced, every
+#     other field kept as received;
+#   - a string -> the string.
+# Any other shape (Edit's structured result has no text field) is never
+# guessed: nothing is printed and it returns 1, so the caller can tell that
+# no replacement happened. To add to such a result, use additionalContext.
+hook_emit_updated_output() {
+    local input="$1" text="$2"
+    printf '%s' "$input" | jq -ce --arg text "$text" '
+        .tool_response as $r
+        | if ($r | type) == "string" then $text
+          elif ($r | type) == "object" and ($r | has("stdout")) then $r + {stdout: $text}
+          else empty end
+        | {hookSpecificOutput: {hookEventName: "PostToolUse", updatedToolOutput: .}}' 2>/dev/null
 }
 
 # strip_msg_values now lives in _core-helpers.sh — the harness-neutral CORE
