@@ -271,3 +271,44 @@ auto_count() { git -C "$1" for-each-ref 'refs/heads/feature/auto-*' | wc -l | tr
     [[ "$cur" == feature/auto-* ]]
     [ "$cur" != "$b" ]
 }
+
+@test "main-branch-guard: today's branch fast-forwarded INTO main is NOT reused" {
+    # Its tip equals HEAD, but it carried work (maybe a merged PR): new edits
+    # must not land on it. Its reflog shows it moved since creation.
+    init_repo "$TEST_DIR/repo" main
+    local b; b=$(today_branch)
+    git -C "$TEST_DIR/repo" checkout -q -b "$b"
+    echo y > "$TEST_DIR/repo/g.txt"; git -C "$TEST_DIR/repo" add -A; git -C "$TEST_DIR/repo" commit -qm own
+    git -C "$TEST_DIR/repo" checkout -q main
+    git -C "$TEST_DIR/repo" merge -q --ff-only "$b"
+    run bash -c "cd '$TEST_DIR/repo' && bash '$GUARD' </dev/null 2>&1"
+    [ "$status" -eq 0 ]
+    local cur; cur=$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)
+    [[ "$cur" == feature/auto-* ]]
+    [ "$cur" != "$b" ]
+}
+
+@test "main-branch-guard: today's branch with an upstream is NOT reused" {
+    init_repo "$TEST_DIR/repo" main
+    git init -q --bare "$TEST_DIR/origin.git"
+    git -C "$TEST_DIR/repo" remote add origin "$TEST_DIR/origin.git"
+    local b; b=$(today_branch)
+    git -C "$TEST_DIR/repo" branch "$b"
+    git -C "$TEST_DIR/repo" push -q -u origin "$b" 2>/dev/null
+    run bash -c "cd '$TEST_DIR/repo' && bash '$GUARD' </dev/null 2>&1"
+    [ "$status" -eq 0 ]
+    local cur; cur=$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)
+    [[ "$cur" == feature/auto-* ]]
+    [ "$cur" != "$b" ]
+}
+
+@test "main-branch-guard: a tag named like today's branch never detaches HEAD" {
+    init_repo "$TEST_DIR/repo" main
+    local b; b=$(today_branch)
+    git -C "$TEST_DIR/repo" branch "$b"
+    git -C "$TEST_DIR/repo" tag "$b"
+    run bash -c "cd '$TEST_DIR/repo' && bash '$GUARD' </dev/null 2>&1"
+    [ "$status" -eq 0 ]
+    # Full ref: --short itself prints "heads/<b>" while a tag shares the name.
+    [ "$(git -C "$TEST_DIR/repo" symbolic-ref -q HEAD)" = "refs/heads/$b" ]
+}

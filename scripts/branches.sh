@@ -34,26 +34,38 @@ USAGE
 
     Lists the feature/auto-* branches whose content is already in main (or
     master). With --apply, deletes them after one confirmation per repository.
+    "Already in main" is judged on CONTENT: a rebased, cherry-picked or
+    squash-merged branch counts as merged even though main lacks its commits.
     Kept: the current branch, worktree branches, branches whose upstream holds
-    unmerged work, and any branch with a commit main does not have.
+    unmerged work, and any branch with content main does not have.
 EOF
 }
 
-# in_base <base> <ref> — succeeds when <ref>'s content is already in <base>;
-# prints how on stdout.
+# in_base <base> <base-tree> <ref> — succeeds when <ref>'s content is already
+# in <base>; prints how on stdout. Every git failure answers "not in base".
 in_base() {
-    local base="$1" ref="$2" tree merged
+    local base="$1" tree="$2" ref="$3" cherry merged
     if git merge-base --is-ancestor "$ref" "$base" 2>/dev/null; then
         echo "contained in $base"
         return 0
     fi
-    if ! git cherry "$base" "$ref" 2>/dev/null | grep -q '^+'; then
-        echo "every patch already in $base"
-        return 0
+    # Capture first, test after. `git cherry | grep -q '^+'` under pipefail
+    # inverted on a long branch: grep exits on the first match, cherry dies
+    # of SIGPIPE past one pipe buffer (~96 commits), and the negated pipeline
+    # read "nothing unmerged" — a branch full of work listed for deletion.
+    if cherry=$(git cherry "$base" "$ref" 2>/dev/null) && [ -n "$cherry" ]; then
+        case "
+$cherry" in
+            *"
++"*) ;;
+            *)
+                echo "every patch already in $base"
+                return 0
+                ;;
+        esac
     fi
     # merge-tree --write-tree needs git >= 2.38; an older git fails here and
     # the branch is kept, which is the safe direction.
-    tree=$(git rev-parse "$base^{tree}")
     if merged=$(git merge-tree --write-tree "$base" "$ref" 2>/dev/null) &&
         [ "$(printf '%s\n' "$merged" | head -n1)" = "$tree" ]; then
         echo "content already in $base (squash)"
@@ -65,7 +77,7 @@ in_base() {
 # prune_repo <dir> <apply:0|1> — returns non-zero on a repository error.
 prune_repo() {
     local dir="$1" apply="$2"
-    local base current held b up reason ahead
+    local base tree current held b up reason ahead failed=0
     local deletable="" n_delete=0 n_keep=0
 
     if ! git -C "$dir" rev-parse --git-dir >/dev/null 2>&1; then
@@ -84,6 +96,7 @@ prune_repo() {
     fi
 
     echo "== $dir (base: $base)"
+    tree=$(git rev-parse "$base^{tree}")
 
     current=$(git symbolic-ref -q --short HEAD 2>/dev/null || true)
     held=$(git worktree list --porcelain 2>/dev/null |
@@ -101,24 +114,27 @@ prune_repo() {
             n_keep=$((n_keep + 1))
             continue
         fi
-        if up=$(git rev-parse -q --verify --symbolic-full-name "$b@{upstream}" 2>/dev/null) &&
-            ! in_base "$base" "$up" >/dev/null; then
+        # %(upstream) of the full ref: `<name>@{upstream}` is ambiguous when a
+        # tag shares the name, and `refs/heads/<name>@{upstream}` never resolves.
+        up=$(git for-each-ref --format='%(upstream)' "refs/heads/$b")
+        if [ -n "$up" ] && git rev-parse -q --verify "$up" >/dev/null &&
+            ! in_base "$base" "$tree" "$up" >/dev/null; then
             echo "  keep    $b  (upstream ${up#refs/remotes/} has work not in $base)"
             n_keep=$((n_keep + 1))
             continue
         fi
-        if reason=$(in_base "$base" "$b"); then
+        if reason=$(in_base "$base" "$tree" "refs/heads/$b"); then
             echo "  delete  $b  ($reason)"
             deletable="$deletable$b
 "
             n_delete=$((n_delete + 1))
         else
-            ahead=$(git rev-list --count "$base..$b")
+            ahead=$(git rev-list --count "$base..refs/heads/$b")
             echo "  keep    $b  ($ahead commit(s) not in $base)"
             n_keep=$((n_keep + 1))
         fi
     done <<EOF
-$(git for-each-ref --format='%(refname:short)' 'refs/heads/feature/auto-*')
+$(git for-each-ref --format='%(refname:lstrip=2)' 'refs/heads/feature/auto-*')
 EOF
 
     if [ $((n_delete + n_keep)) -eq 0 ]; then
@@ -141,13 +157,20 @@ EOF
             ;;
     esac
 
+    # Checked one by one: set -e does not hold in a subshell whose status the
+    # caller tests, so an unchecked failure would still print "deleted".
     while IFS= read -r b; do
         [ -n "$b" ] || continue
-        git branch -q -D "$b"
-        echo "  deleted $b"
+        if git branch -q -D "$b"; then
+            echo "  deleted $b"
+        else
+            echo "  FAILED to delete $b" >&2
+            failed=1
+        fi
     done <<EOF
 $deletable
 EOF
+    return "$failed"
 }
 
 cmd_prune_auto() {

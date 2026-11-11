@@ -22,6 +22,10 @@ teardown() { teardown_test_dir; }
 init_repo() {
     local dir="$1" base="${2:-main}"
     git init -q -b "$base" "$dir"
+    # The user's global hooks would run on every test commit: slow, and not
+    # what these tests are about.
+    mkdir -p "$TEST_DIR/no-hooks"
+    git -C "$dir" config core.hooksPath "$TEST_DIR/no-hooks"
     git -C "$dir" config user.email t@t.t
     git -C "$dir" config user.name t
     echo x > "$dir/f.txt"
@@ -156,6 +160,48 @@ R() { echo "$TEST_DIR/repo"; }
     [[ "$output" == *"keep"*"feature/auto-20260102-000000"* ]]
     has_branch "$(R)" feature/auto-20260102-000000
     ! has_branch "$(R)" feature/auto-20260101-000000 || false
+}
+
+@test "prune-auto: a branch with MANY unmerged commits is kept (no SIGPIPE inversion)" {
+    # `git cherry | grep -q` under pipefail: grep exits on the first match,
+    # cherry dies of SIGPIPE once its output passes a pipe buffer (~96
+    # lines), and the negated pipeline then read "nothing unmerged".
+    init_repo "$(R)"
+    git -C "$(R)" checkout -q -b feature/auto-20260101-000000
+    local i
+    for i in $(seq 1 150); do
+        echo "$i" > "$(R)/n.txt"
+        git -C "$(R)" add n.txt
+        git -C "$(R)" commit -qm "c$i"
+    done
+    git -C "$(R)" checkout -q main
+    run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"keep"*"150 commit(s) not in main"* ]]
+    has_branch "$(R)" feature/auto-20260101-000000
+}
+
+@test "prune-auto: a tag with the same name does not hide the branch" {
+    init_repo "$(R)"
+    git -C "$(R)" branch feature/auto-20260101-000000
+    git -C "$(R)" tag feature/auto-20260101-000000
+    run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"deleted feature/auto-20260101-000000"* ]]
+    ! has_branch "$(R)" feature/auto-20260101-000000 || false
+}
+
+@test "prune-auto: a deletion that fails is reported and the run fails" {
+    init_repo "$(R)"
+    git -C "$(R)" branch feature/auto-20260101-000000
+    # A held ref lock makes `git branch -D` fail.
+    mkdir -p "$(R)/.git/refs/heads/feature"
+    : > "$(R)/.git/refs/heads/feature/auto-20260101-000000.lock"
+    run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"FAILED"*"feature/auto-20260101-000000"* ]]
+    [[ "$output" != *"deleted feature/auto-20260101-000000"* ]]
+    has_branch "$(R)" feature/auto-20260101-000000
 }
 
 @test "prune-auto: a squash that took only PART of the branch keeps it" {

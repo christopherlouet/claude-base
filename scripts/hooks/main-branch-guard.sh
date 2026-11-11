@@ -108,21 +108,29 @@ if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
   # Reuse today's auto branch when it still points at the commit we are on:
   # switching to it moves nothing but the branch name (uncommitted work comes
   # along), and one branch per write left dozens of empty feature/auto-* per
-  # repository. A tip anywhere else — a commit of its own, behind main — is
-  # never reused: that switch would change the working tree under the edit.
+  # repository. A tip anywhere else — behind main — is never reused: that
+  # switch would change the working tree under the edit. Nor is a branch that
+  # ever carried work: its tip can equal HEAD after a fast-forward merge, so
+  # it must never have moved since creation (ONE reflog entry; no reflog
+  # reads as moved) and have no upstream (a pushed branch may back a PR).
   # A checkout that fails (the branch is held by another worktree) falls
-  # through to the next candidate, then to a fresh branch.
+  # through to the next candidate, then to a fresh branch. Names come from
+  # lstrip=2, never :short, which prefixes "heads/" when a tag shares the
+  # name — and checking that out detaches HEAD.
   _head=$(git rev-parse -q --verify HEAD 2>/dev/null || true)
   if [ -n "$_head" ]; then
     while IFS=' ' read -r _sha _b; do
       [ "$_sha" = "$_head" ] || continue
+      [ -z "$(git for-each-ref --format='%(upstream)' "refs/heads/$_b" 2>/dev/null)" ] || continue
+      _moves=$(git reflog show --format=%H "refs/heads/$_b" 2>/dev/null | wc -l | tr -d ' ')
+      [ "$_moves" = "1" ] || continue
       if git checkout -q "$_b" 2>/dev/null; then
         echo "Switched to today's branch $_b (you were on $BRANCH)."
         echo "Tip: rename it with git branch -m feature/descriptive-name"
         exit 0
       fi
     done <<EOF
-$(git for-each-ref --sort=-refname --format='%(objectname) %(refname:short)' \
+$(git for-each-ref --sort=-refname --format='%(objectname) %(refname:lstrip=2)' \
     "refs/heads/feature/auto-$(date +%Y%m%d)-*" 2>/dev/null || true)
 EOF
   fi
