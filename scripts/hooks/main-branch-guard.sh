@@ -143,13 +143,17 @@ EOF
     _n=$((_n + 1))
     NEW_BRANCH="$_stem-$_n"
   done
+  # The marker goes in BEFORE the branch exists: a concurrent hook that lists
+  # the new branch must already find it, or it turns the branch down and
+  # creates another — one branch per write again. Removed if creation fails.
+  [ -n "$_head" ] && git config "branch.$NEW_BRANCH.autoBase" "$_head" 2>/dev/null || true
   if git checkout -b "$NEW_BRANCH" 2>/dev/null; then
-    [ -n "$_head" ] && git config "branch.$NEW_BRANCH.autoBase" "$_head" 2>/dev/null || true
     echo "Branch $NEW_BRANCH created automatically (you were on $BRANCH)."
     echo "Tip: rename it with git branch -m feature/descriptive-name"
     exit 0
   fi
   # Branch creation failed — do NOT let the edit land on main/master.
+  git config --unset "branch.$NEW_BRANCH.autoBase" 2>/dev/null || true
   echo >&2 "BLOCKED: on $BRANCH and could not auto-create a feature branch ($NEW_BRANCH)."
   echo >&2 "Create one manually (git checkout -b feature/…) or set ALLOW_MAIN_EDIT=1 to edit $BRANCH intentionally."
   exit 2

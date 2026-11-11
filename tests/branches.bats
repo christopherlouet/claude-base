@@ -121,7 +121,7 @@ R() { echo "$TEST_DIR/repo"; }
     ! has_branch "$(R)" feature/auto-20260101-000000 || false
 }
 
-@test "prune-auto: a rebase/cherry-picked commit is deletable (patch-id)" {
+@test "prune-auto: a rebased/cherry-picked commit is deletable (content)" {
     init_repo "$(R)"
     git -C "$(R)" checkout -q -b feature/auto-20260101-000000
     commit_on "$(R)" g.txt g
@@ -194,7 +194,7 @@ R() { echo "$TEST_DIR/repo"; }
 @test "prune-auto: a deletion that fails is reported and the run fails" {
     init_repo "$(R)"
     git -C "$(R)" branch feature/auto-20260101-000000
-    # A held ref lock makes `git branch -D` fail.
+    # A held ref lock makes the deletion fail.
     mkdir -p "$(R)/.git/refs/heads/feature"
     : > "$(R)/.git/refs/heads/feature/auto-20260101-000000.lock"
     run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
@@ -258,16 +258,76 @@ R() { echo "$TEST_DIR/repo"; }
     has_branch "$(R)" feature/auto-20260101-000000
 }
 
+# during_prompt <repo> <command> — run prune-auto --apply on <repo>, wait
+# until it asks, run <command> (what another session does meanwhile), then
+# answer y. Deterministic: no sleep racing the scan.
+during_prompt() {
+    local i
+    mkfifo "$TEST_DIR/answer"
+    bash "$SCRIPT" prune-auto --apply "$1" <"$TEST_DIR/answer" >"$TEST_DIR/out" 2>&1 &
+    local pid=$!
+    exec 4>"$TEST_DIR/answer"
+    for i in $(seq 1 300); do
+        grep -q 'y/N' "$TEST_DIR/out" 2>/dev/null && break
+        sleep 0.1
+    done
+    grep -q 'y/N' "$TEST_DIR/out" || { exec 4>&-; cat "$TEST_DIR/out"; return 1; }
+    bash -c "$2"
+    echo y >&4
+    exec 4>&-
+    status=0; wait "$pid" || status=$?
+    output=$(cat "$TEST_DIR/out")
+}
+
 @test "prune-auto: a branch that MOVES while the prompt waits is not deleted" {
     init_repo "$(R)"
     git -C "$(R)" branch feature/auto-20260101-000000
     git -C "$(R)" checkout -q -b side
     commit_on "$(R)" late.txt committed-during-the-prompt
     git -C "$(R)" checkout -q main
-    run bash -c "{ sleep 2; git -C '$(R)' update-ref refs/heads/feature/auto-20260101-000000 refs/heads/side; echo y; } | bash '$SCRIPT' prune-auto --apply '$(R)' 2>&1"
+    during_prompt "$(R)" "git -C '$(R)' update-ref refs/heads/feature/auto-20260101-000000 refs/heads/side"
     [ "$status" -ne 0 ]
     [[ "$output" == *"FAILED"*"feature/auto-20260101-000000"* ]]
     [ "$(git -C "$(R)" rev-parse feature/auto-20260101-000000)" = "$(git -C "$(R)" rev-parse side)" ]
+}
+
+@test "prune-auto: a branch CHECKED OUT while the prompt waits is not deleted" {
+    # The guard reuses exactly these branches (today's, empty, at main): a
+    # Claude edit during the prompt switches onto one. Deleting it would leave
+    # HEAD on a ref that no longer exists.
+    init_repo "$(R)"
+    git -C "$(R)" branch feature/auto-20260101-000000
+    during_prompt "$(R)" "git -C '$(R)' checkout -q feature/auto-20260101-000000"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"FAILED"*"feature/auto-20260101-000000"* ]]
+    [ "$(git -C "$(R)" symbolic-ref -q HEAD)" = "refs/heads/feature/auto-20260101-000000" ]
+    git -C "$(R)" rev-parse -q --verify HEAD >/dev/null
+}
+
+@test "prune-auto: a branch being BISECTED in another worktree is not deleted" {
+    # Its worktree reads "detached", so neither the current-branch nor the
+    # worktree check names it; git itself still knows the branch is in use.
+    init_repo "$(R)"
+    commit_on "$(R)" two.txt 2
+    commit_on "$(R)" three.txt 3
+    git -C "$(R)" branch feature/auto-20260101-000000
+    git -C "$(R)" worktree add -q "$TEST_DIR/wt" feature/auto-20260101-000000
+    git -C "$TEST_DIR/wt" bisect start >/dev/null
+    git -C "$TEST_DIR/wt" bisect bad >/dev/null
+    git -C "$TEST_DIR/wt" bisect good HEAD~2 >/dev/null
+    # Precondition: bisect stopped mid-way, so the worktree reads "detached".
+    git -C "$(R)" worktree list --porcelain | grep -qx detached
+    run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
+    has_branch "$(R)" feature/auto-20260101-000000
+}
+
+@test "prune-auto: a deletion prints the tip it removed, for recovery" {
+    init_repo "$(R)"
+    git -C "$(R)" branch feature/auto-20260101-000000
+    local sha; sha=$(git -C "$(R)" rev-parse --short feature/auto-20260101-000000)
+    run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"deleted feature/auto-20260101-000000 (was $sha"* ]]
 }
 
 @test "prune-auto: a squash that took only PART of the branch keeps it" {

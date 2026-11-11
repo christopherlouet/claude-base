@@ -42,6 +42,8 @@ USAGE
     squash-merged branch counts as merged even though main lacks its commits.
     Kept: the current branch, worktree branches, branches whose upstream holds
     unmerged work, and any branch with content main does not have.
+    The LOCAL main is the reference: pull it first, or branches merged on the
+    remote since are reported as unmerged.
 EOF
 }
 
@@ -102,11 +104,18 @@ prune_repo() {
             n_keep=$((n_keep + 1))
             continue
         fi
-        if printf '%s\n' "$held" | grep -qxF -- "$b"; then
+        # A shell match, not `printf | grep -q`: under pipefail that pipe can
+        # die of SIGPIPE and read "not held".
+        case "
+$held
+" in *"
+$b
+"*)
             echo "  keep    $b  (checked out in a worktree)"
             n_keep=$((n_keep + 1))
             continue
-        fi
+            ;;
+        esac
         if [ -n "$up" ] && git rev-parse -q --verify "$up" >/dev/null &&
             ! in_base "$ref" "$tree" "$up" >/dev/null; then
             echo "  keep    $b  (upstream ${up#refs/remotes/} has work not in $base)"
@@ -147,17 +156,23 @@ EOF
             ;;
     esac
 
-    # Deleted only if the tip is still the one judged above: the prompt may
-    # wait while another session commits to the branch. Checked one by one:
-    # set -e does not hold in a subshell whose status the caller tests, so an
-    # unchecked failure would still print "deleted".
+    # The prompt may wait for minutes while another session works: re-check
+    # every branch at deletion time. Its tip must still be the one judged
+    # above (a commit landed meanwhile), and `git branch -D` — not update-ref,
+    # which bypasses it — refuses a branch any worktree has checked out,
+    # rebases or bisects (the guard may have switched onto it meanwhile).
+    # Checked one by one: set -e does not hold in a subshell whose status the
+    # caller tests, so an unchecked failure would still print "deleted". The
+    # old tip is printed: the branch's reflog goes with it.
     while IFS=' ' read -r sha b; do
         [ -n "$b" ] || continue
-        if git update-ref -d "refs/heads/$b" "$sha" 2>/dev/null; then
-            git config --remove-section "branch.$b" 2>/dev/null || true
-            echo "  deleted $b"
+        if [ "$(git rev-parse -q --verify "refs/heads/$b" 2>/dev/null || true)" != "$sha" ]; then
+            echo "  FAILED to delete $b (moved since the scan)" >&2
+            failed=1
+        elif git branch -q -D "$b" 2>/dev/null; then
+            echo "  deleted $b (was $(git rev-parse --short "$sha"))"
         else
-            echo "  FAILED to delete $b (moved or locked since the scan)" >&2
+            echo "  FAILED to delete $b (in use, or locked)" >&2
             failed=1
         fi
     done <<EOF
@@ -214,4 +229,7 @@ main() {
     esac
 }
 
-main "$@"
+# Sourcing loads the functions without running the CLI.
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    main "$@"
+fi
