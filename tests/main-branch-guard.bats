@@ -221,7 +221,7 @@ guard_again() { run bash -c "cd '$1' && bash '$GUARD' </dev/null 2>&1"; }
 @test "main-branch-guard: the second write of the day reuses the first branch" {
     init_repo "$TEST_DIR/repo" main
     local b; b=$(first_branch "$TEST_DIR/repo")
-    [[ "$b" == feature/auto-* ]]
+    [[ "$b" == feature/auto-* ]] || false
     guard_again "$TEST_DIR/repo"
     [ "$status" -eq 0 ]
     [ "$(cur_branch "$TEST_DIR/repo")" = "$b" ]
@@ -246,7 +246,7 @@ guard_again() { run bash -c "cd '$1' && bash '$GUARD' </dev/null 2>&1"; }
     git -C "$TEST_DIR/repo" checkout -q main
     guard_again "$TEST_DIR/repo"
     [ "$status" -eq 0 ]
-    [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]]
+    [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]] || false
     [ "$(cur_branch "$TEST_DIR/repo")" != "$b" ]
 }
 
@@ -260,7 +260,7 @@ guard_again() { run bash -c "cd '$1' && bash '$GUARD' </dev/null 2>&1"; }
     git -C "$TEST_DIR/repo" merge -q --ff-only "$b"
     guard_again "$TEST_DIR/repo"
     [ "$status" -eq 0 ]
-    [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]]
+    [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]] || false
     [ "$(cur_branch "$TEST_DIR/repo")" != "$b" ]
 }
 
@@ -282,7 +282,7 @@ guard_again() { run bash -c "cd '$1' && bash '$GUARD' </dev/null 2>&1"; }
     git -C "$TEST_DIR/repo" push -q -u origin "$b" 2>/dev/null
     guard_again "$TEST_DIR/repo"
     [ "$status" -eq 0 ]
-    [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]]
+    [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]] || false
     [ "$(cur_branch "$TEST_DIR/repo")" != "$b" ]
 }
 
@@ -292,7 +292,7 @@ guard_again() { run bash -c "cd '$1' && bash '$GUARD' </dev/null 2>&1"; }
     git -C "$TEST_DIR/repo" worktree add -q "$TEST_DIR/wt" "$b"
     guard_again "$TEST_DIR/repo"
     [ "$status" -eq 0 ]
-    [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]]
+    [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]] || false
     [ "$(cur_branch "$TEST_DIR/repo")" != "$b" ]
 }
 
@@ -303,7 +303,7 @@ guard_again() { run bash -c "cd '$1' && bash '$GUARD' </dev/null 2>&1"; }
     git -C "$TEST_DIR/repo" config "branch.$old.autoBase" "$(git -C "$TEST_DIR/repo" rev-parse HEAD)"
     guard_again "$TEST_DIR/repo"
     [ "$status" -eq 0 ]
-    [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]]
+    [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]] || false
     [ "$(cur_branch "$TEST_DIR/repo")" != "$old" ]
 }
 
@@ -313,7 +313,7 @@ guard_again() { run bash -c "cd '$1' && bash '$GUARD' </dev/null 2>&1"; }
     git -C "$TEST_DIR/repo" branch "$b"
     guard_again "$TEST_DIR/repo"
     [ "$status" -eq 0 ]
-    [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]]
+    [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]] || false
     [ "$(cur_branch "$TEST_DIR/repo")" != "$b" ]
 }
 
@@ -325,4 +325,36 @@ guard_again() { run bash -c "cd '$1' && bash '$GUARD' </dev/null 2>&1"; }
     [ "$status" -eq 0 ]
     # Full ref: --short itself prints "heads/<b>" while a tag shares the name.
     [ "$(git -C "$TEST_DIR/repo" symbolic-ref -q HEAD)" = "refs/heads/$b" ]
+}
+
+@test "main-branch-guard: reuse survives branch.autoSetupMerge=always" {
+    # Every new branch then tracks the LOCAL main: that upstream is no PR.
+    init_repo "$TEST_DIR/repo" main
+    git -C "$TEST_DIR/repo" config branch.autoSetupMerge always
+    local b; b=$(first_branch "$TEST_DIR/repo")
+    guard_again "$TEST_DIR/repo"
+    [ "$status" -eq 0 ]
+    [ "$(cur_branch "$TEST_DIR/repo")" = "$b" ]
+}
+
+@test "main-branch-guard: two concurrent writes on main both pass" {
+    # Parallel Edit calls fire their hooks at once: same second, same name,
+    # one shared index. The loser must not block its edit, nor erase the
+    # winner's reuse marker.
+    init_repo "$TEST_DIR/repo" main
+    local i rc1 rc2
+    for i in 1 2 3 4 5; do
+        git -C "$TEST_DIR/repo" checkout -q main
+        (cd "$TEST_DIR/repo" && bash "$GUARD" </dev/null >/dev/null 2>&1) & local p1=$!
+        (cd "$TEST_DIR/repo" && bash "$GUARD" </dev/null >/dev/null 2>&1) & local p2=$!
+        rc1=0; wait "$p1" || rc1=$?
+        rc2=0; wait "$p2" || rc2=$?
+        [ "$rc1" -eq 0 ] && [ "$rc2" -eq 0 ] || { echo "trial $i: rc $rc1/$rc2"; false; }
+        [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]] || false
+        local cur; cur=$(cur_branch "$TEST_DIR/repo")
+        [ -n "$(git -C "$TEST_DIR/repo" config --get "branch.$cur.autoBase")" ] || { echo "trial $i: $cur lost its marker"; false; }
+        git -C "$TEST_DIR/repo" checkout -q main
+        git -C "$TEST_DIR/repo" for-each-ref --format='%(refname:lstrip=2)' 'refs/heads/feature/auto-*' |
+            while read -r x; do git -C "$TEST_DIR/repo" branch -q -D "$x"; done
+    done
 }

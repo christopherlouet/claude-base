@@ -113,17 +113,24 @@ if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
   # comes along). Never reused: a branch behind main (the switch would change
   # the working tree under the edit), one that carried work (after a
   # fast-forward merge its tip equals HEAD again, but no longer autoBase), one
-  # with an upstream (it may back a PR), one this hook did not create. A
-  # checkout that fails (another worktree holds the branch) falls through to
-  # the next candidate, then to a fresh branch. One query gives tip, upstream
-  # and name, ':'-separated (a ref name cannot hold one); names come from
-  # lstrip=2, never :short, which prefixes "heads/" when a tag shares the name
-  # — and checking that out detaches HEAD.
+  # with a REMOTE upstream (it may back a PR; a local one is only
+  # branch.autoSetupMerge=always tracking main), one this hook did not create.
+  # A checkout that fails (another worktree holds the branch) falls through
+  # to the next candidate, then to a fresh branch. One query gives tip,
+  # upstream and name, ':'-separated (a ref name cannot hold one); names come
+  # from lstrip=2, never :short, which prefixes "heads/" when a tag shares the
+  # name — and checking that out detaches HEAD. The markers are read once.
   _head=$(git rev-parse -q --verify HEAD 2>/dev/null || true)
   if [ -n "$_head" ]; then
+    _marks=$(git config --get-regexp '^branch\.feature/auto-.*\.autobase$' 2>/dev/null || true)
     while IFS=: read -r _sha _up _b; do
-      [ -n "$_b" ] && [ "$_sha" = "$_head" ] && [ -z "$_up" ] || continue
-      [ "$(git config --get "branch.$_b.autoBase" 2>/dev/null || true)" = "$_head" ] || continue
+      [ -n "$_b" ] && [ "$_sha" = "$_head" ] || continue
+      case "$_up" in refs/remotes/*) continue ;; esac
+      case "
+$_marks
+" in *"
+branch.$_b.autobase $_head
+"*) ;; *) continue ;; esac
       if git checkout -q "$_b" 2>/dev/null; then
         echo "Switched to today's branch $_b (you were on $BRANCH)."
         echo "Tip: rename it with git branch -m feature/descriptive-name"
@@ -135,25 +142,36 @@ $(git for-each-ref --sort=-refname --format='%(objectname):%(upstream):%(refname
 EOF
   fi
 
-  # Named to the second; a second write within that second (another worktree,
-  # a branch the reuse test turned down) would collide and block the edit.
-  NEW_BRANCH="feature/auto-$(date +%Y%m%d-%H%M%S)"
-  _stem=$NEW_BRANCH _n=1
-  while [ "$_n" -lt 10 ] && git show-ref -q --verify "refs/heads/$NEW_BRANCH" 2>/dev/null; do
+  # Create a fresh branch. Named to the second, so two writes in the same
+  # second collide — parallel Edit calls fire their hooks at once, on one
+  # shared index. A failed attempt is retried under the next suffix, unless
+  # a concurrent hook has meanwhile moved this worktree off main, in which
+  # case the edit is already safe. The marker is written only on success and
+  # never removed: a failed attempt must not touch a branch it did not make.
+  _stem="feature/auto-$(date +%Y%m%d-%H%M%S)"
+  NEW_BRANCH=$_stem
+  _n=1
+  while [ "$_n" -le 5 ]; do
+    if ! git show-ref -q --verify "refs/heads/$NEW_BRANCH" 2>/dev/null &&
+      git checkout -q -b "$NEW_BRANCH" 2>/dev/null; then
+      [ -n "$_head" ] && git config "branch.$NEW_BRANCH.autoBase" "$_head" 2>/dev/null || true
+      echo "Branch $NEW_BRANCH created automatically (you were on $BRANCH)."
+      echo "Tip: rename it with git branch -m feature/descriptive-name"
+      exit 0
+    fi
+    _now=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)
+    case "$_now" in
+      "" | HEAD | main | master) ;;
+      *)
+        echo "Now on $_now: a concurrent write moved off $BRANCH first."
+        exit 0
+        ;;
+    esac
     _n=$((_n + 1))
     NEW_BRANCH="$_stem-$_n"
+    sleep 0.1 2>/dev/null || sleep 1
   done
-  # The marker goes in BEFORE the branch exists: a concurrent hook that lists
-  # the new branch must already find it, or it turns the branch down and
-  # creates another — one branch per write again. Removed if creation fails.
-  [ -n "$_head" ] && git config "branch.$NEW_BRANCH.autoBase" "$_head" 2>/dev/null || true
-  if git checkout -b "$NEW_BRANCH" 2>/dev/null; then
-    echo "Branch $NEW_BRANCH created automatically (you were on $BRANCH)."
-    echo "Tip: rename it with git branch -m feature/descriptive-name"
-    exit 0
-  fi
   # Branch creation failed — do NOT let the edit land on main/master.
-  git config --unset "branch.$NEW_BRANCH.autoBase" 2>/dev/null || true
   echo >&2 "BLOCKED: on $BRANCH and could not auto-create a feature branch ($NEW_BRANCH)."
   echo >&2 "Create one manually (git checkout -b feature/…) or set ALLOW_MAIN_EDIT=1 to edit $BRANCH intentionally."
   exit 2

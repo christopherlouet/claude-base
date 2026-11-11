@@ -64,10 +64,38 @@ in_base() {
     return 1
 }
 
+# judge <sha> <upstream> — prints "delete <why>" or "keep <why>" for a branch
+# tip, against the caller's $base/$ref/$tree (prune_repo's locals). Used at
+# scan time AND again at deletion time, with the state of that moment.
+# Only a REMOTE upstream can hold work: with branch.autoSetupMerge=always a
+# branch tracks the local main, which is the base itself.
+# An ancestor of the base is deletable even if the base later reverted its
+# work: every commit stays reachable from the base, so nothing is lost. A
+# patch the base took by cherry-pick and then reverted is kept — the
+# branch's own commit is its only copy.
+judge() {
+    local sha="$1" up="$2" why ahead
+    case "$up" in
+        refs/remotes/*)
+            if git rev-parse -q --verify "$up" >/dev/null &&
+                ! in_base "$ref" "$tree" "$up" >/dev/null; then
+                echo "keep upstream ${up#refs/remotes/} has work not in $base"
+                return 0
+            fi
+            ;;
+    esac
+    if why=$(in_base "$ref" "$tree" "$sha"); then
+        echo "delete $why"
+    else
+        ahead=$(git rev-list --count "$ref..$sha")
+        echo "keep $ahead commit(s) not in $base"
+    fi
+}
+
 # prune_repo <dir> <apply:0|1> — returns non-zero on a repository error.
 prune_repo() {
     local dir="$1" apply="$2"
-    local base ref tree current held sha b up reason ahead failed=0
+    local base ref tree current held sha b up verdict now failed=0
     local deletable="" n_delete=0 n_keep=0
 
     if ! git -C "$dir" rev-parse --git-dir >/dev/null 2>&1; then
@@ -76,7 +104,14 @@ prune_repo() {
     fi
     cd "$dir" || return 1
 
-    if git show-ref -q --verify refs/heads/main; then
+    # The remote's default branch first: a repository based on master may
+    # also carry a stale local main, and comparing against it would keep
+    # what master merged and delete what only the stale main contains.
+    base=$(git symbolic-ref -q --short refs/remotes/origin/HEAD 2>/dev/null || true)
+    base=${base#origin/}
+    if [ -n "$base" ] && git show-ref -q --verify "refs/heads/$base"; then
+        :
+    elif git show-ref -q --verify refs/heads/main; then
         base=main
     elif git show-ref -q --verify refs/heads/master; then
         base=master
@@ -116,22 +151,19 @@ $b
             continue
             ;;
         esac
-        if [ -n "$up" ] && git rev-parse -q --verify "$up" >/dev/null &&
-            ! in_base "$ref" "$tree" "$up" >/dev/null; then
-            echo "  keep    $b  (upstream ${up#refs/remotes/} has work not in $base)"
-            n_keep=$((n_keep + 1))
-            continue
-        fi
-        if reason=$(in_base "$ref" "$tree" "$sha"); then
-            echo "  delete  $b  ($reason)"
-            deletable="$deletable$sha $b
+        verdict=$(judge "$sha" "$up")
+        case "$verdict" in
+            delete*)
+                echo "  delete  $b  (${verdict#delete })"
+                deletable="$deletable$sha $b
 "
-            n_delete=$((n_delete + 1))
-        else
-            ahead=$(git rev-list --count "$ref..$sha")
-            echo "  keep    $b  ($ahead commit(s) not in $base)"
-            n_keep=$((n_keep + 1))
-        fi
+                n_delete=$((n_delete + 1))
+                ;;
+            *)
+                echo "  keep    $b  (${verdict#keep })"
+                n_keep=$((n_keep + 1))
+                ;;
+        esac
     done <<EOF
 $(git for-each-ref --format='%(objectname):%(upstream):%(refname:lstrip=2)' 'refs/heads/feature/auto-*')
 EOF
@@ -156,18 +188,26 @@ EOF
             ;;
     esac
 
-    # The prompt may wait for minutes while another session works: re-check
+    # The prompt may wait for minutes while another session works: re-judge
     # every branch at deletion time. Its tip must still be the one judged
-    # above (a commit landed meanwhile), and `git branch -D` — not update-ref,
+    # above (a commit landed meanwhile), the verdict must still be "delete"
+    # against the base and upstream of NOW (a fetch, a reset of main), and
+    # `git branch -D` — not update-ref,
     # which bypasses it — refuses a branch any worktree has checked out,
     # rebases or bisects (the guard may have switched onto it meanwhile).
     # Checked one by one: set -e does not hold in a subshell whose status the
     # caller tests, so an unchecked failure would still print "deleted". The
     # old tip is printed: the branch's reflog goes with it.
+    tree=$(git rev-parse "$ref^{tree}")
     while IFS=' ' read -r sha b; do
         [ -n "$b" ] || continue
-        if [ "$(git rev-parse -q --verify "refs/heads/$b" 2>/dev/null || true)" != "$sha" ]; then
+        now=$(git rev-parse -q --verify "refs/heads/$b" 2>/dev/null || true)
+        up=$(git for-each-ref --format='%(upstream)' "refs/heads/$b")
+        if [ "$now" != "$sha" ]; then
             echo "  FAILED to delete $b (moved since the scan)" >&2
+            failed=1
+        elif verdict=$(judge "$sha" "$up") && [ "${verdict%% *}" != "delete" ]; then
+            echo "  FAILED to delete $b (now: ${verdict#keep })" >&2
             failed=1
         elif git branch -q -D "$b" 2>/dev/null; then
             echo "  deleted $b (was $(git rev-parse --short "$sha"))"

@@ -51,7 +51,7 @@ R() { echo "$TEST_DIR/repo"; }
     git -C "$(R)" branch feature/auto-20260101-000000
     run bash "$SCRIPT" prune-auto "$(R)" </dev/null
     [ "$status" -eq 0 ]
-    [[ "$output" == *"delete"*"feature/auto-20260101-000000"* ]]
+    [[ "$output" == *"delete"*"feature/auto-20260101-000000"* ]] || false
     has_branch "$(R)" feature/auto-20260101-000000
 }
 
@@ -157,7 +157,7 @@ R() { echo "$TEST_DIR/repo"; }
     git -C "$(R)" checkout -q main
     run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"keep"*"feature/auto-20260102-000000"* ]]
+    [[ "$output" == *"keep"*"feature/auto-20260102-000000"* ]] || false
     has_branch "$(R)" feature/auto-20260102-000000
     ! has_branch "$(R)" feature/auto-20260101-000000 || false
 }
@@ -177,7 +177,7 @@ R() { echo "$TEST_DIR/repo"; }
     git -C "$(R)" checkout -q main
     run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"keep"*"150 commit(s) not in main"* ]]
+    [[ "$output" == *"keep"*"150 commit(s) not in main"* ]] || false
     has_branch "$(R)" feature/auto-20260101-000000
 }
 
@@ -187,7 +187,7 @@ R() { echo "$TEST_DIR/repo"; }
     git -C "$(R)" tag feature/auto-20260101-000000
     run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"deleted feature/auto-20260101-000000"* ]]
+    [[ "$output" == *"deleted feature/auto-20260101-000000"* ]] || false
     ! has_branch "$(R)" feature/auto-20260101-000000 || false
 }
 
@@ -199,8 +199,8 @@ R() { echo "$TEST_DIR/repo"; }
     : > "$(R)/.git/refs/heads/feature/auto-20260101-000000.lock"
     run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
     [ "$status" -ne 0 ]
-    [[ "$output" == *"FAILED"*"feature/auto-20260101-000000"* ]]
-    [[ "$output" != *"deleted feature/auto-20260101-000000"* ]]
+    [[ "$output" == *"FAILED"*"feature/auto-20260101-000000"* ]] || false
+    [[ "$output" != *"deleted feature/auto-20260101-000000"* ]] || false
     has_branch "$(R)" feature/auto-20260101-000000
 }
 
@@ -287,7 +287,7 @@ during_prompt() {
     git -C "$(R)" checkout -q main
     during_prompt "$(R)" "git -C '$(R)' update-ref refs/heads/feature/auto-20260101-000000 refs/heads/side"
     [ "$status" -ne 0 ]
-    [[ "$output" == *"FAILED"*"feature/auto-20260101-000000"* ]]
+    [[ "$output" == *"FAILED"*"feature/auto-20260101-000000"* ]] || false
     [ "$(git -C "$(R)" rev-parse feature/auto-20260101-000000)" = "$(git -C "$(R)" rev-parse side)" ]
 }
 
@@ -299,7 +299,7 @@ during_prompt() {
     git -C "$(R)" branch feature/auto-20260101-000000
     during_prompt "$(R)" "git -C '$(R)' checkout -q feature/auto-20260101-000000"
     [ "$status" -ne 0 ]
-    [[ "$output" == *"FAILED"*"feature/auto-20260101-000000"* ]]
+    [[ "$output" == *"FAILED"*"feature/auto-20260101-000000"* ]] || false
     [ "$(git -C "$(R)" symbolic-ref -q HEAD)" = "refs/heads/feature/auto-20260101-000000" ]
     git -C "$(R)" rev-parse -q --verify HEAD >/dev/null
 }
@@ -318,7 +318,44 @@ during_prompt() {
     # Precondition: bisect stopped mid-way, so the worktree reads "detached".
     git -C "$(R)" worktree list --porcelain | grep -qx detached
     run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
+    # Selected by the scan, then refused at deletion: the path under test.
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"FAILED"*"feature/auto-20260101-000000"* ]] || false
     has_branch "$(R)" feature/auto-20260101-000000
+}
+
+@test "prune-auto: an upstream that gains work while the prompt waits keeps the branch" {
+    init_repo "$(R)"
+    git init -q --bare "$TEST_DIR/origin.git"
+    git -C "$(R)" remote add origin "$TEST_DIR/origin.git"
+    git -C "$(R)" push -q origin main
+    git -C "$(R)" branch feature/auto-20260101-000000
+    git -C "$(R)" push -q -u origin feature/auto-20260101-000000
+    git -C "$(R)" checkout -q -b side
+    commit_on "$(R)" fetched.txt arrived-by-fetch
+    git -C "$(R)" checkout -q main
+    # What a `git fetch` in another session does: the upstream moves on.
+    during_prompt "$(R)" "git -C '$(R)' update-ref refs/remotes/origin/feature/auto-20260101-000000 refs/heads/side"
+    [ "$status" -ne 0 ]
+    [[ "$output" == *"FAILED"*"feature/auto-20260101-000000"* ]] || false
+    has_branch "$(R)" feature/auto-20260101-000000
+}
+
+@test "prune-auto: the base is the remote's default branch, not a stale main" {
+    init_repo "$(R)" master
+    git -C "$(R)" branch main                     # stale, never updated
+    git -C "$(R)" checkout -q -b feature/auto-20260101-000000
+    commit_on "$(R)" merged.txt into-master
+    git -C "$(R)" checkout -q master
+    git -C "$(R)" merge -q --no-ff -m merge feature/auto-20260101-000000
+    git init -q --bare "$TEST_DIR/origin.git"
+    git -C "$(R)" remote add origin "$TEST_DIR/origin.git"
+    git -C "$(R)" push -q origin master
+    git -C "$(R)" symbolic-ref refs/remotes/origin/HEAD refs/remotes/origin/master
+    run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"base: master"* ]] || false
+    ! has_branch "$(R)" feature/auto-20260101-000000 || false
 }
 
 @test "prune-auto: a deletion prints the tip it removed, for recovery" {
@@ -347,7 +384,7 @@ during_prompt() {
     git -C "$(R)" checkout -q -b feature/auto-20260101-000000
     run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"keep"*"current"* ]]
+    [[ "$output" == *"keep"*"current"* ]] || false
     has_branch "$(R)" feature/auto-20260101-000000
 }
 
@@ -356,7 +393,7 @@ during_prompt() {
     git -C "$(R)" worktree add -q "$TEST_DIR/wt" -b feature/auto-20260101-000000
     run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"keep"*"worktree"* ]]
+    [[ "$output" == *"keep"*"worktree"* ]] || false
     has_branch "$(R)" feature/auto-20260101-000000
 }
 
@@ -380,7 +417,7 @@ during_prompt() {
     git -C "$(R)" branch -f feature/auto-20260101-000000 main   # local now empty
     run bash "$SCRIPT" prune-auto --apply "$(R)" <<<"y"
     [ "$status" -eq 0 ]
-    [[ "$output" == *"keep"*"upstream"* ]]
+    [[ "$output" == *"keep"*"upstream"* ]] || false
     has_branch "$(R)" feature/auto-20260101-000000
 }
 
