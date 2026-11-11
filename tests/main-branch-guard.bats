@@ -193,3 +193,81 @@ guard_on() {
     [ "$status" -eq 0 ]
     [ "$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)" = "main" ]
 }
+
+# --- Reuse today's empty auto branch -----------------------------------------
+# One branch per write left ~80 empty feature/auto-* behind across a fleet: the
+# hook fires on the first write of every task, and most of those branches never
+# received a commit. An auto branch from TODAY that still points at the very
+# commit we are on is reused instead. Anything else — another day, a commit of
+# its own, a tip behind main — keeps the old behaviour: a fresh branch.
+
+today_branch() { printf 'feature/auto-%s-000001' "$(date +%Y%m%d)"; }
+auto_count() { git -C "$1" for-each-ref 'refs/heads/feature/auto-*' | wc -l | tr -d ' '; }
+
+@test "main-branch-guard: reuses today's empty auto branch at HEAD" {
+    init_repo "$TEST_DIR/repo" main
+    local b; b=$(today_branch)
+    git -C "$TEST_DIR/repo" branch "$b"
+    run bash -c "cd '$TEST_DIR/repo' && bash '$GUARD' </dev/null 2>&1"
+    [ "$status" -eq 0 ]
+    [ "$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)" = "$b" ]
+    [ "$(auto_count "$TEST_DIR/repo")" -eq 1 ]
+}
+
+@test "main-branch-guard: reuse carries the uncommitted work along" {
+    init_repo "$TEST_DIR/repo" main
+    local b; b=$(today_branch)
+    git -C "$TEST_DIR/repo" branch "$b"
+    echo dirty > "$TEST_DIR/repo/f.txt"
+    run bash -c "cd '$TEST_DIR/repo' && bash '$GUARD' </dev/null 2>&1"
+    [ "$status" -eq 0 ]
+    [ "$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)" = "$b" ]
+    [ "$(cat "$TEST_DIR/repo/f.txt")" = "dirty" ]
+}
+
+@test "main-branch-guard: today's branch with a commit of its own is NOT reused" {
+    init_repo "$TEST_DIR/repo" main
+    local b; b=$(today_branch)
+    git -C "$TEST_DIR/repo" checkout -q -b "$b"
+    echo y > "$TEST_DIR/repo/g.txt"; git -C "$TEST_DIR/repo" add -A; git -C "$TEST_DIR/repo" commit -qm own
+    git -C "$TEST_DIR/repo" checkout -q main
+    run bash -c "cd '$TEST_DIR/repo' && bash '$GUARD' </dev/null 2>&1"
+    [ "$status" -eq 0 ]
+    local cur; cur=$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)
+    [[ "$cur" == feature/auto-* ]]
+    [ "$cur" != "$b" ]
+}
+
+@test "main-branch-guard: today's branch BEHIND main is NOT reused (no rollback)" {
+    init_repo "$TEST_DIR/repo" main
+    local b; b=$(today_branch)
+    git -C "$TEST_DIR/repo" branch "$b"
+    echo z > "$TEST_DIR/repo/h.txt"; git -C "$TEST_DIR/repo" add -A; git -C "$TEST_DIR/repo" commit -qm advance
+    run bash -c "cd '$TEST_DIR/repo' && bash '$GUARD' </dev/null 2>&1"
+    [ "$status" -eq 0 ]
+    local cur; cur=$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)
+    [[ "$cur" == feature/auto-* ]]
+    [ "$cur" != "$b" ]
+    [ -f "$TEST_DIR/repo/h.txt" ]
+}
+
+@test "main-branch-guard: an empty auto branch from ANOTHER day is NOT reused" {
+    init_repo "$TEST_DIR/repo" main
+    git -C "$TEST_DIR/repo" branch feature/auto-20000101-000000
+    run bash -c "cd '$TEST_DIR/repo' && bash '$GUARD' </dev/null 2>&1"
+    [ "$status" -eq 0 ]
+    local cur; cur=$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)
+    [[ "$cur" == feature/auto-* ]]
+    [ "$cur" != "feature/auto-20000101-000000" ]
+}
+
+@test "main-branch-guard: today's branch held by another worktree → a fresh branch" {
+    init_repo "$TEST_DIR/repo" main
+    local b; b=$(today_branch)
+    git -C "$TEST_DIR/repo" worktree add -q "$TEST_DIR/wt" -b "$b"
+    run bash -c "cd '$TEST_DIR/repo' && bash '$GUARD' </dev/null 2>&1"
+    [ "$status" -eq 0 ]
+    local cur; cur=$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)
+    [[ "$cur" == feature/auto-* ]]
+    [ "$cur" != "$b" ]
+}

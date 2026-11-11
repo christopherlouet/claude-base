@@ -25,6 +25,10 @@
 # anyway: this hook fails toward protecting main, never toward an edit landing
 # on it silently.
 #
+# One branch per write left dozens of empty feature/auto-* per repository, so
+# today's auto branch is reused while it still points at the current commit;
+# `claude-base branches prune-auto` (scripts/branches.sh) clears merged ones.
+#
 # Disable with ALLOW_MAIN_EDIT=1 (edit main/master intentionally).
 # =============================================================================
 set -euo pipefail
@@ -100,6 +104,28 @@ if [ "$BRANCH" = "main" ] || [ "$BRANCH" = "master" ]; then
   # onFailure is "block"), so every second spent here costs one way or the other.
   # Same semantics, none of the cost.
   target_is_outside_repo && exit 0
+
+  # Reuse today's auto branch when it still points at the commit we are on:
+  # switching to it moves nothing but the branch name (uncommitted work comes
+  # along), and one branch per write left dozens of empty feature/auto-* per
+  # repository. A tip anywhere else — a commit of its own, behind main — is
+  # never reused: that switch would change the working tree under the edit.
+  # A checkout that fails (the branch is held by another worktree) falls
+  # through to the next candidate, then to a fresh branch.
+  _head=$(git rev-parse -q --verify HEAD 2>/dev/null || true)
+  if [ -n "$_head" ]; then
+    while IFS=' ' read -r _sha _b; do
+      [ "$_sha" = "$_head" ] || continue
+      if git checkout -q "$_b" 2>/dev/null; then
+        echo "Switched to today's branch $_b (you were on $BRANCH)."
+        echo "Tip: rename it with git branch -m feature/descriptive-name"
+        exit 0
+      fi
+    done <<EOF
+$(git for-each-ref --sort=-refname --format='%(objectname) %(refname:short)' \
+    "refs/heads/feature/auto-$(date +%Y%m%d)-*" 2>/dev/null || true)
+EOF
+  fi
 
   NEW_BRANCH="feature/auto-$(date +%Y%m%d-%H%M%S)"
   if git checkout -b "$NEW_BRANCH" 2>/dev/null; then
