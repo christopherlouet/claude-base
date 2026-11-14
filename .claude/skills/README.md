@@ -60,7 +60,6 @@ skill-name/
 | `ops-opnsense` | OPNsense, firewall, NAT, DHCP | OPNsense configuration via Terraform |
 | `ops-proxmox` | Proxmox, PVE, VM, LXC, PBS | Proxmox VE infrastructure with Terraform |
 | `ops-standup` | standup, morning briefing, activity summary | Cross-repo briefing (commits, PRs, CI, blockers) |
-| `parallel-agents` | parallel, concurrent, fan-out, multi-agents | Parallel agent orchestration |
 | `qa-chrome` | browser, Chrome DevTools, console, UI tests | Visual audit and browser tests via Chrome |
 | `qa-design` | design audit, UI/UX, interface | UI/UX design audit |
 | `qa-e2e` | E2E, Playwright, Cypress | End-to-End tests |

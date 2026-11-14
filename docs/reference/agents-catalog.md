@@ -1,4 +1,4 @@
-# Available Agents (<!-- count:commands -->106<!-- /count --> commands, <!-- count:agents -->44<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
+# Available Agents (<!-- count:commands -->106<!-- /count --> commands, <!-- count:agents -->44<!-- /count --> sub-agents, <!-- count:skills -->52<!-- /count --> skills)
 
 ## Orchestrator (Single entry point)
 | Command | Mode | Usage |

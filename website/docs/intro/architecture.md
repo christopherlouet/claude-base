@@ -116,7 +116,7 @@ claude-base/
 "Explore the auth code" → Claude delegates to the work-explore agent (haiku)
 ```
 
-### Skills (<!-- count:skills -->53<!-- /count -->)
+### Skills (<!-- count:skills -->52<!-- /count -->)
 
 **Skills** are auto-triggered by keywords in the conversation.
 

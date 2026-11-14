@@ -36,7 +36,7 @@ cd website && npm install && cd ..
 .claude/
   commands/    # 106 commands (source of truth)
   agents/      # 44 sub-agents
-  skills/      # 53 skills
+  skills/      # 52 skills
   rules/       # 35 contextual rules
   templates/   # Specification templates
   settings.json # Hooks and permissions

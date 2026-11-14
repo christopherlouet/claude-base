@@ -342,3 +342,20 @@ Flutter's `flutter-setup-localization` installed, also `dev-i18n` ×3 — their
 broad descriptions ("translation requests", "changed user-facing text") did not
 take a setup request. Not measured: an explicit "translate these strings"
 request, which `translate` may well take (without `dev-i18n`'s native-review rule).
+
+## 2026-11-14 — `parallel-agents` removed
+
+Decided on the 2026-09-27 measurement, not re-run. The local results of that
+campaign (`results/` is not committed; CLI 2.1.283) show: in the scaffolded
+workspace the skill fired in neither of the two runs that completed before the
+cost ceiling, and no other skill fired; in the empty workspace it fired 1 of 3.
+
+What they do not show: that Opus fanned out on its own. The traces were not kept,
+and the case's `allowed_tools` did not include the Agent tool, so the reading
+above ("Opus launched parallel subagents itself") is doubtful. Each scaffolded run
+did cost more (0.98 and 0.68 USD at list price, against 0.11, 0.08 and 0.08 for
+the same prompt in the empty workspace), for reasons the results do not record.
+
+Removed because a skill that rarely fires adds little, and the need is covered by
+native sub-agents, `agent-teams` and dynamic workflows. The
+`parallel-agents-fires` case went with the skill.

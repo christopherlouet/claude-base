@@ -1,6 +1,6 @@
 ---
 sidebar_position: 11
-title: "Available Agents (106 commands, 44 sub-agents, 53 skills)"
+title: "Available Agents (106 commands, 44 sub-agents, 52 skills)"
 description: "Claude automatically delegates to specialized agents (isolated context, restricted tools)."
 tags:
   - "reference"
@@ -8,7 +8,7 @@ tags:
 
 <!-- Auto-generated from docs/ - DO NOT EDIT -->
 
-# Available Agents (<!-- count:commands -->106<!-- /count --> commands, <!-- count:agents -->44<!-- /count --> sub-agents, <!-- count:skills -->53<!-- /count --> skills)
+# Available Agents (<!-- count:commands -->106<!-- /count --> commands, <!-- count:agents -->44<!-- /count --> sub-agents, <!-- count:skills -->52<!-- /count --> skills)
 
 ## Orchestrator (Single entry point)
 | Command | Mode | Usage |
