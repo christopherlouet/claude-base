@@ -51,10 +51,10 @@
       "url": "https://github.com/mongodb/agent-skills",
       "rationale": "MongoDB schema design, indexing, query patterns, operational safeguards",
       "condition": "if using MongoDB",
-      "pinnedRef": "v1.1.0",
+      "pinnedRef": "v1.2.1",
       "trustTrack": "authority",
       "provenance": "MongoDB",
-      "lastVerified": "2026-06-13"
+      "lastVerified": "2026-11-11"
     },
     {
       "id": "grafana/skills",
