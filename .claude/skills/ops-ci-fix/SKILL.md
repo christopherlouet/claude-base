@@ -13,7 +13,7 @@ and apply automatic fixes when safe.
 
 ## Native features first
 
-Claude Code ships a native **`/autofix-pr`** that spawns a **cloud** session watching the current branch's PR and pushing fixes when CI fails or reviewers comment. Prefer it to keep an open PR green without supervising it.
+Claude Code ships a native **`/autofix-pr`** that spawns a **cloud** session watching the current branch's PR and pushing fixes when CI fails or reviewers comment. It needs the `gh` CLI and access to cloud sessions. Where you have both, prefer it to keep an open PR green without supervising it.
 
 **This skill's delta is the local, supervised repair**: it works on your machine, on any workflow or branch (not only an open PR), reproduces the failure locally before touching anything, and stops at a dry run when asked (`--dry-run`). Use it when there is no PR yet, when the fix needs local tools or secrets the cloud session lacks, or when you want to see each change before it is pushed.
 
