@@ -6,3 +6,4 @@ Severity: critical
 Severity: high
 5 vulnerabilities (1 critical, 3 high, 1 moderate)
 (exit code: 0)
+[output filtered: 8 of 40 lines kept; rerun with SKIP_BASH_OUTPUT_FILTER=1 to see everything]

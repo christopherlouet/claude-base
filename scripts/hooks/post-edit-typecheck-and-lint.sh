@@ -3,9 +3,11 @@
 # post-edit-typecheck-and-lint.sh — PostToolUse Edit|Write hook
 # =============================================================================
 # Replaces the foundation's two former inline tsc + eslint hooks with a single
-# script that ANNOTATES the Edit/Write tool result envelope (hookSpecificOutput
-# .updatedToolOutput, CLI 2.1.121+) instead of emitting tsc/eslint output as
-# separate side messages.
+# script that ADDS the errors found in the just-edited file to Claude's context
+# (hookSpecificOutput.additionalContext). It used to replace the tool result
+# (updatedToolOutput) with an annotated string, which Claude Code drops
+# silently: Edit/Write return a structured object with no text field, and a
+# replacement must match that shape (measured, #685).
 #
 # Status semantics: the rewriter never downgrades the tool result to FAILURE;
 # the edit happened on disk, errors are co-located annotations Claude can act on
@@ -29,8 +31,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=_hook-helpers.sh
 source "$SCRIPT_DIR/_hook-helpers.sh"
 
-# Bail-out chain
-hook_bail_if_unsupported
+# Bail-out chain. No hook_bail_if_unsupported: that sentinel says whether the
+# CLI applies updatedToolOutput, and this hook only adds additionalContext.
 hook_bail_if_disabled SKIP_INLINE_EDIT_ERRORS
 command -v jq >/dev/null 2>&1 || exit 0
 
@@ -90,29 +92,27 @@ if [ -z "$TSC_OUTPUT" ] && [ -z "$ESLINT_OUTPUT" ]; then
 fi
 
 # -----------------------------------------------------------------------------
-# Build annotated tool_response
+# Build the context: one section per tool that found something
 # -----------------------------------------------------------------------------
-ORIG_RESPONSE=$(printf '%s' "$INPUT" | jq -r '.tool_response // "" | if type == "string" then . else tojson end' 2>/dev/null)
-
-ANNOTATED="$ORIG_RESPONSE"
+ANNOTATED="tsc/eslint findings in $REL_PATH after this edit:"
 
 if [ -n "$TSC_OUTPUT" ]; then
     ANNOTATED="$ANNOTATED
 
---- Type errors (tsc) ---
+--- Type check (tsc) ---
 $TSC_OUTPUT"
 fi
 
 if [ -n "$ESLINT_OUTPUT" ]; then
     ANNOTATED="$ANNOTATED
 
---- Lint errors (eslint) ---
+--- Lint (eslint) ---
 $ESLINT_OUTPUT"
 fi
 
 # -----------------------------------------------------------------------------
-# Emit envelope (status stays SUCCESS — co-located annotations only)
+# Emit envelope (status stays SUCCESS — the edit happened; context only)
 # -----------------------------------------------------------------------------
-hook_emit_envelope "PostToolUse" "updatedToolOutput" "$ANNOTATED"
+hook_emit_envelope "PostToolUse" "additionalContext" "$ANNOTATED"
 
 exit 0

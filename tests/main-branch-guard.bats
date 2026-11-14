@@ -193,3 +193,168 @@ guard_on() {
     [ "$status" -eq 0 ]
     [ "$(git -C "$TEST_DIR/repo" rev-parse --abbrev-ref HEAD)" = "main" ]
 }
+
+
+# --- Reuse today's empty auto branch -----------------------------------------
+# One branch per write left ~80 empty feature/auto-* behind across a fleet: the
+# hook fires on the first write of every task, and most of those branches never
+# received a commit. The hook records the commit it created each branch at
+# (branch.<name>.autoBase) and reuses today's branch only while its tip is
+# still that commit AND the commit we are on. Anything else — another day, a
+# commit of its own, a fast-forward merge, behind main, a pushed branch, a
+# branch it did not create — keeps the old behaviour: a fresh branch.
+
+auto_count() { git -C "$1" for-each-ref 'refs/heads/feature/auto-*' | wc -l | tr -d ' '; }
+cur_branch() { git -C "$1" rev-parse --abbrev-ref HEAD; }
+
+# first_branch <repo> — let the hook create today's branch, return to main,
+# and print the branch's name.
+first_branch() {
+    (cd "$1" && bash "$GUARD" </dev/null >/dev/null 2>&1)
+    cur_branch "$1"
+    git -C "$1" checkout -q main
+}
+
+# guard_again <repo> — the next write made on main.
+guard_again() { run bash -c "cd '$1' && bash '$GUARD' </dev/null 2>&1"; }
+
+@test "main-branch-guard: the second write of the day reuses the first branch" {
+    init_repo "$TEST_DIR/repo" main
+    local b; b=$(first_branch "$TEST_DIR/repo")
+    [[ "$b" == feature/auto-* ]] || false
+    guard_again "$TEST_DIR/repo"
+    [ "$status" -eq 0 ]
+    [ "$(cur_branch "$TEST_DIR/repo")" = "$b" ]
+    [ "$(auto_count "$TEST_DIR/repo")" -eq 1 ]
+}
+
+@test "main-branch-guard: reuse carries the uncommitted work along" {
+    init_repo "$TEST_DIR/repo" main
+    local b; b=$(first_branch "$TEST_DIR/repo")
+    echo dirty > "$TEST_DIR/repo/f.txt"
+    guard_again "$TEST_DIR/repo"
+    [ "$status" -eq 0 ]
+    [ "$(cur_branch "$TEST_DIR/repo")" = "$b" ]
+    [ "$(cat "$TEST_DIR/repo/f.txt")" = "dirty" ]
+}
+
+@test "main-branch-guard: a branch with a commit of its own is NOT reused" {
+    init_repo "$TEST_DIR/repo" main
+    local b; b=$(first_branch "$TEST_DIR/repo")
+    git -C "$TEST_DIR/repo" checkout -q "$b"
+    echo y > "$TEST_DIR/repo/g.txt"; git -C "$TEST_DIR/repo" add -A; git -C "$TEST_DIR/repo" commit -qm own
+    git -C "$TEST_DIR/repo" checkout -q main
+    guard_again "$TEST_DIR/repo"
+    [ "$status" -eq 0 ]
+    [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]] || false
+    [ "$(cur_branch "$TEST_DIR/repo")" != "$b" ]
+}
+
+@test "main-branch-guard: a branch fast-forwarded INTO main is NOT reused" {
+    # Its tip equals HEAD again, but it carried work (maybe a merged PR).
+    init_repo "$TEST_DIR/repo" main
+    local b; b=$(first_branch "$TEST_DIR/repo")
+    git -C "$TEST_DIR/repo" checkout -q "$b"
+    echo y > "$TEST_DIR/repo/g.txt"; git -C "$TEST_DIR/repo" add -A; git -C "$TEST_DIR/repo" commit -qm own
+    git -C "$TEST_DIR/repo" checkout -q main
+    git -C "$TEST_DIR/repo" merge -q --ff-only "$b"
+    guard_again "$TEST_DIR/repo"
+    [ "$status" -eq 0 ]
+    [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]] || false
+    [ "$(cur_branch "$TEST_DIR/repo")" != "$b" ]
+}
+
+@test "main-branch-guard: a branch BEHIND main is NOT reused (no rollback)" {
+    init_repo "$TEST_DIR/repo" main
+    local b; b=$(first_branch "$TEST_DIR/repo")
+    echo z > "$TEST_DIR/repo/h.txt"; git -C "$TEST_DIR/repo" add -A; git -C "$TEST_DIR/repo" commit -qm advance
+    guard_again "$TEST_DIR/repo"
+    [ "$status" -eq 0 ]
+    [ "$(cur_branch "$TEST_DIR/repo")" != "$b" ]
+    [ -f "$TEST_DIR/repo/h.txt" ]
+}
+
+@test "main-branch-guard: a branch with an upstream is NOT reused" {
+    init_repo "$TEST_DIR/repo" main
+    git init -q --bare "$TEST_DIR/origin.git"
+    git -C "$TEST_DIR/repo" remote add origin "$TEST_DIR/origin.git"
+    local b; b=$(first_branch "$TEST_DIR/repo")
+    git -C "$TEST_DIR/repo" push -q -u origin "$b" 2>/dev/null
+    guard_again "$TEST_DIR/repo"
+    [ "$status" -eq 0 ]
+    [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]] || false
+    [ "$(cur_branch "$TEST_DIR/repo")" != "$b" ]
+}
+
+@test "main-branch-guard: a branch held by another worktree → a fresh branch" {
+    init_repo "$TEST_DIR/repo" main
+    local b; b=$(first_branch "$TEST_DIR/repo")
+    git -C "$TEST_DIR/repo" worktree add -q "$TEST_DIR/wt" "$b"
+    guard_again "$TEST_DIR/repo"
+    [ "$status" -eq 0 ]
+    [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]] || false
+    [ "$(cur_branch "$TEST_DIR/repo")" != "$b" ]
+}
+
+@test "main-branch-guard: an empty auto branch from ANOTHER day is NOT reused" {
+    init_repo "$TEST_DIR/repo" main
+    local old=feature/auto-20000101-000000
+    git -C "$TEST_DIR/repo" branch "$old"
+    git -C "$TEST_DIR/repo" config "branch.$old.autoBase" "$(git -C "$TEST_DIR/repo" rev-parse HEAD)"
+    guard_again "$TEST_DIR/repo"
+    [ "$status" -eq 0 ]
+    [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]] || false
+    [ "$(cur_branch "$TEST_DIR/repo")" != "$old" ]
+}
+
+@test "main-branch-guard: a today-named branch the hook did not create is NOT reused" {
+    init_repo "$TEST_DIR/repo" main
+    local b; b="feature/auto-$(date +%Y%m%d)-000001"
+    git -C "$TEST_DIR/repo" branch "$b"
+    guard_again "$TEST_DIR/repo"
+    [ "$status" -eq 0 ]
+    [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]] || false
+    [ "$(cur_branch "$TEST_DIR/repo")" != "$b" ]
+}
+
+@test "main-branch-guard: a tag named like today's branch never detaches HEAD" {
+    init_repo "$TEST_DIR/repo" main
+    local b; b=$(first_branch "$TEST_DIR/repo")
+    git -C "$TEST_DIR/repo" tag "$b"
+    guard_again "$TEST_DIR/repo"
+    [ "$status" -eq 0 ]
+    # Full ref: --short itself prints "heads/<b>" while a tag shares the name.
+    [ "$(git -C "$TEST_DIR/repo" symbolic-ref -q HEAD)" = "refs/heads/$b" ]
+}
+
+@test "main-branch-guard: reuse survives branch.autoSetupMerge=always" {
+    # Every new branch then tracks the LOCAL main: that upstream is no PR.
+    init_repo "$TEST_DIR/repo" main
+    git -C "$TEST_DIR/repo" config branch.autoSetupMerge always
+    local b; b=$(first_branch "$TEST_DIR/repo")
+    guard_again "$TEST_DIR/repo"
+    [ "$status" -eq 0 ]
+    [ "$(cur_branch "$TEST_DIR/repo")" = "$b" ]
+}
+
+@test "main-branch-guard: two concurrent writes on main both pass" {
+    # Parallel Edit calls fire their hooks at once: same second, same name,
+    # one shared index. The loser must not block its edit, nor erase the
+    # winner's reuse marker.
+    init_repo "$TEST_DIR/repo" main
+    local i rc1 rc2
+    for i in 1 2 3 4 5; do
+        git -C "$TEST_DIR/repo" checkout -q main
+        (cd "$TEST_DIR/repo" && bash "$GUARD" </dev/null >/dev/null 2>&1) & local p1=$!
+        (cd "$TEST_DIR/repo" && bash "$GUARD" </dev/null >/dev/null 2>&1) & local p2=$!
+        rc1=0; wait "$p1" || rc1=$?
+        rc2=0; wait "$p2" || rc2=$?
+        [ "$rc1" -eq 0 ] && [ "$rc2" -eq 0 ] || { echo "trial $i: rc $rc1/$rc2"; false; }
+        [[ "$(cur_branch "$TEST_DIR/repo")" == feature/auto-* ]] || false
+        local cur; cur=$(cur_branch "$TEST_DIR/repo")
+        [ -n "$(git -C "$TEST_DIR/repo" config --get "branch.$cur.autoBase")" ] || { echo "trial $i: $cur lost its marker"; false; }
+        git -C "$TEST_DIR/repo" checkout -q main
+        git -C "$TEST_DIR/repo" for-each-ref --format='%(refname:lstrip=2)' 'refs/heads/feature/auto-*' |
+            while read -r x; do git -C "$TEST_DIR/repo" branch -q -D "$x"; done
+    done
+}
