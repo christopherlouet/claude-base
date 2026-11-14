@@ -140,7 +140,7 @@ Example:
 | Legal skills | `legal-*` | `legal-rgpd` |
 | Data skills | `data-*` | `data-pipeline` |
 | Workflow skills | `work-*` | `work-explore`, `work-plan` |
-| Meta skills | Descriptive name | `parallel-agents`, `session-handoff` |
+| Meta skills | Descriptive name | `agent-teams`, `session-handoff` |
 
 ### Content patterns
 

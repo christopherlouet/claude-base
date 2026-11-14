@@ -1,6 +1,6 @@
 # Skills (Claude Code 2.1+)
 
-In addition to commands, the project includes **<!-- count:skills -->53<!-- /count --> Skills** in `.claude/skills/`:
+In addition to commands, the project includes **<!-- count:skills -->52<!-- /count --> Skills** in `.claude/skills/`:
 
 **Trigger column.** A phrase list means the skill auto-loads when the conversation
 matches it. **manual only** means the opposite: the skill carries
@@ -54,7 +54,6 @@ cannot drift apart.
 | `state-management` | "state", "Redux", "Zustand", "store" | inline |
 | `dev-document` | "PDF export", "invoice", "report job", "generate DOCX/XLSX/PPTX" from app code | inline |
 | `growth-cro` | "conversion", "CRO", "signup flow", "onboarding", "paywall" | inline |
-| `parallel-agents` | "parallel", "concurrent", "fan-out", "multi-agents" | inline |
 | `agent-teams` | "agent team", "swarm", "agent team", "parallel agents" | inline |
 | `session-handoff` | "handoff", "resume", "session transfer", "context" | inline |
 | `git-worktrees` | "worktree", "parallel dev", "simultaneous branches" | inline |

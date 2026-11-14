@@ -36,4 +36,4 @@ The `--name`/`-n` flag tags the session for logs and terminal identification. Co
 
 - `/work:work-explore` — dedicate an analysis worktree to read-only exploration
 - `session-handoff` skill — transfer context across worktrees
-- `parallel-agents` / `agent-teams` skills — orchestration on top of multi-worktree setups
+- `agent-teams` skill — orchestration on top of multi-worktree setups

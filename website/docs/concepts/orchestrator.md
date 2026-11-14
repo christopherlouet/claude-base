@@ -184,7 +184,7 @@ Result returned to the main conversation
 
 ## Skills triggered automatically
 
-The <!-- count:skills -->53<!-- /count --> skills activate based on keywords in the conversation:
+The <!-- count:skills -->52<!-- /count --> skills activate based on keywords in the conversation:
 
 | Keywords | Activated skill | Action |
 |----------|-----------------|--------|

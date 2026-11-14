@@ -39,7 +39,7 @@ description: Quick reference and matrices
 |-----------|--------|------|
 | Commands | <!-- count:commands -->106<!-- /count --> | [View](/docs/commands) |
 | Agents | <!-- count:agents -->44<!-- /count --> | [View](/docs/agents) |
-| Skills | <!-- count:skills -->53<!-- /count --> | [View](/docs/skills) |
+| Skills | <!-- count:skills -->52<!-- /count --> | [View](/docs/skills) |
 | Rules | <!-- count:rules -->35<!-- /count --> | [View](/docs/rules) |
 
 ## Shortcuts

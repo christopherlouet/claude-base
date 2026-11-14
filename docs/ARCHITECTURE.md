@@ -137,7 +137,7 @@ $ARGUMENTS - Arguments passed by the user
 - Specific actions
 - Complex tasks requiring a detailed prompt
 
-## Skills (<!-- count:skills -->53<!-- /count --> available)
+## Skills (<!-- count:skills -->52<!-- /count --> available)
 
 ### Definition
 Patterns automatically triggered by Claude based on the conversation context.

@@ -216,7 +216,7 @@ The opt-in keyword is **`ultracode`** (highlighted in the prompt input). Since C
 
 | Mechanism | Coordination | Best for |
 |-----------|-------------|----------|
-| `parallel-agents` skill | Task-based fan-out, manual | A handful of independent sub-tasks within one session |
+| Native sub-agents | Claude delegates on its own, results return to the session | A handful of independent sub-tasks within one session |
 | Agent Teams (experimental) | Inter-agent messaging, live | Long-running collaborative work with a lead + teammates |
 | **Dynamic Workflows** | Deterministic script, background | Scale (dozens–hundreds of agents): audits, migrations, exhaustive review |
 
@@ -322,7 +322,7 @@ Read the columns before reading the verdict:
 | 7d tokens | tokens attributed to the skill over the **last 7 days** of sessions on this machine |
 | invocations / last used | a **persistent history across sessions**, counted in days since last use — not a snapshot of the session you run it in |
 
-Relevant to any project that installs a large skill set — this foundation ships <!-- count:skills -->53<!-- /count --> — and to the same
+Relevant to any project that installs a large skill set — this foundation ships <!-- count:skills -->52<!-- /count --> — and to the same
 question for any always-loaded file: the cost is context, so measure what actually fires before
 setting a size budget by argument.
 

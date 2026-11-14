@@ -523,7 +523,6 @@ EOF
     [ -d "$target/.claude/skills/dev-debug" ]
     [ -d "$target/.claude/skills/dev-tdd" ]
     [ -d "$target/.claude/skills/web-scraping" ]
-    [ -d "$target/.claude/skills/parallel-agents" ]
     [ -d "$target/.claude/skills/qa-review" ]
     [ -d "$target/.claude/skills/work-quick" ]
 }

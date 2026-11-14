@@ -173,7 +173,7 @@ Anthropic ships an **Agent View**: a unified terminal dashboard that lists every
 
 ## See also
 
-- Skill `parallel-agents` for orchestration via Task sub-agents
+- Native sub-agents: for a few independent sub-tasks in one session, Claude delegates to sub-agents without a skill
 - Skill `git-worktrees` for manual parallel sessions
 - Skill `session-handoff` for context handoff between sessions
 - `/work:work-team` for the direct launch command
