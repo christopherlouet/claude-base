@@ -13,6 +13,12 @@ argument-hint: "[scope-or-module]"
 
 Identify security vulnerabilities based on OWASP Top 10.
 
+## Native features first
+
+Claude Code ships a native **`/security-review`** that reviews the diff between your branch and origin's default branch for injection, auth issues and data exposure. Prefer it for a change about to be merged.
+
+**This skill's delta is the whole project, not the diff**: dependency audits (`npm audit` and equivalents), a secret search across the tree, the OWASP Top 10 checklist and the patterns below, and the report format. Use it for a pre-production audit, or for code that `/security-review` never sees because it did not change.
+
 ## Instructions
 
 ### 1. Automated scan

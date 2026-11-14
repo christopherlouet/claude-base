@@ -10,6 +10,12 @@ disable-model-invocation: true
 
 Define an action plan BEFORE coding. The plan must be validated before implementation.
 
+## Native features first
+
+Claude Code natively provides the planning *mechanism*: **plan mode** (`/plan [description]`) keeps Claude read-only until you approve a plan, and the built-in **Plan** sub-agent researches the codebase for it. Use them to run the planning.
+
+**This skill's delta is the template the plan is held to**: the files to create and modify, the identified risks with their mitigations, and the explicit validation before any code, as the Plan step of the Explore → Specify → Plan → TDD flow. Fill it from inside plan mode.
+
 ## Instructions
 
 ### 1. Understand the request
