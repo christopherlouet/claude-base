@@ -216,7 +216,7 @@ The opt-in keyword is **`ultracode`** (highlighted in the prompt input). Since C
 
 | Mechanism | Coordination | Best for |
 |-----------|-------------|----------|
-| Native sub-agents | Claude delegates on its own, results return to the session | A handful of independent sub-tasks within one session |
+| Native sub-agents | Claude can delegate on its own or when asked; results return to the session | A handful of independent sub-tasks within one session |
 | Agent Teams (experimental) | Inter-agent messaging, live | Long-running collaborative work with a lead + teammates |
 | **Dynamic Workflows** | Deterministic script, background | Scale (dozens–hundreds of agents): audits, migrations, exhaustive review |
 

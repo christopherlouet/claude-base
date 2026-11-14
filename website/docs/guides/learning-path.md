@@ -2005,7 +2005,7 @@ Agent Teams hurts if:
 - The cost of coordination exceeds the gain in parallelism
 - The task is simple and quick (overhead not justified)
 
-For parallelizable tasks without inter-agent communication, prefer classic sub-agents, which Claude launches on its own, or parallel sessions with the `git-worktrees` skill.
+For parallelizable tasks without inter-agent communication, prefer classic sub-agents (Claude can launch them on its own, or ask it to), or parallel sessions with the `git-worktrees` skill.
 
 ---
 

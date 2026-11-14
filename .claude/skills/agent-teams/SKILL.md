@@ -173,7 +173,7 @@ Anthropic ships an **Agent View**: a unified terminal dashboard that lists every
 
 ## See also
 
-- Native sub-agents: for a few independent sub-tasks in one session, Claude delegates to sub-agents without a skill
+- Native sub-agents: for a few independent sub-tasks in one session, Claude can delegate to sub-agents, on its own or when asked, without a skill
 - Skill `git-worktrees` for manual parallel sessions
 - Skill `session-handoff` for context handoff between sessions
 - `/work:work-team` for the direct launch command
