@@ -12,6 +12,12 @@ disable-model-invocation: true
 
 Understand a codebase BEFORE modifying it. Never code without having explored.
 
+## Native features first
+
+Claude Code ships a built-in, read-only **Explore** sub-agent that Claude delegates codebase searches to, at a depth you can ask for ("quick", "medium", "very thorough"). Let it do the searching.
+
+**This skill's delta is the report it produces**: a fixed summary (key structure, entry points, conventions, sensitive areas) that the next phases of the workflow read. Use it to brief the native Explore agent, or to shape what it brings back.
+
 ## Instructions
 
 ### 1. Overview (5 min)

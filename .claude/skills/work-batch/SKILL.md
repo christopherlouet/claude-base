@@ -11,6 +11,12 @@ argument-hint: "[path-to-prd.json or prd.md]"
 
 Autonomous and sequential execution of user stories from a PRD file.
 
+## Native features first
+
+Claude Code ships a native **`/batch <instruction>`** that splits a large change into 5 to 30 independent units and runs them **in parallel**, one background sub-agent per unit in its own worktree, each opening its own PR. Prefer it when the units are truly independent (a codebase-wide migration, a rename across modules).
+
+**This skill's delta is the sequential PRD**: it reads a `prd.json`/`prd.md` backlog, implements the stories **one after another** in priority order with one commit per story, a progress file and a resume point. Use it when stories build on each other, or when you want one atomic commit per story rather than one PR per unit.
+
 ## PRD file format
 
 ### JSON (`prd.json`)
