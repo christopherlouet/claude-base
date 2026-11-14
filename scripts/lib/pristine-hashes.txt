@@ -956,6 +956,7 @@
 727ecb2f31676c036c1dca2d19ddd805e59abfa7fe080aa89fb09411fb45c98d .claude/commands/doc/doc-generate.md
 728fc92dad88bbb6a45978915869be3d7de4b732345f1e4a931ed1dcc3362851 .claude/commands/growth-seo.md
 7291ed57189a842ccd65aee531aa317a72b5b60df86f715f1f39d6117eb5902d .claude/skills/work-quick/SKILL.md
+729c07656543cefe2231e195fb01f8458d7982b8d531329c3574f0d1c3bb5c0f .claude/skills/agent-teams/SKILL.md
 72c3e586127a2e83fcfbbd7a143952aec25dd68833ca98b717cfddedc22e7f12 .claude/rules/README.md
 72facb3163bdaeae0d63ca6a6237bc8d8ae3da0abb796dd6425868c154d8014f .claude/skills/ops-mobile-release/SKILL.md
 730ad95fcd477e7e71b9ba70914a0a4de3c8e29b14d0fe50151f2a801980b572 .claude/skills/feature-flags/SKILL.md
