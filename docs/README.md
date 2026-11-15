@@ -64,7 +64,7 @@ docs/
 ├── CUSTOMIZATION.md       # Customization
 ├── WORKFLOWS.md           # Workflow diagrams
 ├── reference/             # Reference documentation (best-practices, hooks, advanced features, catalogues)
-├── recipes/               # Targeted recipes (vendor skills, Python toolchain, SaaS monetization)
+├── recipes/               # Targeted recipes (vendor skills, Python toolchain, SaaS monetization, status line)
 └── guides/                # Specific guides
     ├── EXTENDING-GUIDE.md
     ├── TEAM-GUIDE.md
