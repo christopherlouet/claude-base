@@ -26,8 +26,8 @@
 # once carried two unscanned shell scripts past a clean verdict). The same
 # high-signal danger patterns apply to every file; a JSON or TOML config is also
 # scanned one line per declared command, "command" joined with its "args" (YAML
-# is not: no parser in the standard library, so its text alone is scanned and a
-# command split from its args over two lines is not rebuilt). (Limitations,
+# is not: no parser in the standard library, so its text is scanned and a
+# config-shaped YAML is flagged yaml-config-unparsed, for review). (Limitations,
 # all fail toward human review: a download executed in a separate statement, a
 # hook command referencing a script outside the scanned surface, and a plugin
 # manifest pointing its hooks at a custom-named file are not caught — see
@@ -63,7 +63,10 @@
 # exec-surface-unfetchable (tree unlistable), exec-file-unfetchable (a listed
 # exec file unreadable), exec-surface-truncated (GitHub truncated the tree),
 # exec-surface-over-cap (more exec files than the cap), json-surface-over-cap
-# (more other JSON/TOML/YAML files than their own cap, #679), scan-error (a pattern
+# (more other JSON/TOML/YAML files than their own cap, #679), yaml-config-unparsed
+# (a YAML that declares a command, whose commands cannot be rebuilt without a
+# parser, #679), toml-unreadable (the TOML reader could not run: no python3 3.11+
+# — an outage), scan-error (a pattern
 # grep failed, so the text could not be confirmed clean), scan-blind (the scan
 # answered "no match" about a text that demonstrably holds characters).
 # Archives (see _curation_scan_archive): archive-unreadable (the reader could
@@ -490,23 +493,42 @@ _curation_json_is_config() {
 # _curation_toml_json — read a TOML file on stdin, echo it as JSON, so its shape
 # and its commands are read by the JSON rules above (Codex `config.toml`
 # declares `[mcp_servers.x]` with `command` and `args`). Python's standard
-# library (3.11+) parses it; any failure — a broken file, no such interpreter,
-# an older one — returns non-zero and the caller scans the raw text instead.
+# library (3.11+) parses it. Exit: 0 = JSON on stdout; 1 = the file does not
+# parse (no client reads it either: the caller scans its text); anything else =
+# the reader could not run — no interpreter, or one without tomllib — and the
+# file's commands cannot be rebuilt (the caller flags toml-unreadable, an outage).
 _curation_toml_json() {
-    "${CURATION_SAFETY_PYTHON:-python3}" -I -c 'import json, sys, tomllib
-print(json.dumps(tomllib.loads(sys.stdin.read()), default=str))' 2>/dev/null
+    "${CURATION_SAFETY_PYTHON:-python3}" -I -c 'import json, sys
+try:
+    import tomllib
+except ImportError:
+    sys.exit(3)
+try:
+    data = tomllib.loads(sys.stdin.read())
+except Exception:
+    sys.exit(1)
+print(json.dumps(data, default=str))' 2>/dev/null
 }
 
-# _curation_yaml_is_config <text> — 0 when a YAML text declares a server or a
-# command (a key named command, cmd, mcpServers or mcp_servers, any case, block
-# or flow style). The standard library has no YAML parser, so the shape is read
-# from the text, by bash's own matcher (no process that could fail silently into
-# "not a config"), and the raw text is what gets scanned: a command split from
-# its args over two lines is not rebuilt (#679).
+# _curation_yaml_is_config <text> — 0 when a YAML text may declare a server or
+# a command: a key named command, cmd, mcpServers or mcp_servers (any case,
+# block or flow style), or a key the text does not spell out on its line — an
+# escaped quoted key ("\x63md"), an alias used as a key (*k :), a complex key
+# (? command) — which a loader may read as one of those. Read by bash's own
+# matcher: no process that could fail silently into "not a config". The
+# standard library has no YAML parser, so the caller cannot rebuild the
+# commands and sends a config-shaped YAML to review (#679).
 _curation_yaml_is_config() {
-    local lower="${1,,}"
-    local re='(^|[[:space:]{,[-])["'\'']?(command|cmd|mcpservers|mcp_servers)["'\'']?[[:space:]]*:'
-    [[ "$lower" =~ $re ]]
+    local lower="${1,,}" q='["'\'']'
+    local key="(^|[[:space:]{,[-])${q}?(command|cmd|mcpservers|mcp_servers)${q}?[[:space:]]*:"
+    local escaped="${q}[^\"'"$'\n'"]*\\\\[^\"'"$'\n'"]*${q}[[:space:]]*:"
+    # An alias key opens its key: after the indent, a `- ` or a flow `{`/`,`,
+    # and names an anchor. A shell glob (`*"$tag"*)`) or bold Markdown
+    # (`**repository:`) inside a value is neither (both seen in pinned repos).
+    local alias='(^|'$'\n''|[{,])[[:space:]]*(-[[:space:]]+)?\*[a-z0-9_.-]+[[:space:]]*:([[:space:]]|$)'
+    local complex='(^|'$'\n'')[[:space:]]*(-[[:space:]]+)?\?([[:space:]]|$)'
+    [[ "$lower" =~ $key ]] || [[ "$lower" =~ $escaped ]] \
+        || [[ "$lower" =~ $alias ]] || [[ "$lower" =~ $complex ]]
 }
 
 # What counts as an archive, by name (jq/ERE, matched case-insensitively): zip
@@ -1081,7 +1103,7 @@ curation_safety_screen() {
     # (a package.json, a pyproject.toml, a CI workflow) and is not scanned; one
     # that cannot be read is a flag, as above. Their cap keeps its first name,
     # json-surface-over-cap.
-    local jsurface jrc jpath jtext tjson
+    local jsurface jrc jpath jtext tjson trc
     jsurface=$(_curation_list_exec_surface "$repo" "$ref" "$subpaths" json); jrc=$?
     if [ "$jrc" -eq 1 ]; then
         reasons+=("exec-surface-unfetchable")
@@ -1095,15 +1117,21 @@ curation_safety_screen() {
                 case "${jpath,,}" in
                     *.yaml | *.yml)
                         _curation_yaml_is_config "$jtext" || continue
+                        # Its text is scanned, but a command split from its
+                        # args or folded over lines is not rebuilt: review.
+                        reasons+=("yaml-config-unparsed")
                         _curation_screen_scan "$jpath" < <(printf '%s\n' "$jtext")
                         ;;
                     *.toml)
-                        if tjson=$(printf '%s' "$jtext" | _curation_toml_json); then
+                        tjson=$(printf '%s' "$jtext" | _curation_toml_json); trc=$?
+                        if [ "$trc" -eq 0 ]; then
                             printf '%s' "$tjson" | _curation_json_is_config || continue
                             _curation_screen_scan "$jpath" < <(printf '%s\n' "$jtext")
                             _curation_screen_scan "$jpath" joined < <(printf '%s' "$tjson" | _curation_json_commands)
                         else
-                            # Unparsed: its shape cannot be ruled out, so scan the text.
+                            # Unparsed: its shape cannot be ruled out, so scan the
+                            # text. A reader that could not run is also an outage.
+                            [ "$trc" -eq 1 ] || reasons+=("toml-unreadable")
                             _curation_screen_scan "$jpath" < <(printf '%s\n' "$jtext")
                         fi
                         ;;
