@@ -1085,7 +1085,7 @@ unpopular() {
         printf '%s' "$r" | grep -qE "$re" || { echo "outage not matched: $r" >&2; return 1; }
     done
     for r in remote-exec obfuscated-exec destructive-rm prompt-injection uncategorized-pattern \
-             exec-surface-truncated exec-surface-over-cap; do
+             exec-surface-truncated exec-surface-over-cap json-surface-over-cap; do
         if printf '%s' "$r" | grep -qE "$re"; then echo "finding taken for an outage: $r" >&2; return 1; fi
     done
 }

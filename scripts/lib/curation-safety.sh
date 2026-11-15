@@ -16,8 +16,11 @@
 # hostile code: script files (*.sh/.bash/.zsh/.py/.js/.mjs/.cjs/.rb/.pl/.php),
 # anything with the git executable bit (mode 100755, e.g. an extensionless
 # `bin/install`), Claude settings hook command blocks (settings*.json), MCP
-# server configs (.mcp.json / mcp.json) and the plugin format's own declarations
-# (hooks/hooks.json, .claude-plugin/plugin.json, marketplace.json), and the
+# server configs (.mcp.json / mcp.json), the plugin format's own declarations
+# (hooks/hooks.json, .claude-plugin/plugin.json, marketplace.json), any other
+# JSON whose shape declares a server or a command whatever its name (MCP
+# configs, a plugin's .lsp.json, a Gemini extension: #679; an unparseable one
+# is scanned as text), and the
 # members of any ARCHIVE in the tree (.zip, .skill, .tar.gz, …: #678 — a zip
 # once carried two unscanned shell scripts past a clean verdict). The same
 # high-signal danger patterns apply to every file; a JSON file is also scanned
@@ -56,7 +59,8 @@
 # doc-unreadable (the doc is present and unreadable — both modes),
 # exec-surface-unfetchable (tree unlistable), exec-file-unfetchable (a listed
 # exec file unreadable), exec-surface-truncated (GitHub truncated the tree),
-# exec-surface-over-cap (more exec files than the cap), scan-error (a pattern
+# exec-surface-over-cap (more exec files than the cap), json-surface-over-cap
+# (more other JSON files than their own cap, #679), scan-error (a pattern
 # grep failed, so the text could not be confirmed clean), scan-blind (the scan
 # answered "no match" about a text that demonstrably holds characters).
 # Archives (see _curation_scan_archive): archive-unreadable (the reader could
@@ -432,6 +436,47 @@ _curation_json_commands() {
     jq -r "$_CURATION_JQ_COMMANDS commands" 2>/dev/null || true
 }
 
+# _curation_fetch_blob <repo> <ref> <path> — echo a JSON file's text through
+# the git blobs API, for the bodies the contents API withholds (over 1 MB; it
+# still names the blob's sha and size). A big data file (a test fixture in
+# vercel-labs/agent-skills) must not flag every pin of its repo; a SCRIPT over
+# 1 MB stays a flag, never read this way. An empty file echoes nothing and
+# succeeds (nothing in it runs); a blob over CURATION_SAFETY_BLOB_MAX bytes
+# (default 10 MB) is not downloaded and fails, as does anything unreadable.
+_curation_fetch_blob() {
+    local api meta sha size out
+    local max="${CURATION_SAFETY_BLOB_MAX:-10485760}"
+    api=$(_curation_contents_api "$1" "$2" "$3") || return 1
+    meta=$(curation_gh_api "$api" 2>/dev/null) || return 1
+    size=$(printf '%s' "$meta" | jq -r '.size // empty' 2>/dev/null)
+    case "$size" in '' | *[!0-9]*) return 1 ;; 0) return 0 ;; esac
+    [ "$size" -le "$max" ] || return 1
+    sha=$(printf '%s' "$meta" | jq -r '.sha // empty' 2>/dev/null)
+    [[ "$sha" =~ ^[0-9a-f]+$ ]] || return 1
+    out=$(curation_gh_api "repos/$1/git/blobs/$sha" 2>/dev/null \
+        | jq -r '.content // empty' 2>/dev/null | _curation_b64decode) || return 1
+    [ -n "$out" ] || return 1
+    printf '%s' "$out"
+}
+
+# _curation_json_is_config — read a JSON file on stdin; return 1 only when it
+# is NOT exec surface: empty, or a parsed body that declares no server or
+# command. A config is recognised by its SHAPE (an `mcpServers` key, or any
+# object with a "command"), never by a filename list: every client names its
+# own (`.agy-plugin/mcp_config.json`, `gemini-extension.json`, a plugin's
+# `.lsp.json`), and a list missed all three in pinned subjects (#679). A body jq
+# rejects (JSONC, a broken file) cannot be ruled out, so it stays surface and
+# its raw text is scanned. Key names match exactly: a client that folds case
+# (Go's decoder) or reads YAML/TOML is outside this rule.
+_curation_json_is_config() {
+    local body shape
+    body=$(cat)
+    [ -n "$body" ] || return 1
+    shape=$(printf '%s' "$body" | jq -r '[.. | objects | select(has("mcpServers") or has("command"))] | length' 2>/dev/null) || return 0
+    case "$shape" in '' | *[!0-9]*) return 0 ;; esac
+    [ "$shape" -gt 0 ]
+}
+
 # What counts as an archive, by name (jq/ERE, matched case-insensitively): zip
 # containers under their many names (a .skill is a zip, so are .jar, .whl, .egg,
 # .pyz, .nupkg, .apk, .crx…), tar and its compressions, single compressed files,
@@ -743,13 +788,18 @@ _curation_scan_archive() {
     return 0
 }
 
-# _curation_list_exec_surface <repo> <ref> — echo the candidate's executable-
-# surface paths (one per line) from the recursive git tree at <ref>: scripts,
-# exec-bit files, Claude settings hook blocks (settings*.json), MCP server
-# configs (.mcp.json / mcp.json) and plugin declarations (hooks.json,
-# plugin.json, marketplace.json) — the files that can actually run code in a
-# user's session, which the SKILL.md/README.md doc cannot reveal. Capped at
-# CURATION_SAFETY_MAX_FILES (default 250) to bound API calls on large repos.
+# _curation_list_exec_surface <repo> <ref> [<subpaths>] [exec|json] — echo the
+# candidate's executable-surface paths (one per line) from the recursive git
+# tree at <ref>: scripts, exec-bit files, Claude settings hook blocks
+# (settings*.json), MCP server configs (.mcp.json / mcp.json) and plugin
+# declarations (hooks.json, plugin.json, marketplace.json) — the files that can
+# actually run code in a user's session, which the SKILL.md/README.md doc cannot
+# reveal. Capped at CURATION_SAFETY_MAX_FILES (default 250) to bound API calls
+# on large repos. With `json`: every OTHER *.json / .jsonc / .json5 (any case)
+# instead, whose shape the scan reads (_curation_json_is_config, #679), under
+# its own cap CURATION_SAFETY_MAX_JSON (default 250; over it the caller flags
+# json-surface-over-cap) — folders of locale or fixture JSON must not crowd
+# scripts out of the exec cap.
 #
 # The cap is a COST bound, not a safety judgement, so it must clear the real
 # surfaces we watch: the biggest carry 36-158 exec files, and the old cap of 25
@@ -763,23 +813,23 @@ _curation_scan_archive() {
 # 3 and 4 are distinct unknowns: 3 hides files we never even named, 4 hides
 # files we named and chose not to fetch. Both flag; only 3 is unbounded.
 _curation_list_exec_surface() {
-    local repo="$1" ref="$2" subpaths="${3:-}" api body
+    local repo="$1" ref="$2" subpaths="${3:-}" kind="${4:-exec}" api body
     local cap="${CURATION_SAFETY_MAX_FILES:-250}"
+    [ "$kind" = "json" ] && cap="${CURATION_SAFETY_MAX_JSON:-250}"
     api=$(_curation_trees_api "$repo" "$ref") || return 1
     body=$(curation_gh_api "$api" 2>/dev/null) || return 1
     # A response without a .tree array (e.g. an error object) is unusable.
     printf '%s' "$body" | jq -e '.tree | type == "array"' >/dev/null 2>&1 || return 1
     local truncated all count
     truncated=$(printf '%s' "$body" | jq -r '.truncated // false')
-    all=$(printf '%s' "$body" | jq -r --arg archive "$_CURATION_ARCHIVE_RE" '
+    all=$(printf '%s' "$body" | jq -r --arg archive "$_CURATION_ARCHIVE_RE" --arg kind "$kind" '
         .tree[] | select(.type == "blob")
-        | select(
-            (.path | test("\\.(sh|bash|zsh|py|js|mjs|cjs|rb|pl|php)$"))
+        | ((.path | test("\\.(sh|bash|zsh|py|js|mjs|cjs|rb|pl|php)$"))
             or (.path | test($archive; "i"))
             or (.mode == "100755")
             or (.path | split("/")[-1] | (test("^settings.*\\.json$") or test("^\\.?mcp\\.json$")
-                or test("^(hooks|plugin|marketplace)\\.json$")))
-          )
+                or test("^(hooks|plugin|marketplace)\\.json$")))) as $exec
+        | select(if $kind == "json" then ($exec | not) and (.path | test("\\.json[c5]?$"; "i")) else $exec end)
         | .path')
     # Subpath scoping (#384 fix): when the skill lives in subpath(s), keep ONLY
     # files under them — BEFORE the cap — so an unrelated big monorepo elsewhere
@@ -991,6 +1041,30 @@ curation_safety_screen() {
             # Process substitution, not a here-string (no temp file) and not a
             # pipe (the loop must stay in THIS shell — `reasons` is the verdict).
         done < <(printf '%s\n' "$surface")
+    fi
+
+    # 2b. Every other *.json, read for its SHAPE (#679): a config declares a
+    # server or a command whatever its client names it. One that declares
+    # nothing runnable is data (a package.json, a locale) and is not scanned;
+    # one that cannot be read is a flag, as above.
+    local jsurface jrc jpath jtext
+    jsurface=$(_curation_list_exec_surface "$repo" "$ref" "$subpaths" json); jrc=$?
+    if [ "$jrc" -eq 1 ]; then
+        reasons+=("exec-surface-unfetchable")
+    else
+        [ "$jrc" -eq 3 ] && reasons+=("exec-surface-truncated")
+        [ "$jrc" -eq 4 ] && reasons+=("json-surface-over-cap")
+        while IFS= read -r jpath; do
+            [ -n "$jpath" ] || continue
+            if jtext=$(_curation_fetch_one "$repo" "$ref" "$jpath") \
+                || jtext=$(_curation_fetch_blob "$repo" "$ref" "$jpath"); then
+                printf '%s' "$jtext" | _curation_json_is_config || continue
+                _curation_screen_scan "$jpath" < <(printf '%s\n' "$jtext")
+                _curation_screen_scan "$jpath" joined < <(printf '%s' "$jtext" | _curation_json_commands)
+            else
+                reasons+=("exec-file-unfetchable")
+            fi
+        done < <(printf '%s\n' "$jsurface")
     fi
 
     # 3. Dedup reason categories (order-preserving) and decide the verdict.
