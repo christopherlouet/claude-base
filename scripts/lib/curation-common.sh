@@ -61,6 +61,17 @@ curation_days_since() {
     printf '%s\n' $((now_days - then_days))
 }
 
+# curation_uri <text> — percent-encode one URL component, `/` included (a ref or
+# a single path segment). A ref is a candidate's or vendor's tag name, and git
+# allows `#`, `&` and `%` in one: raw in a URL, `v1#x` cuts the query and the
+# call reads another ref (#680). GitHub decodes %2F and %40 back in both the
+# trees path and `?ref=` (measured).
+curation_uri() { jq -rn --arg s "$1" '$s | @uri'; }
+
+# curation_path_uri <path> — percent-encode each segment of a repo path, keeping
+# the `/` between them.
+curation_path_uri() { jq -rn --arg p "$1" '$p | split("/") | map(@uri) | join("/")'; }
+
 # curation_gh_api <api-path> — fail-safe `gh api` wrapper. Retries on transient
 # failure with linear backoff. Echoes the JSON body on success (exit 0); on
 # exhaustion echoes nothing and returns non-zero. Tunables (test-overridable):
