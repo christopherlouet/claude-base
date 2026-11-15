@@ -513,27 +513,14 @@ resolve_ref() {
 }
 
 # _pin_note <ref> <subpath> <owner/repo> — a warning for the digest when a path
-# candidate is pinned to a package tag (`@scope/pkg@1.0.0`, `pkg@1.0.0`) whose
-# package name (its last "/" segment) is neither one of the path's segments nor
-# the repo's name (a single package tagged after its repo), case-insensitively:
-# a monorepo releasing
+# candidate is pinned to another package's tag (curation_pin_note, shared with
+# validate-presets' registry pass, which fails on it): a monorepo releasing
 # per package, whose newest release names another package. The content judged
 # is still right; the label is not, and an accepted record would make the watch
 # follow that package's family. Choosing the pin automatically proved fragile
 # (a package named "skills", a release older than the skills), so the curator
 # fixes it on accepting. Empty when there is nothing to flag.
-_pin_note() {
-    local ref="$1" sub="$2" root="${3:-}" pkg seg segs=()
-    [ -n "$sub" ] || return 0
-    [[ "$ref" =~ ^.+@[^@]+$ ]] || return 0
-    pkg="${ref%@*}"; pkg=$(printf '%s' "${pkg##*/}" | tr '[:upper:]' '[:lower:]')
-    # read -a, not an unquoted $sub: no pathname expansion of a segment.
-    IFS=/ read -ra segs <<< "$sub"
-    for seg in "${segs[@]}" "${root##*/}"; do
-        [ "$(printf '%s' "$seg" | tr '[:upper:]' '[:lower:]')" = "$pkg" ] && return 0
-    done
-    printf 'tag of another package (%s): pick the release of the package under this path, or a commit, before accepting\n' "${ref%@*}"
-}
+_pin_note() { curation_pin_note "$@"; }
 
 # shipped_skills <repo> <ref> — the SKILL.md paths the repo holds at <ref>, one
 # per skill: identical copies (one blob sha, e.g. .claude/skills/x beside
@@ -541,8 +528,9 @@ _pin_note() {
 # come last (often the repo's own tooling). Exit 1 when the tree cannot be read,
 # or is truncated with no SKILL.md in view: an outage, never "no skill".
 shipped_skills() {
-    local body paths
-    body=$(curation_gh_api "repos/$1/git/trees/$2?recursive=1" 2>/dev/null) || return 1
+    local ref body paths
+    ref=$(curation_uri "$2") || return 1   # a tag the candidate chose (#680)
+    body=$(curation_gh_api "repos/$1/git/trees/$ref?recursive=1" 2>/dev/null) || return 1
     printf '%s' "$body" | jq -e '.tree | type == "array"' >/dev/null 2>&1 || return 1
     paths=$(printf '%s' "$body" | jq -r '
         [.tree[] | select(.type == "blob") | select(.path | test("(^|/)SKILL\\.md$"))]
@@ -722,8 +710,11 @@ _reject() {
 # Safety reasons that mean the screen could not run, not that it found something.
 # exec-surface-truncated / -over-cap are NOT in it on purpose: the repo is too
 # large to scan whole, a property of the repo that a re-run would meet again, so
-# it is recorded like a finding.
-_SAFETY_OUTAGE='unfetchable|unreadable|unresolved|scan-error|scan-blind|failed'
+# it is recorded like a finding. A config the screen cannot parse
+# (yaml-config-unparsed, toml-config-unparsed) is in it: the screen only knows
+# it cannot confirm the file, and its text rule also matches prose, so the repo
+# goes to review on every run instead of being set aside for months.
+_SAFETY_OUTAGE='unfetchable|unreadable|unresolved|unparsed|scan-error|scan-blind|failed'
 
 moat_arr=()
 

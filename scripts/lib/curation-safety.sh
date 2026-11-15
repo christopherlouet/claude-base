@@ -16,12 +16,18 @@
 # hostile code: script files (*.sh/.bash/.zsh/.py/.js/.mjs/.cjs/.rb/.pl/.php),
 # anything with the git executable bit (mode 100755, e.g. an extensionless
 # `bin/install`), Claude settings hook command blocks (settings*.json), MCP
-# server configs (.mcp.json / mcp.json) and the plugin format's own declarations
-# (hooks/hooks.json, .claude-plugin/plugin.json, marketplace.json), and the
+# server configs (.mcp.json / mcp.json), the plugin format's own declarations
+# (hooks/hooks.json, .claude-plugin/plugin.json, marketplace.json), any other
+# JSON, TOML or YAML file whose shape declares a server or a command whatever
+# its name (MCP configs, a plugin's .lsp.json, a Gemini extension, Codex
+# config.toml, Goose config.yaml: #679; keys in any case, `cmd` too; an
+# unparseable one is scanned as text), and the
 # members of any ARCHIVE in the tree (.zip, .skill, .tar.gz, …: #678 — a zip
 # once carried two unscanned shell scripts past a clean verdict). The same
-# high-signal danger patterns apply to every file; a JSON file is also scanned
-# one line per declared command, "command" joined with its "args". (Limitations,
+# high-signal danger patterns apply to every file; a JSON or TOML config is also
+# scanned one line per declared command, "command" joined with its "args" (YAML
+# is not: no parser in the standard library, so its text is scanned and a
+# config-shaped YAML is flagged yaml-config-unparsed, for review). (Limitations,
 # all fail toward human review: a download executed in a separate statement, a
 # hook command referencing a script outside the scanned surface, and a plugin
 # manifest pointing its hooks at a custom-named file are not caught — see
@@ -56,7 +62,11 @@
 # doc-unreadable (the doc is present and unreadable — both modes),
 # exec-surface-unfetchable (tree unlistable), exec-file-unfetchable (a listed
 # exec file unreadable), exec-surface-truncated (GitHub truncated the tree),
-# exec-surface-over-cap (more exec files than the cap), scan-error (a pattern
+# exec-surface-over-cap (more exec files than the cap), json-surface-over-cap
+# (more other JSON/TOML/YAML files than their own cap, #679), yaml-config-unparsed
+# (a YAML that declares a command, whose commands cannot be rebuilt without a
+# parser, #679), toml-unreadable (the TOML reader could not run: no python3 3.11+
+# — an outage), scan-error (a pattern
 # grep failed, so the text could not be confirmed clean), scan-blind (the scan
 # answered "no match" about a text that demonstrably holds characters).
 # Archives (see _curation_scan_archive): archive-unreadable (the reader could
@@ -108,6 +118,26 @@ source "$_SAFETY_DIR/curation-common.sh"
 # shared with the trust-score README license probe.
 _curation_b64decode() { curation_b64decode; }
 
+# _curation_contents_api <repo> <ref> <path> — echo the contents API path for one
+# file, each path segment and the ref percent-encoded (`/` kept between
+# segments). The path comes from the candidate's own tree: inserted raw, a name
+# holding `?`, `&`, `#` or `%` rewrites the request (`run?ref=v0&x=.sh` asks for
+# `run` at v0) and the screen scans a file that is not the one installed (#680).
+_curation_contents_api() {
+    local p r
+    p=$(curation_path_uri "$3") || return 1
+    r=$(curation_uri "$2") || return 1
+    printf 'repos/%s/contents/%s?ref=%s' "$1" "$p" "$r"
+}
+
+# _curation_trees_api <repo> <ref> — the recursive git-trees API path, ref
+# encoded: the ref is a tag the candidate chose (see curation_uri).
+_curation_trees_api() {
+    local r
+    r=$(curation_uri "$2") || return 1
+    printf 'repos/%s/git/trees/%s?recursive=1' "$1" "$r"
+}
+
 # _curation_fetch_one <repo> <ref> <path> — echo the decoded text of one file at
 # <ref> via the contents API (base64 body, mockable offline); return non-zero if
 # the file is absent, unfetchable, or undecodable. A present-but-undecodable /
@@ -128,8 +158,9 @@ _curation_b64decode() { curation_b64decode; }
 # needs a status the CLI does not give us here; until it does, nothing may treat
 # 1 as proof that a file does not exist.
 _curation_fetch_one() {
-    local repo="$1" ref="$2" file="$3" body content decoded
-    body=$(curation_gh_api "repos/$repo/contents/$file?ref=$ref" 2>/dev/null) || return 1
+    local repo="$1" ref="$2" file="$3" api body content decoded
+    api=$(_curation_contents_api "$repo" "$ref" "$file") || return 1
+    body=$(curation_gh_api "$api" 2>/dev/null) || return 1
     # The API answered, so the path EXISTS; from here every failure is "present
     # but unreadable".
     content=$(printf '%s' "$body" | jq -r '.content // empty' 2>/dev/null)
@@ -404,11 +435,123 @@ _curation_screen_scan() {
 # Emits nothing for JSON jq rejects: the caller still scans the raw text, so a
 # malformed file is never treated as clean. The jq definition is shared with the
 # rendering, which must rebuild commands exactly the same way.
-_CURATION_JQ_COMMANDS='def commands: .. | objects | select(has("command"))
-    | [.command] + (if (.args | type) == "array" then .args else [] end)
+# Keys match whatever their case, and "cmd" counts as "command" (#679): Go's
+# JSON decoder folds case, Goose names it `cmd`. A command given as an array
+# (`["bash", "-c", …]`) is rebuilt word by word, not as its JSON text.
+# shellcheck disable=SC2016  # jq variables, not shell ones
+_CURATION_JQ_COMMANDS='def ckey($n): to_entries | map(select(.key | ascii_downcase | IN($n[])) | .value);
+def commands: .. | objects | select(any(keys[]; ascii_downcase | IN("command", "cmd")))
+    | (ckey(["command", "cmd"]) | flatten) + (ckey(["args"]) | map(select(type == "array")) | flatten)
     | map(tostring | gsub("[\r\n]+"; " ")) | join(" ");'
 _curation_json_commands() {
     jq -r "$_CURATION_JQ_COMMANDS commands" 2>/dev/null || true
+}
+
+# _curation_fetch_blob <repo> <ref> <path> — echo a JSON file's text through
+# the git blobs API, for the bodies the contents API withholds (over 1 MB; it
+# still names the blob's sha and size). A big data file (a test fixture in
+# vercel-labs/agent-skills) must not flag every pin of its repo; a SCRIPT over
+# 1 MB stays a flag, never read this way. An empty file echoes nothing and
+# succeeds (nothing in it runs); a blob over CURATION_SAFETY_BLOB_MAX bytes
+# (default 10 MB) is not downloaded and fails, as does anything unreadable.
+_curation_fetch_blob() {
+    local api meta sha size out
+    local max="${CURATION_SAFETY_BLOB_MAX:-10485760}"
+    api=$(_curation_contents_api "$1" "$2" "$3") || return 1
+    meta=$(curation_gh_api "$api" 2>/dev/null) || return 1
+    size=$(printf '%s' "$meta" | jq -r '.size // empty' 2>/dev/null)
+    case "$size" in '' | *[!0-9]*) return 1 ;; 0) return 0 ;; esac
+    [ "$size" -le "$max" ] || return 1
+    sha=$(printf '%s' "$meta" | jq -r '.sha // empty' 2>/dev/null)
+    [[ "$sha" =~ ^[0-9a-f]+$ ]] || return 1
+    out=$(curation_gh_api "repos/$1/git/blobs/$sha" 2>/dev/null \
+        | jq -r '.content // empty' 2>/dev/null | _curation_b64decode) || return 1
+    [ -n "$out" ] || return 1
+    printf '%s' "$out"
+}
+
+# _curation_json_is_config — read a JSON file on stdin; return 1 only when it
+# is NOT exec surface: empty, or a parsed body that declares no server or
+# command. A config is recognised by its SHAPE (an `mcpServers` key, or any
+# object with a "command"), never by a filename list: every client names its
+# own (`.agy-plugin/mcp_config.json`, `gemini-extension.json`, a plugin's
+# `.lsp.json`), and a list missed all three in pinned subjects (#679). A body jq
+# rejects (JSONC, a broken file) cannot be ruled out, so it stays surface and
+# its raw text is scanned. Keys match whatever their case, and `cmd` and
+# `mcp_servers` count too (Go's decoder folds case; Goose, Codex), as in
+# _CURATION_JQ_COMMANDS.
+_curation_json_is_config() {
+    local body shape
+    body=$(cat)
+    [ -n "$body" ] || return 1
+    shape=$(printf '%s' "$body" | jq -r '[.. | objects
+        | select(any(keys[]; ascii_downcase | IN("mcpservers", "mcp_servers", "command", "cmd")))] | length' 2>/dev/null) || return 0
+    case "$shape" in '' | *[!0-9]*) return 0 ;; esac
+    [ "$shape" -gt 0 ]
+}
+
+# _curation_toml_json — read a TOML file on stdin, echo it as JSON, so its shape
+# and its commands are read by the JSON rules above (Codex `config.toml`
+# declares `[mcp_servers.x]` with `command` and `args`). Python's standard
+# library (3.11+) parses it. Exit: 0 = JSON on stdout; 1 = the file does not
+# parse (no client reads it either: the caller scans its text); anything else =
+# the reader could not run — no interpreter, or one without tomllib — and the
+# file's commands cannot be rebuilt (the caller flags toml-unreadable, an outage).
+_curation_toml_json() {
+    "${CURATION_SAFETY_PYTHON:-python3}" -I -c 'import json, sys
+try:
+    import tomllib
+except ImportError:
+    sys.exit(3)
+try:
+    data = tomllib.loads(sys.stdin.read())
+except Exception:
+    sys.exit(1)
+print(json.dumps(data, default=str))' 2>/dev/null
+}
+
+# _curation_yaml_is_config <text> — 0 when a YAML text may declare a server or
+# a command: a key named command, cmd, mcpServers or mcp_servers (any case,
+# block or flow style), or a key the text does not spell out on its line — an
+# escaped quoted key ("\x63md"), an alias used as a key (*k :), a complex key
+# (? command, in a block or a flow collection) — which a loader may read as one
+# of those. A leading BOM is dropped, as loaders do; whole-line comments are
+# skipped (an inline one is kept: cutting at `#` could cut a key off). Read by
+# bash's own matcher: no process that could fail silently into "not a
+# config". The standard library has no YAML parser, so the caller cannot
+# rebuild the commands and sends a config-shaped YAML to review (#679). A
+# phrase rule leaks both ways — prose in a block scalar still matches — so the
+# review it causes is not recorded as a finding (see curation-discover.sh).
+_curation_yaml_is_config() {
+    local text="${1#$'\xef\xbb\xbf'}" line lower="" q='["'\'']'
+    while IFS= read -r line || [ -n "$line" ]; do
+        [[ "$line" =~ ^[[:space:]]*# ]] || lower+="${line,,}"$'\n'
+    done < <(printf '%s\n' "$text")
+    local key="(^|[[:space:]{,[-])${q}?(command|cmd|mcpservers|mcp_servers)${q}?[[:space:]]*:"
+    local escaped="${q}[^\"'"$'\n'"]*\\\\[^\"'"$'\n'"]*${q}[[:space:]]*:"
+    # An alias key opens its key: after the indent, a `- `, a flow `{`, `[` or
+    # `,`, or an explicit `? `, and names an anchor. A shell glob (`*"$tag"*)`)
+    # or bold Markdown (`**repository:`) inside a value is neither (both seen in
+    # pinned repos).
+    local alias='(^|'$'\n''|[{,[])[[:space:]]*(-[[:space:]]+)?(\?[[:space:]]+)?\*[a-z0-9_.-]+[[:space:]]*:([[:space:]]|$)'
+    local complex='(^|'$'\n''|[{,[])[[:space:]]*(-[[:space:]]+)?\?([[:space:]]|$)'
+    [[ "$lower" =~ $key ]] || [[ "$lower" =~ $escaped ]] \
+        || [[ "$lower" =~ $alias ]] || [[ "$lower" =~ $complex ]]
+}
+
+# _curation_toml_text_is_config <text> — for a TOML file tomllib rejects: 0 when
+# its text may still declare a server or a command (a `command`, `cmd`,
+# `mcpServers` or `mcp_servers` key, any case, or such a table header). A
+# real client may read what tomllib does not — Codex reads TOML 1.1 — so a
+# rejected config cannot be confirmed safe and goes to review (#679). Whole-line
+# comments are skipped, as in _curation_yaml_is_config.
+_curation_toml_text_is_config() {
+    local line lower="" q='["'\'']'
+    while IFS= read -r line || [ -n "$line" ]; do
+        [[ "$line" =~ ^[[:space:]]*# ]] || lower+="${line,,}"$'\n'
+    done < <(printf '%s\n' "${1#$'\xef\xbb\xbf'}")
+    local key="(^|[[:space:]{,.[])${q}?(command|cmd|mcpservers|mcp_servers)${q}?([[:space:]]*=|[[:space:]]*[].])"
+    [[ "$lower" =~ $key ]]
 }
 
 # What counts as an archive, by name (jq/ERE, matched case-insensitively): zip
@@ -433,8 +576,9 @@ _CURATION_EMBEDDED_RE="PK$(printf '\003\004')|PK$(printf '\005\006')|$(printf '\
 # body could not be decoded; 3 = GitHub withheld the body of a non-empty file
 # (what it does over 1 MB); 4 = the file is empty.
 _curation_fetch_raw() {
-    local body size
-    body=$(curation_gh_api "repos/$1/contents/$3?ref=$2" 2>/dev/null) || return 1
+    local api body size
+    api=$(_curation_contents_api "$1" "$2" "$3") || return 1
+    body=$(curation_gh_api "$api" 2>/dev/null) || return 1
     printf '%s' "$body" | jq -r '.content // empty' 2>/dev/null | _curation_b64decode > "$4" || return 2
     [ -s "$4" ] && return 0
     size=$(printf '%s' "$body" | jq -r '.size // 0' 2>/dev/null)
@@ -721,13 +865,18 @@ _curation_scan_archive() {
     return 0
 }
 
-# _curation_list_exec_surface <repo> <ref> — echo the candidate's executable-
-# surface paths (one per line) from the recursive git tree at <ref>: scripts,
-# exec-bit files, Claude settings hook blocks (settings*.json), MCP server
-# configs (.mcp.json / mcp.json) and plugin declarations (hooks.json,
-# plugin.json, marketplace.json) — the files that can actually run code in a
-# user's session, which the SKILL.md/README.md doc cannot reveal. Capped at
-# CURATION_SAFETY_MAX_FILES (default 250) to bound API calls on large repos.
+# _curation_list_exec_surface <repo> <ref> [<subpaths>] [exec|json] — echo the
+# candidate's executable-surface paths (one per line) from the recursive git
+# tree at <ref>: scripts, exec-bit files, Claude settings hook blocks
+# (settings*.json), MCP server configs (.mcp.json / mcp.json) and plugin
+# declarations (hooks.json, plugin.json, marketplace.json) — the files that can
+# actually run code in a user's session, which the SKILL.md/README.md doc cannot
+# reveal. Capped at CURATION_SAFETY_MAX_FILES (default 250) to bound API calls
+# on large repos. With `json`: every OTHER *.json / .jsonc / .json5 / .toml /
+# .yaml / .yml (any case) instead, whose shape the scan reads (#679), under
+# its own cap CURATION_SAFETY_MAX_JSON (default 250; over it the caller flags
+# json-surface-over-cap) — folders of locale or fixture JSON must not crowd
+# scripts out of the exec cap.
 #
 # The cap is a COST bound, not a safety judgement, so it must clear the real
 # surfaces we watch: the biggest carry 36-158 exec files, and the old cap of 25
@@ -741,22 +890,23 @@ _curation_scan_archive() {
 # 3 and 4 are distinct unknowns: 3 hides files we never even named, 4 hides
 # files we named and chose not to fetch. Both flag; only 3 is unbounded.
 _curation_list_exec_surface() {
-    local repo="$1" ref="$2" subpaths="${3:-}" body
+    local repo="$1" ref="$2" subpaths="${3:-}" kind="${4:-exec}" api body
     local cap="${CURATION_SAFETY_MAX_FILES:-250}"
-    body=$(curation_gh_api "repos/$repo/git/trees/$ref?recursive=1" 2>/dev/null) || return 1
+    [ "$kind" = "json" ] && cap="${CURATION_SAFETY_MAX_JSON:-250}"
+    api=$(_curation_trees_api "$repo" "$ref") || return 1
+    body=$(curation_gh_api "$api" 2>/dev/null) || return 1
     # A response without a .tree array (e.g. an error object) is unusable.
     printf '%s' "$body" | jq -e '.tree | type == "array"' >/dev/null 2>&1 || return 1
     local truncated all count
     truncated=$(printf '%s' "$body" | jq -r '.truncated // false')
-    all=$(printf '%s' "$body" | jq -r --arg archive "$_CURATION_ARCHIVE_RE" '
+    all=$(printf '%s' "$body" | jq -r --arg archive "$_CURATION_ARCHIVE_RE" --arg kind "$kind" '
         .tree[] | select(.type == "blob")
-        | select(
-            (.path | test("\\.(sh|bash|zsh|py|js|mjs|cjs|rb|pl|php)$"))
+        | ((.path | test("\\.(sh|bash|zsh|py|js|mjs|cjs|rb|pl|php)$"))
             or (.path | test($archive; "i"))
             or (.mode == "100755")
             or (.path | split("/")[-1] | (test("^settings.*\\.json$") or test("^\\.?mcp\\.json$")
-                or test("^(hooks|plugin|marketplace)\\.json$")))
-          )
+                or test("^(hooks|plugin|marketplace)\\.json$")))) as $exec
+        | select(if $kind == "json" then ($exec | not) and (.path | test("\\.(json[c5]?|toml|ya?ml)$"; "i")) else $exec end)
         | .path')
     # Subpath scoping (#384 fix): when the skill lives in subpath(s), keep ONLY
     # files under them — BEFORE the cap — so an unrelated big monorepo elsewhere
@@ -806,13 +956,16 @@ _curation_list_exec_surface() {
 # lists <path> as a file. Any failure answers no (the caller only uses it to
 # tell "not scanned" from "nothing there").
 _curation_tree_has() {
-    curation_gh_api "repos/$1/git/trees/$2?recursive=1" 2>/dev/null \
+    local api
+    api=$(_curation_trees_api "$1" "$2") || return 1
+    curation_gh_api "$api" 2>/dev/null \
         | jq -e --arg p "$3" '[.tree[]? | select(.type == "blob" and .path == $p)] | length > 0' >/dev/null 2>&1
 }
 
 _curation_subpaths_resolve() {
-    local repo="$1" ref="$2" subpaths="$3" body paths sp sps=() missing=0
-    body=$(curation_gh_api "repos/$repo/git/trees/$ref?recursive=1" 2>/dev/null) || return 1
+    local repo="$1" ref="$2" subpaths="$3" api body paths sp sps=() missing=0
+    api=$(_curation_trees_api "$repo" "$ref") || return 1
+    body=$(curation_gh_api "$api" 2>/dev/null) || return 1
     printf '%s' "$body" | jq -e '.tree | type == "array"' >/dev/null 2>&1 || return 1
     paths=$(printf '%s' "$body" | jq -r '.tree[]? | .path')
     IFS='+' read -ra sps < <(printf '%s' "$subpaths") || true
@@ -965,6 +1118,61 @@ curation_safety_screen() {
             # Process substitution, not a here-string (no temp file) and not a
             # pipe (the loop must stay in THIS shell — `reasons` is the verdict).
         done < <(printf '%s\n' "$surface")
+    fi
+
+    # 2b. Every other config-like file (*.json, .jsonc, .json5, .toml, .yaml,
+    # .yml), read for its SHAPE (#679): a config declares a server or a command
+    # whatever its client names it. One that declares nothing runnable is data
+    # (a package.json, a pyproject.toml, a CI workflow) and is not scanned; one
+    # that cannot be read is a flag, as above. Their cap keeps its first name,
+    # json-surface-over-cap.
+    local jsurface jrc jpath jtext tjson trc
+    jsurface=$(_curation_list_exec_surface "$repo" "$ref" "$subpaths" json); jrc=$?
+    if [ "$jrc" -eq 1 ]; then
+        reasons+=("exec-surface-unfetchable")
+    else
+        [ "$jrc" -eq 3 ] && reasons+=("exec-surface-truncated")
+        [ "$jrc" -eq 4 ] && reasons+=("json-surface-over-cap")
+        while IFS= read -r jpath; do
+            [ -n "$jpath" ] || continue
+            if jtext=$(_curation_fetch_one "$repo" "$ref" "$jpath") \
+                || jtext=$(_curation_fetch_blob "$repo" "$ref" "$jpath"); then
+                case "${jpath,,}" in
+                    *.yaml | *.yml)
+                        _curation_yaml_is_config "$jtext" || continue
+                        # Its text is scanned, but a command split from its
+                        # args or folded over lines is not rebuilt: review.
+                        reasons+=("yaml-config-unparsed")
+                        _curation_screen_scan "$jpath" < <(printf '%s\n' "$jtext")
+                        ;;
+                    *.toml)
+                        tjson=$(printf '%s' "$jtext" | _curation_toml_json); trc=$?
+                        if [ "$trc" -eq 0 ]; then
+                            printf '%s' "$tjson" | _curation_json_is_config || continue
+                            _curation_screen_scan "$jpath" < <(printf '%s\n' "$jtext")
+                            _curation_screen_scan "$jpath" joined < <(printf '%s' "$tjson" | _curation_json_commands)
+                        else
+                            # Unparsed: its shape cannot be ruled out, so scan the
+                            # text. A reader that could not run is an outage; a
+                            # rejected file that may declare a command, a review.
+                            if [ "$trc" -ne 1 ]; then
+                                reasons+=("toml-unreadable")
+                            elif _curation_toml_text_is_config "$jtext"; then
+                                reasons+=("toml-config-unparsed")
+                            fi
+                            _curation_screen_scan "$jpath" < <(printf '%s\n' "$jtext")
+                        fi
+                        ;;
+                    *)
+                        printf '%s' "$jtext" | _curation_json_is_config || continue
+                        _curation_screen_scan "$jpath" < <(printf '%s\n' "$jtext")
+                        _curation_screen_scan "$jpath" joined < <(printf '%s' "$jtext" | _curation_json_commands)
+                        ;;
+                esac
+            else
+                reasons+=("exec-file-unfetchable")
+            fi
+        done < <(printf '%s\n' "$jsurface")
     fi
 
     # 3. Dedup reason categories (order-preserving) and decide the verdict.

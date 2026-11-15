@@ -61,6 +61,17 @@ curation_days_since() {
     printf '%s\n' $((now_days - then_days))
 }
 
+# curation_uri <text> — percent-encode one URL component, `/` included (a ref or
+# a single path segment). A ref is a candidate's or vendor's tag name, and git
+# allows `#`, `&` and `%` in one: raw in a URL, `v1#x` cuts the query and the
+# call reads another ref (#680). GitHub decodes %2F and %40 back in both the
+# trees path and `?ref=` (measured).
+curation_uri() { jq -rn --arg s "$1" '$s | @uri'; }
+
+# curation_path_uri <path> — percent-encode each segment of a repo path, keeping
+# the `/` between them.
+curation_path_uri() { jq -rn --arg p "$1" '$p | split("/") | map(@uri) | join("/")'; }
+
 # curation_gh_api <api-path> — fail-safe `gh api` wrapper. Retries on transient
 # failure with linear backoff. Echoes the JSON body on success (exit 0); on
 # exhaustion echoes nothing and returns non-zero. Tunables (test-overridable):
@@ -160,6 +171,81 @@ curation_stable_release() {
     fi
     printf '%s\n' "$tag"
 }
+
+# Directory names a monorepo uses for structure: a path segment named so does
+# not identify the package a tag names when the path has another name
+# (`packages/core/skills` pinned to `@acme/skills@2.0.0` is core's skills, not
+# the sibling package `skills`), but does when it is the path's only name
+# (`packages/skills`). The repo's own name always does (a single package named
+# after its repo).
+_CURATION_GENERIC_SEGMENTS=' skills skill plugins plugin packages src lib libs apps '
+
+# Prefixes of a dash tag that name a channel, not a component (`release-1.2.3`,
+# `nightly-1.2.3`).
+_CURATION_NON_COMPONENTS=' release releases rel version ver stable latest nightly beta alpha rc canary next preview dev snapshot '
+
+# curation_pin_note <ref> <subpaths> <owner/repo> — a note when a path record
+# (subpaths '+'-joined) is pinned to ANOTHER package's tag; empty otherwise
+# (#670). The tag names a package (`@scope/pkg@1.0.0`, `pkg@1.0.0`: its last "/"
+# segment) or a release-please component (`pkg-v1.2.0`, `pkg-1.2.0`). It agrees
+# when that name, case-insensitively, is a non-generic segment of one of the
+# subpaths or the repo's name. Not checked: a whole-repo record, a plain version
+# tag, a commit SHA — the way out for a pin this rule gets wrong. Shared by the
+# discovery digest (a warning) and validate-presets' registry pass (a failure).
+curation_pin_note() {
+    local ref="$1" subs="$2" root="${3:-}" pkg shown rest piece sp seg segs=() sps=() names=()
+    [ -n "$subs" ] || return 0
+    if [[ "$ref" =~ ^.+@[^@]+$ ]]; then
+        shown="${ref%@*}"
+        pkg="${shown##*/}"
+    else
+        # A component is cut at the FIRST "-<version>": `foo-v1.0.0-beta-2.1`
+        # is foo's, never `foo-v1.0.0-beta`'s (bash has no lazy match).
+        # A ref that starts as a version is a plain version whatever follows
+        # (`1.0.0-0.3.7`, `v1.0.0-rc-1.2`: semver pre-releases).
+        [[ "$ref" =~ ^[vV]?[0-9]+\.[0-9]+ ]] && return 0
+        shown="" rest="$ref"
+        while [[ "$rest" == *-* ]]; do
+            piece="${rest%%-*}"; rest="${rest#*-}"
+            shown="${shown:+$shown-}$piece"
+            [[ "$rest" =~ ^[vV]?[0-9]+\.[0-9]+([.+-].*)?$ ]] && break
+        done
+        # An odd shape (`-1.2`, `a--v1.2`: a name ending in "-") names no
+        # component this rule can trust: never block on it.
+        [[ -n "$shown" && "$shown" != *- && "$rest" =~ ^[vV]?[0-9]+\.[0-9]+([.+-].*)?$ ]] || return 0
+        pkg="$shown"
+    fi
+    pkg=$(_curation_pkg_norm "$pkg")
+    # Channel words skip dash tags only: `next@15.0.0` names a package.
+    [[ "$ref" != *@* && "$_CURATION_NON_COMPONENTS" == *" $pkg "* ]] && return 0
+    [ "$(_curation_pkg_norm "${root##*/}")" = "$pkg" ] && return 0
+    # read -a, not an unquoted expansion: no pathname expansion of a segment.
+    IFS='+' read -ra sps <<< "$subs"
+    local checked=0
+    for sp in ${sps[@]+"${sps[@]}"}; do
+        [[ "$sp" == *[!/]* ]] || continue   # an empty piece names nothing
+        checked=1
+        IFS=/ read -ra segs <<< "$sp"
+        # A generic segment is structure when the path has another name
+        # (packages/core/skills), the package's own name when it has none
+        # (packages/skills).
+        names=()
+        for seg in ${segs[@]+"${segs[@]}"}; do
+            seg=$(_curation_pkg_norm "$seg")
+            [[ "$_CURATION_GENERIC_SEGMENTS" == *" $seg "* ]] || names+=("$seg")
+        done
+        [ "${#names[@]}" -gt 0 ] || for seg in ${segs[@]+"${segs[@]}"}; do names+=("$(_curation_pkg_norm "$seg")"); done
+        for seg in ${names[@]+"${names[@]}"}; do
+            [ "$seg" = "$pkg" ] && return 0
+        done
+    done
+    [ "$checked" -eq 1 ] || return 0
+    printf 'tag of another package (%s): pick the release of the package under this path, or a commit, before accepting\n' "$shown"
+}
+
+# _curation_pkg_norm <name> — a package or folder name compared loosely: case
+# folded, "_" read as "-" (foo_bar and foo-bar are one name).
+_curation_pkg_norm() { printf '%s' "$1" | tr '[:upper:]_' '[:lower:]-'; }
 
 # curation_finding_json — emit one normalized finding object for a digest
 # (Slice 3 consumes these). Args: subject type evidence action.

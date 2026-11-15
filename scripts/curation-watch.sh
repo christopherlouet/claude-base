@@ -267,7 +267,9 @@ _repo_has_root_record() {
 # — error body, missing entry, a blob where a tree was expected, a truncated
 # listing — resolves to nothing and leaves the caller at "unknown".
 _subtree_sha() {
-    local repo="$1" ref="$2" sub="$3" parent child out
+    local repo="$1" ref sub="$3" parent child out
+    # The ref is the vendor's tag: raw, a `#` or `&` in it reads another ref (#680).
+    ref=$(curation_uri "$2") || return 0
     parent=${sub%/*}; child=${sub##*/}
     if [ "$parent" = "$sub" ]; then
         # top-level subpath: read it out of the root tree, refusing a truncated
@@ -277,6 +279,7 @@ _subtree_sha() {
             if (.truncated // false) then empty
             else (.tree // [])[]? | select(.path == $c and .type == "tree") | .sha end' 2>/dev/null)
     else
+        parent=$(curation_path_uri "$parent") || return 0
         out=$(curation_gh_api "repos/$repo/contents/$parent?ref=$ref" 2>/dev/null) || return 0
         out=$(printf '%s' "$out" | jq -r --arg c "$child" '
             if type == "array" then .[]? | select(.name == $c and .type == "dir") | .sha
@@ -338,8 +341,14 @@ _drift_subpath_fingerprint() {
 # built on an answer we did not get. A rename is a touch on BOTH its old and new
 # path.
 _drift_touched_subpaths() {
-    local repo="$1" old="$2" new="$3" subs="$4" body verdict
-    body=$(curation_gh_api "repos/$repo/compare/$old...$new" 2>/dev/null) \
+    local repo="$1" old="$2" new="$3" subs="$4" body verdict qold qnew
+    # $new is the vendor's tag: raw, `v2#x` compares against v2 (#680). Encoded
+    # for this URL only ($old/$new stay raw for the fingerprint, which encodes
+    # them itself). An encoding failure leaves them empty: the compare fails and
+    # the fingerprint route answers instead.
+    qold=$(curation_uri "$old") || qold=""
+    qnew=$(curation_uri "$new") || qnew=""
+    body=$(curation_gh_api "repos/$repo/compare/$qold...$qnew" 2>/dev/null) \
         && verdict=$(printf '%s' "$body" | jq -r --arg subs "$subs" '
             def under($p): . == $p or startswith($p + "/");
             ($subs | split("+")) as $S
