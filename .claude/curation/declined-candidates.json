@@ -65,7 +65,7 @@
     },
     {
       "repo": "hashicorp/agent-skills/terraform/code-generation/skills",
-      "reason": "Already recorded on purpose as two of its skills (terraform-style-guide, terraform-test; registry, ops-infra-code); of the other two, azure-verified-modules is provider-specific and terraform-search-import is already named in ops-infra-code's pointer to this repo.",
+      "reason": "Already recorded on purpose as two of its skills (terraform-style-guide, terraform-test; registry, ops-infra-code); of the other two, azure-verified-modules is provider-specific and terraform-search-import is covered (as search/import) by ops-infra-code's pointer to this repo.",
       "decidedAt": "2026-11-15",
       "ref": "issue-683"
     },
