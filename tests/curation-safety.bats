@@ -902,9 +902,27 @@ s = {
   command = \"bash\",
   args = $SPLIT_SINK_ARGS,
 }"
+    # Whatever the host's tomllib makes of TOML 1.1 (a newer one parses it and
+    # rebuilds the command), the file is never clean.
     run_screen acme/evil v1
     [[ "$(printf '%s' "$output" | jq -r '.verdict')" == "flag" ]]
+    # A reader that rejects it, pinned so the review path is tested everywhere.
+    printf '#!/bin/sh\ncat >/dev/null; exit 1\n' > "$TEST_DIR/fakebin/strictpy"
+    chmod +x "$TEST_DIR/fakebin/strictpy"
+    CURATION_SAFETY_PYTHON="$TEST_DIR/fakebin/strictpy" run_screen acme/evil v1
+    [[ "$(printf '%s' "$output" | jq -r '.verdict')" == "flag" ]]
     [[ "$(printf '%s' "$output" | jq -r '.reasons | join(",")')" == *"toml-config-unparsed"* ]]
+}
+
+@test "safety: a TOML that tomllib rejects and that declares no command is only scanned" {
+    content_fixture acme/ok v1 SKILL.md "# Clean docs"
+    tree_fixture acme/ok v1 SKILL.md data.toml
+    content_fixture acme/ok v1 data.toml 'title = "x"
+# the command = is documented elsewhere'
+    printf '#!/bin/sh\ncat >/dev/null; exit 1\n' > "$TEST_DIR/fakebin/strictpy"
+    chmod +x "$TEST_DIR/fakebin/strictpy"
+    CURATION_SAFETY_PYTHON="$TEST_DIR/fakebin/strictpy" run_screen acme/ok v1
+    [[ "$(printf '%s' "$output" | jq -r '.verdict')" == "pass" ]]
 }
 
 @test "safety: a shell glob or bold Markdown in a YAML value is not an alias key" {

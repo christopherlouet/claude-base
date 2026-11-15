@@ -543,9 +543,13 @@ _curation_yaml_is_config() {
 # its text may still declare a server or a command (a `command`, `cmd`,
 # `mcpServers` or `mcp_servers` key, any case, or such a table header). A
 # real client may read what tomllib does not — Codex reads TOML 1.1 — so a
-# rejected config cannot be confirmed safe and goes to review (#679).
+# rejected config cannot be confirmed safe and goes to review (#679). Whole-line
+# comments are skipped, as in _curation_yaml_is_config.
 _curation_toml_text_is_config() {
-    local lower="${1,,}" q='["'\'']'
+    local line lower="" q='["'\'']'
+    while IFS= read -r line || [ -n "$line" ]; do
+        [[ "$line" =~ ^[[:space:]]*# ]] || lower+="${line,,}"$'\n'
+    done < <(printf '%s\n' "${1#$'\xef\xbb\xbf'}")
     local key="(^|[[:space:]{,.[])${q}?(command|cmd|mcpservers|mcp_servers)${q}?([[:space:]]*=|[[:space:]]*[].])"
     [[ "$lower" =~ $key ]]
 }
