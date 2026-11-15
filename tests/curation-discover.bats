@@ -84,10 +84,15 @@ refute_called() {
 }
 judged_repos() { grep -oE 'api repos/[^/ ]+/[^/ ]+$' "$TEST_DIR/gh.log" | sed 's|^api repos/||'; }
 gh_fixture() { printf '%s' "$2" > "$TEST_DIR/fx/$(printf '%s' "$1" | tr '/' '_')"; }
+# content_fixture <repo> <ref> <path> <text> — the safety screen's contents call,
+# keyed as it is sent: path segments and ref percent-encoded (#680).
 content_fixture() {
-    local b64; b64=$(printf '%s' "$4" | base64 | tr -d '\n')
+    local b64 api
+    b64=$(printf '%s' "$4" | base64 | tr -d '\n')
+    api=$(jq -rn --arg p "$3" --arg r "$2" \
+        '($p | split("/") | map(@uri) | join("/")) + "?ref=" + ($r | @uri)')
     jq -cn --arg c "$b64" '{content:$c, encoding:"base64"}' \
-        > "$TEST_DIR/fx/$(printf '%s' "repos/$1/contents/$3?ref=$2" | tr '/' '_')"
+        > "$TEST_DIR/fx/$(printf '%s' "repos/$1/contents/$api" | tr '/' '_')"
 }
 llm_response() { printf '%s' "$1" > "$TEST_DIR/llm-response.json"; }
 # digest_json — the digest line alone. `run` merges stderr into $output, so a run

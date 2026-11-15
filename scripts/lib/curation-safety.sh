@@ -108,6 +108,18 @@ source "$_SAFETY_DIR/curation-common.sh"
 # shared with the trust-score README license probe.
 _curation_b64decode() { curation_b64decode; }
 
+# _curation_contents_api <repo> <ref> <path> — echo the contents API path for one
+# file, each path segment and the ref percent-encoded (`/` kept between
+# segments). The path comes from the candidate's own tree: inserted raw, a name
+# holding `?`, `&`, `#` or `%` rewrites the request (`run?ref=v0&x=.sh` asks for
+# `run` at v0) and the screen scans a file that is not the one installed (#680).
+_curation_contents_api() {
+    local enc
+    enc=$(jq -rn --arg p "$3" --arg r "$2" \
+        '($p | split("/") | map(@uri) | join("/")) + "?ref=" + ($r | @uri)') || return 1
+    printf 'repos/%s/contents/%s' "$1" "$enc"
+}
+
 # _curation_fetch_one <repo> <ref> <path> — echo the decoded text of one file at
 # <ref> via the contents API (base64 body, mockable offline); return non-zero if
 # the file is absent, unfetchable, or undecodable. A present-but-undecodable /
@@ -128,8 +140,9 @@ _curation_b64decode() { curation_b64decode; }
 # needs a status the CLI does not give us here; until it does, nothing may treat
 # 1 as proof that a file does not exist.
 _curation_fetch_one() {
-    local repo="$1" ref="$2" file="$3" body content decoded
-    body=$(curation_gh_api "repos/$repo/contents/$file?ref=$ref" 2>/dev/null) || return 1
+    local repo="$1" ref="$2" file="$3" api body content decoded
+    api=$(_curation_contents_api "$repo" "$ref" "$file") || return 1
+    body=$(curation_gh_api "$api" 2>/dev/null) || return 1
     # The API answered, so the path EXISTS; from here every failure is "present
     # but unreadable".
     content=$(printf '%s' "$body" | jq -r '.content // empty' 2>/dev/null)
@@ -433,8 +446,9 @@ _CURATION_EMBEDDED_RE="PK$(printf '\003\004')|PK$(printf '\005\006')|$(printf '\
 # body could not be decoded; 3 = GitHub withheld the body of a non-empty file
 # (what it does over 1 MB); 4 = the file is empty.
 _curation_fetch_raw() {
-    local body size
-    body=$(curation_gh_api "repos/$1/contents/$3?ref=$2" 2>/dev/null) || return 1
+    local api body size
+    api=$(_curation_contents_api "$1" "$2" "$3") || return 1
+    body=$(curation_gh_api "$api" 2>/dev/null) || return 1
     printf '%s' "$body" | jq -r '.content // empty' 2>/dev/null | _curation_b64decode > "$4" || return 2
     [ -s "$4" ] && return 0
     size=$(printf '%s' "$body" | jq -r '.size // 0' 2>/dev/null)
