@@ -60,7 +60,24 @@
       "sourceAudit": "dev-skills-pilot-2026-05-05",
       "flags": [
         "license: MIT declared in README (no LICENSE file) — recognized by the README license probe (EF-006)",
-        "partial-replacement-elsewhere: this repo (the record's vendorId) ships no Next.js skill — dev-nextjs fires 3/3 with all nine installed (eval/skill-triggering/FINDINGS.md, 2026-10-03). The Next.js team ships its own skills in vercel/next.js/skills (v16.3.8: cache-components adoption/optimizer, partial-prefetching adoption, dev-loop) — feature-adoption procedures, not the App Router / RSC / Server Actions reference dev-nextjs is. Do NOT reduce dev-nextjs to a pointer on the strength of either repo."
+        "partial-replacement-elsewhere: this repo (the record's vendorId) ships no Next.js skill — dev-nextjs fires 3/3 with all nine installed (eval/skill-triggering/FINDINGS.md, 2026-10-03). The Next.js team ships its own skills in vercel/next.js/skills (recorded below; six at v16.4.6: cache-components and partial-prefetching adoption/optimizer, bundle-optimizer, dev-loop) — feature procedures, not the App Router / RSC / Server Actions reference dev-nextjs is. Do NOT reduce dev-nextjs to a pointer on the strength of either repo."
+      ]
+    },
+    {
+      "foundationSkill": "dev-nextjs",
+      "vendorId": "vercel/next.js/skills",
+      "vendorUrl": "https://github.com/vercel/next.js/tree/canary/skills",
+      "pinnedRef": "v16.4.6",
+      "trustTrack": "authority",
+      "trustVerdict": "pass",
+      "provenance": "Vercel (Next.js team)",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-11-15",
+      "status": "candidate",
+      "sourceAudit": "discovery-2026-11-01",
+      "flags": [
+        "partial-replacement: six adoption, optimisation and verification procedures for recent features (Cache Components, Partial Prefetching, bundle, dev loop), not the App Router / RSC reference dev-nextjs is; recorded so the nightly watch tracks the pin dev-nextjs cites (issue-683)",
+        "monorepo: scoped to skills/; the framework's own release tags (vX.Y.Z) version it"
       ]
     },
     {
