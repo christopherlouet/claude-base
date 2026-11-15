@@ -46,6 +46,9 @@ source "$SCRIPT_DIR/lib/modules.sh"
 # Command/agent catalog filter SSOT (domain resolution, floor, unknown names).
 # shellcheck source=scripts/lib/catalog-filter.sh
 source "$SCRIPT_DIR/lib/catalog-filter.sh"
+# Pin/package agreement for monorepo records (curation_pin_note, #670).
+# shellcheck source=scripts/lib/curation-common.sh
+source "$SCRIPT_DIR/lib/curation-common.sh"
 
 QUIET=false
 SINGLE_FILE=""
@@ -668,6 +671,14 @@ validate_registry() {
                 errs+=("records[$i].pinnedRef missing (EF-005)")
             elif _is_floating_ref "$pin"; then
                 errs+=("records[$i].pinnedRef '$pin' is a floating ref — pin to a tag or commit SHA (EF-005)")
+            elif [ -n "$vid" ]; then
+                # A path record pinned to another package's tag (#670): checked
+                # here so it holds however the record arrived (discovery, an
+                # older digest, by hand). vendorId = owner/repo[/subpath+…].
+                local pnote
+                pnote=$(curation_pin_note "$pin" "$(printf '%s' "$vid" | cut -d/ -f3- -s)" \
+                    "$(printf '%s' "$vid" | cut -d/ -f1-2)")
+                [ -z "$pnote" ] || errs+=("records[$i].pinnedRef '$pin' — $pnote (#670)")
             fi
             case "$track" in
                 authority|community) ;;

@@ -1590,6 +1590,22 @@ _rel() { jq -cn --arg t "$1" --arg d "$2" '{tag_name:$t, draft:false, prerelease
     [ "$(digest_json | jq -r '.proposals[0].pinNote')" = "null" ]
 }
 
+@test "discover: a path pinned to another release-please component is flagged (#670)" {
+    monorepo_candidate "acme/mono" "packages/alpha/skills" \
+        "[$(_rel 'gamma-v1.2.0' 2026-09-20T00:00:00Z)]" "gamma-v1.2.0"
+    run_discover --digest-dir "$TEST_DIR/out"
+    [ "$status" -eq 0 ]
+    [[ "$(digest_json | jq -r '.proposals[0].pinNote')" == *"(gamma)"* ]] || false
+}
+
+@test "discover: a package matched only by a generic segment is flagged (#670)" {
+    monorepo_candidate "acme/mono" "packages/core/skills" \
+        "[$(_rel '@acme/skills@2.0.0' 2026-09-20T00:00:00Z)]" "@acme/skills@2.0.0"
+    run_discover --digest-dir "$TEST_DIR/out"
+    [ "$status" -eq 0 ]
+    [[ "$(digest_json | jq -r '.proposals[0].pinNote')" == *"@acme/skills"* ]] || false
+}
+
 @test "discover: control - the package match ignores case in the tag too" {
     monorepo_candidate "acme/mono" "packages/alpha/skills" \
         "[$(_rel 'Alpha@1.5.0' 2026-09-20T00:00:00Z)]" "Alpha@1.5.0"
