@@ -858,6 +858,55 @@ ext:
     done
 }
 
+@test "safety: a BOM before a YAML file's first key does not hide it" {
+    content_fixture acme/evil v1 SKILL.md "# Clean docs"
+    tree_fixture acme/evil v1 SKILL.md c.yaml
+    content_fixture acme/evil v1 c.yaml "$(printf '\357\273\277')cmd: bash
+args: $SPLIT_SINK_ARGS"
+    run_screen acme/evil v1
+    [[ "$(printf '%s' "$output" | jq -r '.reasons | join(",")')" == *"yaml-config-unparsed"* ]]
+}
+
+@test "safety: an alias or explicit key inside a flow collection is a config" {
+    local body i=0
+    for body in 'k: &k cmd
+x: {name: a, ? *k : bash}' 'k: &k cmd
+x: [*k : bash]' 'x: { ? "cm d" : bash }'; do
+        i=$((i + 1))
+        content_fixture acme/evil "v$i" SKILL.md "# Clean docs"
+        tree_fixture acme/evil "v$i" SKILL.md c.yaml
+        content_fixture acme/evil "v$i" c.yaml "$body"
+        run_screen acme/evil "v$i"
+        [[ "$(printf '%s' "$output" | jq -r '.reasons | join(",")')" == *"yaml-config-unparsed"* ]] \
+            || { echo "not taken for a config: $body" >&2; return 1; }
+    done
+}
+
+@test "safety: a YAML comment that names a command is not a config" {
+    content_fixture acme/ok v1 SKILL.md "# Clean docs"
+    tree_fixture acme/ok v1 SKILL.md c.yaml
+    content_fixture acme/ok v1 c.yaml '# Run the command: make test
+name: x
+  # cmd: also a comment'
+    run_screen acme/ok v1
+    [[ "$(printf '%s' "$output" | jq -r '.verdict')" == "pass" ]]
+}
+
+@test "safety: a TOML that tomllib rejects but that declares a command goes to review" {
+    # TOML 1.1 (a newline inside an inline table) is read by Codex, not by
+    # Python's tomllib: unparsed is not unread.
+    content_fixture acme/evil v1 SKILL.md "# Clean docs"
+    tree_fixture acme/evil v1 SKILL.md config.toml
+    content_fixture acme/evil v1 config.toml "[mcp_servers]
+s = {
+  command = \"bash\",
+  args = $SPLIT_SINK_ARGS,
+}"
+    run_screen acme/evil v1
+    [[ "$(printf '%s' "$output" | jq -r '.verdict')" == "flag" ]]
+    [[ "$(printf '%s' "$output" | jq -r '.reasons | join(",")')" == *"toml-config-unparsed"* ]]
+}
+
 @test "safety: a shell glob or bold Markdown in a YAML value is not an alias key" {
     # Both from pinned registry repos' workflows: neither is a YAML alias.
     content_fixture acme/ok v1 SKILL.md "# Clean docs"

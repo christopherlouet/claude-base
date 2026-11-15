@@ -514,21 +514,40 @@ print(json.dumps(data, default=str))' 2>/dev/null
 # a command: a key named command, cmd, mcpServers or mcp_servers (any case,
 # block or flow style), or a key the text does not spell out on its line — an
 # escaped quoted key ("\x63md"), an alias used as a key (*k :), a complex key
-# (? command) — which a loader may read as one of those. Read by bash's own
-# matcher: no process that could fail silently into "not a config". The
-# standard library has no YAML parser, so the caller cannot rebuild the
-# commands and sends a config-shaped YAML to review (#679).
+# (? command, in a block or a flow collection) — which a loader may read as one
+# of those. A leading BOM is dropped, as loaders do; whole-line comments are
+# skipped (an inline one is kept: cutting at `#` could cut a key off). Read by
+# bash's own matcher: no process that could fail silently into "not a
+# config". The standard library has no YAML parser, so the caller cannot
+# rebuild the commands and sends a config-shaped YAML to review (#679). A
+# phrase rule leaks both ways — prose in a block scalar still matches — so the
+# review it causes is not recorded as a finding (see curation-discover.sh).
 _curation_yaml_is_config() {
-    local lower="${1,,}" q='["'\'']'
+    local text="${1#$'\xef\xbb\xbf'}" line lower="" q='["'\'']'
+    while IFS= read -r line || [ -n "$line" ]; do
+        [[ "$line" =~ ^[[:space:]]*# ]] || lower+="${line,,}"$'\n'
+    done < <(printf '%s\n' "$text")
     local key="(^|[[:space:]{,[-])${q}?(command|cmd|mcpservers|mcp_servers)${q}?[[:space:]]*:"
     local escaped="${q}[^\"'"$'\n'"]*\\\\[^\"'"$'\n'"]*${q}[[:space:]]*:"
-    # An alias key opens its key: after the indent, a `- ` or a flow `{`/`,`,
-    # and names an anchor. A shell glob (`*"$tag"*)`) or bold Markdown
-    # (`**repository:`) inside a value is neither (both seen in pinned repos).
-    local alias='(^|'$'\n''|[{,])[[:space:]]*(-[[:space:]]+)?\*[a-z0-9_.-]+[[:space:]]*:([[:space:]]|$)'
-    local complex='(^|'$'\n'')[[:space:]]*(-[[:space:]]+)?\?([[:space:]]|$)'
+    # An alias key opens its key: after the indent, a `- `, a flow `{`, `[` or
+    # `,`, or an explicit `? `, and names an anchor. A shell glob (`*"$tag"*)`)
+    # or bold Markdown (`**repository:`) inside a value is neither (both seen in
+    # pinned repos).
+    local alias='(^|'$'\n''|[{,[])[[:space:]]*(-[[:space:]]+)?(\?[[:space:]]+)?\*[a-z0-9_.-]+[[:space:]]*:([[:space:]]|$)'
+    local complex='(^|'$'\n''|[{,[])[[:space:]]*(-[[:space:]]+)?\?([[:space:]]|$)'
     [[ "$lower" =~ $key ]] || [[ "$lower" =~ $escaped ]] \
         || [[ "$lower" =~ $alias ]] || [[ "$lower" =~ $complex ]]
+}
+
+# _curation_toml_text_is_config <text> — for a TOML file tomllib rejects: 0 when
+# its text may still declare a server or a command (a `command`, `cmd`,
+# `mcpServers` or `mcp_servers` key, any case, or such a table header). A
+# real client may read what tomllib does not — Codex reads TOML 1.1 — so a
+# rejected config cannot be confirmed safe and goes to review (#679).
+_curation_toml_text_is_config() {
+    local lower="${1,,}" q='["'\'']'
+    local key="(^|[[:space:]{,.[])${q}?(command|cmd|mcpservers|mcp_servers)${q}?([[:space:]]*=|[[:space:]]*[].])"
+    [[ "$lower" =~ $key ]]
 }
 
 # What counts as an archive, by name (jq/ERE, matched case-insensitively): zip
@@ -1130,8 +1149,13 @@ curation_safety_screen() {
                             _curation_screen_scan "$jpath" joined < <(printf '%s' "$tjson" | _curation_json_commands)
                         else
                             # Unparsed: its shape cannot be ruled out, so scan the
-                            # text. A reader that could not run is also an outage.
-                            [ "$trc" -eq 1 ] || reasons+=("toml-unreadable")
+                            # text. A reader that could not run is an outage; a
+                            # rejected file that may declare a command, a review.
+                            if [ "$trc" -ne 1 ]; then
+                                reasons+=("toml-unreadable")
+                            elif _curation_toml_text_is_config "$jtext"; then
+                                reasons+=("toml-config-unparsed")
+                            fi
                             _curation_screen_scan "$jpath" < <(printf '%s\n' "$jtext")
                         fi
                         ;;
