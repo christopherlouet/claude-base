@@ -541,8 +541,9 @@ _pin_note() {
 # come last (often the repo's own tooling). Exit 1 when the tree cannot be read,
 # or is truncated with no SKILL.md in view: an outage, never "no skill".
 shipped_skills() {
-    local body paths
-    body=$(curation_gh_api "repos/$1/git/trees/$2?recursive=1" 2>/dev/null) || return 1
+    local ref body paths
+    ref=$(curation_uri "$2") || return 1   # a tag the candidate chose (#680)
+    body=$(curation_gh_api "repos/$1/git/trees/$ref?recursive=1" 2>/dev/null) || return 1
     printf '%s' "$body" | jq -e '.tree | type == "array"' >/dev/null 2>&1 || return 1
     paths=$(printf '%s' "$body" | jq -r '
         [.tree[] | select(.type == "blob") | select(.path | test("(^|/)SKILL\\.md$"))]

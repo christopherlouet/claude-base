@@ -114,10 +114,18 @@ _curation_b64decode() { curation_b64decode; }
 # holding `?`, `&`, `#` or `%` rewrites the request (`run?ref=v0&x=.sh` asks for
 # `run` at v0) and the screen scans a file that is not the one installed (#680).
 _curation_contents_api() {
-    local enc
-    enc=$(jq -rn --arg p "$3" --arg r "$2" \
-        '($p | split("/") | map(@uri) | join("/")) + "?ref=" + ($r | @uri)') || return 1
-    printf 'repos/%s/contents/%s' "$1" "$enc"
+    local p r
+    p=$(curation_path_uri "$3") || return 1
+    r=$(curation_uri "$2") || return 1
+    printf 'repos/%s/contents/%s?ref=%s' "$1" "$p" "$r"
+}
+
+# _curation_trees_api <repo> <ref> — the recursive git-trees API path, ref
+# encoded: the ref is a tag the candidate chose (see curation_uri).
+_curation_trees_api() {
+    local r
+    r=$(curation_uri "$2") || return 1
+    printf 'repos/%s/git/trees/%s?recursive=1' "$1" "$r"
 }
 
 # _curation_fetch_one <repo> <ref> <path> — echo the decoded text of one file at
@@ -755,9 +763,10 @@ _curation_scan_archive() {
 # 3 and 4 are distinct unknowns: 3 hides files we never even named, 4 hides
 # files we named and chose not to fetch. Both flag; only 3 is unbounded.
 _curation_list_exec_surface() {
-    local repo="$1" ref="$2" subpaths="${3:-}" body
+    local repo="$1" ref="$2" subpaths="${3:-}" api body
     local cap="${CURATION_SAFETY_MAX_FILES:-250}"
-    body=$(curation_gh_api "repos/$repo/git/trees/$ref?recursive=1" 2>/dev/null) || return 1
+    api=$(_curation_trees_api "$repo" "$ref") || return 1
+    body=$(curation_gh_api "$api" 2>/dev/null) || return 1
     # A response without a .tree array (e.g. an error object) is unusable.
     printf '%s' "$body" | jq -e '.tree | type == "array"' >/dev/null 2>&1 || return 1
     local truncated all count
@@ -820,13 +829,16 @@ _curation_list_exec_surface() {
 # lists <path> as a file. Any failure answers no (the caller only uses it to
 # tell "not scanned" from "nothing there").
 _curation_tree_has() {
-    curation_gh_api "repos/$1/git/trees/$2?recursive=1" 2>/dev/null \
+    local api
+    api=$(_curation_trees_api "$1" "$2") || return 1
+    curation_gh_api "$api" 2>/dev/null \
         | jq -e --arg p "$3" '[.tree[]? | select(.type == "blob" and .path == $p)] | length > 0' >/dev/null 2>&1
 }
 
 _curation_subpaths_resolve() {
-    local repo="$1" ref="$2" subpaths="$3" body paths sp sps=() missing=0
-    body=$(curation_gh_api "repos/$repo/git/trees/$ref?recursive=1" 2>/dev/null) || return 1
+    local repo="$1" ref="$2" subpaths="$3" api body paths sp sps=() missing=0
+    api=$(_curation_trees_api "$repo" "$ref") || return 1
+    body=$(curation_gh_api "$api" 2>/dev/null) || return 1
     printf '%s' "$body" | jq -e '.tree | type == "array"' >/dev/null 2>&1 || return 1
     paths=$(printf '%s' "$body" | jq -r '.tree[]? | .path')
     IFS='+' read -ra sps < <(printf '%s' "$subpaths") || true

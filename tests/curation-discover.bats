@@ -140,7 +140,7 @@ tree_fixture() {
     local repo="$1" ref="$2"; shift 2
     jq -cn '{truncated:($ENV.TREE_TRUNCATED == "1"), tree:[$ARGS.positional[]
               | (split("@")) as $p | {path:$p[0], type:"blob", sha:($p[1] // $p[0])}]}' --args "$@" \
-        > "$TEST_DIR/fx/$(printf '%s' "repos/$repo/git/trees/$ref?recursive=1" | tr '/' '_')"
+        > "$TEST_DIR/fx/$(printf '%s' "repos/$repo/git/trees/$(jq -rn --arg r "$ref" '$r | @uri')?recursive=1" | tr '/' '_')"
 }
 
 # =============================================================================
