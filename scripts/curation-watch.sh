@@ -341,8 +341,14 @@ _drift_subpath_fingerprint() {
 # built on an answer we did not get. A rename is a touch on BOTH its old and new
 # path.
 _drift_touched_subpaths() {
-    local repo="$1" old="$2" new="$3" subs="$4" body verdict
-    body=$(curation_gh_api "repos/$repo/compare/$old...$new" 2>/dev/null) \
+    local repo="$1" old="$2" new="$3" subs="$4" body verdict qold qnew
+    # $new is the vendor's tag: raw, `v2#x` compares against v2 (#680). Encoded
+    # for this URL only ($old/$new stay raw for the fingerprint, which encodes
+    # them itself). An encoding failure leaves them empty: the compare fails and
+    # the fingerprint route answers instead.
+    qold=$(curation_uri "$old") || qold=""
+    qnew=$(curation_uri "$new") || qnew=""
+    body=$(curation_gh_api "repos/$repo/compare/$qold...$qnew" 2>/dev/null) \
         && verdict=$(printf '%s' "$body" | jq -r --arg subs "$subs" '
             def under($p): . == $p or startswith($p + "/");
             ($subs | split("+")) as $S
