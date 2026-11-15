@@ -710,8 +710,11 @@ _reject() {
 # Safety reasons that mean the screen could not run, not that it found something.
 # exec-surface-truncated / -over-cap are NOT in it on purpose: the repo is too
 # large to scan whole, a property of the repo that a re-run would meet again, so
-# it is recorded like a finding.
-_SAFETY_OUTAGE='unfetchable|unreadable|unresolved|scan-error|scan-blind|failed'
+# it is recorded like a finding. A config the screen cannot parse
+# (yaml-config-unparsed, toml-config-unparsed) is in it: the screen only knows
+# it cannot confirm the file, and its text rule also matches prose, so the repo
+# goes to review on every run instead of being set aside for months.
+_SAFETY_OUTAGE='unfetchable|unreadable|unresolved|unparsed|scan-error|scan-blind|failed'
 
 moat_arr=()
 

@@ -1081,7 +1081,8 @@ unpopular() {
     re=$(sed -n "s/^_SAFETY_OUTAGE='\(.*\)'$/\1/p" "$DISCOVER")
     [ -n "$re" ]
     for r in content-unfetchable doc-unreadable subpath-unresolved exec-surface-unfetchable \
-             exec-file-unfetchable scan-error scan-blind screen-emit-failed; do
+             exec-file-unfetchable scan-error scan-blind screen-emit-failed toml-unreadable \
+             yaml-config-unparsed toml-config-unparsed; do
         printf '%s' "$r" | grep -qE "$re" || { echo "outage not matched: $r" >&2; return 1; }
     done
     for r in remote-exec obfuscated-exec destructive-rm prompt-injection uncategorized-pattern \
