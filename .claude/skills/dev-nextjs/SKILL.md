@@ -306,10 +306,11 @@ Vercel Labs publishes official agent skills at [`vercel-labs/agent-skills`](http
 - **`react-best-practices`** — 40+ rules across 8 categories from Vercel Engineering.
 - Companion skills: React Composition Patterns, React View Transitions, `deploy-to-vercel`, `vercel-optimize`, Web Design Guidelines.
 
-The Next.js team ships its own skills **inside the framework repo**, at [`vercel/next.js/skills`](https://github.com/vercel/next.js/tree/canary/skills) (MIT; pin a stable release tag, v16.3.8 at the 2026-10-03 audit). They are adoption and verification procedures for recent features, not a general reference:
+The Next.js team ships its own skills **inside the framework repo**, at [`vercel/next.js/skills`](https://github.com/vercel/next.js/tree/canary/skills) (MIT; pin a stable release tag — the curation registry tracks the verified one, v16.4.6 at the 2026-11-15 review). They are adoption, optimisation and verification procedures for recent features, not a general reference:
 
-- **`next-cache-components-adoption`** / **`-optimizer`** — enable Cache Components and resolve the blocking routes it surfaces.
-- **`next-partial-prefetching-adoption`** (+ an optimizer on `canary`) — enable Partial Prefetching and work through its insights.
+- **`next-cache-components-adoption`** / **`-optimizer`** — enable Cache Components and resolve the blocking routes it surfaces; the optimizer grows a route's static shell against a failing `@next/playwright` `instant()` test.
+- **`next-partial-prefetching-adoption`** / **`-optimizer`** — enable Partial Prefetching, then choose what each navigation prefetches (16.3+).
+- **`next-bundle-optimizer`** — audit and cut a route's initial browser load (oversized client bundles, duplicate dependencies, work that can wait for interaction).
 - **`next-dev-loop`** — verify runtime behaviour in a running `next dev` (needs a browser-driving tool).
 
 Since 16.2 the `next` package bundles version-matched docs at `node_modules/next/dist/docs/`; from 16.3, `next dev` upserts a managed block into `AGENTS.md` and `CLAUDE.md` (when it detects an agent) telling agents to read them first. Prefer those docs over this skill for API details on 16.2+: they match the installed version.

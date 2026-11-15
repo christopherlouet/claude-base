@@ -64,6 +64,23 @@
       ]
     },
     {
+      "foundationSkill": "dev-nextjs",
+      "vendorId": "vercel/next.js/skills",
+      "vendorUrl": "https://github.com/vercel/next.js/tree/canary/skills",
+      "pinnedRef": "v16.4.6",
+      "trustTrack": "authority",
+      "trustVerdict": "pass",
+      "provenance": "Vercel (Next.js team)",
+      "adviceNeutrality": "pass",
+      "lastVerified": "2026-11-15",
+      "status": "candidate",
+      "sourceAudit": "discovery-2026-11-01",
+      "flags": [
+        "partial-replacement: six adoption, optimisation and verification procedures for recent features (Cache Components, Partial Prefetching, bundle, dev loop), not the App Router / RSC reference dev-nextjs is; recorded so the nightly watch tracks the pin dev-nextjs cites (issue-683)",
+        "monorepo: scoped to skills/; the framework's own release tags (vX.Y.Z) version it"
+      ]
+    },
+    {
       "foundationSkill": "dev-prisma",
       "vendorId": "prisma/skills",
       "vendorUrl": "https://github.com/prisma/skills",

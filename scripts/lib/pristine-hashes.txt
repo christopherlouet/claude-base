@@ -1352,6 +1352,7 @@
 9fbe88edc5dfc219de06ca7966363b0b989869aadf4e52c99aa21cc43c855b6f .claude/commands/qa/qa-e2e.md
 a00bd291e1db860caa24f39f658290d3c47e6b6f719a902b2e005110a70ec918 .claude/skills/qa-review/examples/review-example.md
 a00bd291e1db860caa24f39f658290d3c47e6b6f719a902b2e005110a70ec918 .claude/skills/reviewing-code/examples/review-example.md
+a00eccc7ccd22f9f77513d9f5d2921198829a8e6acfc6e3c9dbf6eb49ef78905 .claude/skills/dev-nextjs/SKILL.md
 a0134054f886e29b6b96e2972917f8ee3561eccda892fa9ef4e425cb174f1893 .claude/commands/dev/dev-test.md
 a01c20c34dd413f8d57a824515e48ef47348c70d775bf815a70378956f8e111c .claude/templates/proxmox/lxc-module-template.tf
 a052f4c0229189468d447f07f7c7d01c583b6d3e4f7ab72472e1ad6fa3837ff8 .claude/commands/assistant.md

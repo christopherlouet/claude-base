@@ -26,6 +26,54 @@
       "reason": "Overlaps dev-frontend-design, which already points at the tool maker's own frontend-design skill (anthropics/claude-code plugin). Vendor-vs-vendor: authority over community (vendor-precedence).",
       "decidedAt": "2026-10-29",
       "ref": "issue-539"
+    },
+    {
+      "repo": "reduxjs/redux-toolkit/packages/toolkit/skills",
+      "reason": "Already covered: state-management points at the skills the @reduxjs/toolkit npm package ships under node_modules, version-matched to the installed library; a repo pin would drift from what the user runs.",
+      "decidedAt": "2026-11-15",
+      "ref": "issue-683"
+    },
+    {
+      "repo": "reduxjs/redux-toolkit/packages/rtk-query-codegen-openapi/skills",
+      "reason": "Too narrow for a foundation pointer: one code generator (RTK Query from OpenAPI) of a library state-management already points at.",
+      "decidedAt": "2026-11-15",
+      "ref": "issue-683"
+    },
+    {
+      "repo": "apollographql/apollo-client/docs/agent-skills",
+      "reason": "Duplicate: the Apollo team's own apollographql/skills (registry, dev-graphql) already covers Apollo Client. Its proposed pin was also another package's tag.",
+      "decidedAt": "2026-11-15",
+      "ref": "issue-683"
+    },
+    {
+      "repo": "TanStack/db/packages/angular-db/skills",
+      "reason": "Too narrow: Angular bindings of one data library, and the foundation has no Angular stack to attach it to. Its proposed pin was another package's tag.",
+      "decidedAt": "2026-11-15",
+      "ref": "issue-683"
+    },
+    {
+      "repo": "TanStack/devtools/packages/devtools-vite/skills",
+      "reason": "Too narrow: the configuration of one Vite plugin for TanStack devtools. Its proposed pin was another package's tag.",
+      "decidedAt": "2026-11-15",
+      "ref": "issue-683"
+    },
+    {
+      "repo": "hashicorp/agent-skills/packer/hcp/skills",
+      "reason": "Tied to HCP Packer, HashiCorp's hosted registry service: advice toward one vendor's platform (neutrality). ops-infra-code already points at the Packer builder guidance of the same repo.",
+      "decidedAt": "2026-11-15",
+      "ref": "issue-683"
+    },
+    {
+      "repo": "hashicorp/agent-skills/terraform/code-generation/skills",
+      "reason": "Already recorded on purpose as two of its skills (terraform-style-guide, terraform-test; registry, ops-infra-code); of the other two, azure-verified-modules is provider-specific and terraform-search-import is already named in ops-infra-code's pointer to this repo.",
+      "decidedAt": "2026-11-15",
+      "ref": "issue-683"
+    },
+    {
+      "repo": "komal-SkyNET/claude-skill-homeassistant",
+      "reason": "Not now: homelab-proxmox already recommends homeassistant-ai/skills (2026-09-05), which this complements (operating a config rather than writing one); no push since 2026-07-04. Reconsider if maintenance resumes.",
+      "decidedAt": "2026-11-15",
+      "ref": "issue-683"
     }
   ]
 }
